@@ -222,7 +222,7 @@ namespace DotNetOpenAuth.OpenId {
 
 			if (a.Handle != this.Handle ||
 				a.Issued != this.Issued ||
-				!MessagingUtilities.Equals(a.TotalLifeLength, this.TotalLifeLength, TimeSpan.FromSeconds(1))) {
+				!MessagingUtilities.Equals(a.TotalLifeLength, this.TotalLifeLength, TimeSpan.FromSeconds(2))) {
 				return false;
 			}
 

@@ -95,12 +95,12 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 					// This is a special recognized error case that we create a special message for.
 					message = new AssociateUnsuccessfulResponse(protocol.Version, associateRequest);
 				} else if (message == null) {
-#if !ExcludeDiffieHellman
-					var associateDiffieHellmanRequest = request as AssociateDiffieHellmanRequest;
-					if (associateDiffieHellmanRequest != null) {
-						message = new AssociateDiffieHellmanRelyingPartyResponse(protocol.Version, associateDiffieHellmanRequest);
+					if (OpenIdUtilities.IsDiffieHellmanPresent) {
+						var associateDiffieHellmanRequest = request as AssociateDiffieHellmanRequest;
+						if (associateDiffieHellmanRequest != null) {
+							message = new AssociateDiffieHellmanRelyingPartyResponse(protocol.Version, associateDiffieHellmanRequest);
+						}
 					}
-#endif
 
 					var associateUnencryptedRequest = request as AssociateUnencryptedRequest;
 					if (associateUnencryptedRequest != null) {

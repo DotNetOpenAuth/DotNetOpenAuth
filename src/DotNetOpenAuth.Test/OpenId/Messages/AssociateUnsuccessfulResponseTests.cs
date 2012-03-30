@@ -22,7 +22,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			this.response = new AssociateUnsuccessfulResponse(request.Version, request);
 		}
 
-		[TestCase]
+		[Test]
 		public void ParameterNames() {
 			this.response.ErrorMessage = "Some Error";
 			this.response.AssociationType = "HMAC-SHA1";

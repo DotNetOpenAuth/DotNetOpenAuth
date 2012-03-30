@@ -12,6 +12,8 @@ namespace DotNetOpenAuth.OAuth2 {
 	using System.Linq;
 	using System.Security.Cryptography;
 	using System.Text;
+	using System.Web;
+
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2.ChannelElements;
 	using DotNetOpenAuth.OAuth2.Messages;
@@ -26,29 +28,22 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="authorizationServer">The authorization server.</param>
 		public AuthorizationServer(IAuthorizationServer authorizationServer) {
 			Requires.NotNull(authorizationServer, "authorizationServer");
-			this.OAuthChannel = new OAuth2AuthorizationServerChannel(authorizationServer);
+			this.Channel = new OAuth2AuthorizationServerChannel(authorizationServer);
 		}
 
 		/// <summary>
 		/// Gets the channel.
 		/// </summary>
 		/// <value>The channel.</value>
-		public Channel Channel {
-			get { return this.OAuthChannel; }
-		}
+		public Channel Channel { get; internal set; }
 
 		/// <summary>
 		/// Gets the authorization server.
 		/// </summary>
 		/// <value>The authorization server.</value>
 		public IAuthorizationServer AuthorizationServerServices {
-			get { return this.OAuthChannel.AuthorizationServer; }
+			get { return ((IOAuth2ChannelWithAuthorizationServer)this.Channel).AuthorizationServer; }
 		}
-
-		/// <summary>
-		/// Gets the channel.
-		/// </summary>
-		internal OAuth2AuthorizationServerChannel OAuthChannel { get; private set; }
 
 		/// <summary>
 		/// Reads in a client's request for the Authorization Server to obtain permission from
@@ -58,7 +53,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <returns>The incoming request, or null if no OAuth message was attached.</returns>
 		/// <exception cref="ProtocolException">Thrown if an unexpected OAuth message is attached to the incoming request.</exception>
 		[SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "unauthorizedclient", Justification = "Protocol required.")]
-		public EndUserAuthorizationRequest ReadAuthorizationRequest(HttpRequestInfo request = null) {
+		public EndUserAuthorizationRequest ReadAuthorizationRequest(HttpRequestBase request = null) {
 			if (request == null) {
 				request = this.Channel.GetRequestFromContext();
 			}
@@ -68,7 +63,7 @@ namespace DotNetOpenAuth.OAuth2 {
 				if (message.ResponseType == EndUserAuthorizationResponseType.AuthorizationCode) {
 					// Clients with no secrets can only request implicit grant types.
 					var client = this.AuthorizationServerServices.GetClientOrThrow(message.ClientIdentifier);
-					ErrorUtilities.VerifyProtocol(!String.IsNullOrEmpty(client.Secret), Protocol.unauthorized_client);
+					ErrorUtilities.VerifyProtocol(!string.IsNullOrEmpty(client.Secret), Protocol.unauthorized_client);
 				}
 			}
 
@@ -102,55 +97,33 @@ namespace DotNetOpenAuth.OAuth2 {
 		}
 
 		/// <summary>
-		/// Checks the incoming HTTP request for an access token request and prepares a response if the request message was found.
+		/// Handles an incoming request to the authorization server's token endpoint.
 		/// </summary>
-		/// <param name="response">The formulated response, or <c>null</c> if the request was not found..</param>
-		/// <returns>A value indicating whether any access token request was found in the HTTP request.</returns>
-		/// <remarks>
-		/// This method assumes that the authorization server and the resource server are the same and that they share a single
-		/// asymmetric key for signing and encrypting the access token.  If this is not true, use the <see cref="ReadAccessTokenRequest"/> method instead.
-		/// </remarks>
-		public bool TryPrepareAccessTokenResponse(out IDirectResponseProtocolMessage response) {
-			return this.TryPrepareAccessTokenResponse(this.Channel.GetRequestFromContext(), out response);
-		}
-
-		/// <summary>
-		/// Checks the incoming HTTP request for an access token request and prepares a response if the request message was found.
-		/// </summary>
-		/// <param name="httpRequestInfo">The HTTP request info.</param>
-		/// <param name="response">The formulated response, or <c>null</c> if the request was not found..</param>
-		/// <returns>A value indicating whether any access token request was found in the HTTP request.</returns>
-		/// <remarks>
-		/// This method assumes that the authorization server and the resource server are the same and that they share a single
-		/// asymmetric key for signing and encrypting the access token.  If this is not true, use the <see cref="ReadAccessTokenRequest"/> method instead.
-		/// </remarks>
-		public bool TryPrepareAccessTokenResponse(HttpRequestInfo httpRequestInfo, out IDirectResponseProtocolMessage response) {
-			Requires.NotNull(httpRequestInfo, "httpRequestInfo");
-			Contract.Ensures(Contract.Result<bool>() == (Contract.ValueAtReturn<IDirectResponseProtocolMessage>(out response) != null));
-
-			var request = this.ReadAccessTokenRequest(httpRequestInfo);
-			if (request != null) {
-				response = this.PrepareAccessTokenResponse(request);
-				return true;
+		/// <param name="request">The HTTP request.</param>
+		/// <returns>The HTTP response to send to the client.</returns>
+		public OutgoingWebResponse HandleTokenRequest(HttpRequestBase request = null) {
+			if (request == null) {
+				request = this.Channel.GetRequestFromContext();
 			}
 
-			response = null;
-			return false;
-		}
-
-		/// <summary>
-		/// Reads the access token request.
-		/// </summary>
-		/// <param name="requestInfo">The request info.</param>
-		/// <returns>The Client's request for an access token; or <c>null</c> if no such message was found in the request.</returns>
-		public AccessTokenRequestBase ReadAccessTokenRequest(HttpRequestInfo requestInfo = null) {
-			if (requestInfo == null) {
-				requestInfo = this.Channel.GetRequestFromContext();
+			AccessTokenRequestBase requestMessage;
+			IProtocolMessage responseMessage;
+			try {
+				if (this.Channel.TryReadFromRequest(request, out requestMessage)) {
+					// TODO: refreshToken should be set appropriately based on authorization server policy.
+					responseMessage = this.PrepareAccessTokenResponse(requestMessage);
+				} else {
+					responseMessage = new AccessTokenFailedResponse() {
+						Error = Protocol.AccessTokenRequestErrorCodes.InvalidRequest,
+					};
+				}
+			} catch (ProtocolException) {
+				responseMessage = new AccessTokenFailedResponse() {
+					Error = Protocol.AccessTokenRequestErrorCodes.InvalidRequest,
+				};
 			}
 
-			AccessTokenRequestBase request;
-			this.Channel.TryReadFromRequest(requestInfo, out request);
-			return request;
+			return this.Channel.PrepareResponse(responseMessage);
 		}
 
 		/// <summary>
@@ -193,7 +166,7 @@ namespace DotNetOpenAuth.OAuth2 {
 			switch (authorizationRequest.ResponseType) {
 				case EndUserAuthorizationResponseType.AccessToken:
 					var accessTokenResponse = new EndUserAuthorizationSuccessAccessTokenResponse(callback, authorizationRequest);
-					accessTokenResponse.Lifetime = this.AuthorizationServerServices.GetAccessTokenLifetime(authorizationRequest);
+					accessTokenResponse.Lifetime = this.AuthorizationServerServices.GetAccessTokenLifetime((EndUserAuthorizationImplicitRequest)authorizationRequest);
 					response = accessTokenResponse;
 					break;
 				case EndUserAuthorizationResponseType.AuthorizationCode:
@@ -210,33 +183,6 @@ namespace DotNetOpenAuth.OAuth2 {
 				response.Scope.ResetContents(scopes);
 			}
 
-			return response;
-		}
-
-		/// <summary>
-		/// Prepares the response to an access token request.
-		/// </summary>
-		/// <param name="request">The request for an access token.</param>
-		/// <param name="includeRefreshToken">If set to <c>true</c>, the response will include a long-lived refresh token.</param>
-		/// <returns>The response message to send to the client.</returns>
-		public virtual IDirectResponseProtocolMessage PrepareAccessTokenResponse(AccessTokenRequestBase request, bool includeRefreshToken = true) {
-			Requires.NotNull(request, "request");
-
-			if (includeRefreshToken) {
-				if (request is AccessTokenClientCredentialsRequest) {
-					// Per OAuth 2.0 section 4.4.3 (draft 23), refresh tokens should never be included
-					// in a response to an access token request that used the client credential grant type.
-					Logger.OAuth.Debug("Suppressing refresh token in access token response because the grant type used by the client disallows it.");
-					includeRefreshToken = false;
-				}
-			}
-
-			var tokenRequest = (IAuthorizationCarryingRequest)request;
-			var response = new AccessTokenSuccessResponse(request) {
-				Lifetime = this.AuthorizationServerServices.GetAccessTokenLifetime(request),
-				HasRefreshToken = includeRefreshToken,
-			};
-			response.Scope.ResetContents(tokenRequest.AuthorizationDescription.Scope);
 			return response;
 		}
 
@@ -264,6 +210,33 @@ namespace DotNetOpenAuth.OAuth2 {
 			Uri defaultCallback = client.DefaultCallback;
 			ErrorUtilities.VerifyProtocol(defaultCallback != null, OAuthStrings.NoCallback);
 			return defaultCallback;
+		}
+
+		/// <summary>
+		/// Prepares the response to an access token request.
+		/// </summary>
+		/// <param name="request">The request for an access token.</param>
+		/// <param name="includeRefreshToken">If set to <c>true</c>, the response will include a long-lived refresh token.</param>
+		/// <returns>The response message to send to the client.</returns>
+		private IDirectResponseProtocolMessage PrepareAccessTokenResponse(AccessTokenRequestBase request, bool includeRefreshToken = true) {
+			Requires.NotNull(request, "request");
+
+			if (includeRefreshToken) {
+				if (request is AccessTokenClientCredentialsRequest) {
+					// Per OAuth 2.0 section 4.4.3 (draft 23), refresh tokens should never be included
+					// in a response to an access token request that used the client credential grant type.
+					Logger.OAuth.Debug("Suppressing refresh token in access token response because the grant type used by the client disallows it.");
+					includeRefreshToken = false;
+				}
+			}
+
+			var tokenRequest = (IAuthorizationCarryingRequest)request;
+			var response = new AccessTokenSuccessResponse(request) {
+				Lifetime = this.AuthorizationServerServices.GetAccessTokenLifetime(request),
+				HasRefreshToken = includeRefreshToken,
+			};
+			response.Scope.ResetContents(tokenRequest.AuthorizationDescription.Scope);
+			return response;
 		}
 	}
 }

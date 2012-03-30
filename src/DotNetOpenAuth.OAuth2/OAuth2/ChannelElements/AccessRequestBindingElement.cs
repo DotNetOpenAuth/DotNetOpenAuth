@@ -55,26 +55,23 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
 		public override MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
-			var response = message as IAuthorizationCarryingRequest;
-			if (response != null) {
-				switch (response.CodeOrTokenType) {
-					case CodeOrTokenType.AuthorizationCode:
-						var codeFormatter = AuthorizationCode.CreateFormatter(this.AuthorizationServer);
-						var code = (AuthorizationCode)response.AuthorizationDescription;
-						response.CodeOrToken = codeFormatter.Serialize(code);
-						break;
-					case CodeOrTokenType.AccessToken:
-						var responseWithOriginatingRequest = (IDirectResponseProtocolMessage)message;
-						var request = (IAccessTokenRequest)responseWithOriginatingRequest.OriginatingRequest;
+			var authCodeCarrier = message as IAuthorizationCodeCarryingRequest;
+			if (authCodeCarrier != null) {
+				var codeFormatter = AuthorizationCode.CreateFormatter(this.AuthorizationServer);
+				var code = authCodeCarrier.AuthorizationDescription;
+				authCodeCarrier.Code = codeFormatter.Serialize(code);
+				return MessageProtections.None;
+			}
 
-						using (var resourceServerKey = this.AuthorizationServer.GetResourceServerEncryptionKey(request)) {
-							var tokenFormatter = AccessToken.CreateFormatter(this.AuthorizationServer.AccessTokenSigningKey, resourceServerKey);
-							var token = (AccessToken)response.AuthorizationDescription;
-							response.CodeOrToken = tokenFormatter.Serialize(token);
-							break;
-						}
-					default:
-						throw ErrorUtilities.ThrowInternal(string.Format(CultureInfo.CurrentCulture, "Unexpected outgoing code or token type: {0}", response.CodeOrTokenType));
+			var accessTokenCarrier = message as IAccessTokenCarryingRequest;
+			if (accessTokenCarrier != null) {
+				var responseWithOriginatingRequest = (IDirectResponseProtocolMessage)message;
+				var request = (IAccessTokenRequest)responseWithOriginatingRequest.OriginatingRequest;
+
+				using (var resourceServerKey = this.AuthorizationServer.GetResourceServerEncryptionKey(request)) {
+					var tokenFormatter = AccessToken.CreateFormatter(this.AuthorizationServer.AccessTokenSigningKey, resourceServerKey);
+					var token = accessTokenCarrier.AuthorizationDescription;
+					accessTokenCarrier.AccessToken = tokenFormatter.Serialize(token);
 				}
 
 				return MessageProtections.None;
@@ -115,19 +112,42 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			var tokenRequest = message as IAuthorizationCarryingRequest;
 			if (tokenRequest != null) {
 				try {
-					switch (tokenRequest.CodeOrTokenType) {
-						case CodeOrTokenType.AuthorizationCode:
-							var verificationCodeFormatter = AuthorizationCode.CreateFormatter(this.AuthorizationServer);
-							var verificationCode = verificationCodeFormatter.Deserialize(message, tokenRequest.CodeOrToken);
-							tokenRequest.AuthorizationDescription = verificationCode;
-							break;
-						case CodeOrTokenType.RefreshToken:
-							var refreshTokenFormatter = RefreshToken.CreateFormatter(this.AuthorizationServer.CryptoKeyStore);
-							var refreshToken = refreshTokenFormatter.Deserialize(message, tokenRequest.CodeOrToken);
-							tokenRequest.AuthorizationDescription = refreshToken;
-							break;
-						default:
-							throw ErrorUtilities.ThrowInternal("Unexpected value for CodeOrTokenType: " + tokenRequest.CodeOrTokenType);
+					var authCodeCarrier = message as IAuthorizationCodeCarryingRequest;
+					var refreshTokenCarrier = message as IRefreshTokenCarryingRequest;
+					var resourceOwnerPasswordCarrier = message as AccessTokenResourceOwnerPasswordCredentialsRequest;
+					var clientCredentialOnly = message as AccessTokenClientCredentialsRequest;
+					if (authCodeCarrier != null) {
+						var authorizationCodeFormatter = AuthorizationCode.CreateFormatter(this.AuthorizationServer);
+						var authorizationCode = authorizationCodeFormatter.Deserialize(message, authCodeCarrier.Code, Protocol.code);
+						authCodeCarrier.AuthorizationDescription = authorizationCode;
+					} else if (refreshTokenCarrier != null) {
+						var refreshTokenFormatter = RefreshToken.CreateFormatter(this.AuthorizationServer.CryptoKeyStore);
+						var refreshToken = refreshTokenFormatter.Deserialize(message, refreshTokenCarrier.RefreshToken, Protocol.refresh_token);
+						refreshTokenCarrier.AuthorizationDescription = refreshToken;
+					} else if (resourceOwnerPasswordCarrier != null) {
+						try {
+							if (this.AuthorizationServer.IsResourceOwnerCredentialValid(resourceOwnerPasswordCarrier.UserName, resourceOwnerPasswordCarrier.Password)) {
+								resourceOwnerPasswordCarrier.CredentialsValidated = true;
+							} else {
+								Logger.OAuth.WarnFormat(
+									"Resource owner password credential for user \"{0}\" rejected by authorization server host.",
+									resourceOwnerPasswordCarrier.UserName);
+
+								// TODO: fix this to report the appropriate error code for a bad credential.
+								throw new ProtocolException();
+							}
+						} catch (NotSupportedException) {
+							// TODO: fix this to return the appropriate error code for not supporting resource owner password credentials
+							throw new ProtocolException();
+						} catch (NotImplementedException) {
+							// TODO: fix this to return the appropriate error code for not supporting resource owner password credentials
+							throw new ProtocolException();
+						}
+					} else if (clientCredentialOnly != null) {
+						// this method will throw later if the credentials are false.
+						clientCredentialOnly.CredentialsValidated = true;
+					} else {
+						throw ErrorUtilities.ThrowInternal("Unexpected message type: " + tokenRequest.GetType());
 					}
 				} catch (ExpiredMessageException ex) {
 					throw ErrorUtilities.Wrap(ex, Protocol.authorization_expired);
@@ -141,7 +161,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 					// Check that the client secret is correct.
 					var client = this.AuthorizationServer.GetClientOrThrow(accessRequest.ClientIdentifier);
 					string secret = client.Secret;
-					ErrorUtilities.VerifyProtocol(!String.IsNullOrEmpty(secret), Protocol.unauthorized_client); // an empty secret is not allowed for client authenticated calls.
+					ErrorUtilities.VerifyProtocol(!string.IsNullOrEmpty(secret), Protocol.unauthorized_client); // an empty secret is not allowed for client authenticated calls.
 					ErrorUtilities.VerifyProtocol(MessagingUtilities.EqualsConstantTime(secret, accessRequest.ClientSecret), Protocol.incorrect_client_credentials);
 
 					var scopedAccessRequest = accessRequest as ScopedAccessTokenRequest;

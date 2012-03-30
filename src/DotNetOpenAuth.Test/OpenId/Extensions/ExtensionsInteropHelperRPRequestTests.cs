@@ -44,7 +44,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 		/// <summary>
 		/// Verifies that without an Sreg extension to copy from, no AX extension request is added.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void SpreadSregToAXNoExtensions() {
 			ExtensionsInteropHelper.SpreadSregToAX(this.authReq, AXAttributeFormats.AXSchemaOrg);
 			Assert.AreEqual(0, this.authReq.AppliedExtensions.Count());
@@ -53,7 +53,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 		/// <summary>
 		/// Verifies that Sreg requests are correctly copied to axschema.org AX requests.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void SpreadSregToAXBasic() {
 			this.authReq.AddExtension(this.sreg);
 			ExtensionsInteropHelper.SpreadSregToAX(this.authReq, AXAttributeFormats.AXSchemaOrg);
@@ -72,7 +72,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 		/// <summary>
 		/// Verifies that sreg can spread to multiple AX schemas.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void SpreadSregToAxMultipleSchemas() {
 			this.authReq.AddExtension(this.sreg);
 			ExtensionsInteropHelper.SpreadSregToAX(this.authReq, AXAttributeFormats.AXSchemaOrg | AXAttributeFormats.SchemaOpenIdNet);
@@ -85,7 +85,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 		/// <summary>
 		/// Verifies no spread if the OP advertises sreg support.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void SpreadSregToAxNoOpIfOPSupportsSreg() {
 			this.authReq.AddExtension(this.sreg);
 			this.InjectAdvertisedTypeUri(DotNetOpenAuth.OpenId.Extensions.SimpleRegistration.Constants.sreg_ns);
@@ -96,7 +96,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 		/// <summary>
 		/// Verifies a targeted AX request if the OP advertises a recognized type URI format.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void SpreadSregToAxTargetedAtOPFormat() {
 			this.authReq.AddExtension(this.sreg);
 			this.InjectAdvertisedTypeUri(WellKnownAttributes.Name.FullName);
@@ -109,7 +109,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 		/// <summary>
 		/// Verifies that TransformAXFormat correctly translates AX schema Type URIs.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void TransformAXFormatTest() {
 			Assert.AreEqual(WellKnownAttributes.Name.Alias, ExtensionsInteropProviderHelper.TransformAXFormatTestHook(WellKnownAttributes.Name.Alias, AXAttributeFormats.AXSchemaOrg));
 			Assert.AreEqual("http://schema.openid.net/namePerson/friendly", ExtensionsInteropProviderHelper.TransformAXFormatTestHook(WellKnownAttributes.Name.Alias, AXAttributeFormats.SchemaOpenIdNet));

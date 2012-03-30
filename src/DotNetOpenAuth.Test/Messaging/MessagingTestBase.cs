@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.Test {
 	using System;
 	using System.Collections.Generic;
+	using System.Collections.Specialized;
 	using System.IO;
 	using System.Net;
 	using System.Xml;
@@ -19,6 +20,8 @@ namespace DotNetOpenAuth.Test {
 	/// The base class that all messaging test classes inherit from.
 	/// </summary>
 	public class MessagingTestBase : TestBase {
+		protected internal const string DefaultUrlForHttpRequestInfo = "http://localhost/path";
+
 		internal enum FieldFill {
 			/// <summary>
 			/// An empty dictionary is returned.
@@ -53,29 +56,19 @@ namespace DotNetOpenAuth.Test {
 		}
 
 		internal static HttpRequestInfo CreateHttpRequestInfo(string method, IDictionary<string, string> fields) {
-			string query = MessagingUtilities.CreateQueryString(fields);
-			UriBuilder requestUri = new UriBuilder("http://localhost/path");
-			WebHeaderCollection headers = new WebHeaderCollection();
-			MemoryStream ms = new MemoryStream();
+			var requestUri = new UriBuilder(DefaultUrlForHttpRequestInfo);
+			var headers = new NameValueCollection();
+			NameValueCollection form = null;
 			if (method == "POST") {
-				headers.Add(HttpRequestHeader.ContentType, "application/x-www-form-urlencoded");
-				StreamWriter sw = new StreamWriter(ms);
-				sw.Write(query);
-				sw.Flush();
-				ms.Position = 0;
+				form = fields.ToNameValueCollection();
+				headers.Add(HttpRequestHeaders.ContentType, Channel.HttpFormUrlEncoded);
 			} else if (method == "GET") {
-				requestUri.Query = query;
+				requestUri.Query = MessagingUtilities.CreateQueryString(fields);
 			} else {
 				throw new ArgumentOutOfRangeException("method", method, "Expected POST or GET");
 			}
-			HttpRequestInfo request = new HttpRequestInfo {
-				HttpMethod = method,
-				UrlBeforeRewriting = requestUri.Uri,
-				Headers = headers,
-				InputStream = ms,
-			};
 
-			return request;
+			return new HttpRequestInfo(method, requestUri.Uri, form: form, headers: headers);
 		}
 
 		internal static Channel CreateChannel(MessageProtections capabilityAndRecognition) {

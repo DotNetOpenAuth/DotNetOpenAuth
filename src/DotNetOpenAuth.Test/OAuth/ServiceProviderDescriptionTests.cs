@@ -18,7 +18,7 @@ namespace DotNetOpenAuth.Test.OAuth {
 		/// <summary>
 		/// A test for UserAuthorizationUri
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void UserAuthorizationUriTest() {
 			ServiceProviderDescription target = new ServiceProviderDescription();
 			MessageReceivingEndpoint expected = new MessageReceivingEndpoint("http://localhost/authorization", HttpDeliveryMethods.GetRequest);
@@ -34,7 +34,7 @@ namespace DotNetOpenAuth.Test.OAuth {
 		/// <summary>
 		/// A test for RequestTokenUri
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void RequestTokenUriTest() {
 			var target = new ServiceProviderDescription();
 			MessageReceivingEndpoint expected = new MessageReceivingEndpoint("http://localhost/requesttoken", HttpDeliveryMethods.GetRequest);
@@ -60,7 +60,7 @@ namespace DotNetOpenAuth.Test.OAuth {
 		/// <summary>
 		/// A test for AccessTokenUri
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void AccessTokenUriTest() {
 			var target = new ServiceProviderDescription();
 			MessageReceivingEndpoint expected = new MessageReceivingEndpoint("http://localhost/accesstoken", HttpDeliveryMethods.GetRequest);

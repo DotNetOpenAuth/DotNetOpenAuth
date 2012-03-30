@@ -46,6 +46,7 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Web.Abstractions" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
@@ -69,6 +70,7 @@
     <Content Include="SampleWcf2Javascript.js" />
     <Content Include="Scripts\jquery-1.6.1.js" />
     <Content Include="Scripts\jquery-1.6.1.min.js" />
+    <Content Include="WindowsLive.aspx" />
     <Content Include="Yammer.aspx" />
     <None Include="Service References\SampleResourceServer\DataApi.disco" />
     <None Include="Service References\SampleResourceServer\configuration91.svcinfo" />
@@ -153,6 +155,13 @@
     <Compile Include="Twitter.aspx.designer.cs">
       <DependentUpon>Twitter.aspx</DependentUpon>
     </Compile>
+    <Compile Include="WindowsLive.aspx.cs">
+      <DependentUpon>WindowsLive.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="WindowsLive.aspx.designer.cs">
+      <DependentUpon>WindowsLive.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Yammer.aspx.cs">
       <DependentUpon>Yammer.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -220,7 +229,7 @@
         <WebProjectProperties>
           <UseIIS>False</UseIIS>
           <AutoAssignPort>False</AutoAssignPort>
-          <DevelopmentServerPort>59721</DevelopmentServerPort>
+          <DevelopmentServerPort>59722</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>
           </IISUrl>

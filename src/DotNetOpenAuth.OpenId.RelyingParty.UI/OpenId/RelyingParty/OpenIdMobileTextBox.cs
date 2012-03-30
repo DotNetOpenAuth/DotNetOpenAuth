@@ -325,7 +325,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			set {
 				if (Page != null && !DesignMode) {
 					// Validate new value by trying to construct a Uri based on it.
-					new Uri(this.RelyingParty.Channel.GetRequestFromContext().UrlBeforeRewriting, this.Page.ResolveUrl(value)); // throws an exception on failure.
+					new Uri(this.RelyingParty.Channel.GetRequestFromContext().GetPublicFacingUrl(), this.Page.ResolveUrl(value)); // throws an exception on failure.
 				} else {
 					// We can't fully test it, but it should start with either ~/ or a protocol.
 					if (Regex.IsMatch(value, @"^https?://")) {
@@ -603,7 +603,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 					if (string.IsNullOrEmpty(this.ReturnToUrl)) {
 						this.Request = this.RelyingParty.CreateRequest(userSuppliedIdentifier, typedRealm);
 					} else {
-						Uri returnTo = new Uri(this.RelyingParty.Channel.GetRequestFromContext().UrlBeforeRewriting, this.ReturnToUrl);
+						Uri returnTo = new Uri(this.RelyingParty.Channel.GetRequestFromContext().GetPublicFacingUrl(), this.ReturnToUrl);
 						this.Request = this.RelyingParty.CreateRequest(userSuppliedIdentifier, typedRealm, returnTo);
 					}
 					this.Request.Mode = this.ImmediateMode ? AuthenticationRequestMode.Immediate : AuthenticationRequestMode.Setup;
@@ -747,7 +747,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				Language = this.RequestLanguage,
 				TimeZone = this.RequestTimeZone,
 				PolicyUrl = string.IsNullOrEmpty(this.PolicyUrl) ?
-					null : new Uri(this.RelyingParty.Channel.GetRequestFromContext().UrlBeforeRewriting, this.Page.ResolveUrl(this.PolicyUrl)),
+					null : new Uri(this.RelyingParty.Channel.GetRequestFromContext().GetPublicFacingUrl(), this.Page.ResolveUrl(this.PolicyUrl)),
 			});
 		}
 

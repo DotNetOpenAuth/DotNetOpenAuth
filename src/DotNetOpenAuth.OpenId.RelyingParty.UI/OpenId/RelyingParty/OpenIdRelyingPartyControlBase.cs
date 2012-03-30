@@ -395,7 +395,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			set {
 				if (this.Page != null && !this.DesignMode) {
 					// Validate new value by trying to construct a Uri based on it.
-					new Uri(this.RelyingParty.Channel.GetRequestFromContext().UrlBeforeRewriting, this.Page.ResolveUrl(value)); // throws an exception on failure.
+					new Uri(this.RelyingParty.Channel.GetRequestFromContext().GetPublicFacingUrl(), this.Page.ResolveUrl(value)); // throws an exception on failure.
 				} else {
 					// We can't fully test it, but it should start with either ~/ or a protocol.
 					if (Regex.IsMatch(value, @"^https?://")) {
@@ -919,7 +919,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			Uri returnToApproximation;
 			if (this.ReturnToUrl != null) {
 				string returnToResolvedPath = this.ResolveUrl(this.ReturnToUrl);
-				returnToApproximation = new Uri(this.RelyingParty.Channel.GetRequestFromContext().UrlBeforeRewriting, returnToResolvedPath);
+				returnToApproximation = new Uri(this.RelyingParty.Channel.GetRequestFromContext().GetPublicFacingUrl(), returnToResolvedPath);
 			} else {
 				returnToApproximation = this.Page.Request.Url;
 			}

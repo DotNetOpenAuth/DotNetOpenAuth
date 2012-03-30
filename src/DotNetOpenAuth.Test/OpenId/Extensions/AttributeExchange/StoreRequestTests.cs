@@ -19,7 +19,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.AttributeExchange {
 		/// <summary>
 		/// Verifies the constructor behavior.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void Ctor() {
 			var req = new StoreRequest();
 			Assert.IsFalse(req.Attributes.Any());
@@ -28,7 +28,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.AttributeExchange {
 		/// <summary>
 		/// Verifies the AddAttribute method.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void AddAttributeByValue() {
 			var req = new StoreRequest();
 			AttributeValues value = new AttributeValues();
@@ -39,7 +39,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.AttributeExchange {
 		/// <summary>
 		/// Verifies the AddAttribute method.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void AddAttributeByPrimitives() {
 			var req = new StoreRequest();
 			req.Attributes.Add("http://att1", "value1", "value2");
@@ -51,7 +51,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.AttributeExchange {
 		/// <summary>
 		/// Verifies the Equals method.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void EqualityTests() {
 			var req1 = new StoreRequest();
 			var req2 = new StoreRequest();
@@ -71,7 +71,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.AttributeExchange {
 		/// <summary>
 		/// Verifies that the class is serializable.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void Serializable() {
 			var store = new StoreRequest();
 			store.Attributes.Add("http://someAttribute", "val1", "val2");

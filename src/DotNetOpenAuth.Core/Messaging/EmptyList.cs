@@ -53,6 +53,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// Gets or sets the <typeparamref name="T"/> at the specified index.
 		/// </summary>
 		/// <param name="index">The index of the element in the list to change.</param>
+		/// <returns>Nothing.  It always throws.</returns>
 		public T this[int index] {
 			get {
 				throw new ArgumentOutOfRangeException("index");

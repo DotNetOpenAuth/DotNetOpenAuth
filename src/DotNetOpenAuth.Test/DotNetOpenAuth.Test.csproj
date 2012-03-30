@@ -91,7 +91,7 @@
     </CodeContractsCustomRewriterAssembly>
     <CodeContractsCustomRewriterClass>
     </CodeContractsCustomRewriterClass>
-    <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
+    <CodeContractsRuntimeCheckingLevel>None</CodeContractsRuntimeCheckingLevel>
     <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
     <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
     <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
@@ -130,7 +130,7 @@
     <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
     <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
     <ErrorReport>prompt</ErrorReport>
-    <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
+    <CodeContractsEnableRuntimeChecking>False</CodeContractsEnableRuntimeChecking>
     <CodeContractsCustomRewriterAssembly>
     </CodeContractsCustomRewriterAssembly>
     <CodeContractsCustomRewriterClass>
@@ -218,8 +218,10 @@
     <Compile Include="Mocks\AssociateUnencryptedRequestNoSslCheck.cs" />
     <Compile Include="Mocks\CoordinatingChannel.cs" />
     <Compile Include="Mocks\CoordinatingHttpRequestInfo.cs" />
+    <Compile Include="Mocks\CoordinatingOAuth2AuthServerChannel.cs" />
     <Compile Include="Mocks\CoordinatingOutgoingWebResponse.cs" />
     <Compile Include="Mocks\CoordinatingOAuthConsumerChannel.cs" />
+    <Compile Include="Mocks\IBaseMessageExplicitMembers.cs" />
     <Compile Include="Mocks\InMemoryTokenManager.cs" />
     <Compile Include="Mocks\MockHttpRequest.cs" />
     <Compile Include="Mocks\MockIdentifier.cs" />
@@ -241,9 +243,12 @@
     <Compile Include="Mocks\TestChannel.cs" />
     <Compile Include="Mocks\TestMessage.cs" />
     <Compile Include="Mocks\TestMessageFactory.cs" />
+    <Compile Include="OAuth2\AuthorizationServerTests.cs" />
     <Compile Include="OAuth2\MessageFactoryTests.cs" />
-    <Compile Include="OAuth2\OAuth2ChannelTests.cs" />
+    <Compile Include="OAuth2\UserAgentClientAuthorizeTests.cs" />
+    <Compile Include="OAuth2\OAuth2Coordinator.cs" />
     <Compile Include="OAuth2\OAuth2TestBase.cs" />
+    <Compile Include="OAuth2\WebServerClientAuthorizeTests.cs" />
     <Compile Include="OAuth\ChannelElements\HmacSha1SigningBindingElementTests.cs" />
     <Compile Include="OAuth\ChannelElements\OAuthChannelTests.cs" />
     <Compile Include="OAuth\ChannelElements\PlaintextSigningBindingElementTest.cs" />

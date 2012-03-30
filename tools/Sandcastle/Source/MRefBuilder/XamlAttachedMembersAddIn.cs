@@ -79,7 +79,7 @@ namespace Microsoft.Ddue.Tools {
                         // make sure there isn't already such a property
 
                         Property existingProperty = type.GetProperty(new Identifier(name), new TypeNode[0]);
-                        if (existingProperty != null) continue;
+                        if (existingProperty != null && existingProperty.IsVisibleOutsideAssembly) continue;
 
                         // okay, this really is an indication of an attached property, so create one
 
@@ -126,7 +126,7 @@ namespace Microsoft.Ddue.Tools {
                         // make sure there isn't already such an event
 
                         Event existingEvent = type.GetEvent(new Identifier(name));
-                        if (existingEvent != null) continue;
+                        if (existingEvent != null && existingEvent.IsVisibleOutsideAssembly) continue;
 
                         // okay, this really is an indication of an attached event, so create one
 

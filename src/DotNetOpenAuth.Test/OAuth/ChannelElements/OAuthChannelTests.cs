@@ -56,17 +56,17 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 			new OAuthConsumerChannel(new RsaSha1ServiceProviderSigningBindingElement(new InMemoryTokenManager()), this.nonceStore, null, this.consumerSecuritySettings, new TestMessageFactory());
 		}
 
-		[TestCase]
+		[Test]
 		public void CtorSimpleConsumer() {
 			new OAuthConsumerChannel(new RsaSha1ServiceProviderSigningBindingElement(new InMemoryTokenManager()), this.nonceStore, (IConsumerTokenManager)new InMemoryTokenManager(), this.consumerSecuritySettings);
 		}
 
-		[TestCase]
+		[Test]
 		public void CtorSimpleServiceProvider() {
 			new OAuthServiceProviderChannel(new RsaSha1ServiceProviderSigningBindingElement(new InMemoryTokenManager()), this.nonceStore, (IServiceProviderTokenManager)new InMemoryTokenManager(), this.serviceProviderSecuritySettings);
 		}
 
-		[TestCase]
+		[Test]
 		public void ReadFromRequestAuthorization() {
 			this.ParameterizedReceiveTest(HttpDeliveryMethods.AuthorizationHeaderRequest);
 		}
@@ -75,26 +75,27 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 		/// Verifies that the OAuth ReadFromRequest method gathers parameters
 		/// from the Authorization header, the query string and the entity form data.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void ReadFromRequestAuthorizationScattered() {
 			// Start by creating a standard POST HTTP request.
-			var fields = new Dictionary<string, string> {
+			var postedFields = new Dictionary<string, string> {
 				{ "age", "15" },
 			};
-			HttpRequestInfo requestInfo = CreateHttpRequestInfo(HttpDeliveryMethods.PostRequest, fields);
 
 			// Now add another field to the request URL
-			UriBuilder builder = new UriBuilder(requestInfo.UrlBeforeRewriting);
+			var builder = new UriBuilder(MessagingTestBase.DefaultUrlForHttpRequestInfo);
 			builder.Query = "Name=Andrew";
-			requestInfo.UrlBeforeRewriting = builder.Uri;
-			requestInfo.RawUrl = builder.Path + builder.Query + builder.Fragment;
 
 			// Finally, add an Authorization header
-			fields = new Dictionary<string, string> {
+			var authHeaderFields = new Dictionary<string, string> {
 				{ "Location", "http://hostb/pathB" },
 				{ "Timestamp", XmlConvert.ToString(DateTime.UtcNow, XmlDateTimeSerializationMode.Utc) },
 			};
-			requestInfo.Headers.Add(HttpRequestHeader.Authorization, CreateAuthorizationHeader(fields));
+			var headers = new NameValueCollection();
+			headers.Add(HttpRequestHeaders.Authorization, CreateAuthorizationHeader(authHeaderFields));
+			headers.Add(HttpRequestHeaders.ContentType, Channel.HttpFormUrlEncoded);
+
+			var requestInfo = new HttpRequestInfo("POST", builder.Uri, form: postedFields.ToNameValueCollection(), headers: headers);
 
 			IDirectedProtocolMessage requestMessage = this.channel.ReadFromRequest(requestInfo);
 
@@ -106,17 +107,17 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 			Assert.AreEqual("http://hostb/pathB", testMessage.Location.AbsoluteUri);
 		}
 
-		[TestCase]
+		[Test]
 		public void ReadFromRequestForm() {
 			this.ParameterizedReceiveTest(HttpDeliveryMethods.PostRequest);
 		}
 
-		[TestCase]
+		[Test]
 		public void ReadFromRequestQueryString() {
 			this.ParameterizedReceiveTest(HttpDeliveryMethods.GetRequest);
 		}
 
-		[TestCase]
+		[Test]
 		public void SendDirectMessageResponse() {
 			IProtocolMessage message = new TestDirectedMessage {
 				Age = 15,
@@ -135,7 +136,7 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 			Assert.AreEqual("http://hostb/pathB", body["Location"]);
 		}
 
-		[TestCase]
+		[Test]
 		public void ReadFromResponse() {
 			var fields = new Dictionary<string, string> {
 				{ "age", "15" },
@@ -175,7 +176,7 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 			this.channel.Request(message);
 		}
 
-		[TestCase]
+		[Test]
 		public void RequestUsingAuthorizationHeader() {
 			this.ParameterizedRequestTest(HttpDeliveryMethods.AuthorizationHeaderRequest);
 		}
@@ -183,7 +184,7 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 		/// <summary>
 		/// Verifies that message parts can be distributed to the query, form, and Authorization header.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void RequestUsingAuthorizationHeaderScattered() {
 			TestDirectedMessage request = new TestDirectedMessage(MessageTransport.Direct) {
 				Age = 15,
@@ -216,17 +217,17 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 			Assert.AreEqual("appearinform=formish", this.webRequestHandler.RequestEntityAsString);
 		}
 
-		[TestCase]
+		[Test]
 		public void RequestUsingGet() {
 			this.ParameterizedRequestTest(HttpDeliveryMethods.GetRequest);
 		}
 
-		[TestCase]
+		[Test]
 		public void RequestUsingPost() {
 			this.ParameterizedRequestTest(HttpDeliveryMethods.PostRequest);
 		}
 
-		[TestCase]
+		[Test]
 		public void RequestUsingHead() {
 			this.ParameterizedRequestTest(HttpDeliveryMethods.HeadRequest);
 		}
@@ -234,7 +235,7 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 		/// <summary>
 		/// Verifies that messages asking for special HTTP status codes get them.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void SendDirectMessageResponseHonorsHttpStatusCodes() {
 			IProtocolMessage message = MessagingTestBase.GetStandardTestMessage(MessagingTestBase.FieldFill.AllRequired);
 			OutgoingWebResponse directResponse = this.channel.PrepareDirectResponseTestHook(message);
@@ -266,51 +267,33 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 		}
 
 		private static HttpRequestInfo CreateHttpRequestInfo(HttpDeliveryMethods scheme, IDictionary<string, string> fields) {
-			string query = MessagingUtilities.CreateQueryString(fields);
-			UriBuilder requestUri = new UriBuilder("http://localhost/path");
-			WebHeaderCollection headers = new WebHeaderCollection();
-			MemoryStream ms = new MemoryStream();
+			var requestUri = new UriBuilder(MessagingTestBase.DefaultUrlForHttpRequestInfo);
+			var headers = new NameValueCollection();
+			NameValueCollection form = null;
 			string method;
 			switch (scheme) {
 				case HttpDeliveryMethods.PostRequest:
 					method = "POST";
-					headers.Add(HttpRequestHeader.ContentType, "application/x-www-form-urlencoded");
-					StreamWriter sw = new StreamWriter(ms);
-					sw.Write(query);
-					sw.Flush();
-					ms.Position = 0;
+					form = fields.ToNameValueCollection();
+					headers.Add(HttpRequestHeaders.ContentType, Channel.HttpFormUrlEncoded);
 					break;
 				case HttpDeliveryMethods.GetRequest:
 					method = "GET";
-					requestUri.Query = query;
+					requestUri.Query = MessagingUtilities.CreateQueryString(fields);
 					break;
 				case HttpDeliveryMethods.AuthorizationHeaderRequest:
 					method = "GET";
-					headers.Add(HttpRequestHeader.Authorization, CreateAuthorizationHeader(fields));
+					headers.Add(HttpRequestHeaders.Authorization, CreateAuthorizationHeader(fields));
 					break;
 				default:
 					throw new ArgumentOutOfRangeException("scheme", scheme, "Unexpected value");
 			}
-			HttpRequestInfo request = new HttpRequestInfo {
-				HttpMethod = method,
-				UrlBeforeRewriting = requestUri.Uri,
-				RawUrl = requestUri.Path + requestUri.Query + requestUri.Fragment,
-				Headers = headers,
-				InputStream = ms,
-			};
 
-			return request;
+			return new HttpRequestInfo(method, requestUri.Uri, form: form, headers: headers);
 		}
 
 		private static HttpRequestInfo ConvertToRequestInfo(HttpWebRequest request, Stream postEntity) {
-			HttpRequestInfo info = new HttpRequestInfo {
-				HttpMethod = request.Method,
-				UrlBeforeRewriting = request.RequestUri,
-				RawUrl = request.RequestUri.AbsolutePath + request.RequestUri.Query + request.RequestUri.Fragment,
-				Headers = request.Headers,
-				InputStream = postEntity,
-			};
-			return info;
+			return new HttpRequestInfo(request.Method, request.RequestUri, request.Headers, postEntity);
 		}
 
 		private void ParameterizedRequestTest(HttpDeliveryMethods scheme) {

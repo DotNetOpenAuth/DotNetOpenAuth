@@ -80,7 +80,7 @@
 															$(ProjectRoot)Samples\**\*.refresh_;
 															$(ProjectRoot)Samples\*.proj;
 															" />
-			<ExcludedDropSamplesSourceFiles Condition=" '$(IncludeOAuth2)' != 'true' " Include="
+			<ExcludedDropSamplesSourceFiles Condition=" '$(IncludeOAuth2)' == 'false' " Include="
 															$(ProjectRoot)Samples\OAuthClient\**;
 															$(ProjectRoot)Samples\OAuthAuthorizationServer\**;
 															$(ProjectRoot)Samples\OAuthResourceServer\**;
@@ -162,7 +162,6 @@
 			Replacement="%(Replacement)" />
 		<DowngradeProjects
 			Projects="@(SampleProjectTargets);@(SampleSolutionTargets)"
-			DowngradeMvc2ToMvc1="$(DowngradeMvc2ToMvc1)"
 			Condition=" '$(DowngradeVS2010ToVS2008)' != 'false' "
 			/>
 		<ItemGroup>

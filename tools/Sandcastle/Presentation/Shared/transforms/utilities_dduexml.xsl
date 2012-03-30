@@ -233,8 +233,11 @@
   </xsl:template>
 
   <xsl:template match="ddue:codeEntityReference">
-    <span sdata="cer" target="{string(.)}">
-    <referenceLink target="{string(.)}">
+    <xsl:variable name="codeEntityReference">
+          <xsl:value-of select="translate(., ' ', '')" />
+    </xsl:variable>
+    <span sdata="cer" target="{string($codeEntityReference)}">
+    <referenceLink target="{string($codeEntityReference)}">
       <xsl:if test="@qualifyHint">
         <xsl:attribute name="show-container">
           <xsl:value-of select="@qualifyHint" />

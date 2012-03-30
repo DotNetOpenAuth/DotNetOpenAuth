@@ -122,7 +122,7 @@ namespace OAuthAuthorizationServer.Code
 	public partial class User : INotifyPropertyChanging, INotifyPropertyChanged
 	{
 		
-		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(string.Empty);
 		
 		private int _UserId;
 		
@@ -260,7 +260,7 @@ namespace OAuthAuthorizationServer.Code
 	public partial class Client : INotifyPropertyChanging, INotifyPropertyChanged
 	{
 		
-		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(string.Empty);
 		
 		private int _ClientId;
 		
@@ -470,7 +470,7 @@ namespace OAuthAuthorizationServer.Code
 	public partial class ClientAuthorization : INotifyPropertyChanging, INotifyPropertyChanged
 	{
 		
-		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(string.Empty);
 		
 		private int _AuthorizationId;
 		
@@ -734,7 +734,7 @@ namespace OAuthAuthorizationServer.Code
 	public partial class Nonce : INotifyPropertyChanging, INotifyPropertyChanged
 	{
 		
-		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(string.Empty);
 		
 		private string _Context;
 		
@@ -844,7 +844,7 @@ namespace OAuthAuthorizationServer.Code
 	public partial class SymmetricCryptoKey : INotifyPropertyChanging, INotifyPropertyChanged
 	{
 		
-		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(string.Empty);
 		
 		private string _Bucket;
 		

@@ -38,7 +38,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			this.unsolicited = new PositiveAssertionResponse(this.protocol.Version, RPUri);
 		}
 
-		[TestCase]
+		[Test]
 		public void CtorFromRequest() {
 			Assert.AreEqual(this.protocol.Args.Mode.id_res, this.response.Mode);
 			Assert.AreEqual(this.request.Version, this.response.Version);
@@ -46,7 +46,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			Assert.AreEqual(OPUri, this.response.ProviderEndpoint);
 		}
 
-		[TestCase]
+		[Test]
 		public void CtorUnsolicited() {
 			Assert.AreEqual(this.protocol.Args.Mode.id_res, this.unsolicited.Mode);
 			Assert.AreEqual(this.protocol.Version, this.unsolicited.Version);
@@ -60,7 +60,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 		/// <summary>
 		/// Verifies that local_id and claimed_id can either be null or specified.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void ClaimedIdAndLocalIdSpecifiedIsValid() {
 			this.response.LocalIdentifier = "http://local";
 			this.response.ClaimedIdentifier = "http://claimedid";

@@ -24,16 +24,18 @@ namespace DotNetOpenAuth {
 		/// <typeparam name="T">The type of the parameter</typeparam>
 		/// <param name="value">The value.</param>
 		/// <param name="parameterName">Name of the parameter.</param>
+		/// <returns>The tested value, guaranteed to not be null.</returns>
 #if !CLR4
 		[ContractArgumentValidator]
 #endif
 		[Pure, DebuggerStepThrough]
-		internal static void NotNull<T>(T value, string parameterName) where T : class {
+		internal static T NotNull<T>(T value, string parameterName) where T : class {
 			if (value == null) {
 				throw new ArgumentNullException(parameterName);
 			}
 
 			Contract.EndContractBlock();
+			return value;
 		}
 
 		/// <summary>
@@ -134,7 +136,7 @@ namespace DotNetOpenAuth {
 		[Pure, DebuggerStepThrough]
 		internal static void True(bool condition, string parameterName, string unformattedMessage, params object[] args) {
 			if (!condition) {
-				throw new ArgumentException(String.Format(CultureInfo.CurrentCulture, unformattedMessage, args), parameterName);
+				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, unformattedMessage, args), parameterName);
 			}
 
 			Contract.EndContractBlock();
@@ -185,7 +187,7 @@ namespace DotNetOpenAuth {
 		[Pure, DebuggerStepThrough]
 		internal static void ValidState(bool condition, string unformattedMessage, params object[] args) {
 			if (!condition) {
-				throw new InvalidOperationException(String.Format(CultureInfo.CurrentCulture, unformattedMessage, args));
+				throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, unformattedMessage, args));
 			}
 
 			Contract.EndContractBlock();

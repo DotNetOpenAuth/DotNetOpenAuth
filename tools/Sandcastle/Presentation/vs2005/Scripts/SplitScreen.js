@@ -6,8 +6,8 @@
 		this.scrollingRegion = document.getElementById(scrollingRegionId);
 
 		// set the scrolling settings
-		document.body.style.margin = "0px";
-		document.body.style.overflow = "hidden";
+		this.scrollingRegion.parentElement.style.margin = "0px";
+		this.scrollingRegion.parentElement.style.overflow = "hidden";
 		this.scrollingRegion.style.overflow = "auto";
 
 		// fix the size of the scrolling region
@@ -25,5 +25,5 @@
 		} else {
 			this.scrollingRegion.style.height = 0;
 		}
-		this.scrollingRegion.style.width = document.body.clientWidth;
+		this.scrollingRegion.style.width = this.scrollingRegion.parentElement.clientWidth;
 	}

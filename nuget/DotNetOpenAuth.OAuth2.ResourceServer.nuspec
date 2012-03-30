@@ -10,7 +10,12 @@
 		<iconUrl>https://github.com/AArnott/dotnetopenid/raw/v3.4/doc/logo/dnoa-logo_32x32.png</iconUrl>
 		<licenseUrl>http://www.opensource.org/licenses/ms-pl.html</licenseUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
-		<description>Contains assemblies that are required to implement an OAuth 2.0 Resource Server.</description>
+		<summary>Authorize incoming HTTP requests based on an OAuth 2 access token obtained from an OAuth 2 Authorization Server.</summary>
+		<description>
+			Allow your web forms or MVC web site, REST or WCF service, or any other HTTP(s) service to accept OAuth 2 access tokens
+			as a means of authorization so your users don't have to share their password with 3rd party apps and services in order
+			to share their data between your service and those of the 3rd party.
+		</description>
 		<dependencies>
 			<dependency id="DotNetOpenAuth.OAuth2.Core" version="[$oauth2version$]" />
 			<dependency id="DotNetOpenAuth.OAuth.Common" version="[$version$]" />

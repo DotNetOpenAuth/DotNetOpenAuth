@@ -1,4 +1,6 @@
 ﻿namespace DotNetOpenAuth.OAuth2 {
+	using System.Diagnostics.CodeAnalysis;
+
 	partial class ClientAuthorizationView {
 		/// <summary> 
 		/// Required designer variable.
@@ -22,6 +24,7 @@
 		/// Required method for Designer support - do not modify 
 		/// the contents of this method with the code editor.
 		/// </summary>
+		[SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands", Justification = "I don't see a problem here.")]
 		private void InitializeComponent() {
 			this.webBrowser1 = new System.Windows.Forms.WebBrowser();
 			this.SuspendLayout();

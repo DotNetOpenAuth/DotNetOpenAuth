@@ -182,7 +182,7 @@ namespace DotNetOpenAuth.OpenId.Provider.Behaviors {
 		/// <param name="maximumLifetime">The maximum lifetime.</param>
 		/// <param name="securitySettings">The security settings to adjust.</param>
 		private static void SetMaximumAssociationLifetimeToNotExceed(string associationType, TimeSpan maximumLifetime, ProviderSecuritySettings securitySettings) {
-			Contract.Requires(!String.IsNullOrEmpty(associationType));
+			Contract.Requires(!string.IsNullOrEmpty(associationType));
 			Contract.Requires(maximumLifetime.TotalSeconds > 0);
 			if (!securitySettings.AssociationLifetimes.ContainsKey(associationType) ||
 				securitySettings.AssociationLifetimes[associationType] > maximumLifetime) {

@@ -168,6 +168,11 @@ namespace Microsoft.Ddue.Tools {
                         writer.WriteAttributeString("keywords", link.Target.ToLower());
                         writer.WriteAttributeString("tabindex", "0");
                         break;
+                    case LinkType.Id:
+                        string xhelp = String.Format("ms-xhelp://?Id={0}", link.Target);
+                        writer.WriteStartElement("a");
+                        writer.WriteAttributeString("href", xhelp);
+                        break;
                 }
 
                 // write the link text
@@ -215,7 +220,8 @@ namespace Microsoft.Ddue.Tools {
 	internal enum LinkType {
 		None,		// not active
 		Local,		// a href
-		Index  	// mshelp:link keyword
+		Index,  	// mshelp:link keyword
+        Id          // ms-xhelp link
         //Regex       // regular expression with match/replace
 	}
 

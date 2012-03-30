@@ -14,7 +14,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 
 	[TestFixture]
 	public class DiffieHellmanTests : OpenIdTestBase {
-		[TestCase]
+		[Test]
 		public void Test() {
 			string s1 = Test1();
 			string s2 = Test1();

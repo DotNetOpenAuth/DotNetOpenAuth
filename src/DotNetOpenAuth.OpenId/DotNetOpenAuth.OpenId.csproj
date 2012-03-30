@@ -28,7 +28,7 @@
     <Compile Include="Configuration\OpenIdRelyingPartyElement.cs" />
     <Compile Include="Configuration\OpenIdRelyingPartySecuritySettingsElement.cs" />
     <Compile Include="Configuration\XriResolverElement.cs" />
-    <Compile Include="OpenIdXrdsHelper.cs" />
+    <Compile Include="OpenIdXrdsHelperRelyingParty.cs" />
     <Compile Include="OpenId\Association.cs" />
     <Compile Include="OpenId\AuthenticationRequestMode.cs" />
     <Compile Include="OpenId\Behaviors\AXFetchAsSregTransformBase.cs" />
@@ -69,6 +69,7 @@
     <Compile Include="OpenId\Extensions\OAuth\Constants.cs" />
     <Compile Include="OpenId\Extensions\OAuth\AuthorizationDeclinedResponse.cs" />
     <Compile Include="OpenId\Extensions\OpenIdExtensionFactoryAggregator.cs" />
+    <Compile Include="OpenId\Extensions\SimpleRegistration\GenderEncoder.cs" />
     <Compile Include="OpenId\Extensions\StandardOpenIdExtensionFactory.cs" />
     <Compile Include="OpenId\Extensions\ProviderAuthenticationPolicy\AuthenticationPolicies.cs" />
     <Compile Include="OpenId\Extensions\ProviderAuthenticationPolicy\Constants.cs" />
@@ -121,12 +122,12 @@
     <Compile Include="OpenId\OpenIdXrdsHelper.cs" />
     <Compile Include="OpenId\ProviderEndpointDescription.cs" />
     <Compile Include="OpenId\Realm.cs" />
-    <Compile Include="OpenId\RelyingPartyDescription.cs" />
-    <Compile Include="OpenId\DiffieHellmanUtilities.cs" Condition=" '$(ExcludeDiffieHellman)' != 'true' " />
+    <Compile Include="OpenId\RelyingPartyEndpointDescription.cs" />
+    <Compile Include="OpenId\DiffieHellmanUtilities.cs" />
     <Compile Include="OpenId\HmacShaAssociation.cs" />
     <Compile Include="OpenId\Messages\AssociateUnencryptedRequest.cs" />
     <Compile Include="OpenId\Messages\AssociateDiffieHellmanRequest.cs" />
-    <Compile Include="OpenId\Messages\AssociateDiffieHellmanResponse.cs" Condition=" '$(ExcludeDiffieHellman)' != 'true' " />
+    <Compile Include="OpenId\Messages\AssociateDiffieHellmanResponse.cs" />
     <Compile Include="OpenId\Messages\AssociateRequest.cs" />
     <Compile Include="OpenId\Messages\AssociateSuccessfulResponse.cs" />
     <Compile Include="OpenId\Messages\AssociateUnencryptedResponse.cs" />
@@ -179,7 +180,7 @@
       <Project>{60426312-6AE5-4835-8667-37EDEA670222}</Project>
       <Name>DotNetOpenAuth.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Org.Mentalis.Security.Cryptography\Org.Mentalis.Security.Cryptography.csproj" Condition=" '$(ExcludeDiffieHellman)' != 'true' ">
+    <ProjectReference Include="..\Org.Mentalis.Security.Cryptography\Org.Mentalis.Security.Cryptography.csproj">
       <Project>{26DC877F-5987-48DD-9DDB-E62F2DE0E150}</Project>
       <Name>Org.Mentalis.Security.Cryptography</Name>
     </ProjectReference>

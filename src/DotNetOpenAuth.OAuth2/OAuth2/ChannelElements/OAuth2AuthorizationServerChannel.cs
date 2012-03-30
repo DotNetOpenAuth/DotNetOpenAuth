@@ -15,7 +15,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	/// <summary>
 	/// The channel for the OAuth protocol.
 	/// </summary>
-	internal class OAuth2AuthorizationServerChannel : OAuth2ChannelBase {
+	internal class OAuth2AuthorizationServerChannel : OAuth2ChannelBase, IOAuth2ChannelWithAuthorizationServer {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OAuth2AuthorizationServerChannel"/> class.
 		/// </summary>
@@ -56,7 +56,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// </remarks>
 		protected override OutgoingWebResponse PrepareDirectResponse(IProtocolMessage response) {
 			var webResponse = new OutgoingWebResponse();
-			this.ApplyMessageTemplate(response, webResponse);
+			ApplyMessageTemplate(response, webResponse);
 			string json = this.SerializeAsJson(response);
 			webResponse.SetResponse(json, new ContentType(JsonEncoded));
 			return webResponse;
@@ -69,7 +69,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <returns>
 		/// The deserialized message, if one is found.  Null otherwise.
 		/// </returns>
-		protected override IDirectedProtocolMessage ReadFromRequestCore(HttpRequestInfo request) {
+		protected override IDirectedProtocolMessage ReadFromRequestCore(HttpRequestBase request) {
 			if (!string.IsNullOrEmpty(request.Url.Fragment)) {
 				var fields = HttpUtility.ParseQueryString(request.Url.Fragment.Substring(1)).ToDictionary();
 

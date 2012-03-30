@@ -101,6 +101,8 @@
     <Compile Include="TokenManager.cs" />
     <Compile Include="TwitterConsumer.cs" />
     <Compile Include="Util.cs" />
+    <Compile Include="WindowsLiveClient.cs" />
+    <Compile Include="WindowsLiveGraph.cs" />
     <Compile Include="YammerConsumer.cs" />
     <Compile Include="YubikeyRelyingParty.cs" />
   </ItemGroup>

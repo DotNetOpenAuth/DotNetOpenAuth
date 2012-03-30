@@ -17,7 +17,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 	/// <summary>
 	/// Tests for the <see cref="MessageSerializer"/> class.
 	/// </summary>
-	[TestFixture()]
+	[TestFixture]
 	public class MessageSerializerTests : MessagingTestBase {
 		[TestCase, ExpectedException(typeof(ArgumentNullException))]
 		public void SerializeNull() {
@@ -35,7 +35,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			MessageSerializer.Get(null);
 		}
 
-		[TestCase()]
+		[TestCase]
 		public void SerializeTest() {
 			var serializer = MessageSerializer.Get(typeof(Mocks.TestMessage));
 			var message = GetStandardTestMessage(FieldFill.CompleteBeforeBindings);
@@ -58,7 +58,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 		/// <summary>
 		/// Verifies JSON serialization
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void SerializeDeserializeJson() {
 			var serializer = MessageSerializer.Get(typeof(Mocks.TestMessage));
 			var message = GetStandardTestMessage(FieldFill.CompleteBeforeBindings);
@@ -89,7 +89,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			MessageSerializer.Deserialize(null, null);
 		}
 
-		[TestCase]
+		[Test]
 		public void DeserializeSimple() {
 			var serializer = MessageSerializer.Get(typeof(Mocks.TestMessage));
 			Dictionary<string, string> fields = new Dictionary<string, string>(StringComparer.Ordinal);
@@ -112,7 +112,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 		/// The element sorting rules are first inheritance order, then alphabetical order.
 		/// This test validates correct behavior on both.
 		/// </remarks>
-		[TestCase]
+		[Test]
 		public void DeserializeVerifyElementOrdering() {
 			var serializer = MessageSerializer.Get(typeof(Mocks.TestDerivedMessage));
 			Dictionary<string, string> fields = new Dictionary<string, string>(StringComparer.Ordinal);
@@ -136,7 +136,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			Assert.AreEqual("privateValue", actual.PrivatePropertyAccessor);
 		}
 
-		[TestCase]
+		[Test]
 		public void DeserializeWithExtraFields() {
 			var serializer = MessageSerializer.Get(typeof(Mocks.TestMessage));
 			Dictionary<string, string> fields = new Dictionary<string, string>(StringComparer.Ordinal);

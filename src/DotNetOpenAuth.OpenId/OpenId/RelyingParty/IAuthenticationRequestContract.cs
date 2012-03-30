@@ -74,7 +74,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 		void IAuthenticationRequest.AddCallbackArguments(IDictionary<string, string> arguments) {
 			Requires.NotNull(arguments, "arguments");
-			Requires.True(arguments.Keys.All(k => !String.IsNullOrEmpty(k)), "arguments");
+			Requires.True(arguments.Keys.All(k => !string.IsNullOrEmpty(k)), "arguments");
 			Requires.True(arguments.Values.All(v => v != null), "arguments");
 			throw new NotImplementedException();
 		}

@@ -18,7 +18,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	/// A request from a Client to an Authorization Server to exchange an authorization code for an access token,
 	/// and (at the authorization server's option) a refresh token.
 	/// </summary>
-	internal class AccessTokenAuthorizationCodeRequest : AccessTokenRequestBase, IAuthorizationCarryingRequest {
+	internal class AccessTokenAuthorizationCodeRequest : AccessTokenRequestBase, IAuthorizationCodeCarryingRequest {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AccessTokenAuthorizationCodeRequest"/> class.
 		/// </summary>
@@ -37,19 +37,13 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 			Requires.NotNull(authorizationServer, "authorizationServer");
 		}
 
-		/// <summary>
-		/// Gets the type of the code or token.
-		/// </summary>
-		/// <value>The type of the code or token.</value>
-		CodeOrTokenType IAuthorizationCarryingRequest.CodeOrTokenType {
-			get { return CodeOrTokenType.AuthorizationCode; }
-		}
+		#region IAuthorizationCodeCarryingRequest Members
 
 		/// <summary>
 		/// Gets or sets the verification code or refresh/access token.
 		/// </summary>
 		/// <value>The code or token.</value>
-		string IAuthorizationCarryingRequest.CodeOrToken {
+		string IAuthorizationCodeCarryingRequest.Code {
 			get { return this.AuthorizationCode; }
 			set { this.AuthorizationCode = value; }
 		}
@@ -57,7 +51,16 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <summary>
 		/// Gets or sets the authorization that the token describes.
 		/// </summary>
-		IAuthorizationDescription IAuthorizationCarryingRequest.AuthorizationDescription { get; set; }
+		AuthorizationCode IAuthorizationCodeCarryingRequest.AuthorizationDescription { get; set; }
+
+		/// <summary>
+		/// Gets the authorization that the code describes.
+		/// </summary>
+		IAuthorizationDescription IAuthorizationCarryingRequest.AuthorizationDescription {
+			get { return ((IAuthorizationCodeCarryingRequest)this).AuthorizationDescription; }
+		}
+
+		#endregion
 
 		/// <summary>
 		/// Gets the type of the grant.

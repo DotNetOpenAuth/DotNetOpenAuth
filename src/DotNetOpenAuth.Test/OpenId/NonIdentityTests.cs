@@ -13,7 +13,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 
 	[TestFixture]
 	public class NonIdentityTests : OpenIdTestBase {
-		[TestCase]
+		[Test]
 		public void ExtensionOnlyChannelLevel() {
 			Protocol protocol = Protocol.V20;
 			AuthenticationRequestMode mode = AuthenticationRequestMode.Setup;
@@ -30,7 +30,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			coordinator.Run();
 		}
 
-		[TestCase]
+		[Test]
 		public void ExtensionOnlyFacadeLevel() {
 			Protocol protocol = Protocol.V20;
 			var coordinator = new OpenIdCoordinator(

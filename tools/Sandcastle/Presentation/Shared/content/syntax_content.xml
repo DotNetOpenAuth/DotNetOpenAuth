@@ -1,20 +1,28 @@
 <content xml:space="preserve">
 
+  <!-- Language independent -->
+  <item id="UnsupportedVarargs">does not support methods that use variable length arguments (varargs).
+The compiler automatically resolves calls to this method to the same method that uses a parameter array.</item>
+  
   <!-- C# messages -->
   <item id="UnsupportedOperator_CSharp">C# does not support this operator.</item>
+  <item id="UnsupportedVarargs_CSharp">C# <include item="UnsupportedVarargs" /></item>
   
   <!-- C++ messages -->
   <item id="UnsupportedOperator_ManagedCPlusPlus">Visual C++ does not support this operator.</item>
   
   <!-- F# messages -->
   <item id="UnsupportedOperator_FSharp">F# does not support this operator.</item>
-  <item id="UnsupportedCast_FSharp">F# does not support the declaration of new casting operators.</item>"
+  <item id="UnsupportedCast_FSharp">F# does not support the declaration of new casting operators.</item>
+  <item id="UnsupportedVarargs_FSharp">F# <include item="UnsupportedVarargs" /></item>
   
   <!-- VB messages -->
 	<item id="UnsupportedUnsafe_VisualBasic">Visual Basic does not support APIs that consume or return unsafe types.</item>
   <item id="UnsupportedOperator_VisualBasic">Visual Basic does not support this operator.</item>
   <item id="UnsupportedStaticClass_VisualBasic">Visual Basic does not support the declaration of static classes.</item>
-
+  <item id="UnsupportedVarargs_VisualBasic">Visual Basic <include item="UnsupportedVarargs" /></item>
+  <item id="UnsupportedVarargs_VisualBasicUsage">Visual Basic <include item="UnsupportedVarargs" /></item>
+  
   <!-- J# messages -->
 	<item id="UnsupportedUnsafe_JSharp">J# does not support APIs that consume or return unsafe types.</item>
 	<item id="UnsupportedGeneric_JSharp">J# supports the use of generic APIs, but not the declaration of new ones.</item>
@@ -33,6 +41,7 @@
   <item id="UnsupportedIndex_JScript">JScript does not support indexed properties.</item>
   <item id="UnsupportedCast_JScript">JScript does not support the declaration of new casting operators.</item>
   <item id="UnsupportedStaticConstructor_JScript">JScript does not support static constructors.</item>
+  <item id="UnsupportedVarargs_JScript">JScript <include item="UnsupportedVarargs" /></item>
   
   <!-- JavaScript(Script#) messages-->
   <item id="UnsupportedType_ScriptSharp">This type supports the Script# infrastructure and cannot be used directly from JavaScript.</item>
@@ -44,8 +53,8 @@
   <item id="UnsupportedIndex_JavaScript">JavaScript does not support indexed properties.</item>
   <item id="UnsupportedCast_JavaScript">JavaScript does not support the declaration of new casting operators.</item>
   <!-- VB usages message -->
-  <item id="UnsupportedUnsafe_VisualBasicUsage">Visual basic does not support APIs that consume or return unsafe types.</item>
-  <item id="UnsupportedOperator_VisualBasicUsage">Visual basic does not support this operator.</item>
+  <item id="UnsupportedUnsafe_VisualBasicUsage">Visual Basic does not support APIs that consume or return unsafe types.</item>
+  <item id="UnsupportedOperator_VisualBasicUsage">Visual Basic does not support this operator.</item>
   <item id="UnsupportedStaticClass_VisualBasicUsage">You do not need to declare an instance of a static class in order to access its members.</item>
  
     	<!-- XAML Syntax Boilerplate -->

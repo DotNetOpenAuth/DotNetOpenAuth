@@ -153,6 +153,9 @@
   <data name="RefreshTokenInappropriateForRequestType" xml:space="preserve">
     <value>The request message type {0} should not be responded to with a refresh token.</value>
   </data>
+  <data name="ResultShouldNotBeNull" xml:space="preserve">
+    <value>The return value of {0}.{1} should never be null.</value>
+  </data>
   <data name="ScopesMayNotContainSpaces" xml:space="preserve">
     <value>Individual scopes may not contain spaces.</value>
   </data>

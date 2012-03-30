@@ -53,6 +53,12 @@ namespace Microsoft.Ddue.Tools {
             linkPath = save_node.GetAttribute("link", String.Empty);
             if (String.IsNullOrEmpty(linkPath)) linkPath = "../html";
 
+            // add-xhtml-namespace adds a default namespace for xhtml. Required by Help3 documentation.
+            string addXhtmlDeclaration = save_node.GetAttribute("add-xhtml-namespace", String.Empty);
+            if (!String.IsNullOrEmpty(addXhtmlDeclaration))
+                writeXhtmlNamespace = Convert.ToBoolean(addXhtmlDeclaration);
+
+
 			// encoding
 
 			settings.CloseOutput = true;
@@ -62,6 +68,9 @@ namespace Microsoft.Ddue.Tools {
 		private string basePath = null;
 
         private string linkPath = null;
+
+        private bool writeXhtmlNamespace = false;
+
 
 		public override void Apply (XmlDocument document, string key) {
 
@@ -94,6 +103,12 @@ namespace Microsoft.Ddue.Tools {
             */
             string targetDirectory = Path.GetDirectoryName(path);
             if (!Directory.Exists(targetDirectory)) Directory.CreateDirectory(targetDirectory);
+
+            if (writeXhtmlNamespace)
+            {
+                document.DocumentElement.SetAttribute("xmlns", "http://www.w3.org/1999/xhtml");
+                document.LoadXml(document.OuterXml);
+            }
 
             // save the document
             // select_expression determines which nodes get saved. If there is no select_expression
@@ -130,16 +145,16 @@ namespace Microsoft.Ddue.Tools {
                 settings.ConformanceLevel = ConformanceLevel.Auto;
                 using (StreamWriter output = File.CreateText(path)) {
                     using (XmlWriter writer = XmlWriter.Create(output, settings)) {
-                        XPathExpression select_xpath = select_expression.Clone();
-                        select_xpath.SetContext(context);
-                        XPathNodeIterator ni = document.CreateNavigator().Select(select_expression);
-                        while (ni.MoveNext()) {
-                            if (ni.Current.NodeType == XPathNodeType.ProcessingInstruction && ni.Current.Name.Equals("literal-text")) {
-                                writer.Flush();
-                                output.Write(ni.Current.Value);
-                            }
-                            else
-                                ni.Current.WriteSubtree(writer);
+                            XPathExpression select_xpath = select_expression.Clone();
+                            select_xpath.SetContext(context);
+                            XPathNodeIterator ni = document.CreateNavigator().Select(select_expression);
+                            while (ni.MoveNext()) {
+                                if (ni.Current.NodeType == XPathNodeType.ProcessingInstruction && ni.Current.Name.Equals("literal-text")) {
+                                    writer.Flush();
+                                    output.Write(ni.Current.Value);
+                                }
+                                else
+                                    ni.Current.WriteSubtree(writer);
                         }
                     }
                 }

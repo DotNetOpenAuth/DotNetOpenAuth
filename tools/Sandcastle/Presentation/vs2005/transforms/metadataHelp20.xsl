@@ -375,39 +375,51 @@
     </xsl:choose>
   </xsl:template>
 
+
   <xsl:template name="helpMetadata">
     <!-- F keywords -->
     <xsl:choose>
       <!-- namespace pages get the namespace keyword, if it exists -->
 			<xsl:when test="$group='namespace'">
         <xsl:variable name="namespace" select="/document/reference/apidata/@name" />
-        <xsl:if test="boolean($namespace != '')">
+        <xsl:if test="string($namespace) != ''">
           <MSHelp:Keyword Index="F" Term="{$namespace}" />
         </xsl:if>
       </xsl:when>
-      <!-- type overview and member list pages get type and namespace.type keywords -->
-			<xsl:when test="$group='type' or ($group='list' and $subgroup='members')">
+      <!-- Type overview page gets type and namespace.type keywords. -->
+      <xsl:when test="$group='type'">
         <xsl:variable name="namespace" select="/document/reference/containers/namespace/apidata/@name" />
         <xsl:variable name="type">
           <xsl:for-each select="/document/reference[1]">
             <xsl:call-template name="typeNameWithTicks" />
           </xsl:for-each>
         </xsl:variable>
-        <MSHelp:Keyword Index="F" Term="{$type}" />
-        <xsl:if test="boolean($namespace != '')">
-          <MSHelp:Keyword Index="F" Term="{concat($namespace,'.',$type)}" />
-        </xsl:if>
+        <xsl:choose>
+          <xsl:when test="string($namespace) != ''">
+            <MSHelp:Keyword Index="F" Term="{concat($namespace,'.',$type)}" />
+          </xsl:when>
+          <xsl:otherwise>
+            <MSHelp:Keyword Index="F" Term="{$type}" />
+          </xsl:otherwise>
+        </xsl:choose>
         <xsl:if test="$subgroup = 'enumeration'">
           <xsl:for-each select="/document/reference/elements/element">
-            <MSHelp:Keyword Index="F" Term="{concat($type, '.', apidata/@name)}" />
-            <xsl:if test="boolean($namespace)">
-              <MSHelp:Keyword Index="F" Term="{concat($namespace,'.',$type, '.', apidata/@name)}" />
-            </xsl:if>
+            <xsl:choose>
+              <xsl:when test="string($namespace) != ''">
+                <MSHelp:Keyword Index="F" Term="{concat($namespace,'.',$type, '.', apidata/@name)}" />
+              </xsl:when>
+              <xsl:otherwise>
+                <MSHelp:Keyword Index="F" Term="{concat($type, '.', apidata/@name)}" />
+              </xsl:otherwise>
+            </xsl:choose>
           </xsl:for-each>
         </xsl:if>
         <xsl:call-template name="xamlMSHelpFKeywords"/>
 			</xsl:when>
-      
+
+      <!-- No F keywords on AllMembers pages, TFS 851543. -->
+      <xsl:when test="$group='list' and $subgroup='members'" />
+
       <!-- overload list pages get member, type.member, and namepsace.type.member keywords -->
       <xsl:when test="$group='list' and $subgroup='overload'">
         <xsl:variable name="namespace" select="/document/reference/containers/namespace/apidata/@name" />
@@ -427,11 +439,15 @@
             </xsl:otherwise>
           </xsl:choose>
         </xsl:variable>
-        <MSHelp:Keyword Index="F" Term="{$member}" />
-        <MSHelp:Keyword Index="F" Term="{concat($type, '.', $member)}" />
-        <xsl:if test="boolean($namespace != '')">
-          <MSHelp:Keyword Index="F" Term="{concat($namespace, '.', $type, '.', $member)}" />
-        </xsl:if>
+
+        <xsl:choose>
+          <xsl:when test="string($namespace) != ''">
+            <MSHelp:Keyword Index="F" Term="{concat($namespace,'.',$type, '.', $member)}" />
+          </xsl:when>
+          <xsl:otherwise>
+            <MSHelp:Keyword Index="F" Term="{concat($type, '.', $member)}" />
+          </xsl:otherwise>
+        </xsl:choose>
       </xsl:when>
 
       <!-- no F1 help entries for overload signature topics -->
@@ -475,11 +491,16 @@
           </xsl:when>
           <xsl:otherwise>
             -->
-            <MSHelp:Keyword Index="F" Term="{$member}" />
+
+        <xsl:choose>
+          <xsl:when test="string($namespace) != ''">
+            <MSHelp:Keyword Index="F" Term="{concat($namespace,'.',$type, '.', $member)}" />
+          </xsl:when>
+          <xsl:otherwise>
             <MSHelp:Keyword Index="F" Term="{concat($type, '.', $member)}" />
-            <xsl:if test="boolean($namespace != '')">
-              <MSHelp:Keyword Index="F" Term="{concat($namespace, '.', $type, '.', $member)}" />
-            </xsl:if>
+          </xsl:otherwise>
+        </xsl:choose>
+
         <!--
           </xsl:otherwise>
         </xsl:choose>
@@ -538,6 +559,11 @@
         <xsl:when test="normalize-space($devlang)=''"/>
         <xsl:when test="$devlang = 'VJ#'">
           <xsl:if test="boolean(/document/reference/versions/versions[@name='netfw']//version[not(@name='netfw35')])">
+            <MSHelp:Attr Name="DevLang" Value="{$devlang}" />
+          </xsl:if>
+        </xsl:when>
+        <xsl:when test="$devlang = 'C++'">
+          <xsl:if test="boolean(/document/reference/versions/versions[not(@name='netfw')])">
             <MSHelp:Attr Name="DevLang" Value="{$devlang}" />
           </xsl:if>
         </xsl:when>

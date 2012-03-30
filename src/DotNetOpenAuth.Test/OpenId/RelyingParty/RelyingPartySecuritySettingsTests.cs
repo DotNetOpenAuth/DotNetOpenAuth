@@ -23,7 +23,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			this.settings = new RelyingPartySecuritySettings();
 		}
 
-		[TestCase]
+		[Test]
 		public void Defaults() {
 			Assert.IsFalse(this.settings.RejectUnsolicitedAssertions);
 			Assert.IsFalse(this.settings.RequireSsl, "Default should be to not require SSL.");
@@ -33,7 +33,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// Verifies that the <see cref="RelyingPartySecuritySettings.RequireSsl"/> property
 		/// getter/setter are implemented correctly.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void RequireSsl() {
 			this.settings.RequireSsl = true;
 			Assert.IsTrue(this.settings.RequireSsl);
@@ -45,7 +45,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// Verifies that the <see cref="RelyingPartySecuritySettings.RequireDirectedIdentity"/>
 		/// property getter/setter are implemented correctly.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void RequireDirectedIdentity() {
 			this.settings.RequireDirectedIdentity = true;
 			Assert.IsTrue(this.settings.RequireDirectedIdentity);
@@ -57,7 +57,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// Verifies that the <see cref="RelyingPartySecuritySettings.RequireAssociation"/>
 		/// property getter/setter are implemented correctly.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void RequireAssociation() {
 			this.settings.RequireAssociation = true;
 			Assert.IsTrue(this.settings.RequireAssociation);

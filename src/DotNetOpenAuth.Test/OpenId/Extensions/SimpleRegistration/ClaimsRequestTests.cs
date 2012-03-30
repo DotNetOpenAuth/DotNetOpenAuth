@@ -12,7 +12,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 
 	[TestFixture]
 	public class ClaimsRequestTests : OpenIdTestBase {
-		[TestCase]
+		[Test]
 		public void CreateResponse() {
 			// some unofficial type URIs...
 			this.ParameterizedTypeUriPreservedTest("http://openid.net/sreg/1.0");
@@ -21,7 +21,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			this.ParameterizedTypeUriPreservedTest("http://openid.net/extensions/sreg/1.1");
 		}
 
-		[TestCase]
+		[Test]
 		public void RequiredOptionalLists() {
 			ClaimsRequest req = new ClaimsRequest();
 			MessageDictionary dictionary = this.MessageDescriptions.GetAccessor(req);
@@ -39,7 +39,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			Assert.AreEqual("nickname,postcode", dictionary["required"]);
 		}
 
-		[TestCase]
+		[Test]
 		public void EqualityTests() {
 			ClaimsRequest req1 = new ClaimsRequest();
 			ClaimsRequest req2 = new ClaimsRequest();

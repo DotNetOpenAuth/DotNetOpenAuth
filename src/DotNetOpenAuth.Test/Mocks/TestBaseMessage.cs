@@ -11,10 +11,6 @@ namespace DotNetOpenAuth.Test.Mocks {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Reflection;
 
-	internal interface IBaseMessageExplicitMembers {
-		string ExplicitProperty { get; set; }
-	}
-
 	internal class TestBaseMessage : IProtocolMessage, IBaseMessageExplicitMembers {
 		private Dictionary<string, string> extraData = new Dictionary<string, string>();
 

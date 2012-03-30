@@ -16,10 +16,17 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	/// <summary>
 	/// A message sent by a web application Client to the AuthorizationServer
 	/// via the user agent to obtain authorization from the user and prepare
-	/// to issue an access token to the Consumer if permission is granted.
+	/// to issue an access token to the client if permission is granted.
 	/// </summary>
 	[Serializable]
-	public class EndUserAuthorizationRequest : MessageBase, IAccessTokenRequest {
+	public class EndUserAuthorizationRequest : MessageBase {
+		/// <summary>
+		/// Gets the grant type that the client expects of the authorization server.
+		/// </summary>
+		/// <value>Always <see cref="EndUserAuthorizationResponseType.AuthorizationCode"/>.  Other response types are not supported.</value>
+		[MessagePart(Protocol.response_type, IsRequired = true, Encoder = typeof(EndUserAuthorizationResponseTypeEncoder))]
+		private const EndUserAuthorizationResponseType ResponseTypeConst = EndUserAuthorizationResponseType.AuthorizationCode;
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="EndUserAuthorizationRequest"/> class.
 		/// </summary>
@@ -31,7 +38,6 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 			Requires.NotNull(version, "version");
 			this.HttpMethods = HttpDeliveryMethods.GetRequest | HttpDeliveryMethods.PostRequest;
 			this.Scope = new HashSet<string>(OAuthUtilities.ScopeStringComparer);
-			this.ResponseType = EndUserAuthorizationResponseType.AuthorizationCode;
 		}
 
 		/// <summary>
@@ -46,27 +52,17 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		}
 
 		/// <summary>
-		/// Gets or sets the grant type that the client expects of the authorization server.
+		/// Gets the grant type that the client expects of the authorization server.
 		/// </summary>
-		/// <value>Always <see cref="EndUserAuthorizationResponseType.AuthorizationCode"/>.  Other response types are not supported.</value>
-		[MessagePart(Protocol.response_type, IsRequired = true, Encoder = typeof(EndUserAuthorizationResponseTypeEncoder))]
-		public EndUserAuthorizationResponseType ResponseType { get; set; }
+		public virtual EndUserAuthorizationResponseType ResponseType {
+			get { return ResponseTypeConst; }
+		}
 
 		/// <summary>
 		/// Gets or sets the identifier by which this client is known to the Authorization Server.
 		/// </summary>
 		[MessagePart(Protocol.client_id, IsRequired = true)]
 		public string ClientIdentifier { get; set; }
-
-		/// <summary>
-		/// Gets a value indicating whether the client requesting the access token has authenticated itself.
-		/// </summary>
-		/// <value>
-		/// Always false because authorization requests only include the client_id, without a secret.
-		/// </value>
-		bool IAccessTokenRequest.ClientAuthenticated {
-			get { return false; }
-		}
 
 		/// <summary>
 		/// Gets or sets the callback URL.

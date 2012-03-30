@@ -10,11 +10,15 @@
 		<iconUrl>https://github.com/AArnott/dotnetopenid/raw/v3.4/doc/logo/dnoa-logo_32x32.png</iconUrl>
 		<licenseUrl>http://www.opensource.org/licenses/ms-pl.html</licenseUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
-		<description>Contains assemblies that are required to implement OpenID+OAuth extension support.</description>
+		<summary>Request or respond with OAuth 1.0 tokens during an OpenID login.</summary>
+		<description>
+			As an OpenID 2.0 relying party or provider, include an OAuth 1.0 access token in the same user authorization/authentication step
+			so that the relying party may also directly access the user's data on the OpenID Provider's web service.
+		</description>
 		<dependencies>
 			<dependency id="DotNetOpenAuth.OAuth.Consumer" version="[$version$]" />
 			<dependency id="DotNetOpenAuth.OAuth.ServiceProvider" version="[$version$]" />
-			<dependency id="DotNetOpenAuth.OpenId" version="[$version$]" />
+			<dependency id="DotNetOpenAuth.OpenId.Core" version="[$version$]" />
 		</dependencies>
 	</metadata>
 	<files>

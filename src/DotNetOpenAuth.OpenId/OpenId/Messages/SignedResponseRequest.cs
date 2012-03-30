@@ -58,7 +58,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// </summary>
 		/// <value><c>true</c> if using OpenID immediate mode; otherwise, <c>false</c>.</value>
 		internal bool Immediate {
-			get { return String.Equals(this.Mode, Protocol.Args.Mode.checkid_immediate, StringComparison.Ordinal); }
+			get { return string.Equals(this.Mode, Protocol.Args.Mode.checkid_immediate, StringComparison.Ordinal); }
 		}
 
 		/// <summary>

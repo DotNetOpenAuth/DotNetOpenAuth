@@ -137,25 +137,25 @@
 
   <xsl:template match="ddue:notesForImplementers">
     <p/>
-    <b>
+    <span class="label">
       <include item="NotesForImplementers"/>
-    </b>
+    </span>
     <xsl:apply-templates/>
   </xsl:template>
 
   <xsl:template match="ddue:notesForCallers">
     <p/>
-    <b>
+    <span class="label">
       <include item="NotesForCallers"/>
-    </b>
+    </span>
     <xsl:apply-templates/>
   </xsl:template>
 
   <xsl:template match="ddue:notesForInheritors">
     <p/>
-    <b>
+    <span class="label">
       <include item="NotesForInheritors"/>
-    </b>
+    </span>
     <xsl:apply-templates/>
   </xsl:template>
 
@@ -228,6 +228,9 @@
               </xsl:when>
               <xsl:when test="@language = 'xaml' or @language = 'XAML'">
                 <xsl:text>XAML</xsl:text>
+              </xsl:when>
+              <xsl:when test="@language = 'javascript' or @language = 'JavaScript'">
+                <xsl:text>JavaScript</xsl:text>
               </xsl:when>
               <xsl:otherwise>
                 <xsl:text>other</xsl:text>
@@ -360,6 +363,7 @@
 
     <xsl:variable name="titleName" select="../../ddue:title"/>
 
+<!-- 'Output' was translated in JPN file, so the following code does not work.
     <xsl:choose>
       <xsl:when test="(($titleName = 'Output') or ($titleName = 'Input') or ($titleName = 'SampleOutput'))">
         <div class="code">
@@ -386,11 +390,16 @@
         </xsl:call-template>
       </xsl:otherwise>
     </xsl:choose>
+-->
+
+    <xsl:call-template name="codeSection">
+      <xsl:with-param name="codeLang" select="$codeLang" />
+    </xsl:call-template>
 
 	</xsl:template>
 
 	<xsl:template match="ddue:sampleCode">
-		<div><b><xsl:value-of select="@language"/></b></div>
+		<div><span class="label"><xsl:value-of select="@language"/></span></div>
 		<div class="code"><pre><xsl:apply-templates /></pre></div>
 	</xsl:template>
 
@@ -862,7 +871,7 @@
   <xsl:template match="ddue:codeFeaturedElement">
     <xsl:if test="normalize-space(.)">
       <!--<xsl:if test="count(preceding::ddue:codeFeaturedElement) &gt; 0"><br/></xsl:if>-->
-      <b><xsl:apply-templates/></b>
+      <span class="label"><xsl:apply-templates/></span>
     </xsl:if>
   </xsl:template>
 
@@ -1272,14 +1281,14 @@
                     <xsl:value-of select="concat($subgroup, 'Lower')"/>
                   </parameter>
                   <parameter>
-                    <b>
+                    <span class="label">
                       <xsl:for-each select="/document/reference/attributes/attribute[type[@api='T:System.Security.Permissions.HostProtectionAttribute']]/assignment">
                         <xsl:value-of select="@name"/>
                         <xsl:if test="position() != last()">
                           <xsl:text> | </xsl:text>
                         </xsl:if>
                       </xsl:for-each>
-                    </b>
+                    </span>
                   </parameter>
                 </include>
               </p>
@@ -1398,11 +1407,11 @@
               <include item="remarksTitle" />
             </xsl:with-param>
             <xsl:with-param name="content">
+              <xsl:apply-templates select="$node/ddue:remarks/*" />
               <!-- HostProtectionAttribute -->
               <xsl:if test="/document/reference/attributes/attribute/type[@api='T:System.Security.Permissions.HostProtectionAttribute']">
                 <xsl:call-template name="hostProtectionContent" />
               </xsl:if>
-              <xsl:apply-templates select="$node/ddue:remarks/*" />
               <xsl:apply-templates select="$node/ddue:notesForImplementers"/>
               <xsl:apply-templates select="$node/ddue:notesForCallers"/>
               <xsl:apply-templates select="$node/ddue:notesForInheritors"/>

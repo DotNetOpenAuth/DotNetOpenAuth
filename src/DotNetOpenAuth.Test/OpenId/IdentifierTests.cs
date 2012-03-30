@@ -18,14 +18,14 @@ namespace DotNetOpenAuth.Test.OpenId {
 		private string uriHttps = "https://www.yahoo.com/";
 		private string xri = "=arnott*andrew";
 
-		[TestCase]
+		[Test]
 		public void TryParseNoThrow() {
 			Identifier id;
 			Assert.IsFalse(Identifier.TryParse(null, out id));
 			Assert.IsFalse(Identifier.TryParse(string.Empty, out id));
 		}
 
-		[TestCase]
+		[Test]
 		public void TryParse() {
 			Identifier id;
 			Assert.IsTrue(Identifier.TryParse("http://host/path", out id));
@@ -34,7 +34,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Assert.AreEqual("=arnott", id.ToString());
 		}
 
-		[TestCase]
+		[Test]
 		public void Parse() {
 			Assert.IsInstanceOf<UriIdentifier>(Identifier.Parse(this.uri));
 			Assert.IsInstanceOf<XriIdentifier>(Identifier.Parse(this.xri));
@@ -43,7 +43,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// <summary>
 		/// Tests conformance with 2.0 spec section 7.2#2
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void ParseEndUserSuppliedXriIdentifer() {
 			List<char> symbols = new List<char>(XriIdentifier.GlobalContextSymbols);
 			symbols.Add('(');
@@ -59,7 +59,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// <summary>
 		/// Verifies conformance with 2.0 spec section 7.2#3
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void ParseEndUserSuppliedUriIdentifier() {
 			// verify a fully-qualified Uri
 			var id = Identifier.Parse(this.uri);

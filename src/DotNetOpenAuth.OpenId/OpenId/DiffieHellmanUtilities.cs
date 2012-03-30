@@ -22,12 +22,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <summary>
 		/// An array of known Diffie Hellman sessions, sorted by decreasing hash size.
 		/// </summary>
-		private static DHSha[] diffieHellmanSessionTypes = new List<DHSha> {
-			new DHSha(SHA512.Create(), protocol => protocol.Args.SessionType.DH_SHA512),
-			new DHSha(SHA384.Create(), protocol => protocol.Args.SessionType.DH_SHA384),
-			new DHSha(SHA256.Create(), protocol => protocol.Args.SessionType.DH_SHA256),
-			new DHSha(SHA1.Create(), protocol => protocol.Args.SessionType.DH_SHA1),
-		} .ToArray();
+		private static DHSha[] diffieHellmanSessionTypes = CreateSessionTypes();
 
 		/// <summary>
 		/// Finds the hashing algorithm to use given an openid.session_type value.
@@ -41,7 +36,7 @@ namespace DotNetOpenAuth.OpenId {
 			Requires.NotNull(sessionType, "sessionType");
 
 			// We COULD use just First instead of FirstOrDefault, but we want to throw ProtocolException instead of InvalidOperationException.
-			DHSha match = diffieHellmanSessionTypes.FirstOrDefault(dhsha => String.Equals(dhsha.GetName(protocol), sessionType, StringComparison.Ordinal));
+			DHSha match = diffieHellmanSessionTypes.FirstOrDefault(dhsha => string.Equals(dhsha.GetName(protocol), sessionType, StringComparison.Ordinal));
 			ErrorUtilities.VerifyProtocol(match != null, OpenIdStrings.NoSessionTypeFound, sessionType, protocol.Version);
 			return match.Algorithm;
 		}
@@ -116,6 +111,23 @@ namespace DotNetOpenAuth.OpenId {
 			}
 
 			return inputBytes;
+		}
+
+		/// <summary>
+		/// Returns the value used to initialize the static field storing DH session types.
+		/// </summary>
+		/// <returns>A non-null, non-empty array.</returns>
+		/// <remarks>>
+		/// This is a method rather than being inlined to the field initializer to try to avoid
+		/// the CLR bug that crops up sometimes if we initialize arrays using object initializer syntax.
+		/// </remarks>
+		private static DHSha[] CreateSessionTypes() {
+			return new[] {
+				new DHSha(SHA512.Create(), protocol => protocol.Args.SessionType.DH_SHA512),
+				new DHSha(SHA384.Create(), protocol => protocol.Args.SessionType.DH_SHA384),
+				new DHSha(SHA256.Create(), protocol => protocol.Args.SessionType.DH_SHA256),
+				new DHSha(SHA1.Create(), protocol => protocol.Args.SessionType.DH_SHA1),
+			};
 		}
 
 		/// <summary>

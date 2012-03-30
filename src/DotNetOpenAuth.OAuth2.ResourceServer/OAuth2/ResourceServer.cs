@@ -71,7 +71,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </returns>
 		[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "1#", Justification = "Try pattern")]
 		[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "2#", Justification = "Try pattern")]
-		public virtual OutgoingWebResponse VerifyAccess(HttpRequestInfo httpRequestInfo, out string userName, out HashSet<string> scope) {
+		public virtual OutgoingWebResponse VerifyAccess(HttpRequestBase httpRequestInfo, out string userName, out HashSet<string> scope) {
 			Requires.NotNull(httpRequestInfo, "httpRequestInfo");
 
 			AccessProtectedResourceRequest request = null;
@@ -108,7 +108,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// An error to return to the client if access is not authorized; <c>null</c> if access is granted.
 		/// </returns>
 		[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "1#", Justification = "Try pattern")]
-		public virtual OutgoingWebResponse VerifyAccess(HttpRequestInfo httpRequestInfo, out IPrincipal principal) {
+		public virtual OutgoingWebResponse VerifyAccess(HttpRequestBase httpRequestInfo, out IPrincipal principal) {
 			string username;
 			HashSet<string> scope;
 			var result = this.VerifyAccess(httpRequestInfo, out username, out scope);

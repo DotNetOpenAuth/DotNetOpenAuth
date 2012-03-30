@@ -40,7 +40,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// <summary>
 		/// Verifies that immediate/setup modes are correctly detected.
 		/// </summary>
-		[TestCase]
+		[Test]
 		public void ImmediateVsSetupModes() {
 			this.responseMessage = new NegativeAssertionResponse(this.protocol.Version, RPUri, this.protocol.Args.Mode.cancel);
 			this.response = new NegativeAuthenticationResponse(this.responseMessage);
@@ -58,14 +58,14 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			Assert.AreEqual(UserSuppliedIdentifier, (string)this.response.UserSuppliedIdentifier);
 		}
 
-		[TestCase]
+		[Test]
 		public void CommonProperties() {
 			Assert.IsNull(this.response.Exception);
 			Assert.IsNull(this.response.ClaimedIdentifier);
 			Assert.IsNull(this.response.FriendlyIdentifierForDisplay);
 		}
 
-		[TestCase]
+		[Test]
 		public void CommonMethods() {
 			Assert.IsNull(this.response.GetExtension<ClaimsRequest>());
 			Assert.IsNull(this.response.GetExtension(typeof(ClaimsRequest)));

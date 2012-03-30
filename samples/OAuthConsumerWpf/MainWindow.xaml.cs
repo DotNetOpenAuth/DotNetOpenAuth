@@ -112,9 +112,9 @@
 			bool? result = auth.ShowDialog();
 			if (result.HasValue && result.Value) {
 				this.wcfAccessToken = auth.Authorization;
-				this.wcfName.Content = CallService(client => client.GetName());
-				this.wcfAge.Content = CallService(client => client.GetAge());
-				this.wcfFavoriteSites.Content = CallService(client => string.Join(", ", client.GetFavoriteSites()));
+				this.wcfName.Content = this.CallService(client => client.GetName());
+				this.wcfAge.Content = this.CallService(client => client.GetAge());
+				this.wcfFavoriteSites.Content = this.CallService(client => string.Join(", ", client.GetFavoriteSites()));
 			}
 		}
 

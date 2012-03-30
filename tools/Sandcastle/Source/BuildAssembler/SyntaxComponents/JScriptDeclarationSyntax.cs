@@ -101,6 +101,7 @@ namespace Microsoft.Ddue.Tools {
             if (IsUnsupportedUnsafe(reflection, writer)) return;
             if (IsUnsupportedGeneric(reflection, writer)) return;
             if (IsUnsupportedExplicit(reflection, writer)) return;
+            if (IsUnsupportedVarargs(reflection, writer)) return;
 
             string name = (string)reflection.Evaluate(apiNameExpression);
             XPathNavigator returnType = reflection.SelectSingleNode(apiReturnTypeExpression);

@@ -216,7 +216,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// </summary>
 		/// <param name="request">The HTTP request to read the message from.</param>
 		/// <returns>The deserialized message.</returns>
-		public IDirectedProtocolMessage ReadRequest(HttpRequestInfo request) {
+		public IDirectedProtocolMessage ReadRequest(HttpRequestBase request) {
 			return this.Channel.ReadFromRequest(request);
 		}
 
@@ -238,7 +238,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="request">The HTTP request to read from.</param>
 		/// <returns>The incoming request, or null if no OAuth message was attached.</returns>
 		/// <exception cref="ProtocolException">Thrown if an unexpected OAuth message is attached to the incoming request.</exception>
-		public UnauthorizedTokenRequest ReadTokenRequest(HttpRequestInfo request) {
+		public UnauthorizedTokenRequest ReadTokenRequest(HttpRequestBase request) {
 			UnauthorizedTokenRequest message;
 			if (this.Channel.TryReadFromRequest(request, out message)) {
 				ErrorUtilities.VerifyProtocol(message.Version >= Protocol.Lookup(this.SecuritySettings.MinimumRequiredOAuthVersion).Version, OAuthStrings.MinimumConsumerVersionRequirementNotMet, this.SecuritySettings.MinimumRequiredOAuthVersion, message.Version);
@@ -282,7 +282,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="request">The HTTP request to read from.</param>
 		/// <returns>The incoming request, or null if no OAuth message was attached.</returns>
 		/// <exception cref="ProtocolException">Thrown if an unexpected OAuth message is attached to the incoming request.</exception>
-		public UserAuthorizationRequest ReadAuthorizationRequest(HttpRequestInfo request) {
+		public UserAuthorizationRequest ReadAuthorizationRequest(HttpRequestBase request) {
 			UserAuthorizationRequest message;
 			this.Channel.TryReadFromRequest(request, out message);
 			return message;
@@ -368,7 +368,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="request">The HTTP request to read from.</param>
 		/// <returns>The incoming request, or null if no OAuth message was attached.</returns>
 		/// <exception cref="ProtocolException">Thrown if an unexpected OAuth message is attached to the incoming request.</exception>
-		public AuthorizedTokenRequest ReadAccessTokenRequest(HttpRequestInfo request) {
+		public AuthorizedTokenRequest ReadAccessTokenRequest(HttpRequestBase request) {
 			AuthorizedTokenRequest message;
 			this.Channel.TryReadFromRequest(request, out message);
 			return message;
@@ -436,7 +436,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// to access the resources being requested.
 		/// </remarks>
 		/// <exception cref="ProtocolException">Thrown if an unexpected message is attached to the request.</exception>
-		public AccessProtectedResourceRequest ReadProtectedResourceAuthorization(HttpRequestInfo request) {
+		public AccessProtectedResourceRequest ReadProtectedResourceAuthorization(HttpRequestBase request) {
 			Requires.NotNull(request, "request");
 
 			AccessProtectedResourceRequest accessMessage;

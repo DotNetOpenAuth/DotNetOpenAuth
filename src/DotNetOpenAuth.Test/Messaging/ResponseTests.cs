@@ -19,7 +19,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			new OutgoingWebResponse().Respond();
 		}
 
-		[TestCase]
+		[Test]
 		public void Respond() {
 			StringWriter writer = new StringWriter();
 			HttpRequest httpRequest = new HttpRequest("file", "http://server", string.Empty);

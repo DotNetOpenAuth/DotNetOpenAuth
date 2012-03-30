@@ -1,8 +1,7 @@
-window.onload=LoadPage;
-window.onunload=Window_Unload;
-//window.onresize=ResizeWindow;
-window.onbeforeprint = set_to_print;
-window.onafterprint = reset_form;
+registerEventHandler(window, 'load', getInstanceDelegate(this, "LoadPage"));
+registerEventHandler(window, 'unload', getInstanceDelegate(this, "Window_Unload"));
+registerEventHandler(window, 'beforeprint', getInstanceDelegate(this, "set_to_print"));
+registerEventHandler(window, 'afterprint', getInstanceDelegate(this, "reset_form"));
 
 var scrollPos = 0;
 
@@ -214,6 +213,7 @@ function OnLoadImage(eventObj)
 */
 
 var docSettings;
+var mainSection;
 
 function LoadPage()
 {
@@ -246,7 +246,11 @@ function LoadPage()
 	SetCollapseAll();
 
 	// split screen
-	var screen = new SplitScreen('header', 'mainSection');
+	mainSection = document.getElementById("mainSection");
+	if (!mainSection)
+	    mainSection = document.getElementById("mainSectionMHS");
+	    
+	var screen = new SplitScreen('header', mainSection.id);
 
 	// init devlang filter checkboxes
 	SetupDevlangsFilter();
@@ -256,8 +260,12 @@ function LoadPage()
 	
 	// init memberlist platforms filter checkboxes, e.g. .Net Framework, CompactFramework, XNA, Silverlight, etc.
 	SetupMemberFrameworksFilter();
-	
-    var mainSection = document.getElementById("mainSection");
+
+	// removes blank target from in the self links for Microsoft Help System
+	RemoveTargetBlank();
+
+    // set gardien image to the bottom of header or Microsoft Help System
+	SetBackground('headerBottom');
 	
 	// vs70.js did this to allow up/down arrow scrolling, I think
 	try { mainSection.setActive(); } catch(e) { }
@@ -275,6 +283,16 @@ function Window_Unload()
     
     // save the expand/collapse section states
     SaveSections();
+}
+
+// removes blank target from in the self links for Microsoft Help System
+function RemoveTargetBlank() {
+    var elems = document.getElementsByTagName("a");
+    for (var i = 0; i < elems.length; i++) {
+        if (elems[i].getAttribute("target") == "_blank" &&
+        elems[i].getAttribute("href", 2).indexOf("#", 0) == 0)
+            elems[i].removeAttribute("target");
+    }
 }
 
 function set_to_print()
@@ -295,7 +313,7 @@ function set_to_print()
 			document.all[i].style.margin = "0px 0px 0px 0px";
 			document.all[i].style.width = "100%";
 		}
-		if (document.all[i].id == "mainSection")
+		if (document.all[i].id == mainSection.id)
 		{
 			document.all[i].style.overflow = "visible";
 			document.all[i].style.top = "5px";
@@ -357,7 +375,7 @@ function SetupDevlangsFilter()
 	{
 	    // setup the dropdown menu
         devlangsMenu = new CheckboxMenu("devlangsMenu", docSettings, persistKeys, globals);
-		devlangsDropdown = new Dropdown('devlangsDropdown', 'devlangsMenu');
+		devlangsDropdown = new Dropdown('devlangsDropdown', 'devlangsMenu', 'header');
 		dropdowns.push(devlangsDropdown);
 
         // update the label of the dropdown menu
@@ -408,7 +426,7 @@ function SetupMemberOptionsFilter()
 {
 	if (document.getElementById('memberOptionsMenu') != null) {
         memberOptionsMenu = new CheckboxMenu("memberOptionsMenu", docSettings, persistKeys, globals);
-		memberOptionsDropdown = new Dropdown('memberOptionsDropdown', 'memberOptionsMenu');
+		memberOptionsDropdown = new Dropdown('memberOptionsDropdown', 'memberOptionsMenu', 'header');
 		dropdowns.push(memberOptionsDropdown);
 
         // update the label of the dropdown menu
@@ -419,12 +437,23 @@ function SetupMemberOptionsFilter()
 	}
 }
 
+// sets the background to an element for Microsoft Help 3 system
+function SetBackground(id) {
+    var elem = document.getElementById(id);
+    if (elem) {
+        var img = document.getElementById(id + "Image");
+        if (img) {
+            elem.setAttribute("background", img.getAttribute("src"));
+        }
+    }
+}
+
 function SetupMemberFrameworksFilter()
 {
 	if (document.getElementById('memberFrameworksMenu') != null) 
 	{
         memberFrameworksMenu = new CheckboxMenu("memberFrameworksMenu", docSettings, persistKeys, globals);
-		memberFrameworksDropdown = new Dropdown('memberFrameworksDropdown', 'memberFrameworksMenu');
+		memberFrameworksDropdown = new Dropdown('memberFrameworksDropdown', 'memberFrameworksMenu', 'header');
 		dropdowns.push(memberFrameworksDropdown);
 
         // update the label of the dropdown menu

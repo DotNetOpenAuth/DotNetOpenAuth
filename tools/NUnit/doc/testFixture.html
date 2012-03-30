@@ -5,6 +5,7 @@
 <title>NUnit - TestFixture</title>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
 <meta http-equiv="Content-Language" content="en-US">
+<meta name="norton-safeweb-site-verification" content="tb6xj01p4hgo5x-8wscsmq633y11-e6nhk-bnb5d987bseanyp6p0uew-pec8j963qlzj32k5x9h3r2q7wh-vmy8bbhek5lnpp5w4p8hocouuq39e09jrkihdtaeknua" />
 <link rel="stylesheet" type="text/css" href="nunit.css">
 <link rel="shortcut icon" href="favicon.ico">
 </head>
@@ -139,9 +140,21 @@ so the well-known Abstract Fixture pattern may be implemented if desired.
 
 <p>In order to facilitate use of generic and/or parameterized classes,
 where the derived class may require a different number of arguments (or
-type arguments) from the base class, any <b>TestFixture</b> attribute on a 
-derived class causes those on the base classes to be ignored. This allows
-use of code like the following:
+type arguments) from the base class, superfluous <b>TestFixture</b> 
+attributes are ignored, using the following rules:
+
+<ol>
+<li>If all TestFixture attributes provide constructor or type arguments, 
+then all of them are used.
+<li>If some of the attributes provide arguments and others do not, then
+only those with arguments are used and those without arguments are ignored.
+<li>If none of the attributes provide arguments, one of them is selected
+for use by NUnit. It is not possible to predict which will be used, so
+this situation should generally be avoided.
+</ol>
+
+This permits code like the following, which would cause an error if the
+attribute on the base class were not ignored.
 
 <div class="code">
 <pre>[TestFixture]
@@ -168,6 +181,10 @@ public class DerivedFixture&lt;T&gt; : AbstractFixtureBase
 <p>Individual fixture instances in a set of parameterized fixtures may be ignored. 
    Set the <b>Ignore</b> named parameter of the attribute to true or set 
    <b>IgnoreReason</b> to a non-empty string.
+
+<p>Individual fixture instances may be given categories as well. Set the <b>Category</b>
+   named parameter of the attribute to the name of the category or to a comma-separated
+   list of categories.
    
 <h4>Example</h4>
 
@@ -349,13 +366,15 @@ public class DeduceTypeArgsFromArgs&lt;T1, T2&gt;
 <!-- Submenu -->
 <div id="subnav">
 <ul>
-<li><a href="index.html">NUnit 2.5.9</a></li>
+<li><a href="index.html">NUnit 2.6</a></li>
 <ul>
 <li><a href="getStarted.html">Getting&nbsp;Started</a></li>
+<li><a href="writingTests.html">Writing&nbsp;Tests</a></li>
+<ul>
 <li><a href="assertions.html">Assertions</a></li>
-<li><a href="constraintModel.html">Constraints</a></li>
 <li><a href="attributes.html">Attributes</a></li>
 <ul>
+<li><a href="actionAttributes.html">Action&nbsp;Attributes</a></li>
 <li><a href="category.html">Category</a></li>
 <li><a href="combinatorial.html">Combinatorial</a></li>
 <li><a href="culture.html">Culture</a></li>
@@ -377,6 +396,7 @@ public class DeduceTypeArgsFromArgs&lt;T1, T2&gt;
 <li><a href="requiresThread.html">Requires&nbsp;Thread</a></li>
 <li><a href="sequential.html">Sequential</a></li>
 <li><a href="setCulture.html">SetCulture</a></li>
+<li><a href="setUICulture.html">SetUICulture</a></li>
 <li><a href="setup.html">Setup</a></li>
 <li><a href="setupFixture.html">SetupFixture</a></li>
 <li><a href="suite.html">Suite</a></li>
@@ -392,12 +412,21 @@ public class DeduceTypeArgsFromArgs&lt;T1, T2&gt;
 <li><a href="values.html">Values</a></li>
 <li><a href="valueSource.html">ValueSource</a></li>
 </ul>
+<li><a href="constraintModel.html">Constraints</a></li>
+<li><a href="testContext.html">Test&nbsp;Context</a></li>
+</ul>
 <li><a href="runningTests.html">Running&nbsp;Tests</a></li>
 <li><a href="extensibility.html">Extensibility</a></li>
 <li><a href="releaseNotes.html">Release&nbsp;Notes</a></li>
 <li><a href="samples.html">Samples</a></li>
 <li><a href="license.html">License</a></li>
 </ul>
+<li><a href="vsTestAdapter.html">NUnit&nbsp;Test&nbsp;Adapter&nbsp;0.90</a></li>
+<ul>
+<li><a href="vsTestAdapterLicense.html">License</a></li>
+</ul>
+<li><a href="&r=2.6.html"></a></li>
+<li><a href="&r=2.6.html"></a></li>
 </ul>
 </div>
 <!-- End of Submenu -->
@@ -405,7 +434,7 @@ public class DeduceTypeArgsFromArgs&lt;T1, T2&gt;
 
 <!-- Standard Footer for NUnit.org -->
 <div id="footer">
-  Copyright &copy; 2010 Charlie Poole. All Rights Reserved.
+  Copyright &copy; 2012 Charlie Poole. All Rights Reserved.
 </div>
 <!-- End of Footer -->
 

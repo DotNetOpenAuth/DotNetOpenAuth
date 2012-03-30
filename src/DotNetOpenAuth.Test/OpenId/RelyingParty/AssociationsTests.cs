@@ -26,17 +26,17 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			this.assocs = new Associations();
 		}
 
-		[TestCase]
+		[Test]
 		public void GetNonexistentHandle() {
 			Assert.IsNull(this.assocs.Get("someinvalidhandle"));
 		}
 
-		[TestCase]
+		[Test]
 		public void RemoveNonexistentHandle() {
 			Assert.IsFalse(this.assocs.Remove("someinvalidhandle"));
 		}
 
-		[TestCase]
+		[Test]
 		public void HandleLifecycle() {
 			Association a = HmacShaAssociation.Create(
 				Protocol.Default,
@@ -51,7 +51,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			Assert.IsFalse(this.assocs.Remove(a.Handle));
 		}
 
-		[TestCase]
+		[Test]
 		public void Best() {
 			Association a = HmacShaAssociation.Create(
 				Protocol.Default,
