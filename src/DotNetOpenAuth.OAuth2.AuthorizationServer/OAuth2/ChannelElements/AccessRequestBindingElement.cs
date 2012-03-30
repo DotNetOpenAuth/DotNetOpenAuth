@@ -50,6 +50,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
 		public override MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
+			// Serialize the authorization code, if there is one.
 			var authCodeCarrier = message as IAuthorizationCodeCarryingRequest;
 			if (authCodeCarrier != null) {
 				var codeFormatter = AuthorizationCode.CreateFormatter(this.AuthorizationServer);

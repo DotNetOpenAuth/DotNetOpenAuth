@@ -113,6 +113,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			Requires.NotNull(authorizationServer, "authorizationServer");
 			var bindingElements = new List<IChannelBindingElement>();
 
+			// The order they are provided is used for outgoing messgaes, and reversed for incoming messages.
 			bindingElements.Add(new MessageValidationBindingElement());
 			bindingElements.Add(new AccessTokenBindingElement());
 			bindingElements.Add(new AccessRequestBindingElement());

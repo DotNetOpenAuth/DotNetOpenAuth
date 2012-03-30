@@ -143,7 +143,10 @@ namespace DotNetOpenAuth.Messaging {
 		/// A class prepared to analyze incoming messages and indicate what concrete
 		/// message types can deserialize from it.
 		/// </param>
-		/// <param name="bindingElements">The binding elements to use in sending and receiving messages.</param>
+		/// <param name="bindingElements">
+		/// The binding elements to use in sending and receiving messages.
+		/// The order they are provided is used for outgoing messgaes, and reversed for incoming messages.
+		/// </param>
 		protected Channel(IMessageFactory messageTypeProvider, params IChannelBindingElement[] bindingElements) {
 			Requires.NotNull(messageTypeProvider, "messageTypeProvider");
 

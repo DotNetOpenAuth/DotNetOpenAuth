@@ -31,7 +31,10 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="messageTypes">The message types that might be encountered.</param>
 		/// <param name="versions">All the possible message versions that might be encountered.</param>
-		/// <param name="bindingElements">The binding elements to apply to the channel.</param>
+		/// <param name="bindingElements">
+		/// The binding elements to use in sending and receiving messages.
+		/// The order they are provided is used for outgoing messgaes, and reversed for incoming messages.
+		/// </param>
 		protected StandardMessageFactoryChannel(ICollection<Type> messageTypes, ICollection<Version> versions, params IChannelBindingElement[] bindingElements)
 			: base(new StandardMessageFactory(), bindingElements) {
 			Requires.NotNull(messageTypes, "messageTypes");
