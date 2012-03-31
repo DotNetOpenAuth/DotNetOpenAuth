@@ -26,7 +26,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{08a938b6-ebbd-4036-880e-ce7ba2d14510}</ProjectGuid>
     <GenerateDatabaseFile>False</GenerateDatabaseFile>
-    <GenerateCreateScript>False</GenerateCreateScript>
+    <GenerateCreateScript>True</GenerateCreateScript>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <SqlServerVerification>False</SqlServerVerification>
     <TargetLanguage>CS</TargetLanguage>
