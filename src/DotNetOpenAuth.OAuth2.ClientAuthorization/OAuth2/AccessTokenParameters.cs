@@ -37,7 +37,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		public TimeSpan AccessTokenLifetime { get; set; }
 
 		/// <summary>
-		/// Gets the crypto service provider with the asymmetric private key to use for signing access tokens.
+		/// Gets or sets the crypto service provider with the asymmetric private key to use for signing access tokens.
 		/// </summary>
 		/// <returns>A crypto service provider instance that contains the private key.</returns>
 		/// <value>Must not be null, and must contain the private key.</value>
