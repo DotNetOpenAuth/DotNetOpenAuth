@@ -17,18 +17,22 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 	using NUnit.Framework;
 
 	/// <summary>
-	/// Verifies that the WRAP message types are recognized.
+	/// Verifies that the OAuth 2 message types are recognized.
 	/// </summary>
 	public class MessageFactoryTests : OAuth2TestBase {
 		private readonly MessageReceivingEndpoint recipient = new MessageReceivingEndpoint("http://who", HttpDeliveryMethods.PostRequest);
-		private OAuth2AuthorizationServerChannel channel;
-		private IMessageFactory messageFactory;
+		private IMessageFactory authServerMessageFactory;
+
+		private IMessageFactory clientMessageFactory;
 
 		public override void SetUp() {
 			base.SetUp();
 
-			this.channel = new OAuth2AuthorizationServerChannel(new Mock<IAuthorizationServer>().Object);
-			this.messageFactory = this.channel.MessageFactoryTestHook;
+			var authServerChannel = new OAuth2AuthorizationServerChannel(new Mock<IAuthorizationServer>().Object);
+			this.authServerMessageFactory = authServerChannel.MessageFactoryTestHook;
+
+			var clientChannel = new OAuth2ClientChannel();
+			this.clientMessageFactory = clientChannel.MessageFactoryTestHook;
 		}
 
 		#region End user authorization messages
@@ -40,7 +44,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 				{ Protocol.client_id, "abc" },
 				{ Protocol.redirect_uri, "abc" },
 			};
-			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
+			IDirectedProtocolMessage request = this.authServerMessageFactory.GetNewRequestMessage(this.recipient, fields);
 			Assert.That(request, Is.InstanceOf(typeof(EndUserAuthorizationRequest)));
 		}
 
@@ -51,7 +55,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 				{ Protocol.client_id, "abc" },
 				{ Protocol.redirect_uri, "abc" },
 			};
-			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
+			IDirectedProtocolMessage request = this.authServerMessageFactory.GetNewRequestMessage(this.recipient, fields);
 			Assert.That(request, Is.InstanceOf(typeof(EndUserAuthorizationImplicitRequest)));
 		}
 
@@ -60,7 +64,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 			var fields = new Dictionary<string, string> {
 				{ Protocol.code, "abc" },
 			};
-			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
+			IDirectedProtocolMessage request = this.clientMessageFactory.GetNewRequestMessage(this.recipient, fields);
 			Assert.That(request, Is.InstanceOf(typeof(EndUserAuthorizationSuccessResponseBase)));
 		}
 
@@ -70,7 +74,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 				{ Protocol.access_token, "abc" },
 				{ Protocol.token_type, "bearer" },
 			};
-			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
+			IDirectedProtocolMessage request = this.clientMessageFactory.GetNewRequestMessage(this.recipient, fields);
 			Assert.That(request, Is.InstanceOf(typeof(EndUserAuthorizationSuccessResponseBase)));
 		}
 
@@ -79,7 +83,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 			var fields = new Dictionary<string, string> {
 				{ Protocol.error, "access-denied" },
 			};
-			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
+			IDirectedProtocolMessage request = this.clientMessageFactory.GetNewRequestMessage(this.recipient, fields);
 			Assert.That(request, Is.InstanceOf(typeof(EndUserAuthorizationFailedResponse)));
 		}
 
@@ -94,7 +98,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 				{ Protocol.refresh_token, "abc" },
 				{ Protocol.grant_type, "refresh-token" },
 			};
-			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
+			IDirectedProtocolMessage request = this.authServerMessageFactory.GetNewRequestMessage(this.recipient, fields);
 			Assert.That(request, Is.InstanceOf(typeof(AccessTokenRefreshRequest)));
 		}
 
@@ -106,7 +110,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 				{ Protocol.grant_type, "authorization-code" },
 				{ Protocol.redirect_uri, "http://someUri" },
 			};
-			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
+			IDirectedProtocolMessage request = this.authServerMessageFactory.GetNewRequestMessage(this.recipient, fields);
 			Assert.That(request, Is.InstanceOf(typeof(AccessTokenAuthorizationCodeRequest)));
 		}
 
@@ -119,7 +123,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 				{ Protocol.username, "abc" },
 				{ Protocol.password, "abc" },
 			};
-			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
+			IDirectedProtocolMessage request = this.authServerMessageFactory.GetNewRequestMessage(this.recipient, fields);
 			Assert.That(request, Is.InstanceOf(typeof(AccessTokenResourceOwnerPasswordCredentialsRequest)));
 		}
 
@@ -130,7 +134,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 				{ Protocol.client_secret, "abc" },
 				{ Protocol.grant_type, "none" },
 			};
-			IDirectedProtocolMessage request = this.messageFactory.GetNewRequestMessage(this.recipient, fields);
+			IDirectedProtocolMessage request = this.authServerMessageFactory.GetNewRequestMessage(this.recipient, fields);
 			Assert.That(request, Is.InstanceOf(typeof(AccessTokenClientCredentialsRequest)));
 		}
 

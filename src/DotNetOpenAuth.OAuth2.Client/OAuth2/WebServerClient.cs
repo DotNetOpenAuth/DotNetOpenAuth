@@ -78,7 +78,7 @@ namespace DotNetOpenAuth.OAuth2 {
 				authorization.SaveChanges();
 			}
 
-			var request = new EndUserAuthorizationRequest(this.AuthorizationServer) {
+			var request = new EndUserAuthorizationRequestC(this.AuthorizationServer) {
 				ClientIdentifier = this.ClientIdentifier,
 				Callback = authorization.Callback,
 			};

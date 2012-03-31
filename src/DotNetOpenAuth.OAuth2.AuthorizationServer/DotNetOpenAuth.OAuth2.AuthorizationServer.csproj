@@ -19,6 +19,26 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="OAuth2\AuthorizationServer.cs" />
+    <Compile Include="OAuth2\AuthServerStrings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>AuthServerStrings.resx</DependentUpon>
+    </Compile>
+    <Compile Include="OAuth2\AuthServerUtilities.cs" />
+    <Compile Include="OAuth2\ChannelElements\TokenCodeSerializationBindingElement.cs" />
+    <Compile Include="OAuth2\ChannelElements\AccessTokenBindingElement.cs" />
+    <Compile Include="OAuth2\ChannelElements\AuthorizationCode.cs" />
+    <Compile Include="OAuth2\ChannelElements\MessageValidationBindingElement.cs" />
+    <Compile Include="OAuth2\ChannelElements\AuthServerBindingElementBase.cs" />
+    <Compile Include="OAuth2\ChannelElements\IOAuth2ChannelWithAuthorizationServer.cs" />
+    <Compile Include="OAuth2\ChannelElements\OAuth2AuthorizationServerChannel.cs" />
+    <Compile Include="OAuth2\ChannelElements\RefreshToken.cs" />
+    <Compile Include="OAuth2\ClientDescription.cs" />
+    <Compile Include="OAuth2\Messages\AccessTokenAuthorizationCodeRequestAS.cs" />
+    <Compile Include="OAuth2\Messages\AccessTokenRefreshRequestAS.cs" />
+    <Compile Include="OAuth2\Messages\EndUserAuthorizationSuccessAuthCodeResponseAS.cs" />
+    <Compile Include="OAuth2\Messages\IAuthorizationCodeCarryingRequest.cs" />
+    <Compile Include="OAuth2\Messages\IRefreshTokenCarryingRequest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -26,10 +46,20 @@
       <Project>{60426312-6AE5-4835-8667-37EDEA670222}</Project>
       <Name>DotNetOpenAuth.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\DotNetOpenAuth.OAuth2.ClientAuthorization\DotNetOpenAuth.OAuth2.ClientAuthorization.csproj">
+      <Project>{CCF3728A-B3D7-404A-9BC6-75197135F2D7}</Project>
+      <Name>DotNetOpenAuth.OAuth2.ClientAuthorization</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DotNetOpenAuth.OAuth2\DotNetOpenAuth.OAuth2.csproj">
       <Project>{56459A6C-6BA2-4BAC-A9C0-27E3BD961FA6}</Project>
       <Name>DotNetOpenAuth.OAuth2</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="OAuth2\AuthServerStrings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AuthServerStrings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.targets" />

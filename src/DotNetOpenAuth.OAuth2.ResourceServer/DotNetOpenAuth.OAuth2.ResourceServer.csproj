@@ -18,12 +18,15 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="OAuth2\ChannelElements\OAuth2ResourceServerChannel.cs" />
+    <Compile Include="OAuth2\IAccessTokenAnalyzer.cs" />
     <Compile Include="OAuth2\OAuth2Strings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>OAuth2Strings.resx</DependentUpon>
     </Compile>
     <Compile Include="OAuth2\ResourceServer.cs" />
+    <Compile Include="OAuth2\StandardAccessTokenAnalyzer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -159,6 +159,14 @@
       <Project>{99BB7543-EA16-43EE-A7BC-D7A25A3B22F6}</Project>
       <Name>DotNetOpenAuth.OAuth2.AuthorizationServer</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\src\DotNetOpenAuth.OAuth2.ClientAuthorization\DotNetOpenAuth.OAuth2.ClientAuthorization.csproj">
+      <Project>{CCF3728A-B3D7-404A-9BC6-75197135F2D7}</Project>
+      <Name>DotNetOpenAuth.OAuth2.ClientAuthorization</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\DotNetOpenAuth.OAuth2.Client\DotNetOpenAuth.OAuth2.Client.csproj">
+      <Project>{CDEDD439-7F35-4E6E-8605-4E70BDC4CC99}</Project>
+      <Name>DotNetOpenAuth.OAuth2.Client</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\src\DotNetOpenAuth.OAuth2.ResourceServer\DotNetOpenAuth.OAuth2.ResourceServer.csproj">
       <Project>{A1A3150A-7B0E-4A34-8E35-045296CD3C76}</Project>
       <Name>DotNetOpenAuth.OAuth2.ResourceServer</Name>

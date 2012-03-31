@@ -437,6 +437,10 @@
       <Project>{ADC2CC8C-541E-4F86-ACB1-DD504A36FA4B}</Project>
       <Name>DotNetOpenAuth.OAuth2.Client.UI</Name>
     </ProjectReference>
+    <ProjectReference Include="..\DotNetOpenAuth.OAuth2.ClientAuthorization\DotNetOpenAuth.OAuth2.ClientAuthorization.csproj">
+      <Project>{CCF3728A-B3D7-404A-9BC6-75197135F2D7}</Project>
+      <Name>DotNetOpenAuth.OAuth2.ClientAuthorization</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DotNetOpenAuth.OAuth2.Client\DotNetOpenAuth.OAuth2.Client.csproj">
       <Project>{CDEDD439-7F35-4E6E-8605-4E70BDC4CC99}</Project>
       <Name>DotNetOpenAuth.OAuth2.Client</Name>

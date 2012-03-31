@@ -19,7 +19,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	/// to indicate that user authorization was granted, carrying only an access token,
 	/// and to return the user to the Client where they started their experience.
 	/// </summary>
-	internal class EndUserAuthorizationSuccessAccessTokenResponse : EndUserAuthorizationSuccessResponseBase, IAccessTokenCarryingRequest, IHttpIndirectResponse {
+	internal class EndUserAuthorizationSuccessAccessTokenResponse : EndUserAuthorizationSuccessResponseBase, IAccessTokenIssuingResponse, IHttpIndirectResponse {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="EndUserAuthorizationSuccessAccessTokenResponse"/> class.
 		/// </summary>
@@ -73,6 +73,17 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Gets or sets the lifetime of the access token.
+		/// </summary>
+		/// <value>
+		/// The lifetime.
+		/// </value>
+		TimeSpan? IAccessTokenIssuingResponse.Lifetime {
+			get { return this.Lifetime; }
+			set { this.Lifetime = value; }
+		}
 
 		/// <summary>
 		/// Gets or sets the token type.

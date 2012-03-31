@@ -18,49 +18,15 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	/// A request from a Client to an Authorization Server to exchange an authorization code for an access token,
 	/// and (at the authorization server's option) a refresh token.
 	/// </summary>
-	internal class AccessTokenAuthorizationCodeRequest : AccessTokenRequestBase, IAuthorizationCodeCarryingRequest {
+	internal class AccessTokenAuthorizationCodeRequest : AccessTokenRequestBase {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AccessTokenAuthorizationCodeRequest"/> class.
 		/// </summary>
 		/// <param name="tokenEndpoint">The Authorization Server's access token endpoint URL.</param>
 		/// <param name="version">The version.</param>
-		internal AccessTokenAuthorizationCodeRequest(Uri tokenEndpoint, Version version)
+		protected AccessTokenAuthorizationCodeRequest(Uri tokenEndpoint, Version version)
 			: base(tokenEndpoint, version) {
 		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="AccessTokenAuthorizationCodeRequest"/> class.
-		/// </summary>
-		/// <param name="authorizationServer">The authorization server.</param>
-		internal AccessTokenAuthorizationCodeRequest(AuthorizationServerDescription authorizationServer)
-			: this(authorizationServer.TokenEndpoint, authorizationServer.Version) {
-			Requires.NotNull(authorizationServer, "authorizationServer");
-		}
-
-		#region IAuthorizationCodeCarryingRequest Members
-
-		/// <summary>
-		/// Gets or sets the verification code or refresh/access token.
-		/// </summary>
-		/// <value>The code or token.</value>
-		string IAuthorizationCodeCarryingRequest.Code {
-			get { return this.AuthorizationCode; }
-			set { this.AuthorizationCode = value; }
-		}
-
-		/// <summary>
-		/// Gets or sets the authorization that the token describes.
-		/// </summary>
-		AuthorizationCode IAuthorizationCodeCarryingRequest.AuthorizationDescription { get; set; }
-
-		/// <summary>
-		/// Gets the authorization that the code describes.
-		/// </summary>
-		IAuthorizationDescription IAuthorizationCarryingRequest.AuthorizationDescription {
-			get { return ((IAuthorizationCodeCarryingRequest)this).AuthorizationDescription; }
-		}
-
-		#endregion
 
 		/// <summary>
 		/// Gets the type of the grant.

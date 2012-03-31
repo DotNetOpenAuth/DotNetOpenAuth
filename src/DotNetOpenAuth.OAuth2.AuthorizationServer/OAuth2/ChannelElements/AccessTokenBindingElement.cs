@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="AuthServerAllFlowsBindingElement.cs" company="Outercurve Foundation">
+// <copyright file="AccessTokenBindingElement.cs" company="Outercurve Foundation">
 //     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -7,26 +7,27 @@
 namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
+	using System.Diagnostics;
 	using System.Linq;
+	using System.Security.Cryptography;
 	using System.Text;
+	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2.Messages;
-	using Messaging;
 
 	/// <summary>
-	/// A binding element that should be applied for authorization server channels regardless of which flows
-	/// are supported.
+	/// Serializes access tokens inside an outgoing message.
 	/// </summary>
-	internal class AuthServerAllFlowsBindingElement : AuthServerBindingElementBase {
+	internal class AccessTokenBindingElement : AuthServerBindingElementBase {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="AuthServerAllFlowsBindingElement"/> class.
+		/// Initializes a new instance of the <see cref="AccessTokenBindingElement"/> class.
 		/// </summary>
-		internal AuthServerAllFlowsBindingElement() {
+		internal AccessTokenBindingElement() {
 		}
 
 		/// <summary>
 		/// Gets the protection commonly offered (if any) by this binding element.
 		/// </summary>
+		/// <value>Always <c>MessageProtections.None</c></value>
 		/// <remarks>
 		/// This value is used to assist in sorting binding elements in the channel stack.
 		/// </remarks>
@@ -42,11 +43,34 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// The protections (if any) that this binding element applied to the message.
 		/// Null if this binding element did not even apply to this binding element.
 		/// </returns>
-		/// <remarks>
-		/// Implementations that provide message protection must honor the
-		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
-		/// </remarks>
 		public override MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
+			var directResponse = message as IDirectResponseProtocolMessage;
+			var request = directResponse != null ? directResponse.OriginatingRequest as IAccessTokenRequestInternal : null;
+			var authCarryingRequest = request as IAuthorizationCarryingRequest;
+			var accessTokenResponse = message as IAccessTokenIssuingResponse;
+			var implicitGrantResponse = message as EndUserAuthorizationSuccessAccessTokenResponse;
+
+			if (request != null) {
+				request.AccessTokenCreationParameters = this.AuthorizationServer.GetAccessTokenParameters(request);
+				ErrorUtilities.VerifyHost(request.AccessTokenCreationParameters != null, "IAuthorizationServer.GetAccessTokenParameters must not return null.");
+
+				if (accessTokenResponse != null) {
+					accessTokenResponse.Lifetime = request.AccessTokenCreationParameters.AccessTokenLifetime;
+				}
+			}
+
+			if (authCarryingRequest != null) {
+				ErrorUtilities.VerifyInternal(request != null, MessagingStrings.UnexpectedMessageReceived, typeof(IAccessTokenRequestInternal), request.GetType());
+				accessTokenResponse.AuthorizationDescription = new AccessToken(authCarryingRequest.AuthorizationDescription, accessTokenResponse.Lifetime);
+			} else if (implicitGrantResponse != null) {
+				IAccessTokenCarryingRequest tokenCarryingResponse = implicitGrantResponse;
+				accessTokenResponse.AuthorizationDescription = new AccessToken(
+					request.ClientIdentifier,
+					implicitGrantResponse.Scope,
+					implicitGrantResponse.AuthorizingUsername,
+					implicitGrantResponse.Lifetime);
+			}
+
 			return null;
 		}
 
@@ -63,20 +87,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// Thrown when the binding element rules indicate that this message is invalid and should
 		/// NOT be processed.
 		/// </exception>
-		/// <remarks>
-		/// Implementations that provide message protection must honor the
-		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
-		/// </remarks>
 		public override MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
-			var authorizationRequest = message as EndUserAuthorizationRequest;
-			if (authorizationRequest != null) {
-				var client = this.AuthorizationServer.GetClientOrThrow(authorizationRequest.ClientIdentifier);
-				ErrorUtilities.VerifyProtocol(authorizationRequest.Callback == null || client.IsCallbackAllowed(authorizationRequest.Callback), OAuthStrings.ClientCallbackDisallowed, authorizationRequest.Callback);
-				ErrorUtilities.VerifyProtocol(authorizationRequest.Callback != null || client.DefaultCallback != null, OAuthStrings.NoCallback);
-
-				return MessageProtections.None;
-			}
-
 			return null;
 		}
 	}

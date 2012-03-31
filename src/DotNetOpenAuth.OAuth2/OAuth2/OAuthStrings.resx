@@ -120,9 +120,6 @@
   <data name="AbsoluteUriRequired" xml:space="preserve">
     <value>The value for message part "{0}" must be an absolute URI.</value>
   </data>
-  <data name="AccessScopeExceedsGrantScope" xml:space="preserve">
-    <value>The requested access scope ("{0}") exceeds the grant scope ("{1}").</value>
-  </data>
   <data name="AccessTokenInvalidForHttpAuthorizationHeader" xml:space="preserve">
     <value>The access token contains characters that must not appear in the HTTP Authorization header.</value>
   </data>

@@ -13,15 +13,28 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	using System.Web;
 
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OAuth2.Messages;
 
 	/// <summary>
 	/// The messaging channel used by OAuth 2.0 Clients.
 	/// </summary>
 	internal class OAuth2ClientChannel : OAuth2ChannelBase {
 		/// <summary>
+		/// The messages receivable by this channel.
+		/// </summary>
+		private static readonly Type[] MessageTypes = new Type[] {
+			typeof(AccessTokenSuccessResponse),
+			typeof(AccessTokenFailedResponse),
+			typeof(EndUserAuthorizationSuccessAuthCodeResponse),
+			typeof(EndUserAuthorizationSuccessAccessTokenResponse),
+			typeof(EndUserAuthorizationFailedResponse),
+			typeof(UnauthorizedResponse),
+		};
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="OAuth2ClientChannel"/> class.
 		/// </summary>
-		internal OAuth2ClientChannel() {
+		internal OAuth2ClientChannel() : base(MessageTypes) {
 		}
 
 		/// <summary>

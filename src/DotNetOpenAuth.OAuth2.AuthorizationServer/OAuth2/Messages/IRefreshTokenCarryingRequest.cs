@@ -4,7 +4,9 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.OAuth2.ChannelElements {
+namespace DotNetOpenAuth.OAuth2.AuthServer.ChannelElements {
+	using DotNetOpenAuth.OAuth2.ChannelElements;
+
 	/// <summary>
 	/// A message that carries a refresh token between client and authorization server.
 	/// </summary>

@@ -45,29 +45,26 @@
 			get { return AsymmetricTokenSigningPrivateKey; }
 		}
 
-		public TimeSpan GetAccessTokenLifetime(IAccessTokenRequest accessTokenRequestMessage) {
+		public AccessTokenParameters GetAccessTokenParameters(IAccessTokenRequest accessTokenRequestMessage) {
+			var parameters = new AccessTokenParameters();
+
 			// Just for the sake of the sample, we use a short-lived token.  This can be useful to mitigate the security risks
 			// of access tokens that are used over standard HTTP.
 			// But this is just the lifetime of the access token.  The client can still renew it using their refresh token until
 			// the authorization itself expires.
-			TimeSpan lifetime = TimeSpan.FromMinutes(2);
+			parameters.AccessTokenLifetime = TimeSpan.FromMinutes(2);
 
 			// Also take into account the remaining life of the authorization and artificially shorten the access token's lifetime
 			// to account for that if necessary.
 			//// TODO: code here
 
-			return lifetime;
-		}
-
-		public RSACryptoServiceProvider GetResourceServerEncryptionKey(IAccessTokenRequest accessTokenRequestMessage) {
-			var resourceServerEncryptionKey = new RSACryptoServiceProvider();
-
 			// For this sample, we assume just one resource server.
 			// If this authorization server needs to mint access tokens for more than one resource server,
 			// we'd look at the request message passed to us and decide which public key to return.
-			resourceServerEncryptionKey.ImportParameters(ResourceServerEncryptionPublicKey);
+			parameters.ResourceServerEncryptionKey = new RSACryptoServiceProvider();
+			parameters.ResourceServerEncryptionKey.ImportParameters(ResourceServerEncryptionPublicKey);
 
-			return resourceServerEncryptionKey;
+			return parameters;
 		}
 
 		public IClientDescription GetClient(string clientIdentifier) {

@@ -63,7 +63,7 @@ namespace DotNetOpenAuth.OAuth2 {
 				if (message.ResponseType == EndUserAuthorizationResponseType.AuthorizationCode) {
 					// Clients with no secrets can only request implicit grant types.
 					var client = this.AuthorizationServerServices.GetClientOrThrow(message.ClientIdentifier);
-					ErrorUtilities.VerifyProtocol(!string.IsNullOrEmpty(client.Secret), Protocol.unauthorized_client);
+					ErrorUtilities.VerifyProtocol(!string.IsNullOrEmpty(client.Secret), Protocol.EndUserAuthorizationRequestErrorCodes.UnauthorizedClient);
 				}
 			}
 
@@ -113,10 +113,10 @@ namespace DotNetOpenAuth.OAuth2 {
 					// TODO: refreshToken should be set appropriately based on authorization server policy.
 					responseMessage = this.PrepareAccessTokenResponse(requestMessage);
 				} else {
-					responseMessage = new AccessTokenFailedResponse() {
-						Error = Protocol.AccessTokenRequestErrorCodes.InvalidRequest,
-					};
+					responseMessage = new AccessTokenFailedResponse() { Error = Protocol.AccessTokenRequestErrorCodes.InvalidRequest, };
 				}
+			} catch (TokenEndpointProtocolException ex) {
+				responseMessage = new AccessTokenFailedResponse() { Error = ex.Error, ErrorDescription = ex.Description, ErrorUri = ex.MoreInformation };
 			} catch (ProtocolException) {
 				responseMessage = new AccessTokenFailedResponse() {
 					Error = Protocol.AccessTokenRequestErrorCodes.InvalidRequest,
@@ -166,11 +166,17 @@ namespace DotNetOpenAuth.OAuth2 {
 			switch (authorizationRequest.ResponseType) {
 				case EndUserAuthorizationResponseType.AccessToken:
 					var accessTokenResponse = new EndUserAuthorizationSuccessAccessTokenResponse(callback, authorizationRequest);
-					accessTokenResponse.Lifetime = this.AuthorizationServerServices.GetAccessTokenLifetime((EndUserAuthorizationImplicitRequest)authorizationRequest);
 					response = accessTokenResponse;
 					break;
 				case EndUserAuthorizationResponseType.AuthorizationCode:
-					response = new EndUserAuthorizationSuccessAuthCodeResponse(callback, authorizationRequest);
+					var authCodeResponse = new EndUserAuthorizationSuccessAuthCodeResponseAS(callback, authorizationRequest);
+					IAuthorizationCodeCarryingRequest tokenCarryingResponse = authCodeResponse;
+					tokenCarryingResponse.AuthorizationDescription = new AuthorizationCode(
+						authorizationRequest.ClientIdentifier,
+						authorizationRequest.Callback,
+						authCodeResponse.Scope,
+						userName);
+					response = authCodeResponse;
 					break;
 				default:
 					throw ErrorUtilities.ThrowInternal("Unexpected response type.");
@@ -231,8 +237,8 @@ namespace DotNetOpenAuth.OAuth2 {
 			}
 
 			var tokenRequest = (IAuthorizationCarryingRequest)request;
+			var accessTokenRequest = (IAccessTokenRequestInternal)request;
 			var response = new AccessTokenSuccessResponse(request) {
-				Lifetime = this.AuthorizationServerServices.GetAccessTokenLifetime(request),
 				HasRefreshToken = includeRefreshToken,
 			};
 			response.Scope.ResetContents(tokenRequest.AuthorizationDescription.Scope);

@@ -47,6 +47,14 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		}
 
 		/// <summary>
+		/// Gets the maximum message age from the standard expiration binding element.
+		/// </summary>
+		/// <value>This interval need not account for clock skew because it is only compared within a single authorization server or farm of servers.</value>
+		internal static TimeSpan MaximumMessageAge {
+			get { return Configuration.DotNetOpenAuthSection.Messaging.MaximumMessageLifetimeNoSkew; }
+		}
+
+		/// <summary>
 		/// Gets or sets the hash of the callback URL.
 		/// </summary>
 		[MessagePart("cb")]
@@ -70,7 +78,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 				signed: true,
 				encrypted: true,
 				compressed: false,
-				maximumAge: AuthorizationCodeBindingElement.MaximumMessageAge,
+				maximumAge: MaximumMessageAge,
 				decodeOnceOnly: authorizationServer.VerificationCodeNonceStore);
 		}
 
@@ -86,7 +94,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		[SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "redirecturimismatch", Justification = "Protocol requirement")]
 		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "DotNetOpenAuth.Messaging.ErrorUtilities.VerifyProtocol(System.Boolean,System.String,System.Object[])", Justification = "Protocol requirement")]
 		internal void VerifyCallback(Uri callback) {
-			ErrorUtilities.VerifyProtocol(MessagingUtilities.AreEquivalent(this.CallbackHash, CalculateCallbackHash(callback)), Protocol.redirect_uri_mismatch);
+			ErrorUtilities.VerifyProtocol(MessagingUtilities.AreEquivalentConstantTime(this.CallbackHash, CalculateCallbackHash(callback)), Protocol.redirect_uri_mismatch);
 		}
 
 		/// <summary>

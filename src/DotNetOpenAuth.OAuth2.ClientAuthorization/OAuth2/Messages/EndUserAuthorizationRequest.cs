@@ -32,23 +32,12 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// </summary>
 		/// <param name="authorizationEndpoint">The Authorization Server's user authorization URL to direct the user to.</param>
 		/// <param name="version">The protocol version.</param>
-		internal EndUserAuthorizationRequest(Uri authorizationEndpoint, Version version)
+		protected EndUserAuthorizationRequest(Uri authorizationEndpoint, Version version)
 			: base(version, MessageTransport.Indirect, authorizationEndpoint) {
 			Requires.NotNull(authorizationEndpoint, "authorizationEndpoint");
 			Requires.NotNull(version, "version");
 			this.HttpMethods = HttpDeliveryMethods.GetRequest | HttpDeliveryMethods.PostRequest;
 			this.Scope = new HashSet<string>(OAuthUtilities.ScopeStringComparer);
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="EndUserAuthorizationRequest"/> class.
-		/// </summary>
-		/// <param name="authorizationServer">The authorization server.</param>
-		internal EndUserAuthorizationRequest(AuthorizationServerDescription authorizationServer)
-			: this(authorizationServer.AuthorizationEndpoint, authorizationServer.Version) {
-			Requires.NotNull(authorizationServer, "authorizationServer");
-			Requires.True(authorizationServer.Version != null, "authorizationServer");
-			Requires.True(authorizationServer.AuthorizationEndpoint != null, "authorizationServer");
 		}
 
 		/// <summary>

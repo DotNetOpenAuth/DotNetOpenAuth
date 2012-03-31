@@ -18,7 +18,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	/// <remarks>
 	/// This message type is shared by the Web App, Rich App, and Username/Password profiles.
 	/// </remarks>
-	internal class AccessTokenSuccessResponse : MessageBase, IHttpDirectResponse {
+	internal class AccessTokenSuccessResponse : MessageBase, IHttpDirectResponse, IAccessTokenIssuingResponse {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AccessTokenSuccessResponse"/> class.
 		/// </summary>
@@ -91,6 +91,50 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <value>The scope of the access request expressed as a list of space-delimited strings. The value of the scope parameter is defined by the authorization server. If the value contains multiple space-delimited strings, their order does not matter, and each string adds an additional access range to the requested scope.</value>
 		[MessagePart(Protocol.scope, IsRequired = false, Encoder = typeof(ScopeEncoder))]
 		public HashSet<string> Scope { get; private set; }
+
+		#region IAccessTokenIssuingResponse Members
+
+		/// <summary>
+		/// Gets or sets the lifetime of the access token.
+		/// </summary>
+		/// <value>
+		/// The lifetime.
+		/// </value>
+		TimeSpan? IAccessTokenIssuingResponse.Lifetime {
+			get { return this.Lifetime; }
+			set { this.Lifetime = value; }
+		}
+
+		#endregion
+
+		#region IAuthorizationCarryingRequest
+
+		/// <summary>
+		/// Gets the authorization that the token describes.
+		/// </summary>
+		IAuthorizationDescription IAuthorizationCarryingRequest.AuthorizationDescription {
+			get { return ((IAccessTokenCarryingRequest)this).AuthorizationDescription; }
+		}
+
+		#endregion
+
+		#region IAccessTokenCarryingRequest Members
+
+		/// <summary>
+		/// Gets or sets the authorization that the token describes.
+		/// </summary>
+		/// <value></value>
+		AccessToken IAccessTokenCarryingRequest.AuthorizationDescription { get; set; }
+
+		/// <summary>
+		/// Gets or sets the access token.
+		/// </summary>
+		string IAccessTokenCarryingRequest.AccessToken {
+			get { return this.AccessToken; }
+			set { this.AccessToken = value; }
+		}
+
+		#endregion
 
 		/// <summary>
 		/// Gets or sets a value indicating whether a refresh token is or should be included in the response.

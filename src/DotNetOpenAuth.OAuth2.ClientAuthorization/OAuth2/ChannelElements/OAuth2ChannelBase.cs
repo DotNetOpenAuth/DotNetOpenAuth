@@ -18,24 +18,6 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	/// </summary>
 	internal abstract class OAuth2ChannelBase : StandardMessageFactoryChannel {
 		/// <summary>
-		/// The messages receivable by this channel.
-		/// </summary>
-		private static readonly Type[] MessageTypes = new Type[] {
-			typeof(AccessTokenRefreshRequest),
-			typeof(AccessTokenAuthorizationCodeRequest),
-			typeof(AccessTokenResourceOwnerPasswordCredentialsRequest),
-			typeof(AccessTokenClientCredentialsRequest),
-			typeof(AccessTokenSuccessResponse),
-			typeof(AccessTokenFailedResponse),
-			typeof(EndUserAuthorizationRequest),
-			typeof(EndUserAuthorizationImplicitRequest),
-			typeof(EndUserAuthorizationSuccessAuthCodeResponse),
-			typeof(EndUserAuthorizationSuccessAccessTokenResponse),
-			typeof(EndUserAuthorizationFailedResponse),
-			typeof(UnauthorizedResponse),
-		};
-
-		/// <summary>
 		/// The protocol versions supported by this channel.
 		/// </summary>
 		private static readonly Version[] Versions = Protocol.AllVersions.Select(v => v.Version).ToArray();
@@ -43,9 +25,13 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OAuth2ChannelBase"/> class.
 		/// </summary>
-		/// <param name="channelBindingElements">The channel binding elements.</param>
-		internal OAuth2ChannelBase(params IChannelBindingElement[] channelBindingElements)
-			: base(MessageTypes, Versions, channelBindingElements) {
+		/// <param name="messageTypes">The message types that are received by this channel.</param>
+		/// <param name="channelBindingElements">
+		/// The binding elements to use in sending and receiving messages.
+		/// The order they are provided is used for outgoing messgaes, and reversed for incoming messages.
+		/// </param>
+		internal OAuth2ChannelBase(Type[] messageTypes, params IChannelBindingElement[] channelBindingElements)
+			: base(Requires.NotNull(messageTypes, "messageTypes"), Versions, channelBindingElements) {
 		}
 
 		/// <summary>
