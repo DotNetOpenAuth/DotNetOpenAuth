@@ -104,19 +104,15 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 							if (this.AuthorizationServer.IsResourceOwnerCredentialValid(resourceOwnerPasswordCarrier.UserName, resourceOwnerPasswordCarrier.Password)) {
 								resourceOwnerPasswordCarrier.CredentialsValidated = true;
 							} else {
-								Logger.OAuth.WarnFormat(
+								Logger.OAuth.ErrorFormat(
 									"Resource owner password credential for user \"{0}\" rejected by authorization server host.",
 									resourceOwnerPasswordCarrier.UserName);
-
-								// TODO: fix this to report the appropriate error code for a bad credential.
-								throw new ProtocolException();
+								throw new TokenEndpointProtocolException(Protocol.AccessTokenRequestErrorCodes.InvalidGrant, AuthServerStrings.InvalidResourceOwnerPasswordCredential);
 							}
 						} catch (NotSupportedException) {
-							// TODO: fix this to return the appropriate error code for not supporting resource owner password credentials
-							throw new ProtocolException();
+							throw new TokenEndpointProtocolException(Protocol.AccessTokenRequestErrorCodes.UnsupportedGrantType);
 						} catch (NotImplementedException) {
-							// TODO: fix this to return the appropriate error code for not supporting resource owner password credentials
-							throw new ProtocolException();
+							throw new TokenEndpointProtocolException(Protocol.AccessTokenRequestErrorCodes.UnsupportedGrantType);
 						}
 					} else if (clientCredentialOnly != null) {
 						// this method will throw later if the credentials are false.
@@ -125,23 +121,29 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 						throw ErrorUtilities.ThrowInternal("Unexpected message type: " + tokenRequest.GetType());
 					}
 				} catch (ExpiredMessageException ex) {
-					throw ErrorUtilities.Wrap(ex, Protocol.authorization_expired);
+					throw new TokenEndpointProtocolException(ex);
 				}
 
 				var accessRequest = tokenRequest as AccessTokenRequestBase;
 				if (accessRequest != null) {
 					// Make sure the client sending us this token is the client we issued the token to.
-					ErrorUtilities.VerifyProtocol(string.Equals(accessRequest.ClientIdentifier, tokenRequest.AuthorizationDescription.ClientIdentifier, StringComparison.Ordinal), Protocol.incorrect_client_credentials);
+					AuthServerUtilities.TokenEndpointVerify(string.Equals(accessRequest.ClientIdentifier, tokenRequest.AuthorizationDescription.ClientIdentifier, StringComparison.Ordinal), Protocol.AccessTokenRequestErrorCodes.InvalidClient);
 
 					var scopedAccessRequest = accessRequest as ScopedAccessTokenRequest;
 					if (scopedAccessRequest != null) {
 						// Make sure the scope the client is requesting does not exceed the scope in the grant.
-						ErrorUtilities.VerifyProtocol(scopedAccessRequest.Scope.IsSubsetOf(tokenRequest.AuthorizationDescription.Scope), OAuthStrings.AccessScopeExceedsGrantScope, scopedAccessRequest.Scope, tokenRequest.AuthorizationDescription.Scope);
+						if (!scopedAccessRequest.Scope.IsSubsetOf(tokenRequest.AuthorizationDescription.Scope)) {
+							Logger.OAuth.ErrorFormat("The requested access scope (\"{0}\") exceeds the grant scope (\"{1}\").", scopedAccessRequest.Scope, tokenRequest.AuthorizationDescription.Scope);
+							throw new TokenEndpointProtocolException(Protocol.AccessTokenRequestErrorCodes.InvalidScope, AuthServerStrings.AccessScopeExceedsGrantScope);
+						}
 					}
 				}
 
 				// Make sure the authorization this token represents hasn't already been revoked.
-				ErrorUtilities.VerifyProtocol(this.AuthorizationServer.IsAuthorizationValid(tokenRequest.AuthorizationDescription), Protocol.authorization_expired);
+				if (!this.AuthorizationServer.IsAuthorizationValid(tokenRequest.AuthorizationDescription)) {
+					Logger.OAuth.Error("Rejecting access token request because the IAuthorizationServer.IsAuthorizationValid method returned false.");
+					throw new TokenEndpointProtocolException(Protocol.AccessTokenRequestErrorCodes.InvalidGrant);
+				}
 
 				return MessageProtections.None;
 			}

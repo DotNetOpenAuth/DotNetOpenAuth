@@ -63,7 +63,7 @@ namespace DotNetOpenAuth.OAuth2 {
 				if (message.ResponseType == EndUserAuthorizationResponseType.AuthorizationCode) {
 					// Clients with no secrets can only request implicit grant types.
 					var client = this.AuthorizationServerServices.GetClientOrThrow(message.ClientIdentifier);
-					ErrorUtilities.VerifyProtocol(!string.IsNullOrEmpty(client.Secret), Protocol.unauthorized_client);
+					ErrorUtilities.VerifyProtocol(!string.IsNullOrEmpty(client.Secret), Protocol.EndUserAuthorizationRequestErrorCodes.UnauthorizedClient);
 				}
 			}
 
@@ -113,10 +113,10 @@ namespace DotNetOpenAuth.OAuth2 {
 					// TODO: refreshToken should be set appropriately based on authorization server policy.
 					responseMessage = this.PrepareAccessTokenResponse(requestMessage);
 				} else {
-					responseMessage = new AccessTokenFailedResponse() {
-						Error = Protocol.AccessTokenRequestErrorCodes.InvalidRequest,
-					};
+					responseMessage = new AccessTokenFailedResponse() { Error = Protocol.AccessTokenRequestErrorCodes.InvalidRequest, };
 				}
+			} catch (TokenEndpointProtocolException ex) {
+				responseMessage = new AccessTokenFailedResponse() { Error = ex.Error, ErrorDescription = ex.Description, ErrorUri = ex.MoreInformation };
 			} catch (ProtocolException) {
 				responseMessage = new AccessTokenFailedResponse() {
 					Error = Protocol.AccessTokenRequestErrorCodes.InvalidRequest,

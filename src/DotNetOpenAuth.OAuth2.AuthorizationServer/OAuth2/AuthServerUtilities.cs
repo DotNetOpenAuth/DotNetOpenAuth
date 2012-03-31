@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OAuth2 {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
+	using System.Globalization;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
@@ -34,6 +35,20 @@ namespace DotNetOpenAuth.OAuth2 {
 				throw ErrorUtilities.Wrap(ex, OAuthStrings.ClientOrTokenSecretNotFound);
 			} catch (ArgumentException ex) {
 				throw ErrorUtilities.Wrap(ex, OAuthStrings.ClientOrTokenSecretNotFound);
+			}
+		}
+
+		/// <summary>
+		/// Verifies a condition is true or throws an exception describing the problem.
+		/// </summary>
+		/// <param name="condition">The condition that evaluates to true to avoid an exception.</param>
+		/// <param name="error">A single error code from <see cref="Protocol.AccessTokenRequestErrorCodes"/>.</param>
+		/// <param name="unformattedDescription">A human-readable UTF-8 encoded text providing additional information, used to assist the client developer in understanding the error that occurred.</param>
+		/// <param name="args">The formatting arguments to generate the actual description.</param>
+		internal static void TokenEndpointVerify(bool condition, string error, string unformattedDescription = null, params object[] args) {
+			if (!condition) {
+				string description = unformattedDescription != null ? string.Format(CultureInfo.CurrentCulture, unformattedDescription, args) : null;
+				throw new TokenEndpointProtocolException(error, description);
 			}
 		}
 	}

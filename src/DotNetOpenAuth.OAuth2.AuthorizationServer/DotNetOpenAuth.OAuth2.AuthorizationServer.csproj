@@ -19,6 +19,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="OAuth2\AuthorizationServer.cs" />
+    <Compile Include="OAuth2\AuthServerStrings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>AuthServerStrings.resx</DependentUpon>
+    </Compile>
     <Compile Include="OAuth2\AuthServerUtilities.cs" />
     <Compile Include="OAuth2\ChannelElements\AccessRequestBindingElement.cs" />
     <Compile Include="OAuth2\ChannelElements\AccessTokenBindingElement.cs" />
@@ -49,6 +54,12 @@
       <Project>{56459A6C-6BA2-4BAC-A9C0-27E3BD961FA6}</Project>
       <Name>DotNetOpenAuth.OAuth2</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="OAuth2\AuthServerStrings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AuthServerStrings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.targets" />
