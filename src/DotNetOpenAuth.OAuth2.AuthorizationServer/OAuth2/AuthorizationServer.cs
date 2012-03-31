@@ -175,7 +175,7 @@ namespace DotNetOpenAuth.OAuth2 {
 						authorizationRequest.ClientIdentifier,
 						authorizationRequest.Callback,
 						authCodeResponse.Scope,
-						authCodeResponse.AuthorizingUsername);
+						userName);
 					response = authCodeResponse;
 					break;
 				default:
