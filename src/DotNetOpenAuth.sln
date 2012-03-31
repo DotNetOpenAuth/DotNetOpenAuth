@@ -128,52 +128,12 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "InfoCardRelyingParty", "..\
 		TargetFrameworkMoniker = ".NETFramework,Version%3Dv3.5"
 		VWDPort = "59719"
 	EndProjectSection
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Debug.AspNetCompiler.FixedNames = "false"
-		Debug.AspNetCompiler.ForceOverwrite = "true"
-		Debug.AspNetCompiler.PhysicalPath = "..\samples\InfoCardRelyingParty\"
-		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\InfoCardRelyingParty\"
-		Debug.AspNetCompiler.Updateable = "true"
-		Debug.AspNetCompiler.VirtualPath = "/InfoCardRelyingParty"
-		DefaultWebSiteLanguage = "Visual Basic"
-		ProjectReferences = "{408D10B8-34BA-4CBD-B7AA-FEB1907ABA4C}|DotNetOpenAuth.InfoCard.dll;{60426312-6AE5-4835-8667-37EDEA670222}|DotNetOpenAuth.Core.dll;{173E7B8D-E751-46E2-A133-F72297C0D2F4}|DotNetOpenAuth.Core.UI.dll;{26DC877F-5987-48DD-9DDB-E62F2DE0E150}|Org.Mentalis.Security.Cryptography.dll;{F4CD3C04-6037-4946-B7A5-34BFC96A75D2}|Mono.Math.dll;{E040EB58-B4D2-457B-A023-AE6EF3BD34DE}|DotNetOpenAuth.InfoCard.UI.dll;"
-		Release.AspNetCompiler.Debug = "False"
-		Release.AspNetCompiler.FixedNames = "false"
-		Release.AspNetCompiler.ForceOverwrite = "true"
-		Release.AspNetCompiler.PhysicalPath = "..\samples\InfoCardRelyingParty\"
-		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\InfoCardRelyingParty\"
-		Release.AspNetCompiler.Updateable = "true"
-		Release.AspNetCompiler.VirtualPath = "/InfoCardRelyingParty"
-		StartServerOnDebug = "false"
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv3.5"
-		VWDPort = "59719"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIdRelyingPartyMvc", "..\samples\OpenIdRelyingPartyMvc\OpenIdRelyingPartyMvc.csproj", "{07B193F1-68AD-4E9C-98AF-BEFB5E9403CB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIdRelyingPartyWebForms", "..\samples\OpenIdRelyingPartyWebForms\OpenIdRelyingPartyWebForms.csproj", "{1E8AEA89-BF69-47A1-B290-E8B0FE588700}"
 EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "OpenIdRelyingPartyClassicAsp", "..\samples\OpenIdRelyingPartyClassicAsp\", "{BBACD972-014D-478F-9B07-56B9E1D4CC73}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Debug.AspNetCompiler.FixedNames = "false"
-		Debug.AspNetCompiler.ForceOverwrite = "true"
-		Debug.AspNetCompiler.PhysicalPath = "..\samples\OpenIdRelyingPartyClassicAsp\"
-		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\OpenIdRelyingPartyClassicAsp\"
-		Debug.AspNetCompiler.Updateable = "true"
-		Debug.AspNetCompiler.VirtualPath = "/OpenIdRelyingPartyClassicAsp"
-		Release.AspNetCompiler.Debug = "False"
-		Release.AspNetCompiler.FixedNames = "false"
-		Release.AspNetCompiler.ForceOverwrite = "true"
-		Release.AspNetCompiler.PhysicalPath = "..\samples\OpenIdRelyingPartyClassicAsp\"
-		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\OpenIdRelyingPartyClassicAsp\"
-		Release.AspNetCompiler.Updateable = "true"
-		Release.AspNetCompiler.VirtualPath = "/OpenIdRelyingPartyClassicAsp"
-		StartServerOnDebug = "false"
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv3.5"
-		VWDPort = "10318"
-	EndProjectSection
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Debug.AspNetCompiler.FixedNames = "false"
