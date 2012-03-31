@@ -195,10 +195,10 @@
       <Project>{3896A32A-E876-4C23-B9B8-78E17D134CD3}</Project>
       <Name>DotNetOpenAuth.OpenId</Name>
     </ProjectReference>
-    <ProjectReference Include="..\RelyingPartyDatabase\RelyingPartyDatabase.dbproj">
+    <ProjectReference Include="..\RelyingPartyDatabase\RelyingPartyDatabase.sqlproj">
       <Name>RelyingPartyDatabase</Name>
       <!-- Deploy the latest SQL script first, so that this project can embed the latest version. -->
-      <Targets>Build;Deploy</Targets>
+      <Targets>GetDeployScriptPath</Targets>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
   </ItemGroup>
@@ -222,6 +222,12 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <Target Name="CopySqlDeployScript">
+    <MSBuild Projects="..\RelyingPartyDatabase\RelyingPartyDatabase.sqlproj" Targets="GetDeployScriptPath">
+      <Output TaskParameter="TargetOutputs" PropertyName="SqlDeployScriptPath"/>
+    </MSBuild>
+    <Copy SourceFiles="$(SqlDeployScriptPath)" DestinationFiles="CreateDatabase.sql" />
+  </Target>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
@@ -230,5 +236,11 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))\EnlistmentInfo.targets" Condition=" '$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))' != '' " />
+	<PropertyGroup>
+		<PrepareResourceNamesDependsOn>
+			CopySqlDeployScript;
+			$(PrepareResourceNamesDependsOn)
+		</PrepareResourceNamesDependsOn>
+	</PropertyGroup>
+	<Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))\EnlistmentInfo.targets" Condition=" '$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))' != '' " />
 </Project>
