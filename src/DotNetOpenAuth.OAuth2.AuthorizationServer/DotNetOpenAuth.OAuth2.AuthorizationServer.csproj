@@ -25,7 +25,7 @@
       <DependentUpon>AuthServerStrings.resx</DependentUpon>
     </Compile>
     <Compile Include="OAuth2\AuthServerUtilities.cs" />
-    <Compile Include="OAuth2\ChannelElements\AccessRequestBindingElement.cs" />
+    <Compile Include="OAuth2\ChannelElements\TokenCodeSerializationBindingElement.cs" />
     <Compile Include="OAuth2\ChannelElements\AccessTokenBindingElement.cs" />
     <Compile Include="OAuth2\ChannelElements\AuthorizationCode.cs" />
     <Compile Include="OAuth2\ChannelElements\MessageValidationBindingElement.cs" />

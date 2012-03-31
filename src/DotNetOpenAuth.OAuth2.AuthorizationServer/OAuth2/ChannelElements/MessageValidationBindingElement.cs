@@ -17,6 +17,11 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	/// A guard for all messages to or from an Authorization Server to ensure that they are well formed,
 	/// have valid secrets, callback URIs, etc.
 	/// </summary>
+	/// <remarks>
+	/// This binding element also ensures that the code/token coming in is issued to
+	/// the same client that is sending the code/token and that the authorization has
+	/// not been revoked and that an access token has not expired.
+	/// </remarks>
 	internal class MessageValidationBindingElement : AuthServerBindingElementBase {
 		/// <summary>
 		/// Gets the protection commonly offered (if any) by this binding element.
@@ -72,13 +77,38 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			bool applied = false;
 
 			// Check that the client secret is correct for client authenticated messages.
+			var clientCredentialOnly = message as AccessTokenClientCredentialsRequest;
 			var authenticatedClientRequest = message as AuthenticatedClientRequestBase;
 			if (authenticatedClientRequest != null) {
 				var client = this.AuthorizationServer.GetClientOrThrow(authenticatedClientRequest.ClientIdentifier);
 				string secret = client.Secret;
 				AuthServerUtilities.TokenEndpointVerify(!string.IsNullOrEmpty(secret), Protocol.AccessTokenRequestErrorCodes.UnauthorizedClient); // an empty secret is not allowed for client authenticated calls.
 				AuthServerUtilities.TokenEndpointVerify(MessagingUtilities.EqualsConstantTime(secret, authenticatedClientRequest.ClientSecret), Protocol.AccessTokenRequestErrorCodes.InvalidClient, AuthServerStrings.ClientSecretMismatch);
+
+				if (clientCredentialOnly != null) {
+					clientCredentialOnly.CredentialsValidated = true;
+				}
+
 				applied = true;
+			}
+
+			// Check that any resource owner password credential is correct.
+			var resourceOwnerPasswordCarrier = message as AccessTokenResourceOwnerPasswordCredentialsRequest;
+			if (resourceOwnerPasswordCarrier != null) {
+				try {
+					if (this.AuthorizationServer.IsResourceOwnerCredentialValid(resourceOwnerPasswordCarrier.UserName, resourceOwnerPasswordCarrier.Password)) {
+						resourceOwnerPasswordCarrier.CredentialsValidated = true;
+					} else {
+						Logger.OAuth.ErrorFormat(
+							"Resource owner password credential for user \"{0}\" rejected by authorization server host.",
+							resourceOwnerPasswordCarrier.UserName);
+						throw new TokenEndpointProtocolException(Protocol.AccessTokenRequestErrorCodes.InvalidGrant, AuthServerStrings.InvalidResourceOwnerPasswordCredential);
+					}
+				} catch (NotSupportedException) {
+					throw new TokenEndpointProtocolException(Protocol.AccessTokenRequestErrorCodes.UnsupportedGrantType);
+				} catch (NotImplementedException) {
+					throw new TokenEndpointProtocolException(Protocol.AccessTokenRequestErrorCodes.UnsupportedGrantType);
+				}
 			}
 
 			// Check that authorization requests come with an acceptable callback URI.
@@ -95,6 +125,32 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			if (request != null) {
 				IAuthorizationCodeCarryingRequest tokenRequest = request;
 				tokenRequest.AuthorizationDescription.VerifyCallback(request.Callback);
+				applied = true;
+			}
+
+			var authCarrier = message as IAuthorizationCarryingRequest;
+			if (authCarrier != null) {
+				var accessRequest = authCarrier as AccessTokenRequestBase;
+				if (accessRequest != null) {
+					// Make sure the client sending us this token is the client we issued the token to.
+					AuthServerUtilities.TokenEndpointVerify(string.Equals(accessRequest.ClientIdentifier, authCarrier.AuthorizationDescription.ClientIdentifier, StringComparison.Ordinal), Protocol.AccessTokenRequestErrorCodes.InvalidClient);
+
+					var scopedAccessRequest = accessRequest as ScopedAccessTokenRequest;
+					if (scopedAccessRequest != null) {
+						// Make sure the scope the client is requesting does not exceed the scope in the grant.
+						if (!scopedAccessRequest.Scope.IsSubsetOf(authCarrier.AuthorizationDescription.Scope)) {
+							Logger.OAuth.ErrorFormat("The requested access scope (\"{0}\") exceeds the grant scope (\"{1}\").", scopedAccessRequest.Scope, authCarrier.AuthorizationDescription.Scope);
+							throw new TokenEndpointProtocolException(Protocol.AccessTokenRequestErrorCodes.InvalidScope, AuthServerStrings.AccessScopeExceedsGrantScope);
+						}
+					}
+				}
+
+				// Make sure the authorization this token represents hasn't already been revoked.
+				if (!this.AuthorizationServer.IsAuthorizationValid(authCarrier.AuthorizationDescription)) {
+					Logger.OAuth.Error("Rejecting access token request because the IAuthorizationServer.IsAuthorizationValid method returned false.");
+					throw new TokenEndpointProtocolException(Protocol.AccessTokenRequestErrorCodes.InvalidGrant);
+				}
+
 				applied = true;
 			}
 

@@ -59,30 +59,16 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 				}
 			}
 
-			AccessToken accessToken = null;
 			if (authCarryingRequest != null) {
 				ErrorUtilities.VerifyInternal(request != null, MessagingStrings.UnexpectedMessageReceived, typeof(IAccessTokenRequestInternal), request.GetType());
-				accessToken = new AccessToken(authCarryingRequest.AuthorizationDescription, accessTokenResponse.Lifetime);
+				accessTokenResponse.AuthorizationDescription = new AccessToken(authCarryingRequest.AuthorizationDescription, accessTokenResponse.Lifetime);
 			} else if (implicitGrantResponse != null) {
 				IAccessTokenCarryingRequest tokenCarryingResponse = implicitGrantResponse;
-				accessToken = new AccessToken(
+				accessTokenResponse.AuthorizationDescription = new AccessToken(
 					request.ClientIdentifier,
 					implicitGrantResponse.Scope,
 					implicitGrantResponse.AuthorizingUsername,
 					implicitGrantResponse.Lifetime);
-			}
-
-			if (accessToken != null) {
-				accessTokenResponse.AuthorizationDescription = accessToken;
-				var accessTokenFormatter = AccessToken.CreateFormatter(this.AuthorizationServer.AccessTokenSigningKey, request.AccessTokenCreationParameters.ResourceServerEncryptionKey);
-				accessTokenResponse.AccessToken = accessTokenFormatter.Serialize(accessToken);
-			}
-
-			var refreshTokenResponse = message as AccessTokenSuccessResponse;
-			if (refreshTokenResponse != null && refreshTokenResponse.HasRefreshToken) {
-				var refreshToken = new RefreshToken(authCarryingRequest.AuthorizationDescription);
-				var refreshTokenFormatter = RefreshToken.CreateFormatter(this.AuthorizationServer.CryptoKeyStore);
-				refreshTokenResponse.RefreshToken = refreshTokenFormatter.Serialize(refreshToken);
 			}
 
 			return null;
