@@ -38,17 +38,6 @@ namespace DotNetOpenAuth.OAuth2 {
 		INonceStore VerificationCodeNonceStore { get; }
 
 		/// <summary>
-		/// Gets the crypto service provider with the asymmetric private key to use for signing access tokens.
-		/// </summary>
-		/// <returns>A crypto service provider instance that contains the private key.</returns>
-		/// <value>Must not be null, and must contain the private key.</value>
-		/// <remarks>
-		/// The public key in the private/public key pair will be used by the resource
-		/// servers to validate that the access token is minted by a trusted authorization server.
-		/// </remarks>
-		RSACryptoServiceProvider AccessTokenSigningKey { get; }
-
-		/// <summary>
 		/// Obtains parameters to go into the formulation of an access token.
 		/// </summary>
 		/// <param name="accessTokenRequestMessage">Details regarding the resources that the access token will grant access to, and the identity of the client
@@ -130,21 +119,6 @@ namespace DotNetOpenAuth.OAuth2 {
 		INonceStore IAuthorizationServer.VerificationCodeNonceStore {
 			get {
 				Contract.Ensures(Contract.Result<INonceStore>() != null);
-				throw new NotImplementedException();
-			}
-		}
-
-		/// <summary>
-		/// Gets the crypto service provider with the asymmetric private key to use for signing access tokens.
-		/// </summary>
-		/// <value>
-		/// Must not be null, and must contain the private key.
-		/// </value>
-		/// <returns>A crypto service provider instance that contains the private key.</returns>
-		RSACryptoServiceProvider IAuthorizationServer.AccessTokenSigningKey {
-			get {
-				Contract.Ensures(Contract.Result<RSACryptoServiceProvider>() != null);
-				Contract.Ensures(!Contract.Result<RSACryptoServiceProvider>().PublicOnly);
 				throw new NotImplementedException();
 			}
 		}

@@ -37,6 +37,17 @@ namespace DotNetOpenAuth.OAuth2 {
 		public TimeSpan AccessTokenLifetime { get; set; }
 
 		/// <summary>
+		/// Gets the crypto service provider with the asymmetric private key to use for signing access tokens.
+		/// </summary>
+		/// <returns>A crypto service provider instance that contains the private key.</returns>
+		/// <value>Must not be null, and must contain the private key.</value>
+		/// <remarks>
+		/// The public key in the private/public key pair will be used by the resource
+		/// servers to validate that the access token is minted by a trusted authorization server.
+		/// </remarks>
+		public RSACryptoServiceProvider AccessTokenSigningKey { get; set; }
+
+		/// <summary>
 		/// Gets or sets the key to encrypt the access token.
 		/// </summary>
 		public RSACryptoServiceProvider ResourceServerEncryptionKey { get; set; }
@@ -70,6 +81,11 @@ namespace DotNetOpenAuth.OAuth2 {
 			if (disposing) {
 				if (this.ResourceServerEncryptionKey != null) {
 					IDisposable value = this.ResourceServerEncryptionKey;
+					value.Dispose();
+				}
+
+				if (this.AccessTokenSigningKey != null) {
+					IDisposable value = this.AccessTokenSigningKey;
 					value.Dispose();
 				}
 			}

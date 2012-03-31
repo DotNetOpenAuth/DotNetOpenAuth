@@ -11,8 +11,6 @@
 	using DotNetOpenAuth.OAuth2.Messages;
 
 	internal class OAuth2AuthorizationServer : IAuthorizationServer {
-		private static readonly RSACryptoServiceProvider AsymmetricTokenSigningPrivateKey = CreateRSA();
-
 #if SAMPLESONLY
 		/// <summary>
 		/// This is the FOR SAMPLE ONLY hard-coded public key of the complementary OAuthResourceServer sample.
@@ -41,10 +39,6 @@
 			get { return MvcApplication.KeyNonceStore; }
 		}
 
-		public RSACryptoServiceProvider AccessTokenSigningKey {
-			get { return AsymmetricTokenSigningPrivateKey; }
-		}
-
 		public AccessTokenParameters GetAccessTokenParameters(IAccessTokenRequest accessTokenRequestMessage) {
 			var parameters = new AccessTokenParameters();
 
@@ -63,6 +57,8 @@
 			// we'd look at the request message passed to us and decide which public key to return.
 			parameters.ResourceServerEncryptionKey = new RSACryptoServiceProvider();
 			parameters.ResourceServerEncryptionKey.ImportParameters(ResourceServerEncryptionPublicKey);
+
+			parameters.AccessTokenSigningKey = CreateRSA();
 
 			return parameters;
 		}
@@ -117,7 +113,7 @@
 		/// Creates the RSA key used by all the crypto service provider instances we create.
 		/// </summary>
 		/// <returns>RSA data that includes the private key.</returns>
-		private static RSAParameters CreateRSAKey() {
+		private static RSAParameters CreateAuthorizationServerSigningKey() {
 #if SAMPLESONLY
 			// Since the sample authorization server and the sample resource server must work together,
 			// we hard-code a FOR SAMPLE USE ONLY key pair.  The matching public key information is hard-coded into the OAuthResourceServer sample.
@@ -152,7 +148,7 @@
 
 		private static RSACryptoServiceProvider CreateRSA() {
 			var rsa = new RSACryptoServiceProvider();
-			rsa.ImportParameters(CreateRSAKey());
+			rsa.ImportParameters(CreateAuthorizationServerSigningKey());
 			return rsa;
 		}
 

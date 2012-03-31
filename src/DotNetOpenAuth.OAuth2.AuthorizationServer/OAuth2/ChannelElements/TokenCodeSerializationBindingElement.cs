@@ -71,7 +71,9 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			var accessTokenResponse = message as IAccessTokenIssuingResponse;
 			if (accessTokenResponse != null && accessTokenResponse.AuthorizationDescription != null) {
 				ErrorUtilities.VerifyInternal(request != null, "We should always have a direct request message for this case.");
-				var accessTokenFormatter = AccessToken.CreateFormatter(this.AuthorizationServer.AccessTokenSigningKey, request.AccessTokenCreationParameters.ResourceServerEncryptionKey);
+				var accessTokenFormatter = AccessToken.CreateFormatter(
+					request.AccessTokenCreationParameters.AccessTokenSigningKey,
+					request.AccessTokenCreationParameters.ResourceServerEncryptionKey);
 				accessTokenResponse.AccessToken = accessTokenFormatter.Serialize(accessTokenResponse.AuthorizationDescription);
 			}
 
