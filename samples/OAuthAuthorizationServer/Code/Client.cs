@@ -66,7 +66,7 @@
 		/// <returns><c>true</c> if the secret matches the one in the authorization server's record for the client; <c>false</c> otherwise.</returns>
 		/// <remarks>
 		/// All string equality checks, whether checking secrets or their hashes,
-		/// should be done using <see cref="MessagingUtilites.EqualsConstantTime"/> to mitigate timing attacks.
+		/// should be done using <see cref="MessagingUtilities.EqualsConstantTime"/> to mitigate timing attacks.
 		/// </remarks>
 		bool IClientDescription.IsValidClientSecret(string secret) {
 			return MessagingUtilities.EqualsConstantTime(secret, this.ClientSecret);
