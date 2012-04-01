@@ -23,14 +23,13 @@ namespace RelyingPartyLogic {
 			: base(authorizationServerPublicSigningKey, resourceServerPrivateEncryptionKey) {
 		}
 
-		public override bool TryValidateAccessToken(DotNetOpenAuth.Messaging.IDirectedProtocolMessage message, string accessToken, out string user, out HashSet<string> scope) {
-			bool result = base.TryValidateAccessToken(message, accessToken, out user, out scope);
-			if (result) {
-				// Ensure that clients coming in this way always belong to the oauth_client role.
-				scope.Add("oauth_client");
-			}
+		public override AccessToken DeserializeAccessToken(DotNetOpenAuth.Messaging.IDirectedProtocolMessage message, string accessToken) {
+			var token = base.DeserializeAccessToken(message, accessToken);
 
-			return result;
+			// Ensure that clients coming in this way always belong to the oauth_client role.
+			token.Scope.Add("oauth_client");
+
+			return token;
 		}
 	}
 }

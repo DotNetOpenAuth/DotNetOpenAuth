@@ -184,7 +184,6 @@ namespace DotNetOpenAuth.OAuth2 {
 					implicitGrantResponse.Lifetime = accessRequestInternal.AccessTokenCreationParameters.AccessTokenLifetime;
 					IAccessTokenCarryingRequest tokenCarryingResponse = implicitGrantResponse;
 					tokenCarryingResponse.AuthorizationDescription = new AccessToken(
-						authorizationRequest.ClientIdentifier,
 						implicitGrantResponse.Scope,
 						userName,
 						implicitGrantResponse.Lifetime);

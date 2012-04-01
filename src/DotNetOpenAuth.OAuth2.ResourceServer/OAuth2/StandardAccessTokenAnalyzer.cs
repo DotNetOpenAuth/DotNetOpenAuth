@@ -45,22 +45,13 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// Reads an access token to find out what data it authorizes access to.
 		/// </summary>
 		/// <param name="message">The message carrying the access token.</param>
-		/// <param name="accessToken">The access token.</param>
-		/// <param name="user">The user whose data is accessible with this access token.</param>
-		/// <param name="scope">The scope of access authorized by this access token.</param>
-		/// <returns>
-		/// A value indicating whether this access token is valid.
-		/// </returns>
-		/// <remarks>
-		/// This method also responsible to throw a <see cref="ProtocolException"/> or return
-		/// <c>false</c> when the access token is expired, invalid, or from an untrusted authorization server.
-		/// </remarks>
-		public virtual bool TryValidateAccessToken(IDirectedProtocolMessage message, string accessToken, out string user, out HashSet<string> scope) {
+		/// <param name="accessToken">The access token's serialized representation.</param>
+		/// <returns>The deserialized, validated token.</returns>
+		/// <exception cref="ProtocolException">Thrown if the access token is expired, invalid, or from an untrusted authorization server.</exception>
+		public virtual AccessToken DeserializeAccessToken(IDirectedProtocolMessage message, string accessToken) {
 			var accessTokenFormatter = AccessToken.CreateFormatter(this.AuthorizationServerPublicSigningKey, this.ResourceServerPrivateEncryptionKey);
 			var token = accessTokenFormatter.Deserialize(message, accessToken, Protocol.access_token);
-			user = token.User;
-			scope = new HashSet<string>(token.Scope, OAuthUtilities.ScopeStringComparer);
-			return true;
+			return token;
 		}
 	}
 }

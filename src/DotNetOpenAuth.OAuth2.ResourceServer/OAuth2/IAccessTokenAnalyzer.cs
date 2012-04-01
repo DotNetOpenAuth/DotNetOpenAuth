@@ -23,13 +23,12 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// Reads an access token to find out what data it authorizes access to.
 		/// </summary>
 		/// <param name="message">The message carrying the access token.</param>
-		/// <param name="accessToken">The access token.</param>
-		/// <param name="user">The user whose data is accessible with this access token.</param>
-		/// <param name="scope">The scope of access authorized by this access token.</param>
-		/// <returns>A value indicating whether this access token is valid.</returns>
+		/// <param name="accessToken">The access token's serialized representation.</param>
+		/// <returns>The deserialized, validated token.</returns>
+		/// <exception cref="ProtocolException">Thrown if the access token is expired, invalid, or from an untrusted authorization server.</exception>
 		[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "1#", Justification = "Try pattern")]
 		[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "2#", Justification = "Try pattern")]
-		bool TryValidateAccessToken(IDirectedProtocolMessage message, string accessToken, out string user, out HashSet<string> scope);
+		AccessToken DeserializeAccessToken(IDirectedProtocolMessage message, string accessToken);
 	}
 
 	/// <summary>
@@ -47,17 +46,13 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// Reads an access token to find out what data it authorizes access to.
 		/// </summary>
 		/// <param name="message">The message carrying the access token.</param>
-		/// <param name="accessToken">The access token.</param>
-		/// <param name="user">The user whose data is accessible with this access token.</param>
-		/// <param name="scope">The scope of access authorized by this access token.</param>
-		/// <returns>
-		/// A value indicating whether this access token is valid.
-		/// </returns>
-		bool IAccessTokenAnalyzer.TryValidateAccessToken(IDirectedProtocolMessage message, string accessToken, out string user, out HashSet<string> scope) {
+		/// <param name="accessToken">The access token's serialized representation.</param>
+		/// <returns>The deserialized, validated token.</returns>
+		/// <exception cref="ProtocolException">Thrown if the access token is expired, invalid, or from an untrusted authorization server.</exception>
+		AccessToken IAccessTokenAnalyzer.DeserializeAccessToken(IDirectedProtocolMessage message, string accessToken) {
 			Requires.NotNull(message, "message");
 			Requires.NotNullOrEmpty(accessToken, "accessToken");
-			Contract.Ensures(Contract.Result<bool>() == (Contract.ValueAtReturn<string>(out user) != null));
-
+			Contract.Ensures(Contract.Result<AccessToken>() != null);
 			throw new NotImplementedException();
 		}
 	}

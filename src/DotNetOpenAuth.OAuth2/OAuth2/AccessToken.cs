@@ -4,18 +4,19 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.OAuth2.ChannelElements {
+namespace DotNetOpenAuth.OAuth2 {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
 	using System.Security.Cryptography;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
+	using DotNetOpenAuth.OAuth2.ChannelElements;
 
 	/// <summary>
 	/// A short-lived token that accompanies HTTP requests to protected data to authorize the request.
 	/// </summary>
-	internal class AccessToken : AuthorizationDataBag {
+	public class AccessToken : AuthorizationDataBag {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AccessToken"/> class.
 		/// </summary>
@@ -40,14 +41,15 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AccessToken"/> class.
 		/// </summary>
-		/// <param name="clientIdentifier">The client identifier.</param>
 		/// <param name="scopes">The scopes.</param>
 		/// <param name="username">The username of the account that authorized this token.</param>
 		/// <param name="lifetime">The lifetime for this access token.</param>
-		internal AccessToken(string clientIdentifier, IEnumerable<string> scopes, string username, TimeSpan? lifetime) {
-			Requires.NotNullOrEmpty(clientIdentifier, "clientIdentifier");
-
-			this.ClientIdentifier = clientIdentifier;
+		/// <remarks>
+		/// The <see cref="ClientIdentifier.ClientIdentifier"/> is left <c>null</c> in this case because this constructor
+		/// is invoked in the case where the client is <em>not</em> authenticated, and therefore no
+		/// trust in the client_id is appropriate.
+		/// </remarks>
+		internal AccessToken(IEnumerable<string> scopes, string username, TimeSpan? lifetime) {
 			this.Scope.ResetContents(scopes);
 			this.User = username;
 			this.Lifetime = lifetime;
@@ -59,7 +61,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// </summary>
 		/// <value>The lifetime.</value>
 		[MessagePart(Encoder = typeof(TimespanSecondsEncoder))]
-		internal TimeSpan? Lifetime { get; set; }
+		public TimeSpan? Lifetime { get; set; }
 
 		/// <summary>
 		/// Creates a formatter capable of serializing/deserializing an access token.

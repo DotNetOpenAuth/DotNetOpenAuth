@@ -14,7 +14,7 @@ namespace DotNetOpenAuth.Messaging {
 	/// A collection of message parts that will be serialized into a single string,
 	/// to be set into a larger message.
 	/// </summary>
-	internal abstract class DataBag : IMessage {
+	public abstract class DataBag : IMessage {
 		/// <summary>
 		/// The default version for DataBags.
 		/// </summary>

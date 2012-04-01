@@ -13,7 +13,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	/// <summary>
 	/// A data bag that stores authorization data.
 	/// </summary>
-	internal abstract class AuthorizationDataBag : DataBag, IAuthorizationDescription {
+	public abstract class AuthorizationDataBag : DataBag, IAuthorizationDescription {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AuthorizationDataBag"/> class.
 		/// </summary>

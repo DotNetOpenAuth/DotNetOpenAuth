@@ -117,10 +117,16 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="ClientIdentifierLooksLikeResourceOwnerName" xml:space="preserve">
+    <value>Client Identifier starts with a resource owner prefix.  Authorization aborted.</value>
+  </data>
   <data name="InvalidAccessToken" xml:space="preserve">
     <value>Invalid access token.</value>
   </data>
   <data name="MissingAccessToken" xml:space="preserve">
     <value>Missing access token.</value>
+  </data>
+  <data name="ResourceOwnerNameLooksLikeClientIdentifier" xml:space="preserve">
+    <value>Resource owner username starts with a client prefix.  Authorization aborted.</value>
   </data>
 </root>
