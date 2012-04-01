@@ -24,7 +24,7 @@
 	<ItemGroup>
 		<ProjectTemplates Include="**\*.*proj" Exclude="$(MSBuildThisFile)" />
 
-		<ProjectReferencesToRemove Include="..\RelyingPartyDatabase\RelyingPartyDatabase.dbproj"/>
+		<ProjectReferencesToRemove Include="..\RelyingPartyDatabase\RelyingPartyDatabase.sqlproj"/>
 		<AssemblyReferencesToReplaceWith Include="REMOVE" />
 	</ItemGroup>
 
@@ -34,7 +34,7 @@
 
 	<Target Name="DeploySql">
 		<!-- This causes the SQL script that generates the database to be deployed to the RelyingPartyLogic class library. -->
-		<MSBuild Projects="RelyingPartyDatabase\RelyingPartyDatabase.dbproj" Targets="Build;Deploy" BuildInParallel="$(BuildInParallel)" />
+		<MSBuild Projects="RelyingPartyDatabase\RelyingPartyDatabase.sqlproj" Targets="Build" BuildInParallel="$(BuildInParallel)" />
 	</Target>
 
 	<Target Name="LayoutProjects">
