@@ -40,7 +40,7 @@ namespace RelyingPartyLogic {
 		/// Gets the authorization code nonce store to use to ensure that authorization codes can only be used once.
 		/// </summary>
 		/// <value>The authorization code nonce store.</value>
-		public INonceStore VerificationCodeNonceStore {
+		public INonceStore NonceStore {
 			get { return this.nonceStore; }
 		}
 

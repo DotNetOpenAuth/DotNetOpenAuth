@@ -35,7 +35,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// Gets the authorization code nonce store to use to ensure that authorization codes can only be used once.
 		/// </summary>
 		/// <value>The authorization code nonce store.</value>
-		INonceStore VerificationCodeNonceStore { get; }
+		INonceStore NonceStore { get; }
 
 		/// <summary>
 		/// Obtains parameters to go into the formulation of an access token.
@@ -116,7 +116,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// Gets the authorization code nonce store to use to ensure that authorization codes can only be used once.
 		/// </summary>
 		/// <value>The authorization code nonce store.</value>
-		INonceStore IAuthorizationServer.VerificationCodeNonceStore {
+		INonceStore IAuthorizationServer.NonceStore {
 			get {
 				Contract.Ensures(Contract.Result<INonceStore>() != null);
 				throw new NotImplementedException();

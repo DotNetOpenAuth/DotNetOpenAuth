@@ -79,7 +79,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 				encrypted: true,
 				compressed: false,
 				maximumAge: MaximumMessageAge,
-				decodeOnceOnly: authorizationServer.VerificationCodeNonceStore);
+				decodeOnceOnly: authorizationServer.NonceStore);
 		}
 
 		/// <summary>

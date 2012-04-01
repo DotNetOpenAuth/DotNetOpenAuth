@@ -35,7 +35,7 @@
 			get { return MvcApplication.KeyNonceStore; }
 		}
 
-		public INonceStore VerificationCodeNonceStore {
+		public INonceStore NonceStore {
 			get { return MvcApplication.KeyNonceStore; }
 		}
 
