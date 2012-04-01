@@ -237,7 +237,7 @@ namespace DotNetOpenAuth.OAuth2 {
 			// Since the request didn't include a callback URL, look up the callback from
 			// the client's preregistration with this authorization server.
 			Uri defaultCallback = client.DefaultCallback;
-			ErrorUtilities.VerifyProtocol(defaultCallback != null, OAuthStrings.NoCallback);
+			ErrorUtilities.VerifyProtocol(defaultCallback != null, AuthServerStrings.NoCallback);
 			return defaultCallback;
 		}
 

@@ -262,7 +262,7 @@ namespace DotNetOpenAuth.OAuth2 {
 			} else {
 				authorizationState.Delete();
 				string error = failedAccessTokenResponse != null ? failedAccessTokenResponse.Error : "(unknown)";
-				ErrorUtilities.ThrowProtocol(OAuthStrings.CannotObtainAccessTokenWithReason, error);
+				ErrorUtilities.ThrowProtocol(OAuth2Strings.CannotObtainAccessTokenWithReason, error);
 			}
 		}
 

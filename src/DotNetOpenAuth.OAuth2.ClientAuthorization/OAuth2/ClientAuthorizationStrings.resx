@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="RefreshTokenInappropriateForRequestType" xml:space="preserve">
+    <value>The request message type {0} should not be responded to with a refresh token.</value>
+  </data>
   <data name="TokenEndpointErrorFormat" xml:space="preserve">
     <value>The Authorization Server's token endpoint generated error {0}: '{1}'</value>
   </data>

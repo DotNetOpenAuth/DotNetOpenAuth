@@ -32,9 +32,9 @@ namespace DotNetOpenAuth.OAuth2 {
 				ErrorUtilities.VerifyHost(result != null, OAuthStrings.ResultShouldNotBeNull, authorizationServer.GetType().FullName, "GetClient(string)");
 				return result;
 			} catch (KeyNotFoundException ex) {
-				throw ErrorUtilities.Wrap(ex, OAuthStrings.ClientOrTokenSecretNotFound);
+				throw ErrorUtilities.Wrap(ex, AuthServerStrings.ClientOrTokenSecretNotFound);
 			} catch (ArgumentException ex) {
-				throw ErrorUtilities.Wrap(ex, OAuthStrings.ClientOrTokenSecretNotFound);
+				throw ErrorUtilities.Wrap(ex, AuthServerStrings.ClientOrTokenSecretNotFound);
 			}
 		}
 

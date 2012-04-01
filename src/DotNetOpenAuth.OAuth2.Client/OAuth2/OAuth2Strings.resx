@@ -127,7 +127,13 @@
     <value>Unexpected OAuth authorization response received with callback and client state that does not match an expected value.</value>
     <comment>The error message generated when detecting a mismatch between the state sent to the authorization server originally and what we got back with successful authorization, or that the user sessions were not identical between the two requests, suggesting XSRF or other attack on the user (victim).</comment>
   </data>
+  <data name="CannotObtainAccessTokenWithReason" xml:space="preserve">
+    <value>Failed to obtain access token.  Authorization Server reports reason: {0}</value>
+  </data>
   <data name="RequiredPropertyNotYetPreset" xml:space="preserve">
     <value>The property {0} must be set before this operation is allowed.</value>
+  </data>
+  <data name="UnexpectedResponseContentType" xml:space="preserve">
+    <value>Unexpected response Content-Type {0}</value>
   </data>
 </root>

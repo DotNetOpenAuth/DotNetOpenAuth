@@ -151,7 +151,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 
 			// Per OAuth 2.0 section 4.4.3 (draft 23), refresh tokens should never be included
 			// in a response to an access token request that used the client credential grant type.
-			ErrorUtilities.VerifyProtocol(!this.HasRefreshToken || !(this.OriginatingRequest is AccessTokenClientCredentialsRequest), OAuthStrings.RefreshTokenInappropriateForRequestType, this.OriginatingRequest.GetType().Name);
+			ErrorUtilities.VerifyProtocol(!this.HasRefreshToken || !(this.OriginatingRequest is AccessTokenClientCredentialsRequest), ClientAuthorizationStrings.RefreshTokenInappropriateForRequestType, this.OriginatingRequest.GetType().Name);
 		}
 	}
 }
