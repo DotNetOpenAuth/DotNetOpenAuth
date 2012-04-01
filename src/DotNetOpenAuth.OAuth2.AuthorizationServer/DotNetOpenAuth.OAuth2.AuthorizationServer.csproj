@@ -26,7 +26,6 @@
     </Compile>
     <Compile Include="OAuth2\AuthServerUtilities.cs" />
     <Compile Include="OAuth2\ChannelElements\TokenCodeSerializationBindingElement.cs" />
-    <Compile Include="OAuth2\ChannelElements\AccessTokenBindingElement.cs" />
     <Compile Include="OAuth2\ChannelElements\AuthorizationCode.cs" />
     <Compile Include="OAuth2\ChannelElements\MessageValidationBindingElement.cs" />
     <Compile Include="OAuth2\ChannelElements\AuthServerBindingElementBase.cs" />

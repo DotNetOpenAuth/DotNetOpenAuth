@@ -110,8 +110,21 @@ namespace DotNetOpenAuth.OAuth2 {
 			IProtocolMessage responseMessage;
 			try {
 				if (this.Channel.TryReadFromRequest(request, out requestMessage)) {
+					IAccessTokenRequestInternal accessRequestInternal = requestMessage;
+					accessRequestInternal.AccessTokenCreationParameters = this.AuthorizationServerServices.GetAccessTokenParameters(requestMessage);
+					ErrorUtilities.VerifyHost(accessRequestInternal.AccessTokenCreationParameters != null, "IAuthorizationServer.GetAccessTokenParameters must not return null.");
+
 					// TODO: refreshToken should be set appropriately based on authorization server policy.
-					responseMessage = this.PrepareAccessTokenResponse(requestMessage);
+					var successResponseMessage = this.PrepareAccessTokenResponse(requestMessage);
+					successResponseMessage.Lifetime = accessRequestInternal.AccessTokenCreationParameters.AccessTokenLifetime;
+
+					var authCarryingRequest = requestMessage as IAuthorizationCarryingRequest;
+					if (authCarryingRequest != null) {
+						IAccessTokenIssuingResponse accessTokenIssuingResponse = successResponseMessage;
+						accessTokenIssuingResponse.AuthorizationDescription = new AccessToken(authCarryingRequest.AuthorizationDescription, successResponseMessage.Lifetime);
+					}
+
+					responseMessage = successResponseMessage;
 				} else {
 					responseMessage = new AccessTokenFailedResponse() { Error = Protocol.AccessTokenRequestErrorCodes.InvalidRequest, };
 				}
@@ -165,13 +178,23 @@ namespace DotNetOpenAuth.OAuth2 {
 			EndUserAuthorizationSuccessResponseBase response;
 			switch (authorizationRequest.ResponseType) {
 				case EndUserAuthorizationResponseType.AccessToken:
-					var accessTokenResponse = new EndUserAuthorizationSuccessAccessTokenResponse(callback, authorizationRequest);
-					response = accessTokenResponse;
+					IAccessTokenRequestInternal accessRequestInternal = (EndUserAuthorizationImplicitRequest)authorizationRequest;
+					accessRequestInternal.AccessTokenCreationParameters = this.AuthorizationServerServices.GetAccessTokenParameters(accessRequestInternal);
+
+					var implicitGrantResponse = new EndUserAuthorizationSuccessAccessTokenResponse(callback, authorizationRequest);
+					IAccessTokenCarryingRequest tokenCarryingResponse = implicitGrantResponse;
+					tokenCarryingResponse.AuthorizationDescription = new AccessToken(
+						authorizationRequest.ClientIdentifier,
+						implicitGrantResponse.Scope,
+						implicitGrantResponse.AuthorizingUsername,
+						implicitGrantResponse.Lifetime);
+
+					response = implicitGrantResponse;
 					break;
 				case EndUserAuthorizationResponseType.AuthorizationCode:
 					var authCodeResponse = new EndUserAuthorizationSuccessAuthCodeResponseAS(callback, authorizationRequest);
-					IAuthorizationCodeCarryingRequest tokenCarryingResponse = authCodeResponse;
-					tokenCarryingResponse.AuthorizationDescription = new AuthorizationCode(
+					IAuthorizationCodeCarryingRequest codeCarryingResponse = authCodeResponse;
+					codeCarryingResponse.AuthorizationDescription = new AuthorizationCode(
 						authorizationRequest.ClientIdentifier,
 						authorizationRequest.Callback,
 						authCodeResponse.Scope,
@@ -224,7 +247,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="request">The request for an access token.</param>
 		/// <param name="includeRefreshToken">If set to <c>true</c>, the response will include a long-lived refresh token.</param>
 		/// <returns>The response message to send to the client.</returns>
-		private IDirectResponseProtocolMessage PrepareAccessTokenResponse(AccessTokenRequestBase request, bool includeRefreshToken = true) {
+		private AccessTokenSuccessResponse PrepareAccessTokenResponse(AccessTokenRequestBase request, bool includeRefreshToken = true) {
 			Requires.NotNull(request, "request");
 
 			if (includeRefreshToken) {
