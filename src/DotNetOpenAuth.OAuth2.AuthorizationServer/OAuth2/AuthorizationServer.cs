@@ -114,8 +114,7 @@ namespace DotNetOpenAuth.OAuth2 {
 					accessRequestInternal.AccessTokenCreationParameters = this.AuthorizationServerServices.GetAccessTokenParameters(requestMessage);
 					ErrorUtilities.VerifyHost(accessRequestInternal.AccessTokenCreationParameters != null, "IAuthorizationServer.GetAccessTokenParameters must not return null.");
 
-					// TODO: refreshToken should be set appropriately based on authorization server policy.
-					var successResponseMessage = this.PrepareAccessTokenResponse(requestMessage);
+					var successResponseMessage = this.PrepareAccessTokenResponse(requestMessage, accessRequestInternal.AccessTokenCreationParameters.IncludeRefreshToken);
 					successResponseMessage.Lifetime = accessRequestInternal.AccessTokenCreationParameters.AccessTokenLifetime;
 
 					var authCarryingRequest = requestMessage as IAuthorizationCarryingRequest;
