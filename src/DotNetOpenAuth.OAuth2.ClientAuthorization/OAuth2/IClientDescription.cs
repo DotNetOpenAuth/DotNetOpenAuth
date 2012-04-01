@@ -35,7 +35,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// Determines whether a callback URI included in a client's authorization request 
 		/// is among those allowed callbacks for the registered client.
 		/// </summary>
-		/// <param name="callback">The absolute URI the client has requested the authorization result be received at.</param>
+		/// <param name="callback">The absolute URI the client has requested the authorization result be received at.  Never null.</param>
 		/// <returns>
 		/// <c>true</c> if the callback URL is allowable for this client; otherwise, <c>false</c>.
 		/// </returns>

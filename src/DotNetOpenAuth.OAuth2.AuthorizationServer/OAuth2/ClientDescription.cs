@@ -16,11 +16,6 @@ namespace DotNetOpenAuth.OAuth2 {
 	/// </summary>
 	public class ClientDescription : IClientDescription {
 		/// <summary>
-		/// A delegate that determines whether the callback is allowed.
-		/// </summary>
-		private readonly Func<Uri, bool> isCallbackAllowed;
-
-		/// <summary>
 		/// The client's secret, if any.
 		/// </summary>
 		private readonly string secret;
@@ -32,12 +27,13 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="defaultCallback">The default callback.</param>
 		/// <param name="clientType">Type of the client.</param>
 		/// <param name="isCallbackAllowed">A delegate that determines whether the callback is allowed.</param>
-		public ClientDescription(string secret, Uri defaultCallback, ClientType clientType, Func<Uri, bool> isCallbackAllowed = null) {
+		public ClientDescription(string secret, Uri defaultCallback, ClientType clientType) {
 			this.secret = secret;
 			this.DefaultCallback = defaultCallback;
 			this.ClientType = clientType;
-			this.isCallbackAllowed = isCallbackAllowed;
 		}
+
+		#region IClientDescription Members
 
 		/// <summary>
 		/// Gets the callback to use when an individual authorization request
@@ -56,7 +52,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <summary>
 		/// Gets a value indicating whether a non-empty secret is registered for this client.
 		/// </summary>
-		public bool HasNonEmptySecret {
+		public virtual bool HasNonEmptySecret {
 			get { return !string.IsNullOrEmpty(this.secret); }
 		}
 
@@ -64,19 +60,16 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// Determines whether a callback URI included in a client's authorization request
 		/// is among those allowed callbacks for the registered client.
 		/// </summary>
-		/// <param name="callback">The absolute URI the client has requested the authorization result be received at.</param>
+		/// <param name="callback">The absolute URI the client has requested the authorization result be received at.  Never null.</param>
 		/// <returns>
 		///   <c>true</c> if the callback URL is allowable for this client; otherwise, <c>false</c>.
 		/// </returns>
-		public bool IsCallbackAllowed(Uri callback) {
-			if (this.isCallbackAllowed != null) {
-				return this.isCallbackAllowed(callback);
-			}
-
+		/// <remarks>
+		/// This method may be overridden to allow for several callbacks to match.
+		/// </remarks>
+		public virtual bool IsCallbackAllowed(Uri callback) {
 			return EqualityComparer<Uri>.Default.Equals(this.DefaultCallback, callback);
 		}
-
-		#region IClientDescription Members
 
 		/// <summary>
 		/// Checks whether the specified client secret is correct.
@@ -87,7 +80,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// All string equality checks, whether checking secrets or their hashes,
 		/// should be done using <see cref="MessagingUtilites.EqualsConstantTime"/> to mitigate timing attacks.
 		/// </remarks>
-		public bool IsValidClientSecret(string secret) {
+		public virtual bool IsValidClientSecret(string secret) {
 			Requires.NotNullOrEmpty(secret, "secret");
 
 			return MessagingUtilities.EqualsConstantTime(secret, this.secret);
