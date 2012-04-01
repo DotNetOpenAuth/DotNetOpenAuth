@@ -26,7 +26,6 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="secret">The secret.</param>
 		/// <param name="defaultCallback">The default callback.</param>
 		/// <param name="clientType">Type of the client.</param>
-		/// <param name="isCallbackAllowed">A delegate that determines whether the callback is allowed.</param>
 		public ClientDescription(string secret, Uri defaultCallback, ClientType clientType) {
 			this.secret = secret;
 			this.DefaultCallback = defaultCallback;
