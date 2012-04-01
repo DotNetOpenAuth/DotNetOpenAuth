@@ -15,11 +15,6 @@ namespace DotNetOpenAuth.OAuth2 {
 	[ContractClass(typeof(IClientDescriptionContract))]
 	public interface IClientDescription {
 		/// <summary>
-		/// Gets the client secret.
-		/// </summary>
-		string Secret { get; }
-
-		/// <summary>
 		/// Gets the callback to use when an individual authorization request
 		/// does not include an explicit callback URI.
 		/// </summary>
@@ -30,6 +25,11 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// Gets the type of the client.
 		/// </summary>
 		ClientType ClientType { get; }
+
+		/// <summary>
+		/// Gets a value indicating whether a non-empty secret is registered for this client.
+		/// </summary>
+		bool HasNonEmptySecret { get; }
 
 		/// <summary>
 		/// Determines whether a callback URI included in a client's authorization request 
@@ -56,6 +56,17 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </para>
 		/// </remarks>
 		bool IsCallbackAllowed(Uri callback);
+
+		/// <summary>
+		/// Checks whether the specified client secret is correct.
+		/// </summary>
+		/// <param name="secret">The secret obtained from the client.</param>
+		/// <returns><c>true</c> if the secret matches the one in the authorization server's record for the client; <c>false</c> otherwise.</returns>
+		/// <remarks>
+		/// All string equality checks, whether checking secrets or their hashes,
+		/// should be done using <see cref="MessagingUtilites.EqualsConstantTime"/> to mitigate timing attacks.
+		/// </remarks>
+		bool IsValidClientSecret(string secret);
 	}
 
 	/// <summary>
@@ -64,14 +75,6 @@ namespace DotNetOpenAuth.OAuth2 {
 	[ContractClassFor(typeof(IClientDescription))]
 	internal abstract class IClientDescriptionContract : IClientDescription {
 		#region IClientDescription Members
-
-		/// <summary>
-		/// Gets the client secret.
-		/// </summary>
-		/// <value></value>
-		string IClientDescription.Secret {
-			get { throw new NotImplementedException(); }
-		}
 
 		/// <summary>
 		/// Gets the type of the client.
@@ -95,6 +98,13 @@ namespace DotNetOpenAuth.OAuth2 {
 		}
 
 		/// <summary>
+		/// Gets a value indicating whether a non-empty secret is registered for this client.
+		/// </summary>
+		bool IClientDescription.HasNonEmptySecret {
+			get { throw new NotImplementedException(); }
+		}
+
+		/// <summary>
 		/// Determines whether a callback URI included in a client's authorization request
 		/// is among those allowed callbacks for the registered client.
 		/// </summary>
@@ -105,6 +115,20 @@ namespace DotNetOpenAuth.OAuth2 {
 		bool IClientDescription.IsCallbackAllowed(Uri callback) {
 			Requires.NotNull(callback, "callback");
 			Requires.True(callback.IsAbsoluteUri, "callback");
+			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		/// Checks whether the specified client secret is correct.
+		/// </summary>
+		/// <param name="secret">The secret obtained from the client.</param>
+		/// <returns><c>true</c> if the secret matches the one in the authorization server's record for the client; <c>false</c> otherwise.</returns>
+		/// <remarks>
+		/// All string equality checks, whether checking secrets or their hashes,
+		/// should be done using <see cref="MessagingUtilites.EqualsConstantTime"/> to mitigate timing attacks.
+		/// </remarks>
+		bool IClientDescription.IsValidClientSecret(string secret) {
+			Requires.NotNullOrEmpty(secret, "secret");
 			throw new NotImplementedException();
 		}
 

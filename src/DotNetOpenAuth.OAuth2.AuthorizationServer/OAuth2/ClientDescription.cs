@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.OAuth2 {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
+	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
 	/// A default implementation of the <see cref="IClientDescription"/> interface.
@@ -20,6 +21,11 @@ namespace DotNetOpenAuth.OAuth2 {
 		private readonly Func<Uri, bool> isCallbackAllowed;
 
 		/// <summary>
+		/// The client's secret, if any.
+		/// </summary>
+		private readonly string secret;
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="ClientDescription"/> class.
 		/// </summary>
 		/// <param name="secret">The secret.</param>
@@ -27,16 +33,11 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="clientType">Type of the client.</param>
 		/// <param name="isCallbackAllowed">A delegate that determines whether the callback is allowed.</param>
 		public ClientDescription(string secret, Uri defaultCallback, ClientType clientType, Func<Uri, bool> isCallbackAllowed = null) {
-			this.Secret = secret;
+			this.secret = secret;
 			this.DefaultCallback = defaultCallback;
 			this.ClientType = clientType;
 			this.isCallbackAllowed = isCallbackAllowed;
 		}
-
-		/// <summary>
-		/// Gets the client secret.
-		/// </summary>
-		public string Secret { get; private set; }
 
 		/// <summary>
 		/// Gets the callback to use when an individual authorization request
@@ -53,6 +54,13 @@ namespace DotNetOpenAuth.OAuth2 {
 		public ClientType ClientType { get; private set; }
 
 		/// <summary>
+		/// Gets a value indicating whether a non-empty secret is registered for this client.
+		/// </summary>
+		public bool HasNonEmptySecret {
+			get { return !string.IsNullOrEmpty(this.secret); }
+		}
+
+		/// <summary>
 		/// Determines whether a callback URI included in a client's authorization request
 		/// is among those allowed callbacks for the registered client.
 		/// </summary>
@@ -67,5 +75,24 @@ namespace DotNetOpenAuth.OAuth2 {
 
 			return EqualityComparer<Uri>.Default.Equals(this.DefaultCallback, callback);
 		}
+
+		#region IClientDescription Members
+
+		/// <summary>
+		/// Checks whether the specified client secret is correct.
+		/// </summary>
+		/// <param name="secret">The secret obtained from the client.</param>
+		/// <returns><c>true</c> if the secret matches the one in the authorization server's record for the client; <c>false</c> otherwise.</returns>
+		/// <remarks>
+		/// All string equality checks, whether checking secrets or their hashes,
+		/// should be done using <see cref="MessagingUtilites.EqualsConstantTime"/> to mitigate timing attacks.
+		/// </remarks>
+		public bool IsValidClientSecret(string secret) {
+			Requires.NotNullOrEmpty(secret, "secret");
+
+			return MessagingUtilities.EqualsConstantTime(secret, this.secret);
+		}
+
+		#endregion
 	}
 }

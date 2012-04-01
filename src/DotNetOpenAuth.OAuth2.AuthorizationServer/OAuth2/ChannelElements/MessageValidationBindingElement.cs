@@ -81,9 +81,8 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			var authenticatedClientRequest = message as AuthenticatedClientRequestBase;
 			if (authenticatedClientRequest != null) {
 				var client = this.AuthorizationServer.GetClientOrThrow(authenticatedClientRequest.ClientIdentifier);
-				string secret = client.Secret;
-				AuthServerUtilities.TokenEndpointVerify(!string.IsNullOrEmpty(secret), Protocol.AccessTokenRequestErrorCodes.UnauthorizedClient); // an empty secret is not allowed for client authenticated calls.
-				AuthServerUtilities.TokenEndpointVerify(MessagingUtilities.EqualsConstantTime(secret, authenticatedClientRequest.ClientSecret), Protocol.AccessTokenRequestErrorCodes.InvalidClient, AuthServerStrings.ClientSecretMismatch);
+				AuthServerUtilities.TokenEndpointVerify(client.HasNonEmptySecret, Protocol.AccessTokenRequestErrorCodes.UnauthorizedClient); // an empty secret is not allowed for client authenticated calls.
+				AuthServerUtilities.TokenEndpointVerify(client.IsValidClientSecret(authenticatedClientRequest.ClientSecret), Protocol.AccessTokenRequestErrorCodes.InvalidClient, AuthServerStrings.ClientSecretMismatch);
 
 				if (clientCredentialOnly != null) {
 					clientCredentialOnly.CredentialsValidated = true;
