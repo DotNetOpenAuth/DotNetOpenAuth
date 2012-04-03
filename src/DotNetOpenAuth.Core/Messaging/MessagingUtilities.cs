@@ -327,6 +327,19 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Gets the URL to the root of a web site, which may include a virtual directory path.
+		/// </summary>
+		/// <returns>An absolute URI.</returns>
+		internal static Uri GetWebRoot() {
+			HttpRequestBase requestInfo = new HttpRequestWrapper(HttpContext.Current.Request);
+			UriBuilder realmUrl = new UriBuilder(requestInfo.GetPublicFacingUrl());
+			realmUrl.Path = HttpContext.Current.Request.ApplicationPath;
+			realmUrl.Query = null;
+			realmUrl.Fragment = null;
+			return realmUrl.Uri;
+		}
+
+		/// <summary>
 		/// Clears any existing elements in a collection and fills the collection with a given set of values.
 		/// </summary>
 		/// <typeparam name="T">The type of value kept in the collection.</typeparam>

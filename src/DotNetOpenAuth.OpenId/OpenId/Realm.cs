@@ -126,11 +126,7 @@ namespace DotNetOpenAuth.OpenId {
 				Requires.ValidState(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
 				Contract.Ensures(Contract.Result<Realm>() != null);
 
-				HttpRequestBase requestInfo = new HttpRequestWrapper(HttpContext.Current.Request);
-				UriBuilder realmUrl = new UriBuilder(requestInfo.GetPublicFacingUrl());
-				realmUrl.Path = HttpContext.Current.Request.ApplicationPath;
-				realmUrl.Query = null;
-				realmUrl.Fragment = null;
+				var realmUrl = new UriBuilder(MessagingUtilities.GetWebRoot());
 
 				// For RP discovery, the realm url MUST NOT redirect.  To prevent this for 
 				// virtual directory hosted apps, we need to make sure that the realm path ends
