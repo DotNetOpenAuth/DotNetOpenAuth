@@ -104,7 +104,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "InfoCardRelyingParty", "..\
 		Release.AspNetCompiler.Updateable = "true"
 		Release.AspNetCompiler.VirtualPath = "/InfoCardRelyingParty"
 		StartServerOnDebug = "false"
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv3.5"
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
 		VWDPort = "59719"
 	EndProjectSection
 EndProject
