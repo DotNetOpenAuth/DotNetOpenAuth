@@ -6,6 +6,9 @@
 
 namespace DotNetOpenAuth.Test.OpenId.Provider {
 	using System;
+	using System.IO;
+	using System.Runtime.Serialization;
+	using System.Runtime.Serialization.Formatters.Binary;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Messages;
@@ -44,6 +47,27 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 			Assert.AreEqual(immediateRequest.ReturnTo, setupRequestMessage.ReturnTo);
 			Assert.AreEqual(immediateRequest.LocalIdentifier, setupRequestMessage.LocalIdentifier);
 			Assert.AreEqual(immediateRequest.Version, setupRequestMessage.Version);
+		}
+
+		/// <summary>
+		/// Verifies that the AuthenticationRequest method is serializable.
+		/// </summary>
+		[Test]
+		public void Serializable() {
+			OpenIdProvider provider = this.CreateProvider();
+			CheckIdRequest immediateRequest = new CheckIdRequest(Protocol.Default.Version, OPUri, DotNetOpenAuth.OpenId.AuthenticationRequestMode.Immediate);
+			immediateRequest.Realm = RPRealmUri;
+			immediateRequest.ReturnTo = RPUri;
+			immediateRequest.LocalIdentifier = "http://somebody";
+			AuthenticationRequest request = new AuthenticationRequest(provider, immediateRequest);
+
+			MemoryStream ms = new MemoryStream();
+			IFormatter formatter = new BinaryFormatter();
+			formatter.Serialize(ms, request);
+
+			ms.Position = 0;
+			var req2 = (AuthenticationRequest)formatter.Deserialize(ms);
+			Assert.That(req2, Is.Not.Null);
 		}
 	}
 }
