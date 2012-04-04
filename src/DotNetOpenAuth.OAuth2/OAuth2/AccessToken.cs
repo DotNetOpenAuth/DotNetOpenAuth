@@ -45,7 +45,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="username">The username of the account that authorized this token.</param>
 		/// <param name="lifetime">The lifetime for this access token.</param>
 		/// <remarks>
-		/// The <see cref="ClientIdentifier.ClientIdentifier"/> is left <c>null</c> in this case because this constructor
+		/// The <see cref="AuthorizationDataBag.ClientIdentifier"/> is left <c>null</c> in this case because this constructor
 		/// is invoked in the case where the client is <em>not</em> authenticated, and therefore no
 		/// trust in the client_id is appropriate.
 		/// </remarks>
