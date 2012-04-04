@@ -8,11 +8,12 @@
 		     so that these builds can be executed in parallel. -->
 		<ItemGroup>
 			<ProjectsToBuild Include="
-						 $(ProjectRoot)vsi\vsi.proj;
-						 $(ProjectRoot)vsix\vsix.proj;
-						 $(ProjectRoot)doc\doc.proj;
-						"/>
-			<ProjectsToBuild Include="$(ProjectRoot)samples\samples.proj" Condition=" '$(TargetFrameworkVersion)' != 'v4.0' " />
+							$(ProjectRoot)vsix\vsix.proj;
+							$(ProjectRoot)samples\samples.proj;
+							" Condition=" '$(TargetFrameworkVersion)' == 'v4.0' " />
+			<ProjectsToBuild Include="
+							$(ProjectRoot)doc\doc.proj;
+							" Condition=" '$(TargetFrameworkVersion)' == 'v3.5' " />
 		</ItemGroup>
 		<MSBuild BuildInParallel="$(BuildInParallel)"
 						 Projects="@(ProjectsToBuild)">

@@ -39,6 +39,9 @@
 		<AssemblyFolders Include="$(ProgramFiles)\Reference Assemblies\Microsoft\Framework\v3.0\*.dll" Condition="$(NetfxVer)>2.0"/>
 		<AssemblyFolders Include="$(WINDIR)\Microsoft.NET\Framework\v3.5\**\*.dll" Condition="$(NetfxVer)>3.0"/>
 		<AssemblyFolders Include="$(ProgramFiles)\Reference Assemblies\Microsoft\Framework\v3.5\*.dll" Condition="$(NetfxVer)>3.0"/>
+		<AssemblyFolders Include="$(WINDIR)\Microsoft.NET\Framework\v4.0.30319\**\*.dll" Condition="$(NetfxVer)>3.5"/>
+		<AssemblyFolders Include="$(MSBuildProgramFiles32)\Reference Assemblies\Microsoft\Framework\.NETCore\v4.0\*.dll" Condition="$(NetfxVer)>3.5"/>
+		<AssemblyFolders Include="$(MSBuildProgramFiles32)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\*.dll" Condition="$(NetfxVer)>3.5"/>
 	</ItemGroup>
 
 	<Target Name="CleanDocumentation">
