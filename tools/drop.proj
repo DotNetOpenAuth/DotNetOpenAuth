@@ -6,13 +6,16 @@
 	<Target Name="Layout" DependsOnTargets="BuildUnifiedProduct;ReSignDelaySignedAssemblies">
 		<!-- Note that we use an MSBuild task for these dependencies rather than individual DependsOnTargets entries
 		     so that these builds can be executed in parallel. -->
-		<MSBuild BuildInParallel="$(BuildInParallel)"
-						 Projects="
-						 $(ProjectRoot)samples\samples.proj;
+		<ItemGroup>
+			<ProjectsToBuild Include="
 						 $(ProjectRoot)vsi\vsi.proj;
 						 $(ProjectRoot)vsix\vsix.proj;
 						 $(ProjectRoot)doc\doc.proj;
-						 ">
+						"/>
+			<ProjectsToBuild Include="$(ProjectRoot)samples\samples.proj" Condition=" '$(TargetFrameworkVersion)' != 'v4.0' " />
+		</ItemGroup>
+		<MSBuild BuildInParallel="$(BuildInParallel)"
+						 Projects="@(ProjectsToBuild)">
 			<Output TaskParameter="TargetOutputs" ItemName="DropLayoutDependencies"/>
 		</MSBuild>
 		<PropertyGroup>

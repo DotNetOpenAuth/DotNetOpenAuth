@@ -7,28 +7,32 @@
 		<!--Removed from NightlyProjects until it can be fixed up. samples\tools.proj;-->
 		<NightlyProjects Include="
 										nuget\nuget.proj;
+										doc\doc.proj;
 										" />
 		<NightlyProjects Include="
 										tools\drop.proj;
 										 ">
-			<BuildOnlyOnClr2>true</BuildOnlyOnClr2>
+			<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
 		</NightlyProjects>
 		<NightlyProjects Include="
 										samples\samples.proj;
-										doc\doc.proj;
 										">
 			<Targets>DeployableArchive</Targets>
-			<BuildOnlyOnClr2>true</BuildOnlyOnClr2>
+			<TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
 		</NightlyProjects>
 
 		<ProjectsToClean Include="
-										 $(SolutionPath);
-										 projecttemplates\projecttemplates.proj;
-										 vsi\vsi.proj;
-										 vsix\vsix.proj;
-										 samples\samples.proj;
-										 doc\doc.proj;
-										 "/>
+		                          $(SolutionPath);
+		                          projecttemplates\projecttemplates.proj;
+		                          vsi\vsi.proj;
+		                          vsix\vsix.proj;
+		                          "/>
+		<ProjectsToClean Include="
+		                          samples\samples.proj;
+		                          doc\doc.proj;
+		                          ">
+			<TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+		</ProjectsToClean>
 
 		<DirectoriesToClean Include="
 			                           $(ProjectRoot)bin;
@@ -58,16 +62,23 @@
 	<Target Name="TouchUpProjectsForDualFrameworks">
 		<ItemGroup>
 			<!-- The point here is to duplicate all projects, once targeting each version of .NET that we support. -->
-			<NightlyProjects>
+			<NightlyProjects Condition=" '%(NightlyProjects.TargetFrameworkVersion)' != '' ">
+				<Properties>TargetFrameworkVersion=%(NightlyProjects.TargetFrameworkVersion)</Properties>
+			</NightlyProjects>
+			<NightlyProjects Condition=" '%(NightlyProjects.TargetFrameworkVersion)' == '' ">
 				<Properties>TargetFrameworkVersion=v3.5</Properties>
 			</NightlyProjects>
-			<NightlyProjects Include="@(NightlyProjects)" Condition=" '%(NightlyProjects.BuildOnlyOnClr2)' != 'true' ">
+			<NightlyProjects Include="@(NightlyProjects)" Condition=" '%(NightlyProjects.TargetFrameworkVersion)' == '' ">
 				<Properties>TargetFrameworkVersion=v4.0</Properties>
 			</NightlyProjects>
-			<ProjectsToClean>
+
+			<ProjectsToClean Condition=" '%(ProjectsToClean.TargetFrameworkVersion)' != '' ">
+				<Properties>TargetFrameworkVersion=%(ProjectsToClean.TargetFrameworkVersion)</Properties>
+			</ProjectsToClean>
+			<ProjectsToClean Condition=" '%(ProjectsToClean.TargetFrameworkVersion)' == '' ">
 				<Properties>TargetFrameworkVersion=v3.5</Properties>
 			</ProjectsToClean>
-			<ProjectsToClean Include="@(ProjectsToClean)">
+			<ProjectsToClean Include="@(ProjectsToClean)" Condition=" '%(ProjectsToClean.TargetFrameworkVersion)' == '' ">
 				<Properties>TargetFrameworkVersion=v4.0</Properties>
 			</ProjectsToClean>
 		</ItemGroup>
