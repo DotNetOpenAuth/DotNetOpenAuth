@@ -132,16 +132,10 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 								null,
 								str => str != null ? underlyingMapping.StringToValue(str) : null);
 						} else {
-							this.converter = new ValueMapping(
-								obj => obj != null ? obj.ToString() : null,
-								null,
-								str => str != null ? Convert.ChangeType(str, underlyingType, CultureInfo.InvariantCulture) : null);
+							this.converter = GetDefaultEncoder(underlyingType);
 						}
 					} else {
-						this.converter = new ValueMapping(
-							obj => obj != null ? obj.ToString() : null,
-							null,
-							str => str != null ? Convert.ChangeType(str, this.memberDeclaredType, CultureInfo.InvariantCulture) : null);
+						this.converter = GetDefaultEncoder(this.memberDeclaredType);
 					}
 				}
 			} else {
@@ -209,28 +203,6 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// </summary>
 		internal Type MemberDeclaredType {
 			get { return this.memberDeclaredType; }
-		}
-
-		/// <summary>
-		/// Adds a pair of type conversion functions to the static conversion map.
-		/// </summary>
-		/// <typeparam name="T">The custom type to convert to and from strings.</typeparam>
-		/// <param name="toString">The function to convert the custom type to a string.</param>
-		/// <param name="toOriginalString">The mapping function that converts some custom value to its original (non-normalized) string.  May be null if the same as the <paramref name="toString"/> function.</param>
-		/// <param name="toValue">The function to convert a string to the custom type.</param>
-		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Diagnostics.Contracts.__ContractsRuntime.Requires<System.ArgumentNullException>(System.Boolean,System.String,System.String)", Justification = "Code contracts"), SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "toString", Justification = "Code contracts"), SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "toValue", Justification = "Code contracts")]
-		internal static void Map<T>(Func<T, string> toString, Func<T, string> toOriginalString, Func<string, T> toValue) {
-			Requires.NotNull(toString, "toString");
-			Requires.NotNull(toValue, "toValue");
-
-			if (toOriginalString == null) {
-				toOriginalString = toString;
-			}
-
-			Func<object, string> safeToString = obj => obj != null ? toString((T)obj) : null;
-			Func<object, string> safeToOriginalString = obj => obj != null ? toOriginalString((T)obj) : null;
-			Func<string, object> safeToT = str => str != null ? toValue(str) : default(T);
-			converters.Add(typeof(T), new ValueMapping(safeToString, safeToOriginalString, safeToT));
 		}
 
 		/// <summary>
@@ -308,6 +280,60 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		}
 
 		/// <summary>
+		/// Adds a pair of type conversion functions to the static conversion map.
+		/// </summary>
+		/// <typeparam name="T">The custom type to convert to and from strings.</typeparam>
+		/// <param name="toString">The function to convert the custom type to a string.</param>
+		/// <param name="toOriginalString">The mapping function that converts some custom value to its original (non-normalized) string.  May be null if the same as the <paramref name="toString"/> function.</param>
+		/// <param name="toValue">The function to convert a string to the custom type.</param>
+		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Diagnostics.Contracts.__ContractsRuntime.Requires<System.ArgumentNullException>(System.Boolean,System.String,System.String)", Justification = "Code contracts"), SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "toString", Justification = "Code contracts"), SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "toValue", Justification = "Code contracts")]
+		private static void Map<T>(Func<T, string> toString, Func<T, string> toOriginalString, Func<string, T> toValue) {
+			Requires.NotNull(toString, "toString");
+			Requires.NotNull(toValue, "toValue");
+
+			if (toOriginalString == null) {
+				toOriginalString = toString;
+			}
+
+			Func<object, string> safeToString = obj => obj != null ? toString((T)obj) : null;
+			Func<object, string> safeToOriginalString = obj => obj != null ? toOriginalString((T)obj) : null;
+			Func<string, object> safeToT = str => str != null ? toValue(str) : default(T);
+			converters.Add(typeof(T), new ValueMapping(safeToString, safeToOriginalString, safeToT));
+		}
+
+		/// <summary>
+		/// Creates a <see cref="ValueMapping"/> that resorts to <see cref="object.ToString"/> and 
+		/// <see cref="Convert.ChangeType(object, Type, IFormatProvider)"/> for the conversion.
+		/// </summary>
+		/// <param name="type">The type to create the mapping for.</param>
+		/// <returns>The value mapping.</returns>
+		private static ValueMapping CreateFallbackMapping(Type type) {
+			Requires.NotNull(type, "type");
+
+			return new ValueMapping(
+				obj => obj != null ? obj.ToString() : null,
+				null,
+				str => str != null ? Convert.ChangeType(str, type, CultureInfo.InvariantCulture) : null);
+		}
+
+		/// <summary>
+		/// Creates the default encoder for a given type.
+		/// </summary>
+		/// <param name="type">The type to create a <see cref="ValueMapping"/> for.</param>
+		/// <returns>A <see cref="ValueMapping"/> struct.</returns>
+		private static ValueMapping GetDefaultEncoder(Type type) {
+			Requires.NotNull(type, "type");
+
+			var converterAttributes = (DefaultEncoderAttribute[])type.GetCustomAttributes(typeof(DefaultEncoderAttribute), false);
+			ErrorUtilities.VerifyInternal(converterAttributes.Length < 2, "Too many attributes applied.");
+			if (converterAttributes.Length == 1) {
+				return new ValueMapping(converterAttributes[0].Encoder);
+			}
+
+			return CreateFallbackMapping(type);
+		}
+
+		/// <summary>
 		/// Figures out the CLR default value for a given type.
 		/// </summary>
 		/// <param name="type">The type whose default value is being sought.</param>
@@ -347,11 +373,13 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			Contract.Ensures(Contract.Result<IMessagePartEncoder>() != null);
 
 			IMessagePartEncoder encoder;
-			if (!encoders.TryGetValue(messagePartEncoder, out encoder)) {
-				try {
-					encoder = encoders[messagePartEncoder] = (IMessagePartEncoder)Activator.CreateInstance(messagePartEncoder);
-				} catch (MissingMethodException ex) {
-					throw ErrorUtilities.Wrap(ex, MessagingStrings.EncoderInstantiationFailed, messagePartEncoder.FullName);
+			lock (encoders) {
+				if (!encoders.TryGetValue(messagePartEncoder, out encoder)) {
+					try {
+						encoder = encoders[messagePartEncoder] = (IMessagePartEncoder)Activator.CreateInstance(messagePartEncoder);
+					} catch (MissingMethodException ex) {
+						throw ErrorUtilities.Wrap(ex, MessagingStrings.EncoderInstantiationFailed, messagePartEncoder.FullName);
+					}
 				}
 			}
 
