@@ -19,23 +19,23 @@ namespace DotNetOpenAuth.Test.Messaging {
 	/// </summary>
 	[TestFixture]
 	public class MessageSerializerTests : MessagingTestBase {
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void SerializeNull() {
 			var serializer = MessageSerializer.Get(typeof(Mocks.TestMessage));
 			serializer.Serialize(null);
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentException))]
+		[Test, ExpectedException(typeof(ArgumentException))]
 		public void GetInvalidMessageType() {
 			MessageSerializer.Get(typeof(string));
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void GetNullType() {
 			MessageSerializer.Get(null);
 		}
 
-		[TestCase]
+		[Test]
 		public void SerializeTest() {
 			var serializer = MessageSerializer.Get(typeof(Mocks.TestMessage));
 			var message = GetStandardTestMessage(FieldFill.CompleteBeforeBindings);
@@ -83,7 +83,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			Assert.AreEqual(message.Timestamp, deserialized.Timestamp);
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void DeserializeNull() {
 			var serializer = MessageSerializer.Get(typeof(Mocks.TestMessage));
 			MessageSerializer.Deserialize(null, null);
@@ -153,7 +153,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			Assert.IsNull(actual.EmptyMember);
 		}
 
-		[TestCase, ExpectedException(typeof(ProtocolException))]
+		[Test, ExpectedException(typeof(ProtocolException))]
 		public void DeserializeInvalidMessage() {
 			IProtocolMessage message = new Mocks.TestDirectedMessage();
 			var serializer = MessageSerializer.Get(message.GetType());

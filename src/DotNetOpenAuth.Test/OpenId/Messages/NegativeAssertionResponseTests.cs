@@ -45,7 +45,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			Assert.IsFalse(new NegativeAssertionResponse(setupRequestV2).Immediate);
 		}
 
-		[TestCase, ExpectedException(typeof(ProtocolException))]
+		[Test, ExpectedException(typeof(ProtocolException))]
 		public void UserSetupUrlRequiredInV1Immediate() {
 			var immediateRequestV1 = new CheckIdRequest(Protocol.V10.Version, OPUri, AuthenticationRequestMode.Immediate);
 			immediateRequestV1.ReturnTo = RPUri;

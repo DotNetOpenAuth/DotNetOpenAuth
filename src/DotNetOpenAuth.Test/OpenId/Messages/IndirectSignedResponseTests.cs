@@ -125,12 +125,12 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			}
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void GetReturnToArgumentNullKey() {
 			this.response.GetReturnToArgument(null);
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentException))]
+		[Test, ExpectedException(typeof(ArgumentException))]
 		public void GetReturnToArgumentEmptyKey() {
 			this.response.GetReturnToArgument(string.Empty);
 		}

@@ -75,12 +75,12 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Assert.AreEqual(this.uri, ((UriIdentifier)id).Uri.AbsoluteUri);
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void ParseNull() {
 			Identifier.Parse(null);
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentException))]
+		[Test, ExpectedException(typeof(ArgumentException))]
 		public void ParseEmpty() {
 			Identifier.Parse(string.Empty);
 		}

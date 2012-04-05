@@ -26,22 +26,22 @@ namespace DotNetOpenAuth.Test.OpenId {
 			base.SetUp();
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNullUri() {
 			new UriIdentifier((Uri)null);
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNullString() {
 			new UriIdentifier((string)null);
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentException))]
+		[Test, ExpectedException(typeof(ArgumentException))]
 		public void CtorBlank() {
 			new UriIdentifier(string.Empty);
 		}
 
-		[TestCase, ExpectedException(typeof(UriFormatException))]
+		[Test, ExpectedException(typeof(UriFormatException))]
 		public void CtorBadUri() {
 			new UriIdentifier(this.badUri);
 		}
@@ -68,7 +68,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Assert.IsTrue(uri.IsDiscoverySecureEndToEnd);
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentException))]
+		[Test, ExpectedException(typeof(ArgumentException))]
 		public void CtorStringHttpSchemeSecure() {
 			new UriIdentifier("http://host/path", true);
 		}
@@ -80,7 +80,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Assert.IsTrue(uri.IsDiscoverySecureEndToEnd);
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentException))]
+		[Test, ExpectedException(typeof(ArgumentException))]
 		public void CtorUriHttpSchemeSecure() {
 			new UriIdentifier(new Uri("http://host/path"), true);
 		}
@@ -235,7 +235,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Assert.IsTrue(id.SchemeImplicitlyPrepended);
 		}
 
-		////[TestCase, Ignore("The spec says http:// must be prepended in this case, but that just creates an invalid URI.  Our UntrustedWebRequest will stop disallowed schemes.")]
+		////[Test, Ignore("The spec says http:// must be prepended in this case, but that just creates an invalid URI.  Our UntrustedWebRequest will stop disallowed schemes.")]
 		public void CtorDisallowedScheme() {
 			UriIdentifier id = new UriIdentifier(new Uri("ftp://host/path"));
 			Assert.AreEqual("http://ftp://host/path", id.ToString());

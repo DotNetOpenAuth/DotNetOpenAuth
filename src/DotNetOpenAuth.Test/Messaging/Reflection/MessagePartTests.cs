@@ -16,7 +16,7 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 
 	[TestFixture]
 	public class MessagePartTests : MessagingTestBase {
-		[TestCase, ExpectedException(typeof(ArgumentException))]
+		[Test, ExpectedException(typeof(ArgumentException))]
 		public void OptionalNonNullableStruct() {
 			this.ParameterizedMessageTypeTest(typeof(MessageWithNonNullableOptionalStruct));
 		}
@@ -41,12 +41,12 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 			this.ParameterizedMessageTypeTest(typeof(MessageWithNullableRequiredStruct));
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNullMember() {
 			new MessagePart(null, new MessagePartAttribute());
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNullAttribute() {
 			PropertyInfo field = typeof(MessageWithNullableOptionalStruct).GetProperty("OptionalInt", BindingFlags.NonPublic | BindingFlags.Instance);
 			new MessagePart(field, null);
@@ -87,14 +87,14 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 			Assert.AreEqual("abc", part.GetValue(message));
 		}
 
-		[TestCase, ExpectedException(typeof(ProtocolException))]
+		[Test, ExpectedException(typeof(ProtocolException))]
 		public void ConstantFieldMemberInvalidValues() {
 			var message = new MessageWithConstantField();
 			MessagePart part = GetMessagePart(message.GetType(), "ConstantField");
 			part.SetValue(message, "def");
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentException))]
+		[Test, ExpectedException(typeof(ArgumentException))]
 		public void NonFieldOrPropertyMember() {
 			MemberInfo method = typeof(MessageWithNullableOptionalStruct).GetMethod("Equals", BindingFlags.Public | BindingFlags.Instance);
 			new MessagePart(method, new MessagePartAttribute());

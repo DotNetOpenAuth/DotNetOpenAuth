@@ -194,7 +194,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// Verifies that authentication requests are generated first for OPs that respond
 		/// to authentication requests.
 		/// </summary>
-		[TestCase, Ignore("Not yet implemented")]
+		[Test, Ignore("Not yet implemented")]
 		public void UnresponsiveProvidersComeLast() {
 			// TODO: code here
 			Assert.Inconclusive("Not yet implemented.");

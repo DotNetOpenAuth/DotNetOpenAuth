@@ -49,7 +49,7 @@ namespace DotNetOpenAuth.Test.OpenId.DiscoveryServices {
 			Assert.AreEqual(1, this.Discover(userSuppliedIdentifier).Count());
 		}
 
-		[TestCase, ExpectedException(typeof(ProtocolException))]
+		[Test, ExpectedException(typeof(ProtocolException))]
 		public void DiscoverRequireSslWithInsecureRedirect() {
 			Identifier claimedId = this.GetMockIdentifier(ProtocolVersion.V20, true);
 

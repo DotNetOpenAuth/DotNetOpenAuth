@@ -58,7 +58,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			this.request.EnsureValidMessage();
 		}
 
-		[TestCase, ExpectedException(typeof(ProtocolException))]
+		[Test, ExpectedException(typeof(ProtocolException))]
 		public void InvalidMessageTest() {
 			this.request = new AssociateUnencryptedRequest(Protocol.V20.Version, this.insecureRecipient);
 			this.request.AssociationType = this.protocol.Args.SignatureAlgorithm.HMAC_SHA1;

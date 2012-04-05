@@ -62,7 +62,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// Verifies that discovery verification of a positive assertion cannot match a dual identifier
 		/// if the default settings are in place.
 		/// </summary>
-		[TestCase, ExpectedException(typeof(ProtocolException))]
+		[Test, ExpectedException(typeof(ProtocolException))]
 		public void DualIdentifierNoMatchInAssertionVerificationByDefault() {
 			PositiveAssertionResponse assertion = this.GetPositiveAssertion(true);
 			ClaimsResponse extension = new ClaimsResponse();
@@ -76,7 +76,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// makes up a claimed Id that was not part of the original request, and 
 		/// that the OP has no authority to assert positively regarding.
 		/// </summary>
-		[TestCase, ExpectedException(typeof(ProtocolException))]
+		[Test, ExpectedException(typeof(ProtocolException))]
 		public void SpoofedClaimedIdDetectionSolicited() {
 			PositiveAssertionResponse assertion = this.GetPositiveAssertion();
 			assertion.ProviderEndpoint = new Uri("http://rogueOP");
@@ -89,7 +89,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// Verifies that the RP rejects positive assertions with HTTP Claimed
 		/// Cdentifiers when RequireSsl is set to true.
 		/// </summary>
-		[TestCase, ExpectedException(typeof(ProtocolException))]
+		[Test, ExpectedException(typeof(ProtocolException))]
 		public void InsecureIdentifiersRejectedWithRequireSsl() {
 			PositiveAssertionResponse assertion = this.GetPositiveAssertion();
 			var rp = CreateRelyingParty();

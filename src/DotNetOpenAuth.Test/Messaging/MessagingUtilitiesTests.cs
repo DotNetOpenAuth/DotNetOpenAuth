@@ -32,7 +32,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			Assert.AreEqual(0, MessagingUtilities.CreateQueryString(new Dictionary<string, string>()).Length);
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void CreateQueryStringNullDictionary() {
 			MessagingUtilities.CreateQueryString(null);
 		}
@@ -51,7 +51,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			Assert.AreEqual("http://baseline.org/page?a=b&c%2Fd=e%2Ff&g=h", uri.Uri.AbsoluteUri);
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void AppendQueryArgsNullUriBuilder() {
 			MessagingUtilities.AppendQueryArgs(null, new Dictionary<string, string>());
 		}
@@ -73,7 +73,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			Assert.AreEqual(nvc["c"], actual["c"]);
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentException))]
+		[Test, ExpectedException(typeof(ArgumentException))]
 		public void ToDictionaryWithNullKey() {
 			NameValueCollection nvc = new NameValueCollection();
 			nvc[null] = "a";
@@ -96,17 +96,17 @@ namespace DotNetOpenAuth.Test.Messaging {
 			Assert.IsNull(MessagingUtilities.ToDictionary(null));
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void ApplyHeadersToResponseNullAspNetResponse() {
 			MessagingUtilities.ApplyHeadersToResponse(new WebHeaderCollection(), (HttpResponseBase)null);
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void ApplyHeadersToResponseNullListenerResponse() {
 			MessagingUtilities.ApplyHeadersToResponse(new WebHeaderCollection(), (HttpListenerResponse)null);
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void ApplyHeadersToResponseNullHeaders() {
 			MessagingUtilities.ApplyHeadersToResponse(null, new HttpResponseWrapper(new HttpResponse(new StringWriter())));
 		}
@@ -192,7 +192,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 		/// <summary>
 		/// Verifies proper behavior of GetHttpVerb on invalid input.
 		/// </summary>
-		[TestCase, ExpectedException(typeof(ArgumentException))]
+		[Test, ExpectedException(typeof(ArgumentException))]
 		public void GetHttpVerbOutOfRangeTest() {
 			MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.PutRequest | HttpDeliveryMethods.PostRequest);
 		}
@@ -212,7 +212,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 		/// <summary>
 		/// Verifies proper behavior of GetHttpDeliveryMethod for an unexpected input
 		/// </summary>
-		[TestCase, ExpectedException(typeof(ArgumentException))]
+		[Test, ExpectedException(typeof(ArgumentException))]
 		public void GetHttpDeliveryMethodOutOfRangeTest() {
 			MessagingUtilities.GetHttpDeliveryMethod("UNRECOGNIZED");
 		}
@@ -249,7 +249,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 		/// <summary>
 		/// Verifies that EqualsConstantTime actually has the same execution time regardless of how well a value matches.
 		/// </summary>
-		[TestCase, Category("Performance")]
+		[Test, Category("Performance")]
 		public void EqualsConstantTimeIsActuallyConstantTime() {
 			string expected = new string('A', 5000);
 			string totalmismatch = new string('B', 5000);
