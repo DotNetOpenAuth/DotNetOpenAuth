@@ -18,10 +18,10 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="OAuth2\OAuth2Strings.Designer.cs">
+    <Compile Include="OAuth2\ClientStrings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>OAuth2Strings.resx</DependentUpon>
+      <DependentUpon>ClientStrings.resx</DependentUpon>
     </Compile>
     <Compile Include="OAuth2\UserAgentClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -39,9 +39,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="OAuth2\OAuth2Strings.resx">
+    <EmbeddedResource Include="OAuth2\ClientStrings.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>OAuth2Strings.Designer.cs</LastGenOutput>
+      <LastGenOutput>ClientStrings.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

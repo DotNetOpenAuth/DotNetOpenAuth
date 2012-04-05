@@ -82,9 +82,9 @@ namespace DotNetOpenAuth.OAuth2 {
 						return null;
 					}
 
-					throw ErrorUtilities.ThrowProtocol(OAuth2Strings.InvalidAccessToken);
+					throw ErrorUtilities.ThrowProtocol(ResourceServerStrings.InvalidAccessToken);
 				} else {
-					var response = new UnauthorizedResponse(new ProtocolException(OAuth2Strings.MissingAccessToken));
+					var response = new UnauthorizedResponse(new ProtocolException(ResourceServerStrings.MissingAccessToken));
 
 					userName = null;
 					scope = null;
