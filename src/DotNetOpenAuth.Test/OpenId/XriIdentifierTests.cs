@@ -22,17 +22,17 @@ namespace DotNetOpenAuth.Test.OpenId {
 			base.SetUp();
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNull() {
 			new XriIdentifier(null);
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentException))]
+		[Test, ExpectedException(typeof(ArgumentException))]
 		public void CtorBlank() {
 			new XriIdentifier(string.Empty);
 		}
 
-		[TestCase, ExpectedException(typeof(FormatException))]
+		[Test, ExpectedException(typeof(FormatException))]
 		public void CtorBadXri() {
 			new XriIdentifier(this.badXri);
 		}
@@ -88,7 +88,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Assert.IsTrue(new XriIdentifier(this.goodXri).Equals(this.goodXri));
 		}
 
-		[TestCase, Ignore("XRI parsing and normalization is not implemented (yet).")]
+		[Test, Ignore("XRI parsing and normalization is not implemented (yet).")]
 		public void NormalizeCase() {
 			Identifier id = "=!9B72.7dd1.50a9.5ccd";
 			Assert.AreEqual("=!9B72.7DD1.50A9.5CCD", id.ToString());

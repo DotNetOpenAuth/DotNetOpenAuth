@@ -59,18 +59,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private readonly IdentifierDiscoveryServices discoveryServices;
 
 		/// <summary>
-		/// A type initializer that ensures that another type initializer runs in order to guarantee that
-		/// types are serializable.
-		/// </summary>
-		private static Identifier dummyIdentifierToInvokeStaticCtor = "http://localhost/";
-
-		/// <summary>
-		/// A type initializer that ensures that another type initializer runs in order to guarantee that
-		/// types are serializable.
-		/// </summary>
-		private static Realm dummyRealmToInvokeStaticCtor = "http://localhost/";
-
-		/// <summary>
 		/// Backing field for the <see cref="NonVerifyingRelyingParty"/> property.
 		/// </summary>
 		private OpenIdRelyingParty nonVerifyingRelyingParty;

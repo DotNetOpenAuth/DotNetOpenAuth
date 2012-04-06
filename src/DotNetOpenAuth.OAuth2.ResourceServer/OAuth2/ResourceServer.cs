@@ -93,12 +93,12 @@ namespace DotNetOpenAuth.OAuth2 {
 					ErrorUtilities.VerifyHost(accessToken != null, "IAccessTokenAnalyzer.DeserializeAccessToken returned a null reslut.");
 					if (string.IsNullOrEmpty(accessToken.User) && string.IsNullOrEmpty(accessToken.ClientIdentifier)) {
 						Logger.OAuth.Error("Access token rejected because both the username and client id properties were null or empty.");
-						ErrorUtilities.ThrowProtocol(OAuth2Strings.InvalidAccessToken);
+						ErrorUtilities.ThrowProtocol(ResourceServerStrings.InvalidAccessToken);
 					}
 
 					return null;
 				} else {
-					var response = new UnauthorizedResponse(new ProtocolException(OAuth2Strings.MissingAccessToken));
+					var response = new UnauthorizedResponse(new ProtocolException(ResourceServerStrings.MissingAccessToken));
 
 					accessToken = null;
 					return this.Channel.PrepareResponse(response);
@@ -126,8 +126,8 @@ namespace DotNetOpenAuth.OAuth2 {
 			if (result == null) {
 				// Mitigates attacks on this approach of differentiating clients from resource owners
 				// by checking that a username doesn't look suspiciously engineered to appear like the other type.
-				ErrorUtilities.VerifyProtocol(accessToken.User == null || string.IsNullOrEmpty(this.ClientPrincipalPrefix) || !accessToken.User.StartsWith(this.ClientPrincipalPrefix, StringComparison.OrdinalIgnoreCase), OAuth2Strings.ResourceOwnerNameLooksLikeClientIdentifier);
-				ErrorUtilities.VerifyProtocol(accessToken.ClientIdentifier == null || string.IsNullOrEmpty(this.ResourceOwnerPrincipalPrefix) || !accessToken.ClientIdentifier.StartsWith(this.ResourceOwnerPrincipalPrefix, StringComparison.OrdinalIgnoreCase), OAuth2Strings.ClientIdentifierLooksLikeResourceOwnerName);
+				ErrorUtilities.VerifyProtocol(accessToken.User == null || string.IsNullOrEmpty(this.ClientPrincipalPrefix) || !accessToken.User.StartsWith(this.ClientPrincipalPrefix, StringComparison.OrdinalIgnoreCase), ResourceServerStrings.ResourceOwnerNameLooksLikeClientIdentifier);
+				ErrorUtilities.VerifyProtocol(accessToken.ClientIdentifier == null || string.IsNullOrEmpty(this.ResourceOwnerPrincipalPrefix) || !accessToken.ClientIdentifier.StartsWith(this.ResourceOwnerPrincipalPrefix, StringComparison.OrdinalIgnoreCase), ResourceServerStrings.ClientIdentifierLooksLikeResourceOwnerName);
 
 				string principalUserName = !string.IsNullOrEmpty(accessToken.User)
 					? this.ResourceOwnerPrincipalPrefix + accessToken.User

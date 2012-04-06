@@ -51,7 +51,7 @@ namespace DotNetOpenAuth.Test.OAuth {
 		/// Verifies that oauth parameters are not allowed in <see cref="ServiceProvider.RequestTokenUri"/>,
 		/// per section OAuth 1.0 section 4.1.
 		/// </summary>
-		[TestCase, ExpectedException(typeof(ArgumentException))]
+		[Test, ExpectedException(typeof(ArgumentException))]
 		public void RequestTokenUriWithOAuthParametersTest() {
 			var target = new ServiceProviderDescription();
 			target.RequestTokenEndpoint = new MessageReceivingEndpoint("http://localhost/requesttoken?oauth_token=something", HttpDeliveryMethods.GetRequest);

@@ -13,7 +13,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 
 	[TestFixture]
 	public class ResponseTests : TestBase {
-		[TestCase, ExpectedException(typeof(InvalidOperationException))]
+		[Test, ExpectedException(typeof(InvalidOperationException))]
 		public void RespondWithoutAspNetContext() {
 			HttpContext.Current = null;
 			new OutgoingWebResponse().Respond();

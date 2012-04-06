@@ -32,7 +32,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			this.response = new NegativeAuthenticationResponse(this.responseMessage);
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNull() {
 			new NegativeAuthenticationResponse(null);
 		}

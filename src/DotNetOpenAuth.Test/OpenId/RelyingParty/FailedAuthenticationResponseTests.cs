@@ -27,7 +27,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			this.response = new FailedAuthenticationResponse(this.exception);
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNull() {
 			new FailedAuthenticationResponse(null);
 		}

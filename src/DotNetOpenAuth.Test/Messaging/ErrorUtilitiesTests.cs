@@ -11,7 +11,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 
 	[TestFixture]
 	public class ErrorUtilitiesTests {
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void VerifyArgumentNotNullThrows() {
 			ErrorUtilities.VerifyArgumentNotNull(null, "someArg");
 		}
@@ -21,12 +21,12 @@ namespace DotNetOpenAuth.Test.Messaging {
 			ErrorUtilities.VerifyArgumentNotNull("hi", "someArg");
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void VerifyNonZeroLengthOnNull() {
 			ErrorUtilities.VerifyNonZeroLength(null, "someArg");
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentException))]
+		[Test, ExpectedException(typeof(ArgumentException))]
 		public void VerifyNonZeroLengthOnEmpty() {
 			ErrorUtilities.VerifyNonZeroLength(string.Empty, "someArg");
 		}

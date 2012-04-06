@@ -41,17 +41,17 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 			this.channel.WebRequestHandler = this.webRequestHandler;
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentException))]
+		[Test, ExpectedException(typeof(ArgumentException))]
 		public void CtorNullSigner() {
 			new OAuthConsumerChannel(null, this.nonceStore, new InMemoryTokenManager(), this.consumerSecuritySettings, new TestMessageFactory());
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNullStore() {
 			new OAuthConsumerChannel(new RsaSha1ServiceProviderSigningBindingElement(new InMemoryTokenManager()), null, new InMemoryTokenManager(), this.consumerSecuritySettings, new TestMessageFactory());
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNullTokenManager() {
 			new OAuthConsumerChannel(new RsaSha1ServiceProviderSigningBindingElement(new InMemoryTokenManager()), this.nonceStore, null, this.consumerSecuritySettings, new TestMessageFactory());
 		}
@@ -157,18 +157,18 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 			}
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void RequestNull() {
 			this.channel.Request(null);
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentException))]
+		[Test, ExpectedException(typeof(ArgumentException))]
 		public void RequestNullRecipient() {
 			IDirectedProtocolMessage message = new TestDirectedMessage(MessageTransport.Direct);
 			this.channel.Request(message);
 		}
 
-		[TestCase, ExpectedException(typeof(NotSupportedException))]
+		[Test, ExpectedException(typeof(NotSupportedException))]
 		public void RequestBadPreferredScheme() {
 			TestDirectedMessage message = new TestDirectedMessage(MessageTransport.Direct);
 			message.Recipient = new Uri("http://localtest");

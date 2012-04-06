@@ -6,7 +6,10 @@
 
 namespace DotNetOpenAuth.Test {
 	using System;
+	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.OpenId;
+	using DotNetOpenAuth.Test.Mocks;
 	using NUnit.Framework;
 
 	[TestFixture]
@@ -206,6 +209,20 @@ namespace DotNetOpenAuth.Test {
 			Assert.AreNotEqual(testRealm1a, null);
 			Assert.AreNotEqual(testRealm1a, testRealm1a.ToString(), "Although the URLs are equal, different object types shouldn't be equal.");
 			Assert.AreNotEqual(testRealm3, testRealm1a, "Wildcard difference ignored by Equals");
+		}
+
+		[Test]
+		public void MessagePartConvertibility() {
+			var message = new MessageWithRealm();
+			var messageDescription = new MessageDescription(message.GetType(), new Version(1, 0));
+			var messageDictionary = new MessageDictionary(message, messageDescription, false);
+			messageDictionary["Realm"] = OpenId.OpenIdTestBase.RPRealmUri.AbsoluteUri;
+			Assert.That(messageDictionary["Realm"], Is.EqualTo(OpenId.OpenIdTestBase.RPRealmUri.AbsoluteUri));
+		}
+
+		private class MessageWithRealm : TestMessage {
+			[MessagePart]
+			internal Realm Realm { get; set; }
 		}
 	}
 }

@@ -24,7 +24,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			Assert.IsNull(response.MailAddress);
 		}
 
-		[TestCase, Ignore("serialization no longer supported")]
+		[Test, Ignore("serialization no longer supported")]
 		public void BinarySerialization() {
 			ClaimsResponse fields = this.GetFilledData();
 			MemoryStream ms = new MemoryStream();
@@ -36,7 +36,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			Assert.AreEqual(fields, fields2);
 		}
 
-		[TestCase, Ignore("serialization no longer supported")]
+		[Test, Ignore("serialization no longer supported")]
 		public void XmlSerialization() {
 			ClaimsResponse fields = this.GetFilledData();
 			MemoryStream ms = new MemoryStream();
@@ -125,7 +125,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			Assert.IsFalse(response.BirthDate.HasValue);
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentException))]
+		[Test, ExpectedException(typeof(ArgumentException))]
 		public void InvalidRawBirthdate() {
 			var response = new ClaimsResponse();
 			response.BirthDateRaw = "2008";

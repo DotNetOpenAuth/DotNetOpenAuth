@@ -20,19 +20,8 @@ namespace DotNetOpenAuth.OpenId {
 	[ContractVerification(true)]
 	[Pure]
 	[ContractClass(typeof(IdentifierContract))]
+	[DefaultEncoder(typeof(IdentifierEncoder))]
 	public abstract class Identifier {
-		/// <summary>
-		/// Initializes static members of the <see cref="Identifier"/> class.
-		/// </summary>
-		static Identifier() {
-			Func<string, Identifier> safeIdentifier = str => {
-				Contract.Assume(str != null);
-				ErrorUtilities.VerifyFormat(str.Length > 0, MessagingStrings.NonEmptyStringExpected);
-				return Identifier.Parse(str, true);
-			};
-			MessagePart.Map<Identifier>(id => id.SerializedString, id => id.OriginalString, safeIdentifier);
-		}
-
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Identifier"/> class.
 		/// </summary>
@@ -306,5 +295,42 @@ namespace DotNetOpenAuth.OpenId {
 		/// False if the Identifier was originally created with an explicit HTTP scheme.
 		/// </returns>
 		internal abstract bool TryRequireSsl(out Identifier secureIdentifier);
+
+		/// <summary>
+		/// Provides conversions to and from strings for messages that include members of this type.
+		/// </summary>
+		private class IdentifierEncoder : IMessagePartOriginalEncoder {
+			/// <summary>
+			/// Encodes the specified value as the original value that was formerly decoded.
+			/// </summary>
+			/// <param name="value">The value.  Guaranteed to never be null.</param>
+			/// <returns>The <paramref name="value"/> in string form, ready for message transport.</returns>
+			public string EncodeAsOriginalString(object value) {
+				Requires.NotNull(value, "value");
+				return ((Identifier)value).OriginalString;
+			}
+
+			/// <summary>
+			/// Encodes the specified value.
+			/// </summary>
+			/// <param name="value">The value.  Guaranteed to never be null.</param>
+			/// <returns>The <paramref name="value"/> in string form, ready for message transport.</returns>
+			public string Encode(object value) {
+				Requires.NotNull(value, "value");
+				return ((Identifier)value).SerializedString;
+			}
+
+			/// <summary>
+			/// Decodes the specified value.
+			/// </summary>
+			/// <param name="value">The string value carried by the transport.  Guaranteed to never be null, although it may be empty.</param>
+			/// <returns>The deserialized form of the given string.</returns>
+			/// <exception cref="FormatException">Thrown when the string value given cannot be decoded into the required object type.</exception>
+			public object Decode(string value) {
+				Requires.NotNull(value, "value");
+				ErrorUtilities.VerifyFormat(value.Length > 0, MessagingStrings.NonEmptyStringExpected);
+				return Identifier.Parse(value, true);
+			}
+		}
 	}
 }

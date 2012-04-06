@@ -11,12 +11,12 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 
 	[TestFixture]
 	public class ValueMappingTests {
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNullToString() {
 			new ValueMapping(null, null, str => new object());
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNullToObject() {
 			new ValueMapping(obj => obj.ToString(), null, null);
 		}

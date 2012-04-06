@@ -40,7 +40,7 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 		/// <summary>
 		/// Verifies that decoding an empty string generates an exception.
 		/// </summary>
-		[TestCase, ExpectedException(typeof(UriFormatException))]
+		[Test, ExpectedException(typeof(UriFormatException))]
 		public void DecodeEmptyStringFails() {
 			this.encoding.Decode(string.Empty);
 		}
@@ -60,7 +60,7 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 		/// <summary>
 		/// Verifies failure to decode a relative Uri
 		/// </summary>
-		[TestCase, ExpectedException(typeof(UriFormatException))]
+		[Test, ExpectedException(typeof(UriFormatException))]
 		public void RelativeUriDecodeFails() {
 			this.encoding.Decode("../a/b");
 		}

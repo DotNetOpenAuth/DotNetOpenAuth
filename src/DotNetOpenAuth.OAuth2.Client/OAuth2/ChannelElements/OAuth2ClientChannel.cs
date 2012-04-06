@@ -78,7 +78,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			} else if (response.ContentType.MediaType == HttpFormUrlEncoded || response.ContentType.MediaType == PlainTextEncoded) {
 				return HttpUtility.ParseQueryString(body).ToDictionary();
 			} else {
-				throw ErrorUtilities.ThrowProtocol(OAuth2Strings.UnexpectedResponseContentType, response.ContentType.MediaType);
+				throw ErrorUtilities.ThrowProtocol(ClientStrings.UnexpectedResponseContentType, response.ContentType.MediaType);
 			}
 		}
 

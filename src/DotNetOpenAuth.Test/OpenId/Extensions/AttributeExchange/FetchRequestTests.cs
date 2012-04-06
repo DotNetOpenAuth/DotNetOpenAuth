@@ -13,7 +13,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 
 	[TestFixture]
 	public class FetchRequestTests : OpenIdTestBase {
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void AddAttributeRequestNull() {
 			new FetchRequest().Attributes.Add(null);
 		}
@@ -30,7 +30,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			req.Attributes.Add(new AttributeRequest() { TypeUri = "=someUri*who*knows*but*this*is*legal" });
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentException))]
+		[Test, ExpectedException(typeof(ArgumentException))]
 		public void AddAttributeRequestAgain() {
 			var req = new FetchRequest();
 			req.Attributes.Add(new AttributeRequest() { TypeUri = "http://UriTwice" });
@@ -59,7 +59,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			Assert.AreEqual("value2", resp.Values[1]);
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentException))]
+		[Test, ExpectedException(typeof(ArgumentException))]
 		public void RespondTooManyValues() {
 			var req = new AttributeRequest();
 			req.TypeUri = "http://someType";
@@ -67,7 +67,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			req.Respond("value1", "value2");
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void RespondNull() {
 			var req = new AttributeRequest();
 			req.TypeUri = "http://someType";

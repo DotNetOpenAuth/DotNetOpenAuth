@@ -68,7 +68,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		public OutgoingWebResponse PrepareRequestUserAuthorization(IAuthorizationState authorization) {
 			Requires.NotNull(authorization, "authorization");
 			Requires.ValidState(authorization.Callback != null || (HttpContext.Current != null && HttpContext.Current.Request != null), MessagingStrings.HttpContextRequired);
-			Requires.ValidState(!string.IsNullOrEmpty(this.ClientIdentifier), OAuth2Strings.RequiredPropertyNotYetPreset, "ClientIdentifier");
+			Requires.ValidState(!string.IsNullOrEmpty(this.ClientIdentifier), ClientStrings.RequiredPropertyNotYetPreset, "ClientIdentifier");
 			Contract.Ensures(Contract.Result<OutgoingWebResponse>() != null);
 
 			if (authorization.Callback == null) {
@@ -105,8 +105,8 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="request">The incoming HTTP request that may carry an authorization response.</param>
 		/// <returns>The authorization state that contains the details of the authorization.</returns>
 		public IAuthorizationState ProcessUserAuthorization(HttpRequestBase request = null) {
-			Requires.ValidState(!string.IsNullOrEmpty(this.ClientIdentifier), OAuth2Strings.RequiredPropertyNotYetPreset, "ClientIdentifier");
-			Requires.ValidState(!string.IsNullOrEmpty(this.ClientSecret), OAuth2Strings.RequiredPropertyNotYetPreset, "ClientSecret");
+			Requires.ValidState(!string.IsNullOrEmpty(this.ClientIdentifier), ClientStrings.RequiredPropertyNotYetPreset, "ClientIdentifier");
+			Requires.ValidState(!string.IsNullOrEmpty(this.ClientSecret), ClientStrings.RequiredPropertyNotYetPreset, "ClientSecret");
 
 			if (request == null) {
 				request = this.Channel.GetRequestFromContext();
@@ -118,11 +118,11 @@ namespace DotNetOpenAuth.OAuth2 {
 				IAuthorizationState authorizationState;
 				if (this.AuthorizationTracker != null) {
 					authorizationState = this.AuthorizationTracker.GetAuthorizationState(callback, response.ClientState);
-					ErrorUtilities.VerifyProtocol(authorizationState != null, OAuth2Strings.AuthorizationResponseUnexpectedMismatch);
+					ErrorUtilities.VerifyProtocol(authorizationState != null, ClientStrings.AuthorizationResponseUnexpectedMismatch);
 				} else {
 					var context = this.Channel.GetHttpContext();
 					if (context.Session != null) {
-						ErrorUtilities.VerifyProtocol(string.Equals(response.ClientState, context.Session.SessionID, StringComparison.Ordinal), OAuth2Strings.AuthorizationResponseUnexpectedMismatch);
+						ErrorUtilities.VerifyProtocol(string.Equals(response.ClientState, context.Session.SessionID, StringComparison.Ordinal), ClientStrings.AuthorizationResponseUnexpectedMismatch);
 					} else {
 						Logger.OAuth.WarnFormat("No request context discovered, so no client state parameter could be checked to mitigate XSRF attacks.");
 					}

@@ -12,17 +12,17 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 
 	[TestFixture]
 	public class MessageDescriptionTests : MessagingTestBase {
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNullType() {
 			new MessageDescription(null, new Version(1, 0));
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNullVersion() {
 			new MessageDescription(typeof(Mocks.TestMessage), null);
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentException))]
+		[Test, ExpectedException(typeof(ArgumentException))]
 		public void CtorNonMessageType() {
 			new MessageDescription(typeof(string), new Version(1, 0));
 		}

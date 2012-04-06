@@ -31,7 +31,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 		/// <summary>
 		/// Verifies that the constructor throws an exception if the app store is null.
 		/// </summary>
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNull() {
 			new OpenIdProvider(null);
 		}
@@ -39,7 +39,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 		/// <summary>
 		/// Verifies that the SecuritySettings property throws when set to null.
 		/// </summary>
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void SecuritySettingsSetNull() {
 			this.provider.SecuritySettings = null;
 		}
@@ -73,7 +73,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 		/// <summary>
 		/// Verifies the GetRequest method throws outside an HttpContext.
 		/// </summary>
-		[TestCase, ExpectedException(typeof(InvalidOperationException))]
+		[Test, ExpectedException(typeof(InvalidOperationException))]
 		public void GetRequestNoContext() {
 			HttpContext.Current = null;
 			this.provider.GetRequest();
@@ -82,7 +82,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 		/// <summary>
 		/// Verifies GetRequest throws on null input.
 		/// </summary>
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void GetRequestNull() {
 			this.provider.GetRequest(null);
 		}
@@ -126,7 +126,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 			coordinator.Run();
 		}
 
-		[TestCase, Category("HostASPNET")]
+		[Test, Category("HostASPNET")]
 		public void BadRequestsGenerateValidErrorResponsesHosted() {
 			try {
 				using (AspNetHost host = AspNetHost.CreateHost(TestWebDirectory)) {

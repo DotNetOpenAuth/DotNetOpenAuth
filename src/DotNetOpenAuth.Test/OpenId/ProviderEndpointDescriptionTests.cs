@@ -20,7 +20,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Assert.IsNotNull(epd.Capabilities);
 		}
 
-		[TestCase, ExpectedException(typeof(ProtocolException))]
+		[Test, ExpectedException(typeof(ProtocolException))]
 		public void ProtocolDetectionWithoutClues() {
 			new ProviderEndpointDescription(OPUri, new[] { Protocol.V20.HtmlDiscoveryLocalIdKey }); // random type URI irrelevant to detection
 		}

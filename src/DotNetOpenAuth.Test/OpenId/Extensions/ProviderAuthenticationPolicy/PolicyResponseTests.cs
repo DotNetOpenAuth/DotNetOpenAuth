@@ -67,7 +67,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.ProviderAuthenticationPolicy {
 			Assert.AreEqual(someUtcTime, resp.AuthenticationTimeUtc);
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentException))]
+		[Test, ExpectedException(typeof(ArgumentException))]
 		public void AuthenticationTimeUtcSetUnspecified() {
 			PolicyResponse resp = new PolicyResponse();
 			resp.AuthenticationTimeUtc = someUnspecifiedTime;
