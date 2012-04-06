@@ -1688,29 +1688,12 @@
             Optional; the name of the file to write the response to.
             </summary>
         </member>
-        <member name="T:MSBuild.Community.Tasks.NuGet">
+        <member name="T:MSBuild.Community.Tasks.NuGet.NuGetBase">
             <summary>
-            Creates a NuGet package based on the specified manifest (Nuspec) file.
-            Can set the version number in the manifest prior to building the package.
+            A base class for NuGet tasks.
             </summary>
         </member>
-        <member name="M:MSBuild.Community.Tasks.NuGet.Execute">
-            <summary>
-            Runs the exectuable file with the specified task parameters.
-            </summary>
-            <returns>
-            true if the task runs successfully; otherwise, false.
-            </returns>
-        </member>
-        <member name="M:MSBuild.Community.Tasks.NuGet.GenerateCommandLineCommands">
-            <summary>
-            Returns a string value containing the command line arguments to pass directly to the executable file.
-            </summary>
-            <returns>
-            A string value containing the command line arguments to pass directly to the executable file.
-            </returns>
-        </member>
-        <member name="M:MSBuild.Community.Tasks.NuGet.GenerateFullPathToTool">
+        <member name="M:MSBuild.Community.Tasks.NuGet.NuGetBase.GenerateFullPathToTool">
             <summary>
             Returns the fully qualified path to the executable file.
             </summary>
@@ -1718,7 +1701,7 @@
             The fully qualified path to the executable file.
             </returns>
         </member>
-        <member name="M:MSBuild.Community.Tasks.NuGet.GetWorkingDirectory">
+        <member name="M:MSBuild.Community.Tasks.NuGet.NuGetBase.GetWorkingDirectory">
             <summary>
             Returns the directory in which to run the executable file.
             </summary>
@@ -1726,38 +1709,7 @@
             The directory in which to run the executable file, or a null reference (Nothing in Visual Basic) if the executable file should be run in the current directory.
             </returns>
         </member>
-        <member name="P:MSBuild.Community.Tasks.NuGet.Manifest">
-            <summary>
-            The location of the manifest (Nuspec) file to create a package.
-            </summary>
-            <value>The manifest.</value>
-        </member>
-        <member name="P:MSBuild.Community.Tasks.NuGet.OutputDirectory">
-            <summary>
-            Specifies the directory for the created NuGet package.
-            </summary>
-            <value>The output directory.</value>
-        </member>
-        <member name="P:MSBuild.Community.Tasks.NuGet.BasePath">
-            <summary>
-            The Base Path of the files defined in the nuspec file.
-            </summary>
-            <value>The base path.</value>
-        </member>
-        <member name="P:MSBuild.Community.Tasks.NuGet.Verbose">
-            <summary>
-            Shows verbose output for package building.
-            </summary>
-            <value><c>true</c> if verbose; otherwise, <c>false</c>.</value>
-        </member>
-        <member name="P:MSBuild.Community.Tasks.NuGet.Version">
-            <summary>
-            Sets the version of the package in the manifest (Nuspec) file.
-            The version must specify at least two places "X.X".
-            </summary>
-            <value>The version to set in the manifest.</value>
-        </member>
-        <member name="P:MSBuild.Community.Tasks.NuGet.WorkingDirectory">
+        <member name="P:MSBuild.Community.Tasks.NuGet.NuGetBase.WorkingDirectory">
             <summary>
             Gets or sets the working directory.
             </summary>
@@ -1766,12 +1718,96 @@
             The directory in which to run the executable file, or a null reference (Nothing in Visual Basic) if the executable file should be run in the current directory.
             </returns>
         </member>
-        <member name="P:MSBuild.Community.Tasks.NuGet.ToolName">
+        <member name="P:MSBuild.Community.Tasks.NuGet.NuGetBase.ToolName">
             <summary>
             Gets the name of the executable file to run.
             </summary>
             <value></value>
             <returns>The name of the executable file to run.</returns>
+        </member>
+        <member name="T:MSBuild.Community.Tasks.NuGet.NuGetPack">
+            <summary>
+            Creates a NuGet package based on the specified nuspec or project file.
+            </summary>
+        </member>
+        <member name="M:MSBuild.Community.Tasks.NuGet.NuGetPack.GenerateCommandLineCommands">
+            <summary>
+            Returns a string value containing the command line arguments to pass directly to the executable file.
+            </summary>
+            <returns>
+            A string value containing the command line arguments to pass directly to the executable file.
+            </returns>
+        </member>
+        <member name="P:MSBuild.Community.Tasks.NuGet.NuGetPack.File">
+            <summary>
+            The location of the nuspec or project file to create a package.
+            </summary>
+        </member>
+        <member name="P:MSBuild.Community.Tasks.NuGet.NuGetPack.OutputDirectory">
+            <summary>
+            Specifies the directory for the created NuGet package.
+            </summary>
+        </member>
+        <member name="P:MSBuild.Community.Tasks.NuGet.NuGetPack.Version">
+            <summary>
+            Overrides the version number from the nuspec file.
+            </summary>
+        </member>
+        <member name="P:MSBuild.Community.Tasks.NuGet.NuGetPack.BasePath">
+            <summary>
+            The base path of the files defined in the nuspec file.
+            </summary>
+        </member>
+        <member name="P:MSBuild.Community.Tasks.NuGet.NuGetPack.Verbose">
+            <summary>
+            Shows verbose output for package building.
+            </summary>
+            <value><c>true</c> if verbose; otherwise, <c>false</c>.</value>
+        </member>
+        <member name="P:MSBuild.Community.Tasks.NuGet.NuGetPack.Symbols">
+            <summary>
+            Determines if a package containing sources and symbols should be created. When specified with a nuspec, 
+            creates a regular NuGet package file and the corresponding symbols package.
+            </summary>
+            <value>
+              <c>true</c> if symbols; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="T:MSBuild.Community.Tasks.NuGet.NuGetPush">
+            <summary>
+            Pushes a package to the server and optionally publishes it.
+            </summary>
+        </member>
+        <member name="M:MSBuild.Community.Tasks.NuGet.NuGetPush.GenerateCommandLineCommands">
+            <summary>
+            Returns a string value containing the command line arguments to pass directly to the executable file.
+            </summary>
+            <returns>
+            A string value containing the command line arguments to pass directly to the executable file.
+            </returns>
+        </member>
+        <member name="P:MSBuild.Community.Tasks.NuGet.NuGetPush.File">
+            <summary>
+            The path to the package to push the package to the server.
+            </summary>
+        </member>
+        <member name="P:MSBuild.Community.Tasks.NuGet.NuGetPush.APIKey">
+            <summary>
+            The API key to use for push to the server.
+            </summary>
+        </member>
+        <member name="P:MSBuild.Community.Tasks.NuGet.NuGetPush.Source">
+            <summary>
+            Specifies the server URL.
+            </summary>
+        </member>
+        <member name="P:MSBuild.Community.Tasks.NuGet.NuGetPush.CreateOnly">
+            <summary>
+            Specifies if the package should be created and uploaded to the server but not published to the server. False by default.
+            </summary>
+            <value>
+              <c>true</c> if create only; otherwise, <c>false</c>.
+            </value>
         </member>
         <member name="M:MSBuild.Community.Tasks.PathUtil.RelativePathTo(System.String,System.String)">
             <summary>  
@@ -5127,6 +5163,16 @@
             <para>The default value is <c>false</c>.</para>
             </remarks>
         </member>
+        <member name="P:MSBuild.Community.Tasks.ILMerge.AllowDuplicateAttributes">
+            <summary>
+            Gets or sets a value indicating whether to copy assembly attributes from all merged assemblies
+            into the unified assembly even if duplicate assembly attributes would result.
+            </summary>
+            <remarks>
+            <para>Applicable only when <see cref="P:MSBuild.Community.Tasks.ILMerge.CopyAttributes"/> is <c>true</c></para>
+            <para>Corresponds to command line option "/allowMultiple".</para>
+            </remarks>
+        </member>
         <member name="P:MSBuild.Community.Tasks.ILMerge.DebugInfo">
             <summary>
             Gets or sets a value indicating whether 
@@ -6643,6 +6689,12 @@
             Initializes a new instance of the <see cref="T:FileUpdate"/> class.
             </summary>
         </member>
+        <member name="F:MSBuild.Community.Tasks.FileUpdate._useDefaultEncoding">
+            Maintain the behaviour of the original implementation for compatibility
+            (i.e. initialize _useDefaultEncoding with false) and use utf-8-without-bom,  
+            which is Microsoft's default encoding, only when Encoding property is set 
+            to "utf-8-without-bom". 
+        </member>
         <member name="M:MSBuild.Community.Tasks.FileUpdate.Execute">
             <summary>
             When overridden in a derived class, executes the task.
@@ -6700,7 +6752,8 @@
             The character encoding used to read and write the file.
             </summary>
             <remarks>Any value returned by <see cref="P:System.Text.Encoding.WebName"/> is valid input.
-            <para>The default is <c>utf-8</c></para></remarks>
+            <para>The default is <c>utf-8</c></para>
+            <para>Additionally, <c>utf-8-without-bom</c>can be used.</para></remarks>
         </member>
         <member name="P:MSBuild.Community.Tasks.FileUpdate.WarnOnNoUpdate">
             <summary>

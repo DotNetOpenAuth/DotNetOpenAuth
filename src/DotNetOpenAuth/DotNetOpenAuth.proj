@@ -57,14 +57,24 @@
 					Inputs="@(ILMergeProductInputAssemblies);@(ILMergeInputAssemblies)" Outputs="$(ILMergeOutputAssembly);$(ILMergeOutputXmlDocs)">
 		<MakeDir Directories="$(ILMergeOutputAssemblyDirectory)" />
 		<Message Text="Merging $(ILMergeOutputAssembly)" Importance="high" />
+
+		<!-- Arrange for DNOA.Core to appear *last* in the input assemblies list so that its assembly attributes overrides the rest. -->
+		<ItemGroup>
+			<ILMergeProductInputCoreAssembly Include="@(ILMergeProductInputAssemblies)" Condition=" '%(Filename)' == 'DotNetOpenAuth.Core' " />
+			<ILMergeProductInputAssemblies Remove="@(ILMergeProductInputCoreAssembly)" />
+			<ILMergeProductInputAssemblies Include="@(ILMergeProductInputCoreAssembly)" />
+		</ItemGroup>
+
 		<ILMerge
 			ExcludeFile="$(ProjectRoot)ILMergeInternalizeExceptions.txt"
-			InputAssemblies="@(ILMergeProductInputAssemblies);@(ILMergeInputAssemblies)"
+			InputAssemblies="@(ILMergeInputAssemblies);@(ILMergeProductInputAssemblies)"
 			OutputFile="$(ILMergeOutputAssembly)"
 			SearchDirectories="@(ILMergeSearchDirectories)"
 			KeyFile="$(PublicKeyFile)"
 			DelaySign="true"
 			XmlDocumentation="true"
+			CopyAttributes="true"
+			AllowDuplicateAttributes="true"
 			ToolPath="$(ProjectRoot)tools\ILMerge"
 			TargetPlatformVersion="$(ClrVersion).0"
 			TargetPlatformDirectory="$(ILMergeTargetPlatformDirectory)" />
