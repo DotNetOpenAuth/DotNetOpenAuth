@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <SchemaComparison>
-  <Version>10</Version>
+  <Version>1</Version>
   <SourceModelProvider>
     <ConnectionBasedModelProvider>
       <ConnectionString>Data Source=.\sqlexpress;Initial Catalog=RelyingPartyDatabase;Integrated Security=True;Password=</ConnectionString>
@@ -25,7 +25,7 @@
     <ConfigurationOptionsElement>
       <PropertyElementName>
         <Name>PlanGenerationType</Name>
-        <Value>SqlDeploymentOptions</Value>
+        <Value>Sql90SchemaDeploymentOptions</Value>
       </PropertyElementName>
       <PropertyElementName>
         <Name>DoNotUseAlterAssemblyStatementsToUpdateCLRTypes</Name>
@@ -308,22 +308,21 @@
         <Value>True</Value>
       </PropertyElementName>
       <PropertyElementName>
-        <Name>Microsoft.Data.Tools.Schema.Sql.SchemaModel.SqlPermissionStatement</Name>
+        <Name>Microsoft.Data.Schema.Sql.SchemaModel.ISqlPermissionStatement</Name>
         <Value>ExcludedType</Value>
       </PropertyElementName>
       <PropertyElementName>
-        <Name>Microsoft.Data.Tools.Schema.Sql.SchemaModel.SqlFilegroup</Name>
+        <Name>Microsoft.Data.Schema.Sql.SchemaModel.ISqlFilegroup</Name>
         <Value>ExcludedType</Value>
       </PropertyElementName>
       <PropertyElementName>
-        <Name>Microsoft.Data.Tools.Schema.Sql.SchemaModel.SqlFile</Name>
+        <Name>Microsoft.Data.Schema.Sql.SchemaModel.ISqlFile</Name>
         <Value>ExcludedType</Value>
       </PropertyElementName>
       <PropertyElementName>
-        <Name>Microsoft.Data.Tools.Schema.Sql.SchemaModel.SqlExtendedProperty</Name>
+        <Name>Microsoft.Data.Schema.Sql.SchemaModel.ISqlExtendedProperty</Name>
         <Value>ExcludedType</Value>
       </PropertyElementName>
     </ConfigurationOptionsElement>
   </SchemaCompareSettingsService>
-  <SchemaCompareViewSettings />
 </SchemaComparison>

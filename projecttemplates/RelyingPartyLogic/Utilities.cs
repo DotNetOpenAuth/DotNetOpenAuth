@@ -73,7 +73,7 @@ GO" };
 			foreach (string remove in removeSnippets) {
 				schemaSqlBuilder.Replace(remove, string.Empty);
 			}
-			schemaSqlBuilder.Replace("Path1_Placeholder", HttpContext.Current.Server.MapPath("~/App_Data/"));
+			schemaSqlBuilder.Replace("$(Path1)", HttpContext.Current.Server.MapPath("~/App_Data/"));
 			schemaSqlBuilder.Replace("WEBROOT", databasePath);
 			schemaSqlBuilder.Replace("$(DatabaseName)", databaseName);
 
