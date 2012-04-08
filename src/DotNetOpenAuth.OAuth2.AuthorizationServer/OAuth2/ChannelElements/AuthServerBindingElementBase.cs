@@ -41,7 +41,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// Gets the authorization server hosting this channel.
 		/// </summary>
 		/// <value>The authorization server.</value>
-		protected IAuthorizationServer AuthorizationServer {
+		protected IAuthorizationServerHost AuthorizationServer {
 			get { return ((IOAuth2ChannelWithAuthorizationServer)this.Channel).AuthorizationServer; }
 		}
 

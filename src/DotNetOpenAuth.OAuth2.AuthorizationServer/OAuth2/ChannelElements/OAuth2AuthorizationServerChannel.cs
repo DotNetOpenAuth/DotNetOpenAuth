@@ -35,7 +35,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// Initializes a new instance of the <see cref="OAuth2AuthorizationServerChannel"/> class.
 		/// </summary>
 		/// <param name="authorizationServer">The authorization server.</param>
-		protected internal OAuth2AuthorizationServerChannel(IAuthorizationServer authorizationServer)
+		protected internal OAuth2AuthorizationServerChannel(IAuthorizationServerHost authorizationServer)
 			: base(MessageTypes, InitializeBindingElements(authorizationServer)) {
 			Requires.NotNull(authorizationServer, "authorizationServer");
 			this.AuthorizationServer = authorizationServer;
@@ -45,7 +45,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// Gets the authorization server.
 		/// </summary>
 		/// <value>The authorization server.</value>
-		public IAuthorizationServer AuthorizationServer { get; private set; }
+		public IAuthorizationServerHost AuthorizationServer { get; private set; }
 
 		/// <summary>
 		/// Gets the protocol message that may be in the given HTTP response.
@@ -109,7 +109,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <returns>
 		/// An array of binding elements used to initialize the channel.
 		/// </returns>
-		private static IChannelBindingElement[] InitializeBindingElements(IAuthorizationServer authorizationServer) {
+		private static IChannelBindingElement[] InitializeBindingElements(IAuthorizationServerHost authorizationServer) {
 			Requires.NotNull(authorizationServer, "authorizationServer");
 			var bindingElements = new List<IChannelBindingElement>();
 

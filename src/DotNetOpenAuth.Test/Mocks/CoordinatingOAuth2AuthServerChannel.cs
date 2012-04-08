@@ -21,7 +21,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 			this.wrappedChannel = (OAuth2AuthorizationServerChannel)wrappedChannel;
 		}
 
-		public IAuthorizationServer AuthorizationServer {
+		public IAuthorizationServerHost AuthorizationServer {
 			get { return this.wrappedChannel.AuthorizationServer; }
 		}
 	}

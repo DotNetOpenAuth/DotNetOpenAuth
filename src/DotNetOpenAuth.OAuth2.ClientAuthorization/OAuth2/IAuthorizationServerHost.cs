@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="IAuthorizationServer.cs" company="Outercurve Foundation">
+// <copyright file="IAuthorizationServerHost.cs" company="Outercurve Foundation">
 //     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -20,7 +20,7 @@ namespace DotNetOpenAuth.OAuth2 {
 	/// Provides host-specific authorization server services needed by this library.
 	/// </summary>
 	[ContractClass(typeof(IAuthorizationServerContract))]
-	public interface IAuthorizationServer {
+	public interface IAuthorizationServerHost {
 		/// <summary>
 		/// Gets the store for storing crypto keys used to symmetrically encrypt and sign authorization codes and refresh tokens.
 		/// </summary>
@@ -92,10 +92,10 @@ namespace DotNetOpenAuth.OAuth2 {
 	}
 
 	/// <summary>
-	/// Code Contract for the <see cref="IAuthorizationServer"/> interface.
+	/// Code Contract for the <see cref="IAuthorizationServerHost"/> interface.
 	/// </summary>
-	[ContractClassFor(typeof(IAuthorizationServer))]
-	internal abstract class IAuthorizationServerContract : IAuthorizationServer {
+	[ContractClassFor(typeof(IAuthorizationServerHost))]
+	internal abstract class IAuthorizationServerContract : IAuthorizationServerHost {
 		/// <summary>
 		/// Prevents a default instance of the <see cref="IAuthorizationServerContract"/> class from being created.
 		/// </summary>
@@ -105,7 +105,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <summary>
 		/// Gets the store for storeing crypto keys used to symmetrically encrypt and sign authorization codes and refresh tokens.
 		/// </summary>
-		ICryptoKeyStore IAuthorizationServer.CryptoKeyStore {
+		ICryptoKeyStore IAuthorizationServerHost.CryptoKeyStore {
 			get {
 				Contract.Ensures(Contract.Result<ICryptoKeyStore>() != null);
 				throw new NotImplementedException();
@@ -116,7 +116,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// Gets the authorization code nonce store to use to ensure that authorization codes can only be used once.
 		/// </summary>
 		/// <value>The authorization code nonce store.</value>
-		INonceStore IAuthorizationServer.NonceStore {
+		INonceStore IAuthorizationServerHost.NonceStore {
 			get {
 				Contract.Ensures(Contract.Result<INonceStore>() != null);
 				throw new NotImplementedException();
@@ -129,7 +129,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="clientIdentifier">The client identifier.</param>
 		/// <returns>The client registration.  Never null.</returns>
 		/// <exception cref="ArgumentException">Thrown when no client with the given identifier is registered with this authorization server.</exception>
-		IClientDescription IAuthorizationServer.GetClient(string clientIdentifier) {
+		IClientDescription IAuthorizationServerHost.GetClient(string clientIdentifier) {
 			Requires.NotNullOrEmpty(clientIdentifier, "clientIdentifier");
 			Contract.Ensures(Contract.Result<IClientDescription>() != null);
 			throw new NotImplementedException();
@@ -157,7 +157,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// security in the event the user was revoking access in order to sever authorization on a stolen
 		/// account or piece of hardware in which the tokens were stored. </para>
 		/// </remarks>
-		bool IAuthorizationServer.IsAuthorizationValid(IAuthorizationDescription authorization) {
+		bool IAuthorizationServerHost.IsAuthorizationValid(IAuthorizationDescription authorization) {
 			Requires.NotNull(authorization, "authorization");
 			throw new NotImplementedException();
 		}
@@ -171,7 +171,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		///   <c>true</c> if the given credentials are valid; otherwise, <c>false</c>.
 		/// </returns>
 		/// <exception cref="NotSupportedException">May be thrown if the authorization server does not support the resource owner password credential grant type.</exception>
-		bool IAuthorizationServer.IsResourceOwnerCredentialValid(string userName, string password) {
+		bool IAuthorizationServerHost.IsResourceOwnerCredentialValid(string userName, string password) {
 			Contract.Requires(!string.IsNullOrEmpty(userName));
 			Contract.Requires(password != null);
 			throw new NotImplementedException();
@@ -187,7 +187,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <returns>
 		/// A non-null parameters instance that DotNetOpenAuth will dispose after it has been used.
 		/// </returns>
-		AccessTokenParameters IAuthorizationServer.GetAccessTokenParameters(IAccessTokenRequest accessTokenRequestMessage) {
+		AccessTokenParameters IAuthorizationServerHost.GetAccessTokenParameters(IAccessTokenRequest accessTokenRequestMessage) {
 			Contract.Requires(accessTokenRequestMessage != null);
 			Contract.Ensures(Contract.Result<AccessTokenParameters>() != null);
 			throw new NotImplementedException();

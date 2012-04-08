@@ -10,7 +10,7 @@
 	using DotNetOpenAuth.OAuth2.ChannelElements;
 	using DotNetOpenAuth.OAuth2.Messages;
 
-	internal class OAuth2AuthorizationServer : IAuthorizationServer {
+	internal class OAuth2AuthorizationServer : IAuthorizationServerHost {
 #if SAMPLESONLY
 		/// <summary>
 		/// This is the FOR SAMPLE ONLY hard-coded public key of the complementary OAuthResourceServer sample.
@@ -29,7 +29,7 @@
 		private static readonly RSAParameters ResourceServerEncryptionPublicKey;
 #endif
 
-		#region Implementation of IAuthorizationServer
+		#region Implementation of IAuthorizationServerHost
 
 		public ICryptoKeyStore CryptoKeyStore {
 			get { return MvcApplication.KeyNonceStore; }

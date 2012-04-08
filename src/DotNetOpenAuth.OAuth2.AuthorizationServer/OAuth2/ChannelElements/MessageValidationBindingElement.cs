@@ -146,7 +146,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 
 				// Make sure the authorization this token represents hasn't already been revoked.
 				if (!this.AuthorizationServer.IsAuthorizationValid(authCarrier.AuthorizationDescription)) {
-					Logger.OAuth.Error("Rejecting access token request because the IAuthorizationServer.IsAuthorizationValid method returned false.");
+					Logger.OAuth.Error("Rejecting access token request because the IAuthorizationServerHost.IsAuthorizationValid method returned false.");
 					throw new TokenEndpointProtocolException(Protocol.AccessTokenRequestErrorCodes.InvalidGrant);
 				}
 

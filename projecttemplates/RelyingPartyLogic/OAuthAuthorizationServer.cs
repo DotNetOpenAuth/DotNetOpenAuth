@@ -20,7 +20,7 @@ namespace RelyingPartyLogic {
 	/// <summary>
 	/// Provides OAuth 2.0 authorization server information to DotNetOpenAuth.
 	/// </summary>
-	public class OAuthAuthorizationServer : IAuthorizationServer {
+	public class OAuthAuthorizationServer : IAuthorizationServerHost {
 		private static readonly RSACryptoServiceProvider SigningKey = new RSACryptoServiceProvider();
 
 		private readonly INonceStore nonceStore = new NonceDbStore();
@@ -32,7 +32,7 @@ namespace RelyingPartyLogic {
 			this.CryptoKeyStore = new RelyingPartyApplicationDbStore();
 		}
 
-		#region IAuthorizationServer Members
+		#region IAuthorizationServerHost Members
 
 		public ICryptoKeyStore CryptoKeyStore { get; private set; }
 

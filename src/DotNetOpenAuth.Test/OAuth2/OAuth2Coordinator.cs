@@ -15,12 +15,12 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 	internal class OAuth2Coordinator<TClient> : CoordinatorBase<TClient, AuthorizationServer>
 		where TClient : ClientBase {
 		private readonly AuthorizationServerDescription serverDescription;
-		private readonly IAuthorizationServer authServerHost;
+		private readonly IAuthorizationServerHost authServerHost;
 		private readonly TClient client;
 
 		internal OAuth2Coordinator(
 			AuthorizationServerDescription serverDescription,
-			IAuthorizationServer authServerHost,
+			IAuthorizationServerHost authServerHost,
 			TClient client,
 			Action<TClient> clientAction,
 			Action<AuthorizationServer> authServerAction)

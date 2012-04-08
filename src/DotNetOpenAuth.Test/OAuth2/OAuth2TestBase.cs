@@ -39,10 +39,10 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 			ClientCallback,
 			ClientType.Confidential);
 
-		protected static readonly IAuthorizationServer AuthorizationServerMock = CreateAuthorizationServerMock().Object;
+		protected static readonly IAuthorizationServerHost AuthorizationServerMock = CreateAuthorizationServerMock().Object;
 
-		protected static Mock<IAuthorizationServer> CreateAuthorizationServerMock() {
-			var authHostMock = new Mock<IAuthorizationServer>();
+		protected static Mock<IAuthorizationServerHost> CreateAuthorizationServerMock() {
+			var authHostMock = new Mock<IAuthorizationServerHost>();
 			var cryptoStore = new MemoryCryptoKeyStore();
 			authHostMock.Setup(m => m.GetClient(ClientId)).Returns(ClientDescription);
 			authHostMock.SetupGet(m => m.CryptoKeyStore).Returns(cryptoStore);

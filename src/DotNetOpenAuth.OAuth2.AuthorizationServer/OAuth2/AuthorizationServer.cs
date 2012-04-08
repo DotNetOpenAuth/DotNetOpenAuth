@@ -26,7 +26,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// Initializes a new instance of the <see cref="AuthorizationServer"/> class.
 		/// </summary>
 		/// <param name="authorizationServer">The authorization server.</param>
-		public AuthorizationServer(IAuthorizationServer authorizationServer) {
+		public AuthorizationServer(IAuthorizationServerHost authorizationServer) {
 			Requires.NotNull(authorizationServer, "authorizationServer");
 			this.Channel = new OAuth2AuthorizationServerChannel(authorizationServer);
 		}
@@ -41,7 +41,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// Gets the authorization server.
 		/// </summary>
 		/// <value>The authorization server.</value>
-		public IAuthorizationServer AuthorizationServerServices {
+		public IAuthorizationServerHost AuthorizationServerServices {
 			get { return ((IOAuth2ChannelWithAuthorizationServer)this.Channel).AuthorizationServer; }
 		}
 
@@ -112,7 +112,7 @@ namespace DotNetOpenAuth.OAuth2 {
 				if (this.Channel.TryReadFromRequest(request, out requestMessage)) {
 					IAccessTokenRequestInternal accessRequestInternal = requestMessage;
 					accessRequestInternal.AccessTokenCreationParameters = this.AuthorizationServerServices.GetAccessTokenParameters(requestMessage);
-					ErrorUtilities.VerifyHost(accessRequestInternal.AccessTokenCreationParameters != null, "IAuthorizationServer.GetAccessTokenParameters must not return null.");
+					ErrorUtilities.VerifyHost(accessRequestInternal.AccessTokenCreationParameters != null, "IAuthorizationServerHost.GetAccessTokenParameters must not return null.");
 
 					var successResponseMessage = this.PrepareAccessTokenResponse(requestMessage, accessRequestInternal.AccessTokenCreationParameters.IncludeRefreshToken);
 					successResponseMessage.Lifetime = accessRequestInternal.AccessTokenCreationParameters.AccessTokenLifetime;
