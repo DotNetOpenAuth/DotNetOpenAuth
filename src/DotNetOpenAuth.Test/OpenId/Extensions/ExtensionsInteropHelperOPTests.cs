@@ -63,7 +63,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 		/// </summary>
 		[Test]
 		public void UnifyExtensionsAsSregWithSreg() {
-			var sregInjected = new ClaimsRequest(DotNetOpenAuth.OpenId.Extensions.SimpleRegistration.Constants.sreg_ns) {
+			var sregInjected = new ClaimsRequest(DotNetOpenAuth.OpenId.Extensions.SimpleRegistration.Constants.TypeUris.Standard) {
 				Nickname = DemandLevel.Request,
 			};
 			this.extensions.Add(sregInjected);
@@ -100,7 +100,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 		/// </summary>
 		[Test]
 		public void UnifyExtensionsAsSregWithBothSregAndAX() {
-			var sregInjected = new ClaimsRequest(DotNetOpenAuth.OpenId.Extensions.SimpleRegistration.Constants.sreg_ns) {
+			var sregInjected = new ClaimsRequest(DotNetOpenAuth.OpenId.Extensions.SimpleRegistration.Constants.TypeUris.Standard) {
 				Nickname = DemandLevel.Request,
 			};
 			this.extensions.Add(sregInjected);

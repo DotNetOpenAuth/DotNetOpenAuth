@@ -27,7 +27,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 		/// The factory method that may be used in deserialization of this message.
 		/// </summary>
 		internal static readonly StandardOpenIdExtensionFactory.CreateDelegate Factory = (typeUri, data, baseMessage, isProviderRole) => {
-			if ((typeUri == Constants.sreg_ns || Array.IndexOf(Constants.AdditionalTypeUris, typeUri) >= 0) && !isProviderRole) {
+			if ((typeUri == Constants.TypeUris.Standard || Array.IndexOf(Constants.AdditionalTypeUris, typeUri) >= 0) && !isProviderRole) {
 				return new ClaimsResponse(typeUri);
 			}
 
@@ -55,10 +55,11 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 		private CultureInfo culture;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ClaimsResponse"/> class.
+		/// Initializes a new instance of the <see cref="ClaimsResponse"/> class
+		/// using the most common, and spec prescribed type URI.
 		/// </summary>
-		internal ClaimsResponse()
-			: this(Constants.sreg_ns) {
+		public ClaimsResponse()
+			: this(Constants.TypeUris.Standard) {
 		}
 
 		/// <summary>
@@ -67,8 +68,10 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 		/// <param name="typeUriToUse">
 		/// The type URI that must be used to identify this extension in the response message.
 		/// This value should be the same one the relying party used to send the extension request.
+		/// Commonly used type URIs supported by relying parties are defined in the
+		/// <see cref="Constants.TypeUris"/> class.
 		/// </param>
-		internal ClaimsResponse(string typeUriToUse)
+		public ClaimsResponse(string typeUriToUse = Constants.TypeUris.Standard)
 			: base(new Version(1, 0), typeUriToUse, Constants.AdditionalTypeUris) {
 			Requires.NotNullOrEmpty(typeUriToUse, "typeUriToUse");
 		}

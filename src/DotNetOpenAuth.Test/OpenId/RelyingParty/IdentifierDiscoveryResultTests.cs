@@ -188,7 +188,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 
 			se = IdentifierDiscoveryResult.CreateForProviderIdentifier(
 				OPUri,
-				new ProviderEndpointDescription(OPUri, new[] { Protocol.V20.ClaimedIdentifierServiceTypeURI, "http://someextension", Constants.sreg_ns }),
+				new ProviderEndpointDescription(OPUri, new[] { Protocol.V20.ClaimedIdentifierServiceTypeURI, "http://someextension", Constants.TypeUris.Standard }),
 				null,
 				null);
 			Assert.IsTrue(se.IsExtensionSupported<ClaimsRequest>());
