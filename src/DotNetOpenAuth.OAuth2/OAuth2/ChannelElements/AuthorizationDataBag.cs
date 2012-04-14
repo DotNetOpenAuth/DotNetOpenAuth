@@ -24,7 +24,6 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <summary>
 		/// Gets or sets the identifier of the client authorized to access protected data.
 		/// </summary>
-		/// <value></value>
 		[MessagePart]
 		public string ClientIdentifier { get; set; }
 
