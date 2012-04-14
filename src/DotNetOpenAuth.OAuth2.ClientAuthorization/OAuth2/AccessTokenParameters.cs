@@ -21,6 +21,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		public AccessTokenParameters() {
 			this.IncludeRefreshToken = true;
 			this.AccessTokenLifetime = TimeSpan.FromHours(1);
+			this.ExtraClaims = new Dictionary<string, string>();
 		}
 
 		/// <summary>
@@ -61,6 +62,11 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// The refresh token <em>may</em> be provided when this value is true.
 		/// </remarks>
 		public bool IncludeRefreshToken { get; set; }
+
+		/// <summary>
+		/// Gets or sets a dictionary of additional claims to include in the <see cref="AccessToken"/>.
+		/// </summary>
+		public IDictionary<string, string> ExtraClaims { get; set; }
 
 		#region Implementation of IDisposable
 

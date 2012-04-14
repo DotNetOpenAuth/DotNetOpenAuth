@@ -121,6 +121,7 @@ namespace DotNetOpenAuth.OAuth2 {
 					if (authCarryingRequest != null) {
 						IAccessTokenIssuingResponse accessTokenIssuingResponse = successResponseMessage;
 						accessTokenIssuingResponse.AuthorizationDescription = new AccessToken(authCarryingRequest.AuthorizationDescription, successResponseMessage.Lifetime);
+						accessTokenIssuingResponse.AuthorizationDescription.ExtraData.AddRange(accessRequestInternal.AccessTokenCreationParameters.ExtraClaims);
 					}
 
 					responseMessage = successResponseMessage;
@@ -187,6 +188,7 @@ namespace DotNetOpenAuth.OAuth2 {
 						implicitGrantResponse.Scope,
 						userName,
 						implicitGrantResponse.Lifetime);
+					tokenCarryingResponse.AuthorizationDescription.ExtraData.AddRange(accessRequestInternal.AccessTokenCreationParameters.ExtraClaims);
 
 					response = implicitGrantResponse;
 					break;
