@@ -55,7 +55,7 @@
 			<!-- Add external libraries and their symbols -->
 			<ProjectTemplateLibraries Include="@(SignedProductAssemblies)" />
 			<ProjectTemplateLibraries Include="@(SignedProductAssemblies->'%(SymbolPath)')" />
-			<ProjectTemplateLibraries Include="$(OutputPath)$(ProductName).xml" />
+			<ProjectTemplateLibraries Include="@(SignedProductAssemblies->'%(XmlDocumentationFile)')" />
 			<!-- ... and log4net -->
 			<ProjectTemplateLibraries Include="$(ProjectRoot)lib\log4net.dll" />
 			<ProjectTemplateLibraries Include="$(ProjectRoot)lib\log4net.xml" />

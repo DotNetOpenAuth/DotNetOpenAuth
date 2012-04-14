@@ -97,6 +97,7 @@
 			<SignedAssemblyTargets Include="@(AssembliesToSign->'%(RootDir)%(Directory)$(SignedSubPath)%(FileName)%(Extension)')">
 				<UnsignedAssemblyPath>%(AssembliesToSign.Identity)</UnsignedAssemblyPath>
 				<SymbolPath Condition="Exists('%(RootDir)%(Directory)%(FileName).pdb')">%(RootDir)%(Directory)%(FileName).pdb</SymbolPath>
+				<XmlDocumentationFile Condition="Exists('%(RootDir)%(Directory)%(FileName).xml')">%(RootDir)%(Directory)%(FileName).xml</XmlDocumentationFile>
 			</SignedAssemblyTargets>
 		</ItemGroup>
 
