@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" InitialTargets="TouchUpProjectsForDualFrameworks">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<Import Project="EnlistmentInfo.props" />
 	<Import Project="$(MSBuildProjectDirectory)\tools\DotNetOpenAuth.automated.props"/>
 	<Import Project="$(ProjectRoot)tools\Translation.targets"/>
@@ -7,22 +7,16 @@
 		<!--Removed from NightlyProjects until it can be fixed up. samples\tools.proj;-->
 		<NightlyProjects Include="
 										nuget\nuget.proj;
-										" />
-		<NightlyProjects Include="
-										doc\doc.proj;
-										">
-			<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-		</NightlyProjects>
-		<NightlyProjects Include="
 										tools\drop.proj;
 										 ">
-			<TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+			<Properties>TargetFrameworkVersion=v4.0</Properties>
 		</NightlyProjects>
 		<NightlyProjects Include="
+										doc\doc.proj;
 										samples\samples.proj;
 										">
 			<Targets>DeployableArchive</Targets>
-			<TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+			<Properties>TargetFrameworkVersion=v4.0</Properties>
 		</NightlyProjects>
 
 		<ProjectsToClean Include="
@@ -30,12 +24,10 @@
 		                          projecttemplates\projecttemplates.proj;
 		                          vsi\vsi.proj;
 		                          vsix\vsix.proj;
-		                          "/>
-		<ProjectsToClean Include="
 		                          samples\samples.proj;
 		                          doc\doc.proj;
 		                          ">
-			<TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+			<Properties>TargetFrameworkVersion=v4.0</Properties>
 		</ProjectsToClean>
 
 		<DirectoriesToClean Include="
@@ -62,31 +54,6 @@
 			<Targets>Publish</Targets>
 		</ProjectsToPublish>
 	</ItemGroup>
-
-	<Target Name="TouchUpProjectsForDualFrameworks">
-		<ItemGroup>
-			<!-- The point here is to duplicate all projects, once targeting each version of .NET that we support. -->
-			<NightlyProjects Condition=" '%(NightlyProjects.TargetFrameworkVersion)' != '' ">
-				<Properties>TargetFrameworkVersion=%(NightlyProjects.TargetFrameworkVersion)</Properties>
-			</NightlyProjects>
-			<NightlyProjects Condition=" '%(NightlyProjects.TargetFrameworkVersion)' == '' ">
-				<Properties>TargetFrameworkVersion=v3.5</Properties>
-			</NightlyProjects>
-			<NightlyProjects Include="@(NightlyProjects)" Condition=" '%(NightlyProjects.TargetFrameworkVersion)' == '' ">
-				<Properties>TargetFrameworkVersion=v4.0</Properties>
-			</NightlyProjects>
-
-			<ProjectsToClean Condition=" '%(ProjectsToClean.TargetFrameworkVersion)' != '' ">
-				<Properties>TargetFrameworkVersion=%(ProjectsToClean.TargetFrameworkVersion)</Properties>
-			</ProjectsToClean>
-			<ProjectsToClean Condition=" '%(ProjectsToClean.TargetFrameworkVersion)' == '' ">
-				<Properties>TargetFrameworkVersion=v3.5</Properties>
-			</ProjectsToClean>
-			<ProjectsToClean Include="@(ProjectsToClean)" Condition=" '%(ProjectsToClean.TargetFrameworkVersion)' == '' ">
-				<Properties>TargetFrameworkVersion=v4.0</Properties>
-			</ProjectsToClean>
-		</ItemGroup>
-	</Target>
 
 	<Target Name="BuildTests" DependsOnTargets="SkipVerification">
 		<MSBuild Projects="$(SolutionPath)" Targets="@(TestProjects)" BuildInParallel="$(BuildInParallel)" />

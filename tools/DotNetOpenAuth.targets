@@ -110,7 +110,15 @@
 	</Target>
 
 	<Target Name="ResignDelaySignedAssemblies" Outputs="@(ResignedAssembliesOutputs)">
-		<MSBuild Projects="@(DelaySignedProjects)" Targets="Sign" BuildInParallel="$(BuildInParallel)">
+		<MSBuild Projects="@(DelaySignedProjects)" Targets="Sign" BuildInParallel="$(BuildInParallel)"
+						 Condition=" '%(DelaySignedProjects.TargetFrameworkVersion)' == '' or '%(DelaySignedProjects.TargetFrameworkVersion)' == '$(TargetFrameworkVersion)' ">
+			<Output TaskParameter="TargetOutputs" ItemName="ResignedAssembliesOutputs"/>
+		</MSBuild>
+	</Target>
+
+	<Target Name="ResignShippingDelaySignedAssemblies" Outputs="@(ResignedAssembliesOutputs)">
+		<MSBuild Projects="@(DelaySignedProjects)" Targets="Sign" BuildInParallel="$(BuildInParallel)"
+						 Condition=" '%(DelaySignedProjects.Nonshipping)' != 'true' and ('%(DelaySignedProjects.TargetFrameworkVersion)' == '' or '%(DelaySignedProjects.TargetFrameworkVersion)' == '$(TargetFrameworkVersion)') ">
 			<Output TaskParameter="TargetOutputs" ItemName="ResignedAssembliesOutputs"/>
 		</MSBuild>
 	</Target>
