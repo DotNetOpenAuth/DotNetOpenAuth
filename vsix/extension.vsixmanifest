@@ -28,6 +28,5 @@
 	<References />
 	<Content>
 		<ProjectTemplate>PT</ProjectTemplate>
-		<!--<VsPackage>DotNetOpenAuthSDK.pkgdef</VsPackage>-->
 	</Content>
 </Vsix>
