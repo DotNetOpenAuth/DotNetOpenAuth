@@ -16,7 +16,7 @@
 			all without disclosing their login credential with you to 3rd parties.  
 		</description>
 		<dependencies>
-			<dependency id="DotNetOpenAuth.OAuth2.Core" version="[$oauth2version$]" />
+			<dependency id="DotNetOpenAuth.OAuth2.ClientAuthorization" version="[$oauth2version$]" />
 		</dependencies>
 	</metadata>
 	<files>
