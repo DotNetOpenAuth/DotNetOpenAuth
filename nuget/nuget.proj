@@ -49,23 +49,33 @@
 		</PropertyGroup>
 	</Target>
 
-	<Target Name="Build" DependsOnTargets="BuildIntermediates">
+	<Target Name="Build" DependsOnTargets="BuildIntermediates" Returns="@(NuGetPackages)">
 		<ItemGroup>
-			<NuGetPackages Include="*.nuspec" Exclude="DotNetOpenAuth.nuspec">
+			<NuGetSpecifications Include="*.nuspec" Exclude="*oauth2*.nuspec;DotNetOpenAuth.nuspec">
 				<Symbols>true</Symbols>
-			</NuGetPackages>
-			<NuGetPackages Include="DotNetOpenAuth.nuspec" />
+				<PackageVersion>$(NuGetPackageVersion)</PackageVersion>
+			</NuGetSpecifications>
+			<NuGetSpecifications Include="*oauth2*.nuspec" Exclude="DotNetOpenAuth.nuspec">
+				<Symbols>true</Symbols>
+				<PackageVersion>$(OAuth2PackagesVersion)</PackageVersion>
+			</NuGetSpecifications>
+			<NuGetSpecifications Include="DotNetOpenAuth.nuspec">
+				<PackageVersion>$(NuGetPackageVersion)</PackageVersion>
+			</NuGetSpecifications>
+
+			<NuGetPackages Include="@(NuGetSpecifications->'$(DropsRoot)%(FileName).%(PackageVersion).nupkg')" />
 
 			<NuGetProperties Include="version=$(NuGetPackageVersion)" />
 			<NuGetProperties Include="oauth2version=$(OAuth2PackagesVersion)" />
 			<NuGetProperties Include="OutputPath35=$(OutputPath35)" />
 			<NuGetProperties Include="OutputPath40=$(OutputPath40)" />
 		</ItemGroup>
+
 		<NuGetPack
-			NuSpec="%(NuGetPackages.Identity)"
+			NuSpec="%(NuGetSpecifications.Identity)"
 			OutputPackageDirectory="$(DropsRoot)"
 			Properties="@(NuGetProperties)"
-			Symbols="%(NuGetPackages.Symbols)"
+			Symbols="%(NuGetSpecifications.Symbols)"
 			ToolPath="$(NuGetToolPath)" />
 	</Target>
 
