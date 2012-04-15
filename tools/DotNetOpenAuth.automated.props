@@ -10,5 +10,6 @@
 		     even if we're not distributing the built bits (as is the case for project templates). -->
 		<Validation Condition=" '$(Validation)' == '' ">Full</Validation>
 		<NUnitToolPath Condition=" '$(NUnitToolPath)' == '' ">$(ProjectRoot)tools\NUnit\bin</NUnitToolPath>
+		<TargetFrameworkVersion Condition=" '$(TargetFrameworkVersion)' == '' ">v4.0</TargetFrameworkVersion>
 	</PropertyGroup>
 </Project>

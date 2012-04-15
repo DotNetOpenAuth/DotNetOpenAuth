@@ -3,10 +3,12 @@
 	<PropertyGroup>
 		<ProductName>DotNetOpenAuth</ProductName>
 		<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-		<TargetFrameworkVersion Condition=" '$(TargetFrameworkVersion)' == '' ">v3.5</TargetFrameworkVersion>
+		<TargetFrameworkVersion Condition=" '$(TargetFrameworkVersion)' == '' ">v4.0</TargetFrameworkVersion>
 		<DisableFastUpToDateCheck>false</DisableFastUpToDateCheck>
 		<DropsRoot>$(ProjectRoot)drops\$(TargetFrameworkVersion)\$(Configuration)\</DropsRoot>
 		<OutputPath>$(ProjectRoot)bin\$(TargetFrameworkVersion)\$(Configuration)\</OutputPath>
+		<OutputPath35>$(ProjectRoot)bin\v3.5\$(Configuration)\</OutputPath35>
+		<OutputPath40>$(ProjectRoot)bin\v4.0\$(Configuration)\</OutputPath40>
 		<DocOutputPath>$(ProjectRoot)doc\</DocOutputPath>
 		<IntermediatePath>$(ProjectRoot)obj\$(TargetFrameworkVersion)\$(Configuration)\</IntermediatePath>
 		<BaseIntermediateOutputPath Condition=" '$(BaseIntermediateOutputPath)' == '' ">obj\$(TargetFrameworkVersion)\</BaseIntermediateOutputPath>
@@ -28,6 +30,8 @@
 		<SignedSubPath>signed\</SignedSubPath>
 
 		<ILMergeOutputAssemblyDirectory>$(OutputPath)unified\</ILMergeOutputAssemblyDirectory>
+		<ILMergeOutputAssembly35Directory>$(OutputPath35)unified\</ILMergeOutputAssembly35Directory>
+		<ILMergeOutputAssembly40Directory>$(OutputPath40)unified\</ILMergeOutputAssembly40Directory>
 		<ILMergeOutputAssembly>$(ILMergeOutputAssemblyDirectory)$(ProductName).dll</ILMergeOutputAssembly>
 		<ILMergeOutputXmlDocs>$(ILMergeOutputAssemblyDirectory)$(ProductName).xml</ILMergeOutputXmlDocs>
 		<ILMergeOutputContractAssemblyDirectory>$(ILMergeOutputAssemblyDirectory)CodeContracts\</ILMergeOutputContractAssemblyDirectory>
@@ -85,9 +89,19 @@
 			<MergeIntoUnifiedAssembly Condition=" '$(IncludeOAuth2)' == 'false' ">false</MergeIntoUnifiedAssembly>
 		</ProductProjectNames>
 		<ProductProjects Include="@(ProductProjectNames->'$(ProjectRoot)src\%(Identity)\%(Identity).csproj')"/>
+		<DelaySignedProjects Include="
+													 @(ProductProjects);
+													 $(ProjectRoot)src\dotnetopenauth\dotnetopenauth.proj;
+													 " />
+		<DelaySignedProjects Include="$(ProjectRoot)src\dotnetopenauth.test\dotnetopenauth.test.csproj">
+			<Nonshipping>true</Nonshipping>
+		</DelaySignedProjects>
+		<DelaySignedProjects Include="$(ProjectRoot)samples\openidofflineprovider\openidofflineprovider.csproj">
+			<TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+		</DelaySignedProjects>
 
 		<ProjectReferencesToRemove Include="@(ProductProjectNames->'..\..\src\%(Identity)\%(Identity).csproj')" />
-		<AssemblyReferencesToReplaceWith Include="@(ProjectReferencesToRemove->'..\..\Bin\$(ProductName).dll')" />
+		<AssemblyReferencesToReplaceWith Include="@(ProjectReferencesToRemove->'..\..\Bin-net4.0\$(ProductName).dll')" />
 
 		<SignDependsOn Include="Build" Condition=" '$(SuppressBuildTarget)' != 'true' " />
 		<ILMergeInputAssemblies Condition=" '$(ClrVersion)' == '2' "

@@ -110,14 +110,6 @@
 	</Target>
 
 	<Target Name="ResignDelaySignedAssemblies" Outputs="@(ResignedAssembliesOutputs)">
-		<ItemGroup>
-			<DelaySignedProjects Include="
-													 @(ProductProjects);
-													 $(ProjectRoot)src\dotnetopenauth\dotnetopenauth.proj;
-													 $(ProjectRoot)src\dotnetopenauth.test\dotnetopenauth.test.csproj;
-													 $(ProjectRoot)samples\openidofflineprovider\openidofflineprovider.csproj;
-													 " />
-		</ItemGroup>
 		<MSBuild Projects="@(DelaySignedProjects)" Targets="Sign" BuildInParallel="$(BuildInParallel)">
 			<Output TaskParameter="TargetOutputs" ItemName="ResignedAssembliesOutputs"/>
 		</MSBuild>

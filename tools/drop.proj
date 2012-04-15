@@ -3,24 +3,44 @@
 	<Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.props))\EnlistmentInfo.props" Condition=" '$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.props))' != '' " />
 	<Import Project="$(MSBuildProjectDirectory)\DotNetOpenAuth.automated.props"/>
 
-	<Target Name="Layout" DependsOnTargets="BuildUnifiedProduct;ReSignDelaySignedAssemblies">
+	<Target Name="LayoutDependencies">
+		<MSBuild Projects="$(ProjectRoot)src\$(ProductName)\$(ProductName).proj"
+		         Properties="TargetFrameworkVersion=v3.5"
+		         Targets="BuildUnifiedProduct"
+		         BuildInParallel="$(BuildInParallel)" />
+		<MSBuild Projects="$(ProjectRoot)src\$(ProductName)\$(ProductName).proj"
+		         Properties="TargetFrameworkVersion=v4.0"
+		         Targets="BuildUnifiedProduct"
+		         BuildInParallel="$(BuildInParallel)" />
+		<MSBuild Projects="@(DelaySignedProjects)"
+		         Properties="TargetFrameworkVersion=v3.5"
+		         Targets="Sign"
+		         BuildInParallel="$(BuildInParallel)"
+		         Condition=" '%(DelaySignedProjects.Nonshipping)' != 'true' and '%(DelaySignedProjects.TargetFrameworkVersion)' != 'v4.0' " />
+		<MSBuild Projects="@(DelaySignedProjects)"
+		         Properties="TargetFrameworkVersion=v4.0"
+		         Targets="Sign"
+		         BuildInParallel="$(BuildInParallel)"
+		         Condition=" '%(DelaySignedProjects.Nonshipping)' != 'true' " />
+	</Target>
+
+	<Target Name="Layout" DependsOnTargets="LayoutDependencies">
 		<!-- Note that we use an MSBuild task for these dependencies rather than individual DependsOnTargets entries
 		     so that these builds can be executed in parallel. -->
 		<ItemGroup>
 			<ProjectsToBuild Include="
 							$(ProjectRoot)vsix\vsix.proj;
 							$(ProjectRoot)samples\samples.proj;
-							" Condition=" '$(TargetFrameworkVersion)' == 'v4.0' " />
-			<ProjectsToBuild Include="
 							$(ProjectRoot)doc\doc.proj;
-							" Condition=" '$(TargetFrameworkVersion)' == 'v3.5' " />
+							"  />
 		</ItemGroup>
 		<MSBuild BuildInParallel="$(BuildInParallel)"
 						 Projects="@(ProjectsToBuild)">
 			<Output TaskParameter="TargetOutputs" ItemName="DropLayoutDependencies"/>
 		</MSBuild>
 		<PropertyGroup>
-			<DropBinDirectory>$(DropDirectory)Bin\</DropBinDirectory>
+			<DropBin35Directory>$(DropDirectory)Bin-net3.5\</DropBin35Directory>
+			<DropBin40Directory>$(DropDirectory)Bin-net4.0\</DropBin40Directory>
 			<DropLibDirectory>$(DropDirectory)Lib\</DropLibDirectory>
 			<DropProjectTemplatesDirectory>$(DropDirectory)Project Templates\</DropProjectTemplatesDirectory>
 			<DropSamplesDirectory>$(DropDirectory)Samples\</DropSamplesDirectory>
@@ -34,7 +54,8 @@
 			<ProjectTemplatesVsi Include="@(DropLayoutDependencies)" Condition=" '%(DropLayoutDependencies.MSBuildSourceProjectFile)' == '$(ProjectRoot)vsi\vsi.proj' " />
 			<DropDirectories Include="
 						 $(DropDirectory);
-						 $(DropBinDirectory);
+						 $(DropBin35Directory);
+						 $(DropBin40Directory);
 						 $(DropLibDirectory);
 						 $(DropProjectTemplatesDirectory);
 						 $(DropSamplesDirectory);
@@ -48,11 +69,19 @@
 																$(ProjectRoot)CONTRIB.txt;
 																"
 											 Exclude="$(ProjectRoot)Doc\README.*.html;" />
-			<DropBinSourceFiles Include="
-																$(ILMergeOutputAssemblyDirectory)$(SignedSubPath)$(ProductName).dll;
-																$(ILMergeOutputAssemblyDirectory)$(ProductName).pdb;
-																$(ILMergeOutputAssemblyDirectory)$(ProductName).xml;
-																$(OutputPath)CodeContracts\$(SignedSubPath)$(ProductName).Contracts.???;
+			<DropBin35SourceFiles Include="
+																$(ILMergeOutputAssembly35Directory)$(SignedSubPath)$(ProductName).dll;
+																$(ILMergeOutputAssembly35Directory)$(ProductName).pdb;
+																$(ILMergeOutputAssembly35Directory)$(ProductName).xml;
+																$(OutputPath35)CodeContracts\$(SignedSubPath)$(ProductName).Contracts.???;
+																$(ProjectRoot)Doc\README.Bin.html;
+																$(ProjectRoot)src\$(ProductName).Core\Configuration\$(ProductName).xsd;
+													" />
+			<DropBin40SourceFiles Include="
+																$(ILMergeOutputAssembly40Directory)$(SignedSubPath)$(ProductName).dll;
+																$(ILMergeOutputAssembly40Directory)$(ProductName).pdb;
+																$(ILMergeOutputAssembly40Directory)$(ProductName).xml;
+																$(OutputPath40)CodeContracts\$(SignedSubPath)$(ProductName).Contracts.???;
 																$(ProjectRoot)Doc\README.Bin.html;
 																$(ProjectRoot)src\$(ProductName).Core\Configuration\$(ProductName).xsd;
 													" />
@@ -96,7 +125,8 @@
 			<DropSpecsSourceFiles Include="$(ProjectRoot)Doc\specs\*.htm*" />
 
 			<DropFiles Include="@(DropSourceFiles->'$(DropDirectory)%(RecursiveDir)%(FileName)%(Extension)')"/>
-			<DropBinFiles Include="@(DropBinSourceFiles->'$(DropBinDirectory)%(RecursiveDir)%(FileName)%(Extension)')"/>
+			<DropBin35Files Include="@(DropBin35SourceFiles->'$(DropBin35Directory)%(RecursiveDir)%(FileName)%(Extension)')"/>
+			<DropBin40Files Include="@(DropBin40SourceFiles->'$(DropBin40Directory)%(RecursiveDir)%(FileName)%(Extension)')"/>
 			<DropSatelliteFiles Include="@(DropSatelliteSourceFiles->'$(DropBinDirectory)%(CultureDir)%(FileName)%(Extension)')" />
 			<DropLibFiles Include="@(DropLibSourceFiles->'$(DropLibDirectory)%(RecursiveDir)%(FileName)%(Extension)')"/>
 			<DropProjectTemplatesFiles Include="@(DropProjectTemplatesSourceFiles->'$(DropProjectTemplatesDirectory)%(FileName)%(Extension)')" />
@@ -108,7 +138,8 @@
 
 			<AllDropSources Include="
 										@(DropSourceFiles);
-										@(DropBinSourceFiles);
+										@(DropBin35SourceFiles);
+										@(DropBin40SourceFiles);
 										@(DropSatelliteSourceFiles);
 										@(DropLibSourceFiles);
 										@(DropProjectTemplatesSourceFiles);
@@ -121,7 +152,8 @@
 
 			<AllDropTargets Include="
 										@(DropFiles);
-										@(DropBinFiles);
+										@(DropBin35Files);
+										@(DropBin40Files);
 										@(DropSatelliteFiles);
 										@(DropLibFiles);
 										@(DropProjectTemplatesFiles);
@@ -156,8 +188,7 @@
 			<SampleSolutionTargets Include="$(DropSamplesDirectory)**\*.sln" />
 		</ItemGroup>
 		<FixupShippingToolSamples Projects="@(DropSamplesToolsProjects)"
-		                          RemoveImportsStartingWith="%24(ProjectRoot)tools\"
-		                          AddReferences="Microsoft.Contracts"/>
+		                          RemoveImportsStartingWith="%24(ProjectRoot)tools\" />
 		<ChangeProjectReferenceToAssemblyReference Projects="@(SampleProjectTargets)"
 		  ProjectReferences="@(ProjectReferencesToRemove)" References="@(AssemblyReferencesToReplaceWith)" />
 		<RegexFileReplace
