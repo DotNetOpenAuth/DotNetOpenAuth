@@ -31,11 +31,18 @@
 			<ProjectsToBuild Include="
 							$(ProjectRoot)vsix\vsix.proj;
 							$(ProjectRoot)samples\samples.proj;
-							$(ProjectRoot)doc\doc.proj;
-							"  />
+							">
+				<Properties>TargetFrameworkVersion=v4.0</Properties>
+			</ProjectsToBuild>
+
+			<!-- Sandcastle doesn't seem to be able to handle .NET 4.0 dependencies right now. -->
+			<ProjectsToBuild Include="$(ProjectRoot)doc\doc.proj">
+				<Properties>TargetFrameworkVersion=v3.5</Properties>
+			</ProjectsToBuild>
 		</ItemGroup>
-		<MSBuild BuildInParallel="$(BuildInParallel)"
-						 Projects="@(ProjectsToBuild)">
+		<MSBuild Projects="@(ProjectsToBuild)"
+						 Properties="%(ProjectsToBuild.Properties)"
+						 BuildInParallel="$(BuildInParallel)">
 			<Output TaskParameter="TargetOutputs" ItemName="DropLayoutDependencies"/>
 		</MSBuild>
 		<PropertyGroup>

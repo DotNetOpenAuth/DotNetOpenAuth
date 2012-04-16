@@ -11,12 +11,13 @@
 										 ">
 			<Properties>TargetFrameworkVersion=v4.0</Properties>
 		</NightlyProjects>
-		<NightlyProjects Include="
-										doc\doc.proj;
-										samples\samples.proj;
-										">
+		<NightlyProjects Include="samples\samples.proj">
 			<Targets>DeployableArchive</Targets>
 			<Properties>TargetFrameworkVersion=v4.0</Properties>
+		</NightlyProjects>
+		<NightlyProjects Include="doc\doc.proj">
+			<Targets>DeployableArchive</Targets>
+			<Properties>TargetFrameworkVersion=v3.5</Properties>
 		</NightlyProjects>
 
 		<ProjectsToClean Include="
@@ -25,9 +26,11 @@
 		                          vsi\vsi.proj;
 		                          vsix\vsix.proj;
 		                          samples\samples.proj;
-		                          doc\doc.proj;
 		                          ">
 			<Properties>TargetFrameworkVersion=v4.0</Properties>
+		</ProjectsToClean>
+		<ProjectsToClean Include="doc\doc.proj">
+			<Properties>TargetFrameworkVersion=v3.5</Properties>
 		</ProjectsToClean>
 
 		<DirectoriesToClean Include="
@@ -47,11 +50,13 @@
 		<TestAssemblies Include="$(OutputPath)$(ProductName).Test.dll"  Condition=" '$(ClrVersion)' == '2' " />
 		<TestAssemblies Include="$(OutputPath)$(ProductName).AspNet.Test.dll" Condition=" '$(ClrVersion)' == '4' " />
 
-		<ProjectsToPublish Include="
-											 doc\doc.proj;
-											 samples\samples.proj;
-											 ">
+		<ProjectsToPublish Include="doc\doc.proj">
 			<Targets>Publish</Targets>
+			<Properties>TargetFrameworkVersion=v3.5</Properties>
+		</ProjectsToPublish>
+		<ProjectsToPublish Include="samples\samples.proj">
+			<Targets>Publish</Targets>
+			<Properties>TargetFrameworkVersion=v4.0</Properties>
 		</ProjectsToPublish>
 	</ItemGroup>
 
@@ -85,7 +90,10 @@
 	</Target>
 
 	<Target Name="Publish">
-		<MSBuild Projects="@(ProjectsToPublish)" Targets="%(ProjectsToPublish.Targets)" BuildInParallel="$(BuildInParallel)" />
+		<MSBuild Projects="@(ProjectsToPublish)"
+						 Targets="%(ProjectsToPublish.Targets)"
+						 Properties="%(ProjectsToPublish.Properties)"
+						 BuildInParallel="$(BuildInParallel)" />
 	</Target>
 
 	<Import Project="$(ProjectRoot)tools\DotNetOpenAuth.automated.targets"/>
