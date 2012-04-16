@@ -88,11 +88,15 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// The access request the credentials came with.
 		/// This may be useful if the authorization server wishes to apply some policy based on the client that is making the request.
 		/// </param>
+		/// <param name="canonicalUserName">
+		/// Receives the canonical username (normalized for the resource server) of the user, for valid credentials;
+		/// Or <c>null</c> if the return value is false.
+		/// </param>
 		/// <returns>
 		///   <c>true</c> if the given credentials are valid; otherwise, <c>false</c>.
 		/// </returns>
 		/// <exception cref="NotSupportedException">May be thrown if the authorization server does not support the resource owner password credential grant type.</exception>
-		bool IsResourceOwnerCredentialValid(string userName, string password, IAccessTokenRequest accessRequest);
+		bool IsResourceOwnerCredentialValid(string userName, string password, IAccessTokenRequest accessRequest, out string canonicalUserName);
 	}
 
 	/// <summary>
@@ -175,14 +179,19 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// The access request the credentials came with.
 		/// This may be useful if the authorization server wishes to apply some policy based on the client that is making the request.
 		/// </param>
+		/// <param name="canonicalUserName">
+		/// Receives the canonical username (normalized for the resource server) of the user, for valid credentials;
+		/// Or <c>null</c> if the return value is false.
+		/// </param>
 		/// <returns>
 		///   <c>true</c> if the given credentials are valid; otherwise, <c>false</c>.
 		/// </returns>
 		/// <exception cref="NotSupportedException">May be thrown if the authorization server does not support the resource owner password credential grant type.</exception>
-		bool IAuthorizationServerHost.IsResourceOwnerCredentialValid(string userName, string password, IAccessTokenRequest accessRequest) {
+		bool IAuthorizationServerHost.IsResourceOwnerCredentialValid(string userName, string password, IAccessTokenRequest accessRequest, out string canonicalUserName) {
 			Contract.Requires(!string.IsNullOrEmpty(userName));
 			Contract.Requires(password != null);
 			Contract.Requires(accessRequest != null);
+			Contract.Ensures(!Contract.Result<bool>() || !string.IsNullOrEmpty(Contract.ValueAtReturn<string>(out canonicalUserName)));
 			throw new NotImplementedException();
 		}
 

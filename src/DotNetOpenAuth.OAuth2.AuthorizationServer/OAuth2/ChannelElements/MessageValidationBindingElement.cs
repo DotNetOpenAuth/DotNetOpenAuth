@@ -95,8 +95,11 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			var resourceOwnerPasswordCarrier = message as AccessTokenResourceOwnerPasswordCredentialsRequest;
 			if (resourceOwnerPasswordCarrier != null) {
 				try {
-					if (this.AuthorizationServer.IsResourceOwnerCredentialValid(resourceOwnerPasswordCarrier.UserName, resourceOwnerPasswordCarrier.Password, resourceOwnerPasswordCarrier)) {
+					string canonicalUserName;
+					if (this.AuthorizationServer.IsResourceOwnerCredentialValid(resourceOwnerPasswordCarrier.UserName, resourceOwnerPasswordCarrier.Password, resourceOwnerPasswordCarrier, out canonicalUserName)) {
+						ErrorUtilities.VerifyHost(!string.IsNullOrEmpty(canonicalUserName), "IsResourceOwnerCredentialValid did not initialize out parameter.");
 						resourceOwnerPasswordCarrier.CredentialsValidated = true;
+						resourceOwnerPasswordCarrier.UserName = canonicalUserName;
 					} else {
 						Logger.OAuth.ErrorFormat(
 							"Resource owner password credential for user \"{0}\" rejected by authorization server host.",
