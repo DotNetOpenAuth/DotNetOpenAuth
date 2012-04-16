@@ -806,6 +806,12 @@ namespace DotNetOpenAuth.Messaging {
 			var cryptoKeyPair = cryptoKeyStore.GetKeys(bucket).FirstOrDefault(pair => pair.Value.Key.Length == keySize / 8);
 			if (cryptoKeyPair.Value == null || cryptoKeyPair.Value.ExpiresUtc < DateTime.UtcNow + minimumRemainingLife) {
 				// No key exists with enough remaining life for the required purpose.  Create a new key.
+				if (cryptoKeyPair.Value == null) {
+					Logger.Messaging.InfoFormat("{0}.GetKeys returned no keys for bucket \"{1}\" with the required key length of {2} bits.  A new key will be created", typeof(ICryptoKeyStore), bucket, keySize);
+				} else {
+					Logger.Messaging.InfoFormat("The first key returned by {0}.GetKeys for bucket \"{1}\" with the required key length of {2} bits was too near expiry to use.  A new key will be created", typeof(ICryptoKeyStore), bucket, keySize);
+				}
+
 				ErrorUtilities.VerifyHost(minimumRemainingLife <= SymmetricSecretKeyLifespan, "Unable to create a new symmetric key with the required lifespan of {0} because it is beyond the limit of {1}.", minimumRemainingLife, SymmetricSecretKeyLifespan);
 				byte[] secret = GetCryptoRandomData(keySize / 8);
 				DateTime expires = DateTime.UtcNow + SymmetricSecretKeyLifespan;
