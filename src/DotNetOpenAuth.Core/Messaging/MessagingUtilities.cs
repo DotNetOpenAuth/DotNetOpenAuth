@@ -826,6 +826,7 @@ namespace DotNetOpenAuth.Messaging {
 					cryptoKeyStore.StoreKey(bucket, handle, cryptoKey);
 				} catch (CryptoKeyCollisionException) {
 					ErrorUtilities.VerifyInternal(++failedAttempts < 3, "Unable to derive a unique handle to a private symmetric key.");
+					Logger.Messaging.Warn("A randomly generated crypto key handle collided with an existing handle.  Another randomly generated handle will be attempted till the retry count is met.");
 					goto tryAgain;
 				}
 			}
