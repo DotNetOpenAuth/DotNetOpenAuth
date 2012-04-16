@@ -119,11 +119,15 @@ namespace RelyingPartyLogic {
 		/// </summary>
 		/// <param name="userName">Username on the account.</param>
 		/// <param name="password">The user's password.</param>
+		/// <param name="accessRequest">
+		/// The access request the credentials came with.
+		/// This may be useful if the authorization server wishes to apply some policy based on the client that is making the request.
+		/// </param>
 		/// <returns>
 		///   <c>true</c> if the given credentials are valid; otherwise, <c>false</c>.
 		/// </returns>
 		/// <exception cref="NotSupportedException">May be thrown if the authorization server does not support the resource owner password credential grant type.</exception>
-		public bool IsResourceOwnerCredentialValid(string userName, string password) {
+		public bool IsResourceOwnerCredentialValid(string userName, string password, IAccessTokenRequest accessRequest) {
 			// This web site delegates user authentication to OpenID Providers, and as such no users have local passwords with this server.
 			throw new NotSupportedException();
 		}

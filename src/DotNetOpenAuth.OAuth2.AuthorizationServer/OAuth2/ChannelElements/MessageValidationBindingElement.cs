@@ -95,7 +95,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			var resourceOwnerPasswordCarrier = message as AccessTokenResourceOwnerPasswordCredentialsRequest;
 			if (resourceOwnerPasswordCarrier != null) {
 				try {
-					if (this.AuthorizationServer.IsResourceOwnerCredentialValid(resourceOwnerPasswordCarrier.UserName, resourceOwnerPasswordCarrier.Password)) {
+					if (this.AuthorizationServer.IsResourceOwnerCredentialValid(resourceOwnerPasswordCarrier.UserName, resourceOwnerPasswordCarrier.Password, resourceOwnerPasswordCarrier)) {
 						resourceOwnerPasswordCarrier.CredentialsValidated = true;
 					} else {
 						Logger.OAuth.ErrorFormat(

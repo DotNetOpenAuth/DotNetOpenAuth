@@ -19,7 +19,7 @@ namespace DotNetOpenAuth.OAuth2 {
 	/// <summary>
 	/// Provides host-specific authorization server services needed by this library.
 	/// </summary>
-	[ContractClass(typeof(IAuthorizationServerContract))]
+	[ContractClass(typeof(IAuthorizationServerHostContract))]
 	public interface IAuthorizationServerHost {
 		/// <summary>
 		/// Gets the store for storing crypto keys used to symmetrically encrypt and sign authorization codes and refresh tokens.
@@ -84,22 +84,26 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <param name="userName">Username on the account.</param>
 		/// <param name="password">The user's password.</param>
+		/// <param name="accessRequest">
+		/// The access request the credentials came with.
+		/// This may be useful if the authorization server wishes to apply some policy based on the client that is making the request.
+		/// </param>
 		/// <returns>
 		///   <c>true</c> if the given credentials are valid; otherwise, <c>false</c>.
 		/// </returns>
 		/// <exception cref="NotSupportedException">May be thrown if the authorization server does not support the resource owner password credential grant type.</exception>
-		bool IsResourceOwnerCredentialValid(string userName, string password);
+		bool IsResourceOwnerCredentialValid(string userName, string password, IAccessTokenRequest accessRequest);
 	}
 
 	/// <summary>
 	/// Code Contract for the <see cref="IAuthorizationServerHost"/> interface.
 	/// </summary>
 	[ContractClassFor(typeof(IAuthorizationServerHost))]
-	internal abstract class IAuthorizationServerContract : IAuthorizationServerHost {
+	internal abstract class IAuthorizationServerHostContract : IAuthorizationServerHost {
 		/// <summary>
-		/// Prevents a default instance of the <see cref="IAuthorizationServerContract"/> class from being created.
+		/// Prevents a default instance of the <see cref="IAuthorizationServerHostContract"/> class from being created.
 		/// </summary>
-		private IAuthorizationServerContract() {
+		private IAuthorizationServerHostContract() {
 		}
 
 		/// <summary>
@@ -167,13 +171,18 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <param name="userName">Username on the account.</param>
 		/// <param name="password">The user's password.</param>
+		/// <param name="accessRequest">
+		/// The access request the credentials came with.
+		/// This may be useful if the authorization server wishes to apply some policy based on the client that is making the request.
+		/// </param>
 		/// <returns>
 		///   <c>true</c> if the given credentials are valid; otherwise, <c>false</c>.
 		/// </returns>
 		/// <exception cref="NotSupportedException">May be thrown if the authorization server does not support the resource owner password credential grant type.</exception>
-		bool IAuthorizationServerHost.IsResourceOwnerCredentialValid(string userName, string password) {
+		bool IAuthorizationServerHost.IsResourceOwnerCredentialValid(string userName, string password, IAccessTokenRequest accessRequest) {
 			Contract.Requires(!string.IsNullOrEmpty(userName));
 			Contract.Requires(password != null);
+			Contract.Requires(accessRequest != null);
 			throw new NotImplementedException();
 		}
 
