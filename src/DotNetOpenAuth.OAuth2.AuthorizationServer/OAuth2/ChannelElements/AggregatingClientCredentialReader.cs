@@ -17,17 +17,17 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	/// <summary>
 	/// Applies OAuth 2 spec policy for supporting multiple methods of client authentication.
 	/// </summary>
-	internal class AggregatingClientCredentialReader : ClientAuthenticationModuleBase {
+	internal class AggregatingClientCredentialReader : ClientAuthenticationModule {
 		/// <summary>
 		/// The set of authenticators to apply to an incoming request.
 		/// </summary>
-		private readonly IEnumerable<IClientAuthenticationModule> authenticators;
+		private readonly IEnumerable<ClientAuthenticationModule> authenticators;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AggregatingClientCredentialReader"/> class.
 		/// </summary>
 		/// <param name="authenticators">The set of authentication modules to apply.</param>
-		internal AggregatingClientCredentialReader(IEnumerable<IClientAuthenticationModule> authenticators) {
+		internal AggregatingClientCredentialReader(IEnumerable<ClientAuthenticationModule> authenticators) {
 			Requires.NotNull(authenticators, "readers");
 			this.authenticators = authenticators;
 		}
@@ -35,19 +35,21 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <summary>
 		/// Attempts to extract client identification/authentication information from a message.
 		/// </summary>
+		/// <param name="authorizationServerHost">The authorization server host.</param>
 		/// <param name="requestMessage">The incoming message.</param>
 		/// <param name="clientIdentifier">Receives the client identifier, if one was found.</param>
 		/// <returns>The level of the extracted client information.</returns>
-		public override ClientAuthenticationResult TryAuthenticateClient(AuthenticatedClientRequestBase requestMessage, out string clientIdentifier) {
+		public override ClientAuthenticationResult TryAuthenticateClient(IAuthorizationServerHost authorizationServerHost, AuthenticatedClientRequestBase requestMessage, out string clientIdentifier) {
+			Requires.NotNull(authorizationServerHost, "authorizationServerHost");
 			Requires.NotNull(requestMessage, "requestMessage");
 
-			IClientAuthenticationModule authenticator = null;
+			ClientAuthenticationModule authenticator = null;
 			ClientAuthenticationResult result = ClientAuthenticationResult.NoAuthenticationRecognized;
 			clientIdentifier = null;
 
 			foreach (var candidateAuthenticator in this.authenticators) {
 				string candidateClientIdentifier;
-				var resultCandidate = candidateAuthenticator.TryAuthenticateClient(requestMessage, out candidateClientIdentifier);
+				var resultCandidate = candidateAuthenticator.TryAuthenticateClient(authorizationServerHost, requestMessage, out candidateClientIdentifier);
 
 				ErrorUtilities.VerifyProtocol(
 					result == ClientAuthenticationResult.NoAuthenticationRecognized || resultCandidate == ClientAuthenticationResult.NoAuthenticationRecognized,

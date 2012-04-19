@@ -15,31 +15,20 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	/// <summary>
 	/// Reads client authentication information from the message payload itself (POST entity as a URI-encoded parameter).
 	/// </summary>
-	public class ClientCredentialMessagePartReader : ClientAuthenticationModuleBase {
-		/// <summary>
-		/// The authorization server host.
-		/// </summary>
-		private readonly IAuthorizationServerHost authorizationServerHost;
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="ClientCredentialMessagePartReader"/> class.
-		/// </summary>
-		/// <param name="authorizationServerHost">The authorization server host.</param>
-		public ClientCredentialMessagePartReader(IAuthorizationServerHost authorizationServerHost) {
-			Requires.NotNull(authorizationServerHost, "authorizationServerHost");
-			this.authorizationServerHost = authorizationServerHost;
-		}
-
+	public class ClientCredentialMessagePartReader : ClientAuthenticationModule {
 		/// <summary>
 		/// Attempts to extract client identification/authentication information from a message.
 		/// </summary>
+		/// <param name="authorizationServerHost">The authorization server host.</param>
 		/// <param name="requestMessage">The incoming message.</param>
 		/// <param name="clientIdentifier">Receives the client identifier, if one was found.</param>
 		/// <returns>The level of the extracted client information.</returns>
-		public override ClientAuthenticationResult TryAuthenticateClient(AuthenticatedClientRequestBase requestMessage, out string clientIdentifier) {
+		public override ClientAuthenticationResult TryAuthenticateClient(IAuthorizationServerHost authorizationServerHost, AuthenticatedClientRequestBase requestMessage, out string clientIdentifier) {
+			Requires.NotNull(authorizationServerHost, "authorizationServerHost");
 			Requires.NotNull(requestMessage, "requestMessage");
+
 			clientIdentifier = requestMessage.ClientIdentifier;
-			return TryAuthenticateClient(this.authorizationServerHost, requestMessage.ClientIdentifier, requestMessage.ClientSecret);
+			return TryAuthenticateClient(authorizationServerHost, requestMessage.ClientIdentifier, requestMessage.ClientSecret);
 		}
 	}
 }

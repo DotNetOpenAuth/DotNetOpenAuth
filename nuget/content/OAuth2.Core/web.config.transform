@@ -1,7 +1,7 @@
 <configuration>
 	<configSections>
 		<sectionGroup name="dotNetOpenAuth" type="DotNetOpenAuth.Configuration.DotNetOpenAuthSection, DotNetOpenAuth.Core">
-			<section name="oauth2" type="DotNetOpenAuth.Configuration.OAuth2Element, DotNetOpenAuth.OAuth2" requirePermission="false" allowLocation="true" />
+			<sectionGroup name="oauth2" type="DotNetOpenAuth.Configuration.OAuth2SectionGroup, DotNetOpenAuth.OAuth2" />
 		</sectionGroup>
 	</configSections>
 </configuration>

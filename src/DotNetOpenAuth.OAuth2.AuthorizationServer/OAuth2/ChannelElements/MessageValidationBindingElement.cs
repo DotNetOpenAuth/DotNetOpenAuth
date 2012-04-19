@@ -26,15 +26,23 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <summary>
 		/// The aggregating client authentication module.
 		/// </summary>
-		private readonly IClientAuthenticationModule clientAuthenticationModule;
+		private readonly ClientAuthenticationModule clientAuthenticationModule;
+
+		/// <summary>
+		/// The authorization server host that applies.
+		/// </summary>
+		private readonly IAuthorizationServerHost authorizationServer;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MessageValidationBindingElement"/> class.
 		/// </summary>
 		/// <param name="clientAuthenticationModule">The aggregating client authentication module.</param>
-		internal MessageValidationBindingElement(IClientAuthenticationModule clientAuthenticationModule) {
+		internal MessageValidationBindingElement(ClientAuthenticationModule clientAuthenticationModule, IAuthorizationServerHost authorizationServer) {
 			Requires.NotNull(clientAuthenticationModule, "clientAuthenticationModule");
+			Requires.NotNull(authorizationServer, "authorizationServer");
+
 			this.clientAuthenticationModule = clientAuthenticationModule;
+			this.authorizationServer = authorizationServer;
 		}
 
 		/// <summary>
@@ -95,7 +103,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			var authenticatedClientRequest = message as AuthenticatedClientRequestBase;
 			if (authenticatedClientRequest != null) {
 				string clientIdentifier;
-				var result = this.clientAuthenticationModule.TryAuthenticateClient(authenticatedClientRequest, out clientIdentifier);
+				var result = this.clientAuthenticationModule.TryAuthenticateClient(this.authorizationServer, authenticatedClientRequest, out clientIdentifier);
 				AuthServerUtilities.TokenEndpointVerify(result != ClientAuthenticationResult.ClientIdNotAuthenticated, Protocol.AccessTokenRequestErrorCodes.UnauthorizedClient); // an empty secret is not allowed for client authenticated calls.
 				AuthServerUtilities.TokenEndpointVerify(result == ClientAuthenticationResult.ClientAuthenticated, Protocol.AccessTokenRequestErrorCodes.InvalidClient, AuthServerStrings.ClientSecretMismatch);
 				authenticatedClientRequest.ClientIdentifier = clientIdentifier;

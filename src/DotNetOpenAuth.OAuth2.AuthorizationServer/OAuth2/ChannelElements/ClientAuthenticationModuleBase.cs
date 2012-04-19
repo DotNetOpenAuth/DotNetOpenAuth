@@ -15,32 +15,24 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	using DotNetOpenAuth.OAuth2.Messages;
 
 	/// <summary>
-	/// A convenient base class for imlementations of the <see cref="IClientAuthenticationModule"/> interface.
+	/// A base class for extensions that can read incoming messages and extract the client identifier and
+	/// possibly authentication information (like a shared secret, signed nonce, etc.)
 	/// </summary>
-	public abstract class ClientAuthenticationModuleBase : IClientAuthenticationModule {
+	public abstract class ClientAuthenticationModule {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ClientAuthenticationModuleBase"/> class.
+		/// Initializes a new instance of the <see cref="ClientAuthenticationModule"/> class.
 		/// </summary>
-		protected ClientAuthenticationModuleBase() {
+		protected ClientAuthenticationModule() {
 		}
 
 		/// <summary>
 		/// Attempts to extract client identification/authentication information from a message.
 		/// </summary>
+		/// <param name="authorizationServerHost">The authorization server host.</param>
 		/// <param name="requestMessage">The incoming message.</param>
 		/// <param name="clientIdentifier">Receives the client identifier, if one was found.</param>
 		/// <returns>The level of the extracted client information.</returns>
-		public abstract ClientAuthenticationResult TryAuthenticateClient(AuthenticatedClientRequestBase requestMessage, out string clientIdentifier);
-
-		/// <summary>
-		/// Attempts to extract client identification/authentication information from a message.
-		/// </summary>
-		/// <param name="requestMessage">The incoming message.  Always an instance of <see cref="AuthenticatedClientRequestBase"/></param>
-		/// <param name="clientIdentifier">Receives the client identifier, if one was found.</param>
-		/// <returns>The level of the extracted client information.</returns>
-		public ClientAuthenticationResult TryAuthenticateClient(IDirectedProtocolMessage requestMessage, out string clientIdentifier) {
-			return this.TryAuthenticateClient((AuthenticatedClientRequestBase)requestMessage, out clientIdentifier);
-		}
+		public abstract ClientAuthenticationResult TryAuthenticateClient(IAuthorizationServerHost authorizationServerHost, AuthenticatedClientRequestBase requestMessage, out string clientIdentifier);
 
 		/// <summary>
 		/// Validates a client identifier and shared secret against the authoriation server's database.

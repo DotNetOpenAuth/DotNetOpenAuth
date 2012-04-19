@@ -479,12 +479,19 @@
 												<xs:choice minOccurs="0" maxOccurs="unbounded">
 													<xs:element name="add">
 														<xs:complexType>
-															<xs:attribute name="name" type="xs:string" use="required" />
+															<xs:attribute name="type" type="xs:string" use="optional">
+																<xs:annotation>
+																	<xs:documentation>
+																		The fully-qualified name of the type that implements the IIdentifierDiscoveryService interface.
+																	</xs:documentation>
+																</xs:annotation>
+															</xs:attribute>
+															<xs:attribute name="xaml" type="xs:string" use="optional" />
 														</xs:complexType>
 													</xs:element>
 													<xs:element name="remove">
 														<xs:complexType>
-															<xs:attribute name="name" type="xs:string" use="required" />
+															<xs:attribute name="type" type="xs:string" use="required" />
 														</xs:complexType>
 													</xs:element>
 													<xs:element name="clear">
@@ -930,12 +937,25 @@
 												<xs:choice minOccurs="0" maxOccurs="unbounded">
 													<xs:element name="add">
 														<xs:complexType>
-															<xs:attribute name="name" type="xs:string" use="required" />
+															<xs:attribute name="type" type="xs:string" use="optional">
+																<xs:annotation>
+																	<xs:documentation>
+																		The fully-qualified name of the ClientAuthenticationModule-derived type.
+																	</xs:documentation>
+																</xs:annotation>
+															</xs:attribute>
+															<xs:attribute name="xaml" type="xs:string" use="optional" />
 														</xs:complexType>
 													</xs:element>
 													<xs:element name="remove">
 														<xs:complexType>
-															<xs:attribute name="name" type="xs:string" use="required" />
+															<xs:attribute name="type" type="xs:string" use="required">
+																<xs:annotation>
+																	<xs:documentation>
+																		The fully-qualified name of the ClientAuthenticationModule-derived type.
+																	</xs:documentation>
+																</xs:annotation>
+															</xs:attribute>
 														</xs:complexType>
 													</xs:element>
 													<xs:element name="clear">
