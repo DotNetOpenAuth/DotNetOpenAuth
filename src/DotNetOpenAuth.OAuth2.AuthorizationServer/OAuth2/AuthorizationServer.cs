@@ -28,8 +28,14 @@ namespace DotNetOpenAuth.OAuth2 {
 		private static readonly TypeConfigurationCollection<IClientAuthenticationModule> defaultClientAuthenticationModules =
 			new TypeConfigurationCollection<IClientAuthenticationModule>(new Type[] { typeof(ClientCredentialHttpBasicReader), typeof(ClientCredentialMessagePartReader) });
 
+		/// <summary>
+		/// The list of modules that verify client authentication data.
+		/// </summary>
 		private readonly List<IClientAuthenticationModule> clientAuthenticationModules = new List<IClientAuthenticationModule>();
 
+		/// <summary>
+		/// The lone aggregate client authentication module that uses the <see cref="clientAuthenticationModules"/> and applies aggregating policy.
+		/// </summary>
 		private readonly ClientAuthenticationModuleBase aggregatingClientAuthenticationModule;
 
 		/// <summary>
@@ -50,7 +56,6 @@ namespace DotNetOpenAuth.OAuth2 {
 			////this.clientAuthenticationModules.AddRange(modules.CreateInstances(true));
 			this.clientAuthenticationModules.Add(new ClientCredentialMessagePartReader(authorizationServer));
 			this.clientAuthenticationModules.Add(new ClientCredentialHttpBasicReader(authorizationServer));
-
 		}
 
 		/// <summary>
@@ -67,6 +72,9 @@ namespace DotNetOpenAuth.OAuth2 {
 			get { return ((IOAuth2ChannelWithAuthorizationServer)this.Channel).AuthorizationServer; }
 		}
 
+		/// <summary>
+		/// Gets the extension modules that can read client authentication data from incoming messages.
+		/// </summary>
 		public IList<IClientAuthenticationModule> ClientAuthenticationModules {
 			get { return this.clientAuthenticationModules; }
 		}

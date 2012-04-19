@@ -32,6 +32,12 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			this.authenticators = authenticators;
 		}
 
+		/// <summary>
+		/// Attempts to extract client identification/authentication information from a message.
+		/// </summary>
+		/// <param name="requestMessage">The incoming message.</param>
+		/// <param name="clientIdentifier">Receives the client identifier, if one was found.</param>
+		/// <returns>The level of the extracted client information.</returns>
 		public override ClientAuthenticationResult TryAuthenticateClient(AuthenticatedClientRequestBase requestMessage, out string clientIdentifier) {
 			Requires.NotNull(requestMessage, "requestMessage");
 

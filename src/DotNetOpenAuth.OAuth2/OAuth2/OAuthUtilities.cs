@@ -18,19 +18,30 @@ namespace DotNetOpenAuth.OAuth2 {
 	/// Some common utility methods for OAuth 2.0.
 	/// </summary>
 	public static class OAuthUtilities {
-		private const string HttpBasicAuthScheme = "Basic ";
-
 		/// <summary>
 		/// The <see cref="StringComparer"/> instance to use when comparing scope equivalence.
 		/// </summary>
 		public static readonly StringComparer ScopeStringComparer = StringComparer.Ordinal;
 
 		/// <summary>
+		/// The string "Basic ".
+		/// </summary>
+		private const string HttpBasicAuthScheme = "Basic ";
+
+		/// <summary>
 		/// The delimiter between scope elements.
 		/// </summary>
-		private static char[] scopeDelimiter = new char[] { ' ' };
+		private static readonly char[] scopeDelimiter = new char[] { ' ' };
 
+		/// <summary>
+		/// A colon, in a 1-length character array.
+		/// </summary>
 		private static readonly char[] ColonSeparator = new char[] { ':' };
+
+		/// <summary>
+		/// The encoding to use when preparing credentials for transit in HTTP Basic base64 encoding form.
+		/// </summary>
+		private static readonly Encoding HttpBasicEncoding = Encoding.UTF8;
 
 		/// <summary>
 		/// The characters that may appear in an access token that is included in an HTTP Authorization header.
@@ -134,8 +145,12 @@ namespace DotNetOpenAuth.OAuth2 {
 				accessToken);
 		}
 
-		private static readonly Encoding HttpBasicEncoding = Encoding.UTF8;
-
+		/// <summary>
+		/// Applies the HTTP Authorization header for HTTP Basic authentication.
+		/// </summary>
+		/// <param name="headers">The headers collection to set the authorization header to.</param>
+		/// <param name="userName">The username.  Cannot be empty.</param>
+		/// <param name="password">The password.  Cannot be null.</param>
 		internal static void ApplyHttpBasicAuth(WebHeaderCollection headers, string userName, string password) {
 			Requires.NotNull(headers, "headers");
 			Requires.NotNullOrEmpty(userName, "userName");
@@ -148,6 +163,11 @@ namespace DotNetOpenAuth.OAuth2 {
 			headers[HttpRequestHeader.Authorization] = header;
 		}
 
+		/// <summary>
+		/// Extracts the username and password from an HTTP Basic authorized web header.
+		/// </summary>
+		/// <param name="headers">The incoming web headers.</param>
+		/// <returns>The network credentials; or <c>null</c> if none could be discovered in the request.</returns>
 		internal static NetworkCredential ParseHttpBasicAuth(WebHeaderCollection headers) {
 			Requires.NotNull(headers, "headers");
 

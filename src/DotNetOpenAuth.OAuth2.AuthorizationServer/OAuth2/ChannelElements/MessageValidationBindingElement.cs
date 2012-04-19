@@ -23,8 +23,15 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	/// not been revoked and that an access token has not expired.
 	/// </remarks>
 	internal class MessageValidationBindingElement : AuthServerBindingElementBase {
+		/// <summary>
+		/// The aggregating client authentication module.
+		/// </summary>
 		private readonly IClientAuthenticationModule clientAuthenticationModule;
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="MessageValidationBindingElement"/> class.
+		/// </summary>
+		/// <param name="clientAuthenticationModule">The aggregating client authentication module.</param>
 		internal MessageValidationBindingElement(IClientAuthenticationModule clientAuthenticationModule) {
 			Requires.NotNull(clientAuthenticationModule, "clientAuthenticationModule");
 			this.clientAuthenticationModule = clientAuthenticationModule;

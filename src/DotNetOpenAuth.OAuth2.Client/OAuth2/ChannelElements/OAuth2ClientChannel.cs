@@ -18,7 +18,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	/// <summary>
 	/// The messaging channel used by OAuth 2.0 Clients.
 	/// </summary>
-	internal class OAuth2ClientChannel : OAuth2ChannelBase, IOAuth2ChannelWithClient {
+	internal class OAuth2ClientChannel : OAuth2ChannelBase {
 		/// <summary>
 		/// The messages receivable by this channel.
 		/// </summary>
@@ -37,13 +37,6 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		internal OAuth2ClientChannel()
 			: base(MessageTypes) {
 		}
-
-		/// <summary>
-		/// Gets or sets the identifier by which this client is known to the Authorization Server.
-		/// </summary>
-		public string ClientIdentifier { get; set; }
-
-		public ClientCredentialApplicator ClientCredentialApplicator { get; set; }
 
 		/// <summary>
 		/// Prepares an HTTP request that carries a given message.
@@ -138,14 +131,6 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		protected override OutgoingWebResponse PrepareDirectResponse(IProtocolMessage response) {
 			// Clients don't ever send direct responses.
 			throw new NotImplementedException();
-		}
-
-		protected override IncomingWebResponse GetDirectResponse(HttpWebRequest webRequest) {
-			if (this.ClientCredentialApplicator != null) {
-				this.ClientCredentialApplicator.ApplyClientCredential(this.ClientIdentifier, webRequest);
-			}
-
-			return base.GetDirectResponse(webRequest);
 		}
 	}
 }

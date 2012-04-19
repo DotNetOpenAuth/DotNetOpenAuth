@@ -43,6 +43,7 @@ namespace DotNetOpenAuth {
 		/// </summary>
 		/// <param name="value">The value.</param>
 		/// <param name="parameterName">Name of the parameter.</param>
+		/// <returns>The validated value.</returns>
 #if !CLR4
 		[ContractArgumentValidator]
 #endif

@@ -14,7 +14,6 @@ namespace DotNetOpenAuth.Configuration {
 	/// Represents the &lt;oauth2/authorizationServer&gt; element in the host's .config file.
 	/// </summary>
 	internal class OAuth2AuthorizationServerElement : ConfigurationElement {
-
 		/// <summary>
 		/// The name of the &lt;clientAuthenticationModules&gt; sub-element.
 		/// </summary>
@@ -23,7 +22,7 @@ namespace DotNetOpenAuth.Configuration {
 		/// <summary>
 		/// The built-in set of identifier discovery services.
 		/// </summary>
-		private static readonly TypeConfigurationCollection<IClientAuthenticationModule> defaultClientAuthenticationModules = 
+		private static readonly TypeConfigurationCollection<IClientAuthenticationModule> defaultClientAuthenticationModules =
 			new TypeConfigurationCollection<IClientAuthenticationModule>();
 
 		/// <summary>

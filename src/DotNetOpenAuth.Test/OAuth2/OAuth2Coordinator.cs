@@ -35,13 +35,13 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 			this.client = client;
 
 			this.client.ClientIdentifier = OAuth2TestBase.ClientId;
-			this.client.ClientCredentialApplicator = ClientCredentialApplicator.NetworkCredential(new NetworkCredential(OAuth2TestBase.ClientId, OAuth2TestBase.ClientSecret));
+			this.client.ClientCredentialApplicator = ClientCredentialApplicator.HttpBasic(OAuth2TestBase.ClientSecret);
 		}
 
 		internal override void Run() {
 			var authServer = new AuthorizationServer(this.authServerHost);
 
-			var rpCoordinatingChannel = new CoordinatingOAuth2ClientChannel(this.client.Channel, this.IncomingMessageFilter, this.OutgoingMessageFilter);
+			var rpCoordinatingChannel = new CoordinatingChannel(this.client.Channel, this.IncomingMessageFilter, this.OutgoingMessageFilter);
 			var opCoordinatingChannel = new CoordinatingOAuth2AuthServerChannel(authServer.Channel, this.IncomingMessageFilter, this.OutgoingMessageFilter);
 			rpCoordinatingChannel.RemoteChannel = opCoordinatingChannel;
 			opCoordinatingChannel.RemoteChannel = rpCoordinatingChannel;

@@ -13,6 +13,9 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	/// A direct message from the client to the authorization server that includes the client's credentials.
 	/// </summary>
 	public abstract class AuthenticatedClientRequestBase : MessageBase, IHttpDirectRequest {
+		/// <summary>
+		/// The backing for the <see cref="Headers"/> property.
+		/// </summary>
 		private readonly WebHeaderCollection headers = new WebHeaderCollection();
 
 		/// <summary>
@@ -44,6 +47,10 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		[MessagePart(Protocol.client_secret, IsRequired = false)]
 		public string ClientSecret { get; internal set; }
 
+		/// <summary>
+		/// Gets the HTTP headers of the request.
+		/// </summary>
+		/// <value>May be an empty collection, but must not be <c>null</c>.</value>
 		public WebHeaderCollection Headers {
 			get { return this.headers; }
 		}

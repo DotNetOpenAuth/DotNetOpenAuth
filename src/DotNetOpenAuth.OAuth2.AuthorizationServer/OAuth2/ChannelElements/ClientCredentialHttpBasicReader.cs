@@ -13,14 +13,30 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2.Messages;
 
+	/// <summary>
+	/// Reads client authentication information from the HTTP Authorization header via Basic authentication.
+	/// </summary>
 	public class ClientCredentialHttpBasicReader : ClientAuthenticationModuleBase {
+		/// <summary>
+		/// The authorization server host.
+		/// </summary>
 		private readonly IAuthorizationServerHost authorizationServerHost;
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ClientCredentialHttpBasicReader"/> class.
+		/// </summary>
+		/// <param name="authorizationServerHost">The authorization server host.</param>
 		public ClientCredentialHttpBasicReader(IAuthorizationServerHost authorizationServerHost) {
 			Requires.NotNull(authorizationServerHost, "authorizationServerHost");
 			this.authorizationServerHost = authorizationServerHost;
 		}
 
+		/// <summary>
+		/// Attempts to extract client identification/authentication information from a message.
+		/// </summary>
+		/// <param name="requestMessage">The incoming message.</param>
+		/// <param name="clientIdentifier">Receives the client identifier, if one was found.</param>
+		/// <returns>The level of the extracted client information.</returns>
 		public override ClientAuthenticationResult TryAuthenticateClient(AuthenticatedClientRequestBase requestMessage, out string clientIdentifier) {
 			Requires.NotNull(requestMessage, "requestMessage");
 
