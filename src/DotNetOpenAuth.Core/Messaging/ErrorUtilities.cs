@@ -193,17 +193,17 @@ namespace DotNetOpenAuth.Messaging {
 		/// Throws a <see cref="ProtocolException"/> if some <paramref name="condition"/> evaluates to false.
 		/// </summary>
 		/// <param name="condition">True to do nothing; false to throw the exception.</param>
-		/// <param name="message">The error message for the exception.</param>
+		/// <param name="unformattedMessage">The error message for the exception.</param>
 		/// <param name="args">The string formatting arguments, if any.</param>
 		/// <exception cref="ProtocolException">Thrown if <paramref name="condition"/> evaluates to <c>false</c>.</exception>
 		[Pure]
-		internal static void VerifyProtocol(bool condition, string message, params object[] args) {
+		internal static void VerifyProtocol(bool condition, string unformattedMessage, params object[] args) {
 			Requires.NotNull(args, "args");
 			Contract.Ensures(condition);
 			Contract.EnsuresOnThrow<ProtocolException>(!condition);
-			Contract.Assume(message != null);
+			Contract.Assume(unformattedMessage != null);
 			if (!condition) {
-				var exception = new ProtocolException(string.Format(CultureInfo.CurrentCulture, message, args));
+				var exception = new ProtocolException(string.Format(CultureInfo.CurrentCulture, unformattedMessage, args));
 				if (Logger.Messaging.IsErrorEnabled) {
 					Logger.Messaging.Error(
 						string.Format(
@@ -220,7 +220,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Throws a <see cref="ProtocolException"/>.
 		/// </summary>
-		/// <param name="message">The message to set in the exception.</param>
+		/// <param name="unformattedMessage">The message to set in the exception.</param>
 		/// <param name="args">The formatting arguments of the message.</param>
 		/// <returns>
 		/// An InternalErrorException, which may be "thrown" by the caller in order
@@ -229,10 +229,10 @@ namespace DotNetOpenAuth.Messaging {
 		/// </returns>
 		/// <exception cref="ProtocolException">Always thrown.</exception>
 		[Pure]
-		internal static Exception ThrowProtocol(string message, params object[] args) {
+		internal static Exception ThrowProtocol(string unformattedMessage, params object[] args) {
 			Requires.NotNull(args, "args");
-			Contract.Assume(message != null);
-			VerifyProtocol(false, message, args);
+			Contract.Assume(unformattedMessage != null);
+			VerifyProtocol(false, unformattedMessage, args);
 
 			// we never reach here, but this allows callers to "throw" this method.
 			return new InternalErrorException();

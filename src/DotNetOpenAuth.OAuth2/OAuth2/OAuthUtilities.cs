@@ -18,6 +18,8 @@ namespace DotNetOpenAuth.OAuth2 {
 	/// Some common utility methods for OAuth 2.0.
 	/// </summary>
 	public static class OAuthUtilities {
+		private const string HttpBasicAuthScheme = "Basic ";
+
 		/// <summary>
 		/// The <see cref="StringComparer"/> instance to use when comparing scope equivalence.
 		/// </summary>
@@ -28,6 +30,8 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		private static char[] scopeDelimiter = new char[] { ' ' };
 
+		private static readonly char[] ColonSeparator = new char[] { ':' };
+
 		/// <summary>
 		/// The characters that may appear in an access token that is included in an HTTP Authorization header.
 		/// </summary>
@@ -35,9 +39,9 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// This is defined in OAuth 2.0 DRAFT 10, section 5.1.1. (http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#authz-header)
 		/// </remarks>
 		private static string accessTokenAuthorizationHeaderAllowedCharacters = MessagingUtilities.UppercaseLetters +
-		                                                                        MessagingUtilities.LowercaseLetters +
-		                                                                        MessagingUtilities.Digits +
-		                                                                        @"!#$%&'()*+-./:<=>?@[]^_`{|}~\,;";
+																				MessagingUtilities.LowercaseLetters +
+																				MessagingUtilities.Digits +
+																				@"!#$%&'()*+-./:<=>?@[]^_`{|}~\,;";
 
 		/// <summary>
 		/// Determines whether one given scope is a subset of another scope.
@@ -128,6 +132,37 @@ namespace DotNetOpenAuth.OAuth2 {
 				CultureInfo.InvariantCulture,
 				Protocol.BearerHttpAuthorizationHeaderFormat,
 				accessToken);
+		}
+
+		private static readonly Encoding HttpBasicEncoding = Encoding.UTF8;
+
+		internal static void ApplyHttpBasicAuth(WebHeaderCollection headers, string userName, string password) {
+			Requires.NotNull(headers, "headers");
+			Requires.NotNullOrEmpty(userName, "userName");
+			Requires.NotNull(password, "password");
+
+			string concat = userName + ":" + password;
+			byte[] bits = HttpBasicEncoding.GetBytes(concat);
+			string base64 = Convert.ToBase64String(bits);
+			string header = HttpBasicAuthScheme + base64;
+			headers[HttpRequestHeader.Authorization] = header;
+		}
+
+		internal static NetworkCredential ParseHttpBasicAuth(WebHeaderCollection headers) {
+			Requires.NotNull(headers, "headers");
+
+			string authorizationHeader = headers[HttpRequestHeaders.Authorization];
+			if (authorizationHeader != null && authorizationHeader.StartsWith(HttpBasicAuthScheme, StringComparison.Ordinal)) {
+				string base64 = authorizationHeader.Substring(HttpBasicAuthScheme.Length);
+				byte[] bits = Convert.FromBase64String(base64);
+				string usernameColonPassword = HttpBasicEncoding.GetString(bits);
+				string[] usernameAndPassword = usernameColonPassword.Split(ColonSeparator, 2);
+				if (usernameAndPassword.Length == 2) {
+					return new NetworkCredential(usernameAndPassword[0], usernameAndPassword[1]);
+				}
+			}
+
+			return null;
 		}
 	}
 }

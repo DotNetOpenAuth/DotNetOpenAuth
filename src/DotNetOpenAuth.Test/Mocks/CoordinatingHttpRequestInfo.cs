@@ -6,9 +6,10 @@
 
 namespace DotNetOpenAuth.Test.Mocks {
 	using System;
-	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
-	using DotNetOpenAuth.Messaging;
+using System.Collections.Generic;
+using System.Diagnostics.Contracts;
+using System.Net;
+using DotNetOpenAuth.Messaging;
 
 	internal class CoordinatingHttpRequestInfo : HttpRequestInfo {
 		private readonly Channel channel;

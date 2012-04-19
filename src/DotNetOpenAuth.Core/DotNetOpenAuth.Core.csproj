@@ -29,6 +29,8 @@
     <Compile Include="Messaging\ChannelContract.cs" />
     <Compile Include="Messaging\DataBagFormatterBase.cs" />
     <Compile Include="Messaging\HttpRequestHeaders.cs" />
+    <Compile Include="Messaging\IHttpDirectRequest.cs" />
+    <Compile Include="Messaging\IHttpDirectRequestContract.cs" />
     <Compile Include="Messaging\IHttpIndirectResponse.cs" />
     <Compile Include="Messaging\IMessageOriginalPayload.cs" />
     <Compile Include="Messaging\DirectWebRequestOptions.cs" />

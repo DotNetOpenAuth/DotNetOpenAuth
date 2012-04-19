@@ -73,7 +73,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 					server.ApproveAuthorizationRequest(request, ResourceOwnerUsername);
 				});
 
-			coordinatorClient.ClientSecret = null; // implicit grant clients don't need a secret.
+			coordinatorClient.ClientCredentialApplicator = null; // implicit grant clients don't need a secret.
 			coordinator.Run();
 		}
 	}

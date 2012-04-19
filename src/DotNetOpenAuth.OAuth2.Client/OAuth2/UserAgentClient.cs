@@ -27,7 +27,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="clientIdentifier">The client identifier.</param>
 		/// <param name="clientSecret">The client secret.</param>
 		public UserAgentClient(AuthorizationServerDescription authorizationServer, string clientIdentifier = null, string clientSecret = null)
-			: base(authorizationServer, clientIdentifier, clientSecret) {
+			: this(authorizationServer, clientIdentifier, DefaultSecretApplicator(clientSecret)) {
 		}
 
 		/// <summary>
@@ -38,9 +38,36 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="clientIdentifier">The client identifier.</param>
 		/// <param name="clientSecret">The client secret.</param>
 		public UserAgentClient(Uri authorizationEndpoint, Uri tokenEndpoint, string clientIdentifier = null, string clientSecret = null)
-			: this(new AuthorizationServerDescription { AuthorizationEndpoint = authorizationEndpoint, TokenEndpoint = tokenEndpoint }, clientIdentifier, clientSecret) {
+			: this(authorizationEndpoint, tokenEndpoint, clientIdentifier, DefaultSecretApplicator(clientSecret)) {
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="UserAgentClient"/> class.
+		/// </summary>
+		/// <param name="authorizationEndpoint">The authorization endpoint.</param>
+		/// <param name="tokenEndpoint">The token endpoint.</param>
+		/// <param name="clientIdentifier">The client identifier.</param>
+		/// <param name="clientCredentialApplicator">
+		/// The tool to use to apply client credentials to authenticated requests to the Authorization Server.  
+		/// May be <c>null</c> for clients with no secret or other means of authentication.
+		/// </param>
+		public UserAgentClient(Uri authorizationEndpoint, Uri tokenEndpoint, string clientIdentifier, ClientCredentialApplicator clientCredentialApplicator)
+			: this(new AuthorizationServerDescription { AuthorizationEndpoint = authorizationEndpoint, TokenEndpoint = tokenEndpoint }, clientIdentifier, clientCredentialApplicator) {
 			Requires.NotNull(authorizationEndpoint, "authorizationEndpoint");
 			Requires.NotNull(tokenEndpoint, "tokenEndpoint");
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="UserAgentClient"/> class.
+		/// </summary>
+		/// <param name="authorizationServer">The token issuer.</param>
+		/// <param name="clientIdentifier">The client identifier.</param>
+		/// <param name="clientCredentialApplicator">
+		/// The tool to use to apply client credentials to authenticated requests to the Authorization Server.  
+		/// May be <c>null</c> for clients with no secret or other means of authentication.
+		/// </param>
+		public UserAgentClient(AuthorizationServerDescription authorizationServer, string clientIdentifier, ClientCredentialApplicator clientCredentialApplicator)
+			: base(authorizationServer, clientIdentifier, clientCredentialApplicator) {
 		}
 
 		/// <summary>

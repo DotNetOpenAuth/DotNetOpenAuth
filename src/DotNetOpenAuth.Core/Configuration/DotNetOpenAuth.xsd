@@ -898,6 +898,71 @@
 						</xs:choice>
 					</xs:complexType>
 				</xs:element>
+				<xs:element name="oauth2">
+					<xs:annotation>
+						<xs:documentation>
+							Settings OAuth 2 clients, authorization servers and resource servers.
+						</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:choice minOccurs="0" maxOccurs="unbounded">
+							<xs:element name="client">
+								<xs:annotation>
+									<xs:documentation>
+										Settings applicable to OAuth 2 Clients.
+									</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:choice minOccurs="0" maxOccurs="unbounded">
+									</xs:choice>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="authorizationServer">
+								<xs:annotation>
+									<xs:documentation>
+										Settings applicable to OAuth 2 Authorization Servers.
+									</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:choice minOccurs="0" maxOccurs="unbounded">
+										<xs:element name="clientAuthenticationModules">
+											<xs:complexType>
+												<xs:choice minOccurs="0" maxOccurs="unbounded">
+													<xs:element name="add">
+														<xs:complexType>
+															<xs:attribute name="name" type="xs:string" use="required" />
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="remove">
+														<xs:complexType>
+															<xs:attribute name="name" type="xs:string" use="required" />
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="clear">
+														<xs:complexType>
+															<!--tag is empty-->
+														</xs:complexType>
+													</xs:element>
+												</xs:choice>
+											</xs:complexType>
+										</xs:element>
+									</xs:choice>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="resourceServer">
+								<xs:annotation>
+									<xs:documentation>
+										Settings applicable to OAuth 2 Resource Servers.
+									</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:choice minOccurs="0" maxOccurs="unbounded">
+									</xs:choice>
+								</xs:complexType>
+							</xs:element>
+						</xs:choice>
+					</xs:complexType>
+				</xs:element>
 				<xs:element name="reporting">
 					<xs:annotation>
 						<xs:documentation>

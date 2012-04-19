@@ -13,7 +13,7 @@ namespace DotNetOpenAuth.OAuth2 {
 	using System.Security.Cryptography;
 	using System.Text;
 	using System.Web;
-
+	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2.ChannelElements;
 	using DotNetOpenAuth.OAuth2.Messages;
@@ -23,12 +23,34 @@ namespace DotNetOpenAuth.OAuth2 {
 	/// </summary>
 	public class AuthorizationServer {
 		/// <summary>
+		/// The built-in set of client authentication modules.
+		/// </summary>
+		private static readonly TypeConfigurationCollection<IClientAuthenticationModule> defaultClientAuthenticationModules =
+			new TypeConfigurationCollection<IClientAuthenticationModule>(new Type[] { typeof(ClientCredentialHttpBasicReader), typeof(ClientCredentialMessagePartReader) });
+
+		private readonly List<IClientAuthenticationModule> clientAuthenticationModules = new List<IClientAuthenticationModule>();
+
+		private readonly ClientAuthenticationModuleBase aggregatingClientAuthenticationModule;
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="AuthorizationServer"/> class.
 		/// </summary>
 		/// <param name="authorizationServer">The authorization server.</param>
 		public AuthorizationServer(IAuthorizationServerHost authorizationServer) {
 			Requires.NotNull(authorizationServer, "authorizationServer");
-			this.Channel = new OAuth2AuthorizationServerChannel(authorizationServer);
+			this.aggregatingClientAuthenticationModule = new AggregatingClientCredentialReader(this.clientAuthenticationModules);
+			this.Channel = new OAuth2AuthorizationServerChannel(authorizationServer, this.aggregatingClientAuthenticationModule);
+
+			var modules = OAuth2Element.Configuration.AuthorizationServer.ClientAuthenticationModules;
+			if (modules.Count == 0) {
+				modules = defaultClientAuthenticationModules;
+			}
+
+			// TODO: work this out once we move configurations into the oauth2 authorization server.
+			////this.clientAuthenticationModules.AddRange(modules.CreateInstances(true));
+			this.clientAuthenticationModules.Add(new ClientCredentialMessagePartReader(authorizationServer));
+			this.clientAuthenticationModules.Add(new ClientCredentialHttpBasicReader(authorizationServer));
+
 		}
 
 		/// <summary>
@@ -43,6 +65,10 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <value>The authorization server.</value>
 		public IAuthorizationServerHost AuthorizationServerServices {
 			get { return ((IOAuth2ChannelWithAuthorizationServer)this.Channel).AuthorizationServer; }
+		}
+
+		public IList<IClientAuthenticationModule> ClientAuthenticationModules {
+			get { return this.clientAuthenticationModules; }
 		}
 
 		/// <summary>

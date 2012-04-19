@@ -23,6 +23,13 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	/// not been revoked and that an access token has not expired.
 	/// </remarks>
 	internal class MessageValidationBindingElement : AuthServerBindingElementBase {
+		private readonly IClientAuthenticationModule clientAuthenticationModule;
+
+		internal MessageValidationBindingElement(IClientAuthenticationModule clientAuthenticationModule) {
+			Requires.NotNull(clientAuthenticationModule, "clientAuthenticationModule");
+			this.clientAuthenticationModule = clientAuthenticationModule;
+		}
+
 		/// <summary>
 		/// Gets the protection commonly offered (if any) by this binding element.
 		/// </summary>
@@ -80,9 +87,11 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			var clientCredentialOnly = message as AccessTokenClientCredentialsRequest;
 			var authenticatedClientRequest = message as AuthenticatedClientRequestBase;
 			if (authenticatedClientRequest != null) {
-				var client = this.AuthorizationServer.GetClientOrThrow(authenticatedClientRequest.ClientIdentifier);
-				AuthServerUtilities.TokenEndpointVerify(client.HasNonEmptySecret, Protocol.AccessTokenRequestErrorCodes.UnauthorizedClient); // an empty secret is not allowed for client authenticated calls.
-				AuthServerUtilities.TokenEndpointVerify(client.IsValidClientSecret(authenticatedClientRequest.ClientSecret), Protocol.AccessTokenRequestErrorCodes.InvalidClient, AuthServerStrings.ClientSecretMismatch);
+				string clientIdentifier;
+				var result = this.clientAuthenticationModule.TryAuthenticateClient(authenticatedClientRequest, out clientIdentifier);
+				AuthServerUtilities.TokenEndpointVerify(result != ClientAuthenticationResult.ClientIdNotAuthenticated, Protocol.AccessTokenRequestErrorCodes.UnauthorizedClient); // an empty secret is not allowed for client authenticated calls.
+				AuthServerUtilities.TokenEndpointVerify(result == ClientAuthenticationResult.ClientAuthenticated, Protocol.AccessTokenRequestErrorCodes.InvalidClient, AuthServerStrings.ClientSecretMismatch);
+				authenticatedClientRequest.ClientIdentifier = clientIdentifier;
 
 				if (clientCredentialOnly != null) {
 					clientCredentialOnly.CredentialsValidated = true;

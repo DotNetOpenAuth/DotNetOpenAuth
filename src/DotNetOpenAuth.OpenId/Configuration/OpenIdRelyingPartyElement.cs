@@ -49,7 +49,8 @@ namespace DotNetOpenAuth.Configuration {
 		/// <summary>
 		/// The built-in set of identifier discovery services.
 		/// </summary>
-		private static readonly TypeConfigurationCollection<IIdentifierDiscoveryService> defaultDiscoveryServices = new TypeConfigurationCollection<IIdentifierDiscoveryService>(new Type[] { typeof(UriDiscoveryService), typeof(XriDiscoveryProxyService) });
+		private static readonly TypeConfigurationCollection<IIdentifierDiscoveryService> defaultDiscoveryServices =
+			new TypeConfigurationCollection<IIdentifierDiscoveryService>(new Type[] { typeof(UriDiscoveryService), typeof(XriDiscoveryProxyService) });
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdRelyingPartyElement"/> class.

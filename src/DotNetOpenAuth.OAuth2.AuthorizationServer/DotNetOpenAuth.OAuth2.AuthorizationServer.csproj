@@ -25,6 +25,9 @@
       <DependentUpon>AuthServerStrings.resx</DependentUpon>
     </Compile>
     <Compile Include="OAuth2\AuthServerUtilities.cs" />
+    <Compile Include="OAuth2\ChannelElements\AggregatingClientCredentialReader.cs" />
+    <Compile Include="OAuth2\ChannelElements\ClientCredentialHttpBasicReader.cs" />
+    <Compile Include="OAuth2\ChannelElements\ClientCredentialMessagePartReader.cs" />
     <Compile Include="OAuth2\ChannelElements\TokenCodeSerializationBindingElement.cs" />
     <Compile Include="OAuth2\ChannelElements\AuthorizationCode.cs" />
     <Compile Include="OAuth2\ChannelElements\MessageValidationBindingElement.cs" />
@@ -32,6 +35,7 @@
     <Compile Include="OAuth2\ChannelElements\IOAuth2ChannelWithAuthorizationServer.cs" />
     <Compile Include="OAuth2\ChannelElements\OAuth2AuthorizationServerChannel.cs" />
     <Compile Include="OAuth2\ChannelElements\RefreshToken.cs" />
+    <Compile Include="OAuth2\ChannelElements\ClientCredentialReader.cs" />
     <Compile Include="OAuth2\ClientDescription.cs" />
     <Compile Include="OAuth2\Messages\AccessTokenAuthorizationCodeRequestAS.cs" />
     <Compile Include="OAuth2\Messages\AccessTokenRefreshRequestAS.cs" />

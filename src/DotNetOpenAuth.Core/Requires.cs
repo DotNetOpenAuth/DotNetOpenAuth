@@ -47,10 +47,12 @@ namespace DotNetOpenAuth {
 		[ContractArgumentValidator]
 #endif
 		[Pure, DebuggerStepThrough]
-		internal static void NotNullOrEmpty(string value, string parameterName) {
+		internal static string NotNullOrEmpty(string value, string parameterName) {
 			NotNull(value, parameterName);
 			True(value.Length > 0, parameterName, Strings.EmptyStringNotAllowed);
+			Contract.Ensures(Contract.Result<string>() == value);
 			Contract.EndContractBlock();
+			return value;
 		}
 
 		/// <summary>
