@@ -28,9 +28,9 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <param name="clientSecret">The secret the client shares with the authorization server.</param>
 		/// <returns>The credential applicator to provide to the <see cref="ClientBase"/> instance.</returns>
-		public static ClientCredentialApplicator SecretParameter(string clientSecret) {
+		public static ClientCredentialApplicator PostParameter(string clientSecret) {
 			Requires.NotNullOrEmpty(clientSecret, "clientSecret");
-			return new SecretParameterApplicator(clientSecret);
+			return new PostParameterApplicator(clientSecret);
 		}
 
 		/// <summary>
@@ -92,17 +92,17 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <summary>
 		/// Authenticates the client via a client_secret parameter in the message.
 		/// </summary>
-		private class SecretParameterApplicator : ClientCredentialApplicator {
+		private class PostParameterApplicator : ClientCredentialApplicator {
 			/// <summary>
 			/// The client secret.
 			/// </summary>
 			private readonly string secret;
 
 			/// <summary>
-			/// Initializes a new instance of the <see cref="SecretParameterApplicator"/> class.
+			/// Initializes a new instance of the <see cref="PostParameterApplicator"/> class.
 			/// </summary>
 			/// <param name="clientSecret">The client secret.</param>
-			internal SecretParameterApplicator(string clientSecret) {
+			internal PostParameterApplicator(string clientSecret) {
 				Requires.NotNullOrEmpty(clientSecret, "clientSecret");
 				this.secret = clientSecret;
 			}

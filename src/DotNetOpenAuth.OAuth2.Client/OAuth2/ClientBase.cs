@@ -278,7 +278,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="secret">The client secret.  May be <c>null</c></param>
 		/// <returns>The client credential applicator.</returns>
 		protected static ClientCredentialApplicator DefaultSecretApplicator(string secret) {
-			return secret == null ? ClientCredentialApplicator.NoSecret() : ClientCredentialApplicator.SecretParameter(secret);
+			return secret == null ? ClientCredentialApplicator.NoSecret() : ClientCredentialApplicator.HttpBasic(secret);
 		}
 
 		/// <summary>
