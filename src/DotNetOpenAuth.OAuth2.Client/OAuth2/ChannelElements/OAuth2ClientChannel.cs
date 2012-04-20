@@ -18,7 +18,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	/// <summary>
 	/// The messaging channel used by OAuth 2.0 Clients.
 	/// </summary>
-	internal class OAuth2ClientChannel : OAuth2ChannelBase {
+	internal class OAuth2ClientChannel : OAuth2ChannelBase, IOAuth2ChannelWithClient {
 		/// <summary>
 		/// The messages receivable by this channel.
 		/// </summary>
@@ -37,6 +37,17 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		internal OAuth2ClientChannel()
 			: base(MessageTypes) {
 		}
+
+		/// <summary>
+		/// Gets or sets the identifier by which this client is known to the Authorization Server.
+		/// </summary>
+		public string ClientIdentifier { get; set; }
+
+		/// <summary>
+		/// Gets or sets the tool to use to apply client credentials to authenticated requests to the Authorization Server.
+		/// </summary>
+		/// <value>May be <c>null</c> if this client has no client secret.</value>
+		public ClientCredentialApplicator ClientCredentialApplicator { get; set; }
 
 		/// <summary>
 		/// Prepares an HTTP request that carries a given message.
@@ -131,6 +142,18 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		protected override OutgoingWebResponse PrepareDirectResponse(IProtocolMessage response) {
 			// Clients don't ever send direct responses.
 			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		/// Performs additional processing on an outgoing web request before it is sent to the remote server.
+		/// </summary>
+		/// <param name="request">The request.</param>
+		protected override void PrepareHttpWebRequest(HttpWebRequest request) {
+			base.PrepareHttpWebRequest(request);
+
+			if (this.ClientCredentialApplicator != null) {
+				this.ClientCredentialApplicator.ApplyClientCredential(this.ClientIdentifier, request);
+			}
 		}
 	}
 }

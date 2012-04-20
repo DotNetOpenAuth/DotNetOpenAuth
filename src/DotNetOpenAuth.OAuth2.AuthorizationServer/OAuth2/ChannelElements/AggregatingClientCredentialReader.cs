@@ -33,6 +33,27 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		}
 
 		/// <summary>
+		/// Gets this module's contribution to an HTTP 401 WWW-Authenticate header so the client knows what kind of authentication this module supports.
+		/// </summary>
+		public override string AuthenticateHeader {
+			get {
+				var builder = new StringBuilder();
+				foreach (var authenticator in this.authenticators) {
+					string scheme = authenticator.AuthenticateHeader;
+					if (scheme != null) {
+						if (builder.Length > 0) {
+							builder.Append(", ");
+						}
+
+						builder.Append(scheme);
+					}
+				}
+
+				return builder.Length > 0 ? builder.ToString() : null;
+			}
+		}
+
+		/// <summary>
 		/// Attempts to extract client identification/authentication information from a message.
 		/// </summary>
 		/// <param name="authorizationServerHost">The authorization server host.</param>

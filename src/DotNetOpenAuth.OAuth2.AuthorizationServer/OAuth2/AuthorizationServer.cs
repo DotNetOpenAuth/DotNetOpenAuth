@@ -148,7 +148,7 @@ namespace DotNetOpenAuth.OAuth2 {
 					responseMessage = new AccessTokenFailedResponse() { Error = Protocol.AccessTokenRequestErrorCodes.InvalidRequest, };
 				}
 			} catch (TokenEndpointProtocolException ex) {
-				responseMessage = new AccessTokenFailedResponse() { Error = ex.Error, ErrorDescription = ex.Description, ErrorUri = ex.MoreInformation };
+				responseMessage = ex.GetResponse();
 			} catch (ProtocolException) {
 				responseMessage = new AccessTokenFailedResponse() {
 					Error = Protocol.AccessTokenRequestErrorCodes.InvalidRequest,

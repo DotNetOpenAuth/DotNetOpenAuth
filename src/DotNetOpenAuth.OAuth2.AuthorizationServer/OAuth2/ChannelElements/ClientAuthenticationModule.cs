@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="ClientAuthenticationModuleBase.cs" company="Andrew Arnott">
+// <copyright file="ClientAuthenticationModule.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -26,6 +26,13 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		}
 
 		/// <summary>
+		/// Gets this module's contribution to an HTTP 401 WWW-Authenticate header so the client knows what kind of authentication this module supports.
+		/// </summary>
+		public virtual string AuthenticateHeader {
+			get { return null; }
+		}
+
+		/// <summary>
 		/// Attempts to extract client identification/authentication information from a message.
 		/// </summary>
 		/// <param name="authorizationServerHost">The authorization server host.</param>
@@ -41,7 +48,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <param name="clientIdentifier">The alleged client identifier.</param>
 		/// <param name="clientSecret">The alleged client secret to be verified.</param>
 		/// <returns>An indication as to the outcome of the validation.</returns>
-		protected static ClientAuthenticationResult TryAuthenticateClient(IAuthorizationServerHost authorizationServerHost, string clientIdentifier, string clientSecret) {
+		protected static ClientAuthenticationResult TryAuthenticateClientBySecret(IAuthorizationServerHost authorizationServerHost, string clientIdentifier, string clientSecret) {
 			Requires.NotNull(authorizationServerHost, "authorizationServerHost");
 
 			if (!string.IsNullOrEmpty(clientIdentifier)) {

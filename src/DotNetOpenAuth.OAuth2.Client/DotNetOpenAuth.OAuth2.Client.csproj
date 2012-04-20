@@ -21,6 +21,7 @@
     <Compile Include="Configuration\OAuth2ClientSection.cs" />
     <Compile Include="OAuth2\AuthorizationServerDescription.cs" />
     <Compile Include="OAuth2\AuthorizationState.cs" />
+    <Compile Include="OAuth2\ChannelElements\IOAuth2ChannelWithClient.cs" />
     <Compile Include="OAuth2\ChannelElements\OAuth2ClientChannel.cs" />
     <Compile Include="OAuth2\ClientCredentialApplicator.cs" />
     <Compile Include="OAuth2\IAuthorizationState.cs" />

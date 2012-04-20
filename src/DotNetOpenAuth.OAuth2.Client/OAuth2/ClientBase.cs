@@ -53,13 +53,23 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <summary>
 		/// Gets or sets the identifier by which this client is known to the Authorization Server.
 		/// </summary>
-		public string ClientIdentifier { get; set; }
+		public string ClientIdentifier {
+			get { return this.OAuthChannel.ClientIdentifier; }
+			set { this.OAuthChannel.ClientIdentifier = value; }
+		}
 
 		/// <summary>
 		/// Gets or sets the tool to use to apply client credentials to authenticated requests to the Authorization Server.
 		/// </summary>
 		/// <value>May be <c>null</c> if this client has no client secret.</value>
-		public ClientCredentialApplicator ClientCredentialApplicator { get; set; }
+		public ClientCredentialApplicator ClientCredentialApplicator {
+			get { return this.OAuthChannel.ClientCredentialApplicator; }
+			set { this.OAuthChannel.ClientCredentialApplicator = value; }
+		}
+
+		internal IOAuth2ChannelWithClient OAuthChannel {
+			get { return (IOAuth2ChannelWithClient)this.Channel; }
+		}
 
 		/// <summary>
 		/// Adds the necessary HTTP Authorization header to an HTTP request for protected resources
@@ -278,7 +288,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="secret">The client secret.  May be <c>null</c></param>
 		/// <returns>The client credential applicator.</returns>
 		protected static ClientCredentialApplicator DefaultSecretApplicator(string secret) {
-			return secret == null ? ClientCredentialApplicator.NoSecret() : ClientCredentialApplicator.HttpBasic(secret);
+			return secret == null ? ClientCredentialApplicator.NoSecret() : ClientCredentialApplicator.NetworkCredential(secret);
 		}
 
 		/// <summary>

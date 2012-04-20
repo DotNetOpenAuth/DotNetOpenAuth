@@ -36,11 +36,21 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <summary>
 		/// Transmits the client identifier and secret in the HTTP Authorization header via HTTP Basic authentication.
 		/// </summary>
+		/// <param name="credential">The client id and secret.</param>
+		/// <returns>The credential applicator to provide to the <see cref="ClientBase"/> instance.</returns>
+		public static ClientCredentialApplicator NetworkCredential(NetworkCredential credential) {
+			Requires.NotNull(credential, "credential");
+			return new NetworkCredentialApplicator(credential);
+		}
+
+		/// <summary>
+		/// Transmits the client identifier and secret in the HTTP Authorization header via HTTP Basic authentication.
+		/// </summary>
 		/// <param name="clientSecret">The secret the client shares with the authorization server.</param>
 		/// <returns>The credential applicator to provide to the <see cref="ClientBase"/> instance.</returns>
-		public static ClientCredentialApplicator HttpBasic(string clientSecret) {
+		public static ClientCredentialApplicator NetworkCredential(string clientSecret) {
 			Requires.NotNullOrEmpty(clientSecret, "clientSecret");
-			return new HttpBasicApplicator(clientSecret);
+			return new NetworkCredentialApplicator(clientSecret);
 		}
 
 		/// <summary>
@@ -56,24 +66,47 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <param name="clientIdentifier">The identifier by which the authorization server should recognize this client.</param>
 		/// <param name="request">The outbound message to apply authentication information to.</param>
-		public abstract void ApplyClientCredential(string clientIdentifier, AuthenticatedClientRequestBase request);
+		public virtual void ApplyClientCredential(string clientIdentifier, AuthenticatedClientRequestBase request) {
+		}
+
+		/// <summary>
+		/// Applies the client identifier and (when applicable) the client authentication to an outbound message.
+		/// </summary>
+		/// <param name="clientIdentifier">The identifier by which the authorization server should recognize this client.</param>
+		/// <param name="request">The outbound message to apply authentication information to.</param>
+		public virtual void ApplyClientCredential(string clientIdentifier, HttpWebRequest request) {
+		}
 
 		/// <summary>
 		/// Authenticates the client via HTTP Basic.
 		/// </summary>
-		private class HttpBasicApplicator : ClientCredentialApplicator {
+		private class NetworkCredentialApplicator : ClientCredentialApplicator {
+			/// <summary>
+			/// The client identifier and secret.
+			/// </summary>
+			private readonly NetworkCredential credential;
+
 			/// <summary>
 			/// The client secret.
 			/// </summary>
 			private readonly string clientSecret;
 
 			/// <summary>
-			/// Initializes a new instance of the <see cref="HttpBasicApplicator"/> class.
+			/// Initializes a new instance of the <see cref="NetworkCredentialApplicator"/> class.
 			/// </summary>
 			/// <param name="clientSecret">The client secret.</param>
-			internal HttpBasicApplicator(string clientSecret) {
+			internal NetworkCredentialApplicator(string clientSecret) {
 				Requires.NotNullOrEmpty(clientSecret, "clientSecret");
 				this.clientSecret = clientSecret;
+			}
+
+			/// <summary>
+			/// Initializes a new instance of the <see cref="NetworkCredentialApplicator"/> class.
+			/// </summary>
+			/// <param name="credential">The client credential.</param>
+			internal NetworkCredentialApplicator(NetworkCredential credential) {
+				Requires.NotNull(credential, "credential");
+				this.credential = credential;
 			}
 
 			/// <summary>
@@ -85,7 +118,19 @@ namespace DotNetOpenAuth.OAuth2 {
 				// When using network credentials, the client authentication is not done as standard message parts.
 				request.ClientIdentifier = null;
 				request.ClientSecret = null;
-				OAuthUtilities.ApplyHttpBasicAuth(request.Headers, clientIdentifier, this.clientSecret);
+			}
+
+			/// <summary>
+			/// Applies the client identifier and (when applicable) the client authentication to an outbound message.
+			/// </summary>
+			/// <param name="clientIdentifier">The identifier by which the authorization server should recognize this client.</param>
+			/// <param name="request">The outbound message to apply authentication information to.</param>
+			public override void ApplyClientCredential(string clientIdentifier, HttpWebRequest request) {
+				if (this.credential != null && this.credential.UserName == clientIdentifier) {
+					ErrorUtilities.VerifyHost(false, "Client identifiers \"{0}\" and \"{1}\" do not match.", this.credential.UserName, clientIdentifier);
+				}
+
+				request.Credentials = this.credential ?? new NetworkCredential(clientIdentifier, this.clientSecret);
 			}
 		}
 

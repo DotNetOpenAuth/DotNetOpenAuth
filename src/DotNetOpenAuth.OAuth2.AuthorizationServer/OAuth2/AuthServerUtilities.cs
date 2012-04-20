@@ -12,6 +12,8 @@ namespace DotNetOpenAuth.OAuth2 {
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OAuth2.ChannelElements;
+	using DotNetOpenAuth.OAuth2.Messages;
 
 	/// <summary>
 	/// Utility methods for authorization servers.
@@ -42,13 +44,21 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// Verifies a condition is true or throws an exception describing the problem.
 		/// </summary>
 		/// <param name="condition">The condition that evaluates to true to avoid an exception.</param>
+		/// <param name="requestMessage">The request message.</param>
 		/// <param name="error">A single error code from <see cref="Protocol.AccessTokenRequestErrorCodes"/>.</param>
+		/// <param name="authenticationModule">The authentication module from which to glean the WWW-Authenticate header when applicable.</param>
 		/// <param name="unformattedDescription">A human-readable UTF-8 encoded text providing additional information, used to assist the client developer in understanding the error that occurred.</param>
 		/// <param name="args">The formatting arguments to generate the actual description.</param>
-		internal static void TokenEndpointVerify(bool condition, string error, string unformattedDescription = null, params object[] args) {
+		internal static void TokenEndpointVerify(bool condition, AccessTokenRequestBase requestMessage, string error, ClientAuthenticationModule authenticationModule = null, string unformattedDescription = null, params object[] args) {
 			if (!condition) {
 				string description = unformattedDescription != null ? string.Format(CultureInfo.CurrentCulture, unformattedDescription, args) : null;
-				throw new TokenEndpointProtocolException(error, description);
+
+				string wwwAuthenticateHeader = null;
+				if (authenticationModule != null) {
+					wwwAuthenticateHeader = authenticationModule.AuthenticateHeader;
+				}
+
+				throw new TokenEndpointProtocolException(requestMessage, error, description, authenticateHeader: wwwAuthenticateHeader);
 			}
 		}
 	}

@@ -18,6 +18,13 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	/// </summary>
 	public class ClientCredentialHttpBasicReader : ClientAuthenticationModule {
 		/// <summary>
+		/// Gets this module's contribution to an HTTP 401 WWW-Authenticate header so the client knows what kind of authentication this module supports.
+		/// </summary>
+		public override string AuthenticateHeader {
+			get { return "Basic"; }
+		}
+
+		/// <summary>
 		/// Attempts to extract client identification/authentication information from a message.
 		/// </summary>
 		/// <param name="authorizationServerHost">The authorization server host.</param>
@@ -31,7 +38,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			var credential = OAuthUtilities.ParseHttpBasicAuth(requestMessage.Headers);
 			if (credential != null) {
 				clientIdentifier = credential.UserName;
-				return TryAuthenticateClient(authorizationServerHost, credential.UserName, credential.Password);
+				return TryAuthenticateClientBySecret(authorizationServerHost, credential.UserName, credential.Password);
 			}
 
 			clientIdentifier = null;

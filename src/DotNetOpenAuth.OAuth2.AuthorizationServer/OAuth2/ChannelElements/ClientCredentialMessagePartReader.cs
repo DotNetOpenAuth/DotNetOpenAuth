@@ -28,7 +28,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			Requires.NotNull(requestMessage, "requestMessage");
 
 			clientIdentifier = requestMessage.ClientIdentifier;
-			return TryAuthenticateClient(authorizationServerHost, requestMessage.ClientIdentifier, requestMessage.ClientSecret);
+			return TryAuthenticateClientBySecret(authorizationServerHost, requestMessage.ClientIdentifier, requestMessage.ClientSecret);
 		}
 	}
 }

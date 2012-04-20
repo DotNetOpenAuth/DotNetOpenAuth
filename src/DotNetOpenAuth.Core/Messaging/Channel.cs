@@ -1097,6 +1097,7 @@ namespace DotNetOpenAuth.Messaging {
 			UriBuilder builder = new UriBuilder(requestMessage.Recipient);
 			MessagingUtilities.AppendQueryArgs(builder, fields);
 			HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create(builder.Uri);
+			this.PrepareHttpWebRequest(httpRequest);
 
 			return httpRequest;
 		}
@@ -1137,6 +1138,7 @@ namespace DotNetOpenAuth.Messaging {
 			var fields = messageAccessor.Serialize();
 
 			var httpRequest = (HttpWebRequest)WebRequest.Create(requestMessage.Recipient);
+			this.PrepareHttpWebRequest(httpRequest);
 			httpRequest.CachePolicy = this.CachePolicy;
 			httpRequest.Method = "POST";
 
@@ -1311,6 +1313,14 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="fields">The received message data.</param>
 		protected virtual void FilterReceivedFields(IDictionary<string, string> fields) {
+		}
+
+		/// <summary>
+		/// Performs additional processing on an outgoing web request before it is sent to the remote server.
+		/// </summary>
+		/// <param name="request">The request.</param>
+		protected virtual void PrepareHttpWebRequest(HttpWebRequest request) {
+			Requires.NotNull(request, "request");
 		}
 
 		/// <summary>

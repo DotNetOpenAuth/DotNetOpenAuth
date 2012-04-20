@@ -18,7 +18,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Configuration\OAuth2Element.cs" />
+    <Compile Include="Configuration\OAuth2SectionGroup.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="OAuth2\AccessToken.cs" />
     <Compile Include="OAuth2\ChannelElements\AuthorizationDataBag.cs" />
