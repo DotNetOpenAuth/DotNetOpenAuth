@@ -1,0 +1,9 @@
+<configuration>
+	<configSections>
+		<sectionGroup name="dotNetOpenAuth" type="DotNetOpenAuth.Configuration.DotNetOpenAuthSection, DotNetOpenAuth.Core">
+			<sectionGroup name="oauth2" type="DotNetOpenAuth.Configuration.OAuth2SectionGroup, DotNetOpenAuth.OAuth2">
+				<section name="authorizationServer" type="DotNetOpenAuth.Configuration.OAuth2AuthorizationServerSection, DotNetOpenAuth.OAuth2.AuthorizationServer" requirePermission="false" allowLocation="true" />
+			</sectionGroup>
+		</sectionGroup>
+	</configSections>
+</configuration>

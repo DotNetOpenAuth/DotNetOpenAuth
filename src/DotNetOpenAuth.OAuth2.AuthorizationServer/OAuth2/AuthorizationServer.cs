@@ -13,7 +13,7 @@ namespace DotNetOpenAuth.OAuth2 {
 	using System.Security.Cryptography;
 	using System.Text;
 	using System.Web;
-
+	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2.ChannelElements;
 	using DotNetOpenAuth.OAuth2.Messages;
@@ -23,12 +23,24 @@ namespace DotNetOpenAuth.OAuth2 {
 	/// </summary>
 	public class AuthorizationServer {
 		/// <summary>
+		/// The list of modules that verify client authentication data.
+		/// </summary>
+		private readonly List<ClientAuthenticationModule> clientAuthenticationModules = new List<ClientAuthenticationModule>();
+
+		/// <summary>
+		/// The lone aggregate client authentication module that uses the <see cref="clientAuthenticationModules"/> and applies aggregating policy.
+		/// </summary>
+		private readonly ClientAuthenticationModule aggregatingClientAuthenticationModule;
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="AuthorizationServer"/> class.
 		/// </summary>
 		/// <param name="authorizationServer">The authorization server.</param>
 		public AuthorizationServer(IAuthorizationServerHost authorizationServer) {
 			Requires.NotNull(authorizationServer, "authorizationServer");
-			this.Channel = new OAuth2AuthorizationServerChannel(authorizationServer);
+			this.aggregatingClientAuthenticationModule = new AggregatingClientCredentialReader(this.clientAuthenticationModules);
+			this.Channel = new OAuth2AuthorizationServerChannel(authorizationServer, this.aggregatingClientAuthenticationModule);
+			this.clientAuthenticationModules.AddRange(OAuth2AuthorizationServerSection.Configuration.ClientAuthenticationModules.CreateInstances(true));
 		}
 
 		/// <summary>
@@ -43,6 +55,13 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <value>The authorization server.</value>
 		public IAuthorizationServerHost AuthorizationServerServices {
 			get { return ((IOAuth2ChannelWithAuthorizationServer)this.Channel).AuthorizationServer; }
+		}
+
+		/// <summary>
+		/// Gets the extension modules that can read client authentication data from incoming messages.
+		/// </summary>
+		public IList<ClientAuthenticationModule> ClientAuthenticationModules {
+			get { return this.clientAuthenticationModules; }
 		}
 
 		/// <summary>
@@ -129,7 +148,7 @@ namespace DotNetOpenAuth.OAuth2 {
 					responseMessage = new AccessTokenFailedResponse() { Error = Protocol.AccessTokenRequestErrorCodes.InvalidRequest, };
 				}
 			} catch (TokenEndpointProtocolException ex) {
-				responseMessage = new AccessTokenFailedResponse() { Error = ex.Error, ErrorDescription = ex.Description, ErrorUri = ex.MoreInformation };
+				responseMessage = ex.GetResponse();
 			} catch (ProtocolException) {
 				responseMessage = new AccessTokenFailedResponse() {
 					Error = Protocol.AccessTokenRequestErrorCodes.InvalidRequest,

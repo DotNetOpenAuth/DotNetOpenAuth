@@ -26,6 +26,8 @@
 		<file src="$OutputPath35$DotNetOpenAuth.OAuth2.xml" target="lib\net35-full" />
 		<file src="$OutputPath40$DotNetOpenAuth.OAuth2.xml" target="lib\net40-full" />
 
+		<file src="content\OAuth2.Core\web.config.transform" target="content\web.config.transform" />
+
 		<file src="..\src\DotNetOpenAuth.OAuth2\**\*.cs" target="src" />
 	</files>
 </package>

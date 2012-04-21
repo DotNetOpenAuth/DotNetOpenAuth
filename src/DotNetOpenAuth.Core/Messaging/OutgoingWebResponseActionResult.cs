@@ -35,6 +35,11 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="context">The context in which to set the response.</param>
 		public override void ExecuteResult(ControllerContext context) {
 			this.response.Respond(context.HttpContext);
+
+			// MVC likes to muck with our response.  For example, when returning contrived 401 Unauthorized responses
+			// MVC will rewrite our response and turn it into a redirect, which breaks OAuth 2 authorization server token endpoints.
+			// It turns out we can prevent this unwanted behavior by flushing the response before returning from this method.
+			context.HttpContext.Response.Flush();
 		}
 	}
 }

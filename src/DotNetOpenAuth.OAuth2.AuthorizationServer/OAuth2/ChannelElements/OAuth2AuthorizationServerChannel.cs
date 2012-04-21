@@ -35,8 +35,9 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// Initializes a new instance of the <see cref="OAuth2AuthorizationServerChannel"/> class.
 		/// </summary>
 		/// <param name="authorizationServer">The authorization server.</param>
-		protected internal OAuth2AuthorizationServerChannel(IAuthorizationServerHost authorizationServer)
-			: base(MessageTypes, InitializeBindingElements(authorizationServer)) {
+		/// <param name="clientAuthenticationModule">The aggregating client authentication module.</param>
+		protected internal OAuth2AuthorizationServerChannel(IAuthorizationServerHost authorizationServer, ClientAuthenticationModule clientAuthenticationModule)
+			: base(MessageTypes, InitializeBindingElements(authorizationServer, clientAuthenticationModule)) {
 			Requires.NotNull(authorizationServer, "authorizationServer");
 			this.AuthorizationServer = authorizationServer;
 		}
@@ -106,15 +107,18 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// Initializes the binding elements for the OAuth channel.
 		/// </summary>
 		/// <param name="authorizationServer">The authorization server.</param>
+		/// <param name="clientAuthenticationModule">The aggregating client authentication module.</param>
 		/// <returns>
 		/// An array of binding elements used to initialize the channel.
 		/// </returns>
-		private static IChannelBindingElement[] InitializeBindingElements(IAuthorizationServerHost authorizationServer) {
+		private static IChannelBindingElement[] InitializeBindingElements(IAuthorizationServerHost authorizationServer, ClientAuthenticationModule clientAuthenticationModule) {
 			Requires.NotNull(authorizationServer, "authorizationServer");
+			Requires.NotNull(clientAuthenticationModule, "clientAuthenticationModule");
+
 			var bindingElements = new List<IChannelBindingElement>();
 
 			// The order they are provided is used for outgoing messgaes, and reversed for incoming messages.
-			bindingElements.Add(new MessageValidationBindingElement());
+			bindingElements.Add(new MessageValidationBindingElement(clientAuthenticationModule, authorizationServer));
 			bindingElements.Add(new TokenCodeSerializationBindingElement());
 
 			return bindingElements.ToArray();

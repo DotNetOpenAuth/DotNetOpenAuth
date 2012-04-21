@@ -28,7 +28,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 		public override void SetUp() {
 			base.SetUp();
 
-			var authServerChannel = new OAuth2AuthorizationServerChannel(new Mock<IAuthorizationServerHost>().Object);
+			var authServerChannel = new OAuth2AuthorizationServerChannel(new Mock<IAuthorizationServerHost>().Object, new Mock<ClientAuthenticationModule>().Object);
 			this.authServerMessageFactory = authServerChannel.MessageFactoryTestHook;
 
 			var clientChannel = new OAuth2ClientChannel();

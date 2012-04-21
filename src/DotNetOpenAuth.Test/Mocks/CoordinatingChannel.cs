@@ -9,10 +9,10 @@ namespace DotNetOpenAuth.Test.Mocks {
 	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
 	using System.Linq;
+	using System.Net;
 	using System.Text;
 	using System.Threading;
 	using System.Web;
-
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.Test.OpenId;
@@ -65,7 +65,15 @@ namespace DotNetOpenAuth.Test.Mocks {
 		/// </summary>
 		private IDictionary<string, string> incomingMessage;
 
+		/// <summary>
+		/// The recipient URL of the <see cref="incomingMessage"/>, where applicable.
+		/// </summary>
 		private MessageReceivingEndpoint incomingMessageRecipient;
+
+		/// <summary>
+		/// The headers of the <see cref="incomingMessage"/>, where applicable.
+		/// </summary>
+		private WebHeaderCollection incomingMessageHttpHeaders;
 
 		/// <summary>
 		/// A delegate that gets a chance to peak at and fiddle with all 
@@ -145,17 +153,27 @@ namespace DotNetOpenAuth.Test.Mocks {
 			this.incomingMessage = this.MessageDescriptions.GetAccessor(message).Serialize();
 			var directedMessage = message as IDirectedProtocolMessage;
 			this.incomingMessageRecipient = (directedMessage != null && directedMessage.Recipient != null) ? new MessageReceivingEndpoint(directedMessage.Recipient, directedMessage.HttpMethods) : null;
+			var httpMessage = message as IHttpDirectRequest;
+			this.incomingMessageHttpHeaders = (httpMessage != null) ? httpMessage.Headers.Clone() : null;
 			this.incomingMessageSignal.Set();
 		}
 
 		protected internal override HttpRequestBase GetRequestFromContext() {
 			MessageReceivingEndpoint recipient;
-			var messageData = this.AwaitIncomingMessage(out recipient);
+			WebHeaderCollection headers;
+			var messageData = this.AwaitIncomingMessage(out recipient, out headers);
+			CoordinatingHttpRequestInfo result;
 			if (messageData != null) {
-				return new CoordinatingHttpRequestInfo(this, this.MessageFactory, messageData, recipient);
+				result = new CoordinatingHttpRequestInfo(this, this.MessageFactory, messageData, recipient);
 			} else {
-				return new CoordinatingHttpRequestInfo(recipient);
+				result = new CoordinatingHttpRequestInfo(recipient);
 			}
+
+			if (headers != null) {
+				headers.ApplyTo(result.Headers);
+			}
+
+			return result;
 		}
 
 		protected override IProtocolMessage RequestCore(IDirectedProtocolMessage request) {
@@ -166,7 +184,8 @@ namespace DotNetOpenAuth.Test.Mocks {
 
 			// Now wait for a response...
 			MessageReceivingEndpoint recipient;
-			IDictionary<string, string> responseData = this.AwaitIncomingMessage(out recipient);
+			WebHeaderCollection headers;
+			IDictionary<string, string> responseData = this.AwaitIncomingMessage(out recipient, out headers);
 			ErrorUtilities.VerifyInternal(recipient == null, "The recipient is expected to be null for direct responses.");
 
 			// And deserialize it.
@@ -177,6 +196,10 @@ namespace DotNetOpenAuth.Test.Mocks {
 
 			var responseAccessor = this.MessageDescriptions.GetAccessor(responseMessage);
 			responseAccessor.Deserialize(responseData);
+			var responseMessageHttpRequest = responseMessage as IHttpDirectRequest;
+			if (headers != null && responseMessageHttpRequest != null) {
+				headers.ApplyTo(responseMessageHttpRequest.Headers);
+			}
 
 			this.ProcessMessageFilter(responseMessage, false);
 			return responseMessage;
@@ -258,7 +281,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 			return channel.MessageFactoryTestHook;
 		}
 
-		private IDictionary<string, string> AwaitIncomingMessage(out MessageReceivingEndpoint recipient) {
+		private IDictionary<string, string> AwaitIncomingMessage(out MessageReceivingEndpoint recipient, out WebHeaderCollection headers) {
 			// Special care should be taken so that we don't indefinitely 
 			// wait for a message that may never come due to a bug in the product
 			// or the test.
@@ -284,8 +307,10 @@ namespace DotNetOpenAuth.Test.Mocks {
 				this.waitingForMessage = false;
 				var response = this.incomingMessage;
 				recipient = this.incomingMessageRecipient;
+				headers = this.incomingMessageHttpHeaders;
 				this.incomingMessage = null;
 				this.incomingMessageRecipient = null;
+				this.incomingMessageHttpHeaders = null;
 
 				// Briefly signal to another thread that might be waiting for our inbox to be empty
 				this.messageReceivedSignal.Set();

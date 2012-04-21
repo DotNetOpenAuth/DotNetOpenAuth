@@ -297,6 +297,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 				MessagingUtilities.AppendQueryArgs(recipientBuilder, requestMessage.ExtraData);
 			}
 			httpRequest = (HttpWebRequest)WebRequest.Create(recipientBuilder.Uri);
+			this.PrepareHttpWebRequest(httpRequest);
 			httpRequest.Method = GetHttpMethod(requestMessage);
 
 			httpRequest.Headers.Add(HttpRequestHeader.Authorization, MessagingUtilities.AssembleAuthorizationHeader(Protocol.AuthorizationHeaderScheme, fields));

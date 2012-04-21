@@ -25,6 +25,11 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		private readonly bool invalidClientCredentialsInAuthorizationHeader;
 
 		/// <summary>
+		/// The headers to include in the response.
+		/// </summary>
+		private readonly WebHeaderCollection headers = new WebHeaderCollection();
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="AccessTokenFailedResponse"/> class.
 		/// </summary>
 		/// <param name="request">The faulty request.</param>
@@ -63,8 +68,8 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// Gets the HTTP headers to add to the response.
 		/// </summary>
 		/// <value>May be an empty collection, but must not be <c>null</c>.</value>
-		WebHeaderCollection IHttpDirectResponse.Headers {
-			get { return new WebHeaderCollection(); }
+		public WebHeaderCollection Headers {
+			get { return this.headers; }
 		}
 
 		#endregion

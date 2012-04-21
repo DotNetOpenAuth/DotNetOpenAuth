@@ -26,7 +26,20 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="clientIdentifier">The client identifier.</param>
 		/// <param name="clientSecret">The client secret.</param>
 		public WebServerClient(AuthorizationServerDescription authorizationServer, string clientIdentifier = null, string clientSecret = null)
-			: base(authorizationServer, clientIdentifier, clientSecret) {
+			: this(authorizationServer, clientIdentifier, DefaultSecretApplicator(clientSecret)) {
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="WebServerClient"/> class.
+		/// </summary>
+		/// <param name="authorizationServer">The authorization server.</param>
+		/// <param name="clientIdentifier">The client identifier.</param>
+		/// <param name="clientCredentialApplicator">
+		/// The tool to use to apply client credentials to authenticated requests to the Authorization Server.
+		/// May be <c>null</c> for clients with no secret or other means of authentication.
+		/// </param>
+		public WebServerClient(AuthorizationServerDescription authorizationServer, string clientIdentifier, ClientCredentialApplicator clientCredentialApplicator)
+			: base(authorizationServer, clientIdentifier, clientCredentialApplicator) {
 		}
 
 		/// <summary>
@@ -106,7 +119,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <returns>The authorization state that contains the details of the authorization.</returns>
 		public IAuthorizationState ProcessUserAuthorization(HttpRequestBase request = null) {
 			Requires.ValidState(!string.IsNullOrEmpty(this.ClientIdentifier), ClientStrings.RequiredPropertyNotYetPreset, "ClientIdentifier");
-			Requires.ValidState(!string.IsNullOrEmpty(this.ClientSecret), ClientStrings.RequiredPropertyNotYetPreset, "ClientSecret");
+			Requires.ValidState(this.ClientCredentialApplicator != null, ClientStrings.RequiredPropertyNotYetPreset, "ClientCredentialApplicator");
 
 			if (request == null) {
 				request = this.Channel.GetRequestFromContext();

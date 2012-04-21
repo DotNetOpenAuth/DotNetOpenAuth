@@ -10,7 +10,7 @@
 	public partial class Facebook : System.Web.UI.Page {
 		private static readonly FacebookClient client = new FacebookClient {
 			ClientIdentifier = ConfigurationManager.AppSettings["facebookAppID"],
-			ClientSecret = ConfigurationManager.AppSettings["facebookAppSecret"],
+			ClientCredentialApplicator = ClientCredentialApplicator.PostParameter(ConfigurationManager.AppSettings["facebookAppSecret"]),
 		};
 
 		protected void Page_Load(object sender, EventArgs e) {

@@ -24,9 +24,24 @@ namespace DotNetOpenAuth.OAuth2 {
 		public static readonly StringComparer ScopeStringComparer = StringComparer.Ordinal;
 
 		/// <summary>
+		/// The string "Basic ".
+		/// </summary>
+		private const string HttpBasicAuthScheme = "Basic ";
+
+		/// <summary>
 		/// The delimiter between scope elements.
 		/// </summary>
-		private static char[] scopeDelimiter = new char[] { ' ' };
+		private static readonly char[] scopeDelimiter = new char[] { ' ' };
+
+		/// <summary>
+		/// A colon, in a 1-length character array.
+		/// </summary>
+		private static readonly char[] ColonSeparator = new char[] { ':' };
+
+		/// <summary>
+		/// The encoding to use when preparing credentials for transit in HTTP Basic base64 encoding form.
+		/// </summary>
+		private static readonly Encoding HttpBasicEncoding = Encoding.UTF8;
 
 		/// <summary>
 		/// The characters that may appear in an access token that is included in an HTTP Authorization header.
@@ -35,9 +50,9 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// This is defined in OAuth 2.0 DRAFT 10, section 5.1.1. (http://tools.ietf.org/id/draft-ietf-oauth-v2-10.html#authz-header)
 		/// </remarks>
 		private static string accessTokenAuthorizationHeaderAllowedCharacters = MessagingUtilities.UppercaseLetters +
-		                                                                        MessagingUtilities.LowercaseLetters +
-		                                                                        MessagingUtilities.Digits +
-		                                                                        @"!#$%&'()*+-./:<=>?@[]^_`{|}~\,;";
+																				MessagingUtilities.LowercaseLetters +
+																				MessagingUtilities.Digits +
+																				@"!#$%&'()*+-./:<=>?@[]^_`{|}~\,;";
 
 		/// <summary>
 		/// Determines whether one given scope is a subset of another scope.
@@ -128,6 +143,46 @@ namespace DotNetOpenAuth.OAuth2 {
 				CultureInfo.InvariantCulture,
 				Protocol.BearerHttpAuthorizationHeaderFormat,
 				accessToken);
+		}
+
+		/// <summary>
+		/// Applies the HTTP Authorization header for HTTP Basic authentication.
+		/// </summary>
+		/// <param name="headers">The headers collection to set the authorization header to.</param>
+		/// <param name="userName">The username.  Cannot be empty.</param>
+		/// <param name="password">The password.  Cannot be null.</param>
+		internal static void ApplyHttpBasicAuth(WebHeaderCollection headers, string userName, string password) {
+			Requires.NotNull(headers, "headers");
+			Requires.NotNullOrEmpty(userName, "userName");
+			Requires.NotNull(password, "password");
+
+			string concat = userName + ":" + password;
+			byte[] bits = HttpBasicEncoding.GetBytes(concat);
+			string base64 = Convert.ToBase64String(bits);
+			string header = HttpBasicAuthScheme + base64;
+			headers[HttpRequestHeader.Authorization] = header;
+		}
+
+		/// <summary>
+		/// Extracts the username and password from an HTTP Basic authorized web header.
+		/// </summary>
+		/// <param name="headers">The incoming web headers.</param>
+		/// <returns>The network credentials; or <c>null</c> if none could be discovered in the request.</returns>
+		internal static NetworkCredential ParseHttpBasicAuth(WebHeaderCollection headers) {
+			Requires.NotNull(headers, "headers");
+
+			string authorizationHeader = headers[HttpRequestHeaders.Authorization];
+			if (authorizationHeader != null && authorizationHeader.StartsWith(HttpBasicAuthScheme, StringComparison.Ordinal)) {
+				string base64 = authorizationHeader.Substring(HttpBasicAuthScheme.Length);
+				byte[] bits = Convert.FromBase64String(base64);
+				string usernameColonPassword = HttpBasicEncoding.GetString(bits);
+				string[] usernameAndPassword = usernameColonPassword.Split(ColonSeparator, 2);
+				if (usernameAndPassword.Length == 2) {
+					return new NetworkCredential(usernameAndPassword[0], usernameAndPassword[1]);
+				}
+			}
+
+			return null;
 		}
 	}
 }

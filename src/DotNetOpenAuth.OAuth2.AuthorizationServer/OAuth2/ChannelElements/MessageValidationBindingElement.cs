@@ -24,6 +24,29 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	/// </remarks>
 	internal class MessageValidationBindingElement : AuthServerBindingElementBase {
 		/// <summary>
+		/// The aggregating client authentication module.
+		/// </summary>
+		private readonly ClientAuthenticationModule clientAuthenticationModule;
+
+		/// <summary>
+		/// The authorization server host that applies.
+		/// </summary>
+		private readonly IAuthorizationServerHost authorizationServer;
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="MessageValidationBindingElement"/> class.
+		/// </summary>
+		/// <param name="clientAuthenticationModule">The aggregating client authentication module.</param>
+		/// <param name="authorizationServer">The authorization server host.</param>
+		internal MessageValidationBindingElement(ClientAuthenticationModule clientAuthenticationModule, IAuthorizationServerHost authorizationServer) {
+			Requires.NotNull(clientAuthenticationModule, "clientAuthenticationModule");
+			Requires.NotNull(authorizationServer, "authorizationServer");
+
+			this.clientAuthenticationModule = clientAuthenticationModule;
+			this.authorizationServer = authorizationServer;
+		}
+
+		/// <summary>
 		/// Gets the protection commonly offered (if any) by this binding element.
 		/// </summary>
 		/// <remarks>
@@ -79,10 +102,13 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			// Check that the client secret is correct for client authenticated messages.
 			var clientCredentialOnly = message as AccessTokenClientCredentialsRequest;
 			var authenticatedClientRequest = message as AuthenticatedClientRequestBase;
+			var accessTokenRequest = authenticatedClientRequest as AccessTokenRequestBase; // currently the only type of message.
 			if (authenticatedClientRequest != null) {
-				var client = this.AuthorizationServer.GetClientOrThrow(authenticatedClientRequest.ClientIdentifier);
-				AuthServerUtilities.TokenEndpointVerify(client.HasNonEmptySecret, Protocol.AccessTokenRequestErrorCodes.UnauthorizedClient); // an empty secret is not allowed for client authenticated calls.
-				AuthServerUtilities.TokenEndpointVerify(client.IsValidClientSecret(authenticatedClientRequest.ClientSecret), Protocol.AccessTokenRequestErrorCodes.InvalidClient, AuthServerStrings.ClientSecretMismatch);
+				string clientIdentifier;
+				var result = this.clientAuthenticationModule.TryAuthenticateClient(this.authorizationServer, authenticatedClientRequest, out clientIdentifier);
+				AuthServerUtilities.TokenEndpointVerify(result != ClientAuthenticationResult.ClientIdNotAuthenticated, accessTokenRequest, Protocol.AccessTokenRequestErrorCodes.UnauthorizedClient); // an empty secret is not allowed for client authenticated calls.
+				AuthServerUtilities.TokenEndpointVerify(result == ClientAuthenticationResult.ClientAuthenticated, accessTokenRequest, Protocol.AccessTokenRequestErrorCodes.InvalidClient, this.clientAuthenticationModule, AuthServerStrings.ClientSecretMismatch);
+				authenticatedClientRequest.ClientIdentifier = clientIdentifier;
 
 				if (clientCredentialOnly != null) {
 					clientCredentialOnly.CredentialsValidated = true;
@@ -104,12 +130,12 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 						Logger.OAuth.ErrorFormat(
 							"Resource owner password credential for user \"{0}\" rejected by authorization server host.",
 							resourceOwnerPasswordCarrier.UserName);
-						throw new TokenEndpointProtocolException(Protocol.AccessTokenRequestErrorCodes.InvalidGrant, AuthServerStrings.InvalidResourceOwnerPasswordCredential);
+						throw new TokenEndpointProtocolException(accessTokenRequest, Protocol.AccessTokenRequestErrorCodes.InvalidGrant, AuthServerStrings.InvalidResourceOwnerPasswordCredential);
 					}
 				} catch (NotSupportedException) {
-					throw new TokenEndpointProtocolException(Protocol.AccessTokenRequestErrorCodes.UnsupportedGrantType);
+					throw new TokenEndpointProtocolException(accessTokenRequest, Protocol.AccessTokenRequestErrorCodes.UnsupportedGrantType);
 				} catch (NotImplementedException) {
-					throw new TokenEndpointProtocolException(Protocol.AccessTokenRequestErrorCodes.UnsupportedGrantType);
+					throw new TokenEndpointProtocolException(accessTokenRequest, Protocol.AccessTokenRequestErrorCodes.UnsupportedGrantType);
 				}
 			}
 
@@ -135,14 +161,14 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 				var accessRequest = authCarrier as AccessTokenRequestBase;
 				if (accessRequest != null) {
 					// Make sure the client sending us this token is the client we issued the token to.
-					AuthServerUtilities.TokenEndpointVerify(string.Equals(accessRequest.ClientIdentifier, authCarrier.AuthorizationDescription.ClientIdentifier, StringComparison.Ordinal), Protocol.AccessTokenRequestErrorCodes.InvalidClient);
+					AuthServerUtilities.TokenEndpointVerify(string.Equals(accessRequest.ClientIdentifier, authCarrier.AuthorizationDescription.ClientIdentifier, StringComparison.Ordinal), accessTokenRequest, Protocol.AccessTokenRequestErrorCodes.InvalidClient);
 
 					var scopedAccessRequest = accessRequest as ScopedAccessTokenRequest;
 					if (scopedAccessRequest != null) {
 						// Make sure the scope the client is requesting does not exceed the scope in the grant.
 						if (!scopedAccessRequest.Scope.IsSubsetOf(authCarrier.AuthorizationDescription.Scope)) {
 							Logger.OAuth.ErrorFormat("The requested access scope (\"{0}\") exceeds the grant scope (\"{1}\").", scopedAccessRequest.Scope, authCarrier.AuthorizationDescription.Scope);
-							throw new TokenEndpointProtocolException(Protocol.AccessTokenRequestErrorCodes.InvalidScope, AuthServerStrings.AccessScopeExceedsGrantScope);
+							throw new TokenEndpointProtocolException(accessTokenRequest, Protocol.AccessTokenRequestErrorCodes.InvalidScope, AuthServerStrings.AccessScopeExceedsGrantScope);
 						}
 					}
 				}
@@ -150,7 +176,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 				// Make sure the authorization this token represents hasn't already been revoked.
 				if (!this.AuthorizationServer.IsAuthorizationValid(authCarrier.AuthorizationDescription)) {
 					Logger.OAuth.Error("Rejecting access token request because the IAuthorizationServerHost.IsAuthorizationValid method returned false.");
-					throw new TokenEndpointProtocolException(Protocol.AccessTokenRequestErrorCodes.InvalidGrant);
+					throw new TokenEndpointProtocolException(accessTokenRequest, Protocol.AccessTokenRequestErrorCodes.InvalidGrant);
 				}
 
 				applied = true;
