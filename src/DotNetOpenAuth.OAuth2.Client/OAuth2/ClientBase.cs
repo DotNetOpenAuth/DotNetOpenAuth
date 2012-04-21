@@ -67,6 +67,9 @@ namespace DotNetOpenAuth.OAuth2 {
 			set { this.OAuthChannel.ClientCredentialApplicator = value; }
 		}
 
+		/// <summary>
+		/// Gets the OAuth client channel.
+		/// </summary>
 		internal IOAuth2ChannelWithClient OAuthChannel {
 			get { return (IOAuth2ChannelWithClient)this.Channel; }
 		}
