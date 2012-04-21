@@ -35,7 +35,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 			this.client = client;
 
 			this.client.ClientIdentifier = OAuth2TestBase.ClientId;
-			this.client.ClientCredentialApplicator = ClientCredentialApplicator.NetworkCredential(OAuth2TestBase.ClientSecret);
+			this.client.ClientCredentialApplicator = ClientCredentialApplicator.PostParameter(OAuth2TestBase.ClientSecret);
 		}
 
 		internal override void Run() {
