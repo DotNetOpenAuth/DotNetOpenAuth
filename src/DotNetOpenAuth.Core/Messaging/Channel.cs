@@ -1385,7 +1385,7 @@ namespace DotNetOpenAuth.Messaging {
 
 			// Now sort the protection binding elements among themselves and add them to the list.
 			orderedList.AddRange(protectionElements.OrderBy(element => element.Protection, BindingElementOutgoingMessageApplicationOrder));
-			return orderedList;
+			return orderedList.AsEnumerable();
 		}
 
 		/// <summary>
