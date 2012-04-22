@@ -138,7 +138,6 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// Thrown when the client is not authorized.  This exception should be caught and the
 		/// <see cref="ProtocolFaultResponseException.ErrorResponse"/> message should be returned to the client.
 		/// </exception>
-		[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "1#", Justification = "Try pattern")]
 		public virtual IPrincipal GetPrincipal(HttpRequestBase httpRequestInfo = null, params string[] requiredScopes) {
 			AccessToken accessToken = this.GetAccessToken(httpRequestInfo, requiredScopes);
 
@@ -169,8 +168,6 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// Thrown when the client is not authorized.  This exception should be caught and the
 		/// <see cref="ProtocolFaultResponseException.ErrorResponse"/> message should be returned to the client.
 		/// </exception>
-		[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "1#", Justification = "Try pattern")]
-		[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "2#", Justification = "Try pattern")]
 		public virtual IPrincipal GetPrincipal(HttpRequestMessageProperty request, Uri requestUri, params string[] requiredScopes) {
 			Requires.NotNull(request, "request");
 			Requires.NotNull(requestUri, "requestUri");

@@ -26,8 +26,6 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="accessToken">The access token's serialized representation.</param>
 		/// <returns>The deserialized, validated token.</returns>
 		/// <exception cref="ProtocolException">Thrown if the access token is expired, invalid, or from an untrusted authorization server.</exception>
-		[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "1#", Justification = "Try pattern")]
-		[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "2#", Justification = "Try pattern")]
 		AccessToken DeserializeAccessToken(IDirectedProtocolMessage message, string accessToken);
 	}
 
