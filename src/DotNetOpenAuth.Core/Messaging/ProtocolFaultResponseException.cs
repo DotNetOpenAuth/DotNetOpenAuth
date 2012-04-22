@@ -60,6 +60,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Creates the HTTP response to forward to the client to report the error.
 		/// </summary>
+		/// <returns>The HTTP response.</returns>
 		public OutgoingWebResponse CreateErrorResponse() {
 			var response = this.channel.PrepareResponse(this.ErrorResponseMessage);
 			return response;
