@@ -42,10 +42,10 @@ namespace DotNetOpenAuth.Messaging {
 		/// such that it can be sent as a protocol message response to a remote caller.
 		/// </summary>
 		/// <param name="message">The human-readable exception message.</param>
-		/// <param name="faultedMessage">The message that was the cause of the exception.  Must not be null.</param>
-		protected internal ProtocolException(string message, IProtocolMessage faultedMessage)
-			: base(message) {
-			Requires.NotNull(faultedMessage, "faultedMessage");
+		/// <param name="faultedMessage">The message that was the cause of the exception.  May be null.</param>
+		/// <param name="innerException">The inner exception to include.</param>
+		protected internal ProtocolException(string message, IProtocolMessage faultedMessage, Exception innerException = null)
+			: base(message, innerException) {
 			this.FaultedMessage = faultedMessage;
 		}
 

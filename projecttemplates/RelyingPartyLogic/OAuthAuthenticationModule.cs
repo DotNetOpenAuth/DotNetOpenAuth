@@ -53,10 +53,11 @@ namespace RelyingPartyLogic {
 				var tokenAnalyzer = new SpecialAccessTokenAnalyzer(crypto, crypto);
 				var resourceServer = new ResourceServer(tokenAnalyzer);
 
-				IPrincipal principal;
-				var errorMessage = resourceServer.VerifyAccess(new HttpRequestWrapper(this.application.Context.Request), out principal);
-				if (errorMessage == null) {
+				try {
+					IPrincipal principal = resourceServer.GetPrincipal(new HttpRequestWrapper(this.application.Context.Request));
 					this.application.Context.User = principal;
+				} catch (ProtocolFaultResponseException ex) {
+					ex.ErrorResponse.Send();
 				}
 			}
 		}

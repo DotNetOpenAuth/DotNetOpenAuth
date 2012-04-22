@@ -65,27 +65,20 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <summary>
 		/// Discovers what access the client should have considering the access token in the current request.
 		/// </summary>
-		/// <param name="accessToken">Receives the access token describing the authorization the client has.</param>
-		/// <returns>An error to return to the client if access is not authorized; <c>null</c> if access is granted.</returns>
-		[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "0#", Justification = "Try pattern")]
-		[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "1#", Justification = "Try pattern")]
-		public OutgoingWebResponse VerifyAccess(out AccessToken accessToken) {
-			return this.VerifyAccess(this.Channel.GetRequestFromContext(), out accessToken);
-		}
-
-		/// <summary>
-		/// Discovers what access the client should have considering the access token in the current request.
-		/// </summary>
 		/// <param name="httpRequestInfo">The HTTP request info.</param>
-		/// <param name="accessToken">Receives the access token describing the authorization the client has.</param>
 		/// <returns>
-		/// An error to return to the client if access is not authorized; <c>null</c> if access is granted.
+		/// The access token describing the authorization the client has.  Never <c>null</c>.
 		/// </returns>
-		[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "1#", Justification = "Try pattern")]
-		[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "2#", Justification = "Try pattern")]
-		public virtual OutgoingWebResponse VerifyAccess(HttpRequestBase httpRequestInfo, out AccessToken accessToken) {
-			Requires.NotNull(httpRequestInfo, "httpRequestInfo");
+		/// <exception cref="ProtocolFaultResponseException">
+		/// Thrown when the client is not authorized.  This exception should be caught and the
+		/// <see cref="ProtocolFaultResponseException.ErrorResponse"/> message should be returned to the client.
+		/// </exception>
+		public virtual AccessToken GetAccessToken(HttpRequestBase httpRequestInfo = null) {
+			if (httpRequestInfo == null) {
+				httpRequestInfo = this.Channel.GetRequestFromContext();
+			}
 
+			AccessToken accessToken;
 			AccessProtectedResourceRequest request = null;
 			try {
 				if (this.Channel.TryReadFromRequest<AccessProtectedResourceRequest>(httpRequestInfo, out request)) {
@@ -96,18 +89,15 @@ namespace DotNetOpenAuth.OAuth2 {
 						ErrorUtilities.ThrowProtocol(ResourceServerStrings.InvalidAccessToken);
 					}
 
-					return null;
+					return accessToken;
 				} else {
-					var response = new UnauthorizedResponse(new ProtocolException(ResourceServerStrings.MissingAccessToken));
-
-					accessToken = null;
-					return this.Channel.PrepareResponse(response);
+					var ex = new ProtocolException(ResourceServerStrings.MissingAccessToken);
+					var response = new UnauthorizedResponse(ex);
+					throw new ProtocolFaultResponseException(this.Channel, response, innerException: ex);
 				}
 			} catch (ProtocolException ex) {
 				var response = request != null ? new UnauthorizedResponse(request, ex) : new UnauthorizedResponse(ex);
-
-				accessToken = null;
-				return this.Channel.PrepareResponse(response);
+				throw new ProtocolFaultResponseException(this.Channel, response, innerException: ex);
 			}
 		}
 
@@ -115,30 +105,29 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// Discovers what access the client should have considering the access token in the current request.
 		/// </summary>
 		/// <param name="httpRequestInfo">The HTTP request info.</param>
-		/// <param name="principal">The principal that contains the user and roles that the access token is authorized for.</param>
 		/// <returns>
-		/// An error to return to the client if access is not authorized; <c>null</c> if access is granted.
+		/// The principal that contains the user and roles that the access token is authorized for.  Never <c>null</c>.
 		/// </returns>
+		/// <exception cref="ProtocolFaultResponseException">
+		/// Thrown when the client is not authorized.  This exception should be caught and the
+		/// <see cref="ProtocolFaultResponseException.ErrorResponse"/> message should be returned to the client.
+		/// </exception>
 		[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "1#", Justification = "Try pattern")]
-		public virtual OutgoingWebResponse VerifyAccess(HttpRequestBase httpRequestInfo, out IPrincipal principal) {
-			AccessToken accessToken;
-			var result = this.VerifyAccess(httpRequestInfo, out accessToken);
-			if (result == null) {
-				// Mitigates attacks on this approach of differentiating clients from resource owners
-				// by checking that a username doesn't look suspiciously engineered to appear like the other type.
-				ErrorUtilities.VerifyProtocol(accessToken.User == null || string.IsNullOrEmpty(this.ClientPrincipalPrefix) || !accessToken.User.StartsWith(this.ClientPrincipalPrefix, StringComparison.OrdinalIgnoreCase), ResourceServerStrings.ResourceOwnerNameLooksLikeClientIdentifier);
-				ErrorUtilities.VerifyProtocol(accessToken.ClientIdentifier == null || string.IsNullOrEmpty(this.ResourceOwnerPrincipalPrefix) || !accessToken.ClientIdentifier.StartsWith(this.ResourceOwnerPrincipalPrefix, StringComparison.OrdinalIgnoreCase), ResourceServerStrings.ClientIdentifierLooksLikeResourceOwnerName);
+		public virtual IPrincipal GetPrincipal(HttpRequestBase httpRequestInfo = null) {
+			AccessToken accessToken = this.GetAccessToken(httpRequestInfo);
 
-				string principalUserName = !string.IsNullOrEmpty(accessToken.User)
-					? this.ResourceOwnerPrincipalPrefix + accessToken.User
-					: this.ClientPrincipalPrefix + accessToken.ClientIdentifier;
-				string[] principalScope = accessToken.Scope != null ? accessToken.Scope.ToArray() : new string[0];
-				principal = new OAuthPrincipal(principalUserName, principalScope);
-			} else {
-				principal = null;
-			}
+			// Mitigates attacks on this approach of differentiating clients from resource owners
+			// by checking that a username doesn't look suspiciously engineered to appear like the other type.
+			ErrorUtilities.VerifyProtocol(accessToken.User == null || string.IsNullOrEmpty(this.ClientPrincipalPrefix) || !accessToken.User.StartsWith(this.ClientPrincipalPrefix, StringComparison.OrdinalIgnoreCase), ResourceServerStrings.ResourceOwnerNameLooksLikeClientIdentifier);
+			ErrorUtilities.VerifyProtocol(accessToken.ClientIdentifier == null || string.IsNullOrEmpty(this.ResourceOwnerPrincipalPrefix) || !accessToken.ClientIdentifier.StartsWith(this.ResourceOwnerPrincipalPrefix, StringComparison.OrdinalIgnoreCase), ResourceServerStrings.ClientIdentifierLooksLikeResourceOwnerName);
 
-			return result;
+			string principalUserName = !string.IsNullOrEmpty(accessToken.User)
+				? this.ResourceOwnerPrincipalPrefix + accessToken.User
+				: this.ClientPrincipalPrefix + accessToken.ClientIdentifier;
+			string[] principalScope = accessToken.Scope != null ? accessToken.Scope.ToArray() : new string[0];
+			var principal = new OAuthPrincipal(principalUserName, principalScope);
+
+			return principal;
 		}
 
 		/// <summary>
@@ -146,17 +135,20 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <param name="request">HTTP details from an incoming WCF message.</param>
 		/// <param name="requestUri">The URI of the WCF service endpoint.</param>
-		/// <param name="principal">The principal that contains the user and roles that the access token is authorized for.</param>
 		/// <returns>
-		/// An error to return to the client if access is not authorized; <c>null</c> if access is granted.
+		/// The principal that contains the user and roles that the access token is authorized for.  Never <c>null</c>.
 		/// </returns>
+		/// <exception cref="ProtocolFaultResponseException">
+		/// Thrown when the client is not authorized.  This exception should be caught and the
+		/// <see cref="ProtocolFaultResponseException.ErrorResponse"/> message should be returned to the client.
+		/// </exception>
 		[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "1#", Justification = "Try pattern")]
 		[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "2#", Justification = "Try pattern")]
-		public virtual OutgoingWebResponse VerifyAccess(HttpRequestMessageProperty request, Uri requestUri, out IPrincipal principal) {
+		public virtual IPrincipal GetPrincipal(HttpRequestMessageProperty request, Uri requestUri) {
 			Requires.NotNull(request, "request");
 			Requires.NotNull(requestUri, "requestUri");
 
-			return this.VerifyAccess(new HttpRequestInfo(request, requestUri), out principal);
+			return this.GetPrincipal(new HttpRequestInfo(request, requestUri));
 		}
 	}
 }

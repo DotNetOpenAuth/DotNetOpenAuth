@@ -54,6 +54,11 @@
 				} else {
 					return false;
 				}
+			} catch (ProtocolFaultResponseException ex) {
+				Global.Logger.Error("Error processing OAuth messages.", ex);
+
+				// Return the appropriate unauthorized response to the client.
+				ex.ErrorResponse.Send();
 			} catch (ProtocolException ex) {
 				Global.Logger.Error("Error processing OAuth messages.", ex);
 			}
@@ -67,12 +72,7 @@
 			using (var signing = Global.CreateAuthorizationServerSigningServiceProvider()) {
 				using (var encrypting = Global.CreateResourceServerEncryptionServiceProvider()) {
 					var resourceServer = new ResourceServer(new StandardAccessTokenAnalyzer(signing, encrypting));
-
-					IPrincipal result;
-					var error = resourceServer.VerifyAccess(HttpRequestInfo.Create(httpDetails, requestUri), out result);
-
-					// TODO: return the prepared error code.
-					return error != null ? null : result;
+					return resourceServer.GetPrincipal(httpDetails, requestUri);
 				}
 			}
 		}
