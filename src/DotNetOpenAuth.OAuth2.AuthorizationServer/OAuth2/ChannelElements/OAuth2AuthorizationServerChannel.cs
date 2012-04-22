@@ -49,6 +49,11 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		public IAuthorizationServerHost AuthorizationServer { get; private set; }
 
 		/// <summary>
+		/// Gets or sets the service that checks whether a granted set of scopes satisfies a required set of scopes.
+		/// </summary>
+		public IScopeSatisfiedCheck ScopeSatisfiedCheck { get; set; }
+
+		/// <summary>
 		/// Gets the protocol message that may be in the given HTTP response.
 		/// </summary>
 		/// <param name="response">The response that is anticipated to contain an protocol message.</param>
@@ -118,7 +123,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			var bindingElements = new List<IChannelBindingElement>();
 
 			// The order they are provided is used for outgoing messgaes, and reversed for incoming messages.
-			bindingElements.Add(new MessageValidationBindingElement(clientAuthenticationModule, authorizationServer));
+			bindingElements.Add(new MessageValidationBindingElement(clientAuthenticationModule));
 			bindingElements.Add(new TokenCodeSerializationBindingElement());
 
 			return bindingElements.ToArray();

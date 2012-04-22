@@ -23,6 +23,11 @@ namespace DotNetOpenAuth.OAuth2 {
 	/// </summary>
 	public class AuthorizationServer {
 		/// <summary>
+		/// A reusable instance of the scope satisfied checker.
+		/// </summary>
+		private static readonly IScopeSatisfiedCheck DefaultScopeSatisfiedCheck = new StandardScopeSatisfiedCheck();
+
+		/// <summary>
 		/// The list of modules that verify client authentication data.
 		/// </summary>
 		private readonly List<ClientAuthenticationModule> clientAuthenticationModules = new List<ClientAuthenticationModule>();
@@ -41,6 +46,7 @@ namespace DotNetOpenAuth.OAuth2 {
 			this.aggregatingClientAuthenticationModule = new AggregatingClientCredentialReader(this.clientAuthenticationModules);
 			this.Channel = new OAuth2AuthorizationServerChannel(authorizationServer, this.aggregatingClientAuthenticationModule);
 			this.clientAuthenticationModules.AddRange(OAuth2AuthorizationServerSection.Configuration.ClientAuthenticationModules.CreateInstances(true));
+			this.ScopeSatisfiedCheck = DefaultScopeSatisfiedCheck;
 		}
 
 		/// <summary>
@@ -62,6 +68,14 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		public IList<ClientAuthenticationModule> ClientAuthenticationModules {
 			get { return this.clientAuthenticationModules; }
+		}
+
+		/// <summary>
+		/// Gets or sets the service that checks whether a granted set of scopes satisfies a required set of scopes.
+		/// </summary>
+		public IScopeSatisfiedCheck ScopeSatisfiedCheck {
+			get { return ((IOAuth2ChannelWithAuthorizationServer)this.Channel).ScopeSatisfiedCheck; }
+			set { ((IOAuth2ChannelWithAuthorizationServer)this.Channel).ScopeSatisfiedCheck = value; }
 		}
 
 		/// <summary>

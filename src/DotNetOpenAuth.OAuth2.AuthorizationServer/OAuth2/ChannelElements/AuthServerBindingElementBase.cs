@@ -38,6 +38,13 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		public abstract MessageProtections Protection { get; }
 
 		/// <summary>
+		/// Gets the channel to which this binding element belongs.
+		/// </summary>
+		internal IOAuth2ChannelWithAuthorizationServer AuthServerChannel {
+			get { return (IOAuth2ChannelWithAuthorizationServer)this.Channel; }
+		}
+
+		/// <summary>
 		/// Gets the authorization server hosting this channel.
 		/// </summary>
 		/// <value>The authorization server.</value>

@@ -29,21 +29,12 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		private readonly ClientAuthenticationModule clientAuthenticationModule;
 
 		/// <summary>
-		/// The authorization server host that applies.
-		/// </summary>
-		private readonly IAuthorizationServerHost authorizationServer;
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref="MessageValidationBindingElement"/> class.
 		/// </summary>
 		/// <param name="clientAuthenticationModule">The aggregating client authentication module.</param>
-		/// <param name="authorizationServer">The authorization server host.</param>
-		internal MessageValidationBindingElement(ClientAuthenticationModule clientAuthenticationModule, IAuthorizationServerHost authorizationServer) {
+		internal MessageValidationBindingElement(ClientAuthenticationModule clientAuthenticationModule) {
 			Requires.NotNull(clientAuthenticationModule, "clientAuthenticationModule");
-			Requires.NotNull(authorizationServer, "authorizationServer");
-
 			this.clientAuthenticationModule = clientAuthenticationModule;
-			this.authorizationServer = authorizationServer;
 		}
 
 		/// <summary>
@@ -105,7 +96,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			var accessTokenRequest = authenticatedClientRequest as AccessTokenRequestBase; // currently the only type of message.
 			if (authenticatedClientRequest != null) {
 				string clientIdentifier;
-				var result = this.clientAuthenticationModule.TryAuthenticateClient(this.authorizationServer, authenticatedClientRequest, out clientIdentifier);
+				var result = this.clientAuthenticationModule.TryAuthenticateClient(this.AuthServerChannel.AuthorizationServer, authenticatedClientRequest, out clientIdentifier);
 				AuthServerUtilities.TokenEndpointVerify(result != ClientAuthenticationResult.ClientIdNotAuthenticated, accessTokenRequest, Protocol.AccessTokenRequestErrorCodes.UnauthorizedClient); // an empty secret is not allowed for client authenticated calls.
 				AuthServerUtilities.TokenEndpointVerify(result == ClientAuthenticationResult.ClientAuthenticated, accessTokenRequest, Protocol.AccessTokenRequestErrorCodes.InvalidClient, this.clientAuthenticationModule, AuthServerStrings.ClientSecretMismatch);
 				authenticatedClientRequest.ClientIdentifier = clientIdentifier;
@@ -166,7 +157,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 					var scopedAccessRequest = accessRequest as ScopedAccessTokenRequest;
 					if (scopedAccessRequest != null) {
 						// Make sure the scope the client is requesting does not exceed the scope in the grant.
-						if (!scopedAccessRequest.Scope.IsSubsetOf(authCarrier.AuthorizationDescription.Scope)) {
+						if (!this.AuthServerChannel.ScopeSatisfiedCheck.IsScopeSatisfied(requiredScope: scopedAccessRequest.Scope, grantedScope: authCarrier.AuthorizationDescription.Scope)) {
 							Logger.OAuth.ErrorFormat("The requested access scope (\"{0}\") exceeds the grant scope (\"{1}\").", scopedAccessRequest.Scope, authCarrier.AuthorizationDescription.Scope);
 							throw new TokenEndpointProtocolException(accessTokenRequest, Protocol.AccessTokenRequestErrorCodes.InvalidScope, AuthServerStrings.AccessScopeExceedsGrantScope);
 						}

@@ -14,6 +14,11 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// Gets the authorization server.
 		/// </summary>
 		/// <value>The authorization server.</value>
-		 IAuthorizationServerHost AuthorizationServer { get;  }
+		IAuthorizationServerHost AuthorizationServer { get; }
+
+		/// <summary>
+		/// Gets or sets the service that checks whether a granted set of scopes satisfies a required set of scopes.
+		/// </summary>
+		IScopeSatisfiedCheck ScopeSatisfiedCheck { get; set; }
 	}
 }

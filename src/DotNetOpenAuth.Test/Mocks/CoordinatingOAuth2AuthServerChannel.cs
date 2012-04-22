@@ -24,5 +24,10 @@ namespace DotNetOpenAuth.Test.Mocks {
 		public IAuthorizationServerHost AuthorizationServer {
 			get { return this.wrappedChannel.AuthorizationServer; }
 		}
+
+		public IScopeSatisfiedCheck ScopeSatisfiedCheck {
+			get { return this.wrappedChannel.ScopeSatisfiedCheck; }
+			set { this.wrappedChannel.ScopeSatisfiedCheck = value; }
+		}
 	}
 }

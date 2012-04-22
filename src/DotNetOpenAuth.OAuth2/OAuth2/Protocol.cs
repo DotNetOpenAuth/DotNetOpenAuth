@@ -297,5 +297,39 @@ namespace DotNetOpenAuth.OAuth2 {
 			/// </summary>
 			internal const string Bearer = "bearer";
 		}
+
+		internal static class BearerTokenUnauthorizedResponseParameters {
+			internal const string Realm = "realm";
+			internal const string ErrorCode = "error";
+			internal const string ErrorDescription = "error_description";
+			internal const string ErrorUri = "error_uri";
+			internal const string Scope = "scope";
+		}
+
+		/// <summary>
+		/// The error codes prescribed in http://self-issued.info/docs/draft-ietf-oauth-v2-bearer.html#resource-error-codes
+		/// </summary>
+		internal static class BearerTokenErrorCodes {
+			/// <summary>
+			/// The request is missing a required parameter, includes an unsupported parameter or parameter value,
+			/// repeats the same parameter, uses more than one method for including an access token, or is otherwise
+			/// malformed. The resource server SHOULD respond with the HTTP 400 (Bad Request) status code.
+			/// </summary>
+			internal const string InvalidRequest = "invalid_request";
+
+			/// <summary>
+			/// The access token provided is expired, revoked, malformed, or invalid for other reasons.
+			/// The resource SHOULD respond with the HTTP 401 (Unauthorized) status code. The client MAY request
+			/// a new access token and retry the protected resource request.
+			/// </summary>
+			internal const string InvalidToken = "invalid_token";
+
+			/// <summary>
+			/// The request requires higher privileges than provided by the access token. The resource server
+			/// SHOULD respond with the HTTP 403 (Forbidden) status code and MAY include the scope attribute
+			/// with the scope necessary to access the protected resource.
+			/// </summary>
+			internal const string InsufficientScope = "insufficient_scope";
+		}
 	}
 }

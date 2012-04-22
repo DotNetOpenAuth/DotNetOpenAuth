@@ -101,7 +101,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		protected override OutgoingWebResponse PrepareDirectResponse(IProtocolMessage response) {
 			var webResponse = new OutgoingWebResponse();
 
-			// The only direct response from a resource server is a 401 Unauthorized error.
+			// The only direct response from a resource server is some authorization error (400, 401, 403).
 			var unauthorizedResponse = response as UnauthorizedResponse;
 			ErrorUtilities.VerifyInternal(unauthorizedResponse != null, "Only unauthorized responses are expected.");
 
@@ -113,7 +113,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 
 			// Now serialize all the message parts into the WWW-Authenticate header.
 			var fields = this.MessageDescriptions.GetAccessor(response);
-			webResponse.Headers[HttpResponseHeader.WwwAuthenticate] = MessagingUtilities.AssembleAuthorizationHeader(Protocol.BearerHttpAuthorizationScheme, fields);
+			webResponse.Headers[HttpResponseHeader.WwwAuthenticate] = MessagingUtilities.AssembleAuthorizationHeader(unauthorizedResponse.Scheme, fields);
 			return webResponse;
 		}
 

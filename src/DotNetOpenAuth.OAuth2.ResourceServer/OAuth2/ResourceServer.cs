@@ -26,6 +26,11 @@ namespace DotNetOpenAuth.OAuth2 {
 	/// </summary>
 	public class ResourceServer {
 		/// <summary>
+		/// A reusable instance of the scope satisfied checker.
+		/// </summary>
+		private static readonly IScopeSatisfiedCheck DefaultScopeSatisfiedCheck = new StandardScopeSatisfiedCheck();
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="ResourceServer"/> class.
 		/// </summary>
 		/// <param name="accessTokenAnalyzer">The access token analyzer.</param>
@@ -36,6 +41,7 @@ namespace DotNetOpenAuth.OAuth2 {
 			this.Channel = new OAuth2ResourceServerChannel();
 			this.ResourceOwnerPrincipalPrefix = string.Empty;
 			this.ClientPrincipalPrefix = "client:";
+			this.ScopeSatisfiedCheck = DefaultScopeSatisfiedCheck;
 		}
 
 		/// <summary>
@@ -43,6 +49,11 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <value>The access token analyzer.</value>
 		public IAccessTokenAnalyzer AccessTokenAnalyzer { get; private set; }
+
+		/// <summary>
+		/// Gets or sets the service that checks whether a granted set of scopes satisfies a required set of scopes.
+		/// </summary>
+		public IScopeSatisfiedCheck ScopeSatisfiedCheck { get; set; }
 
 		/// <summary>
 		/// Gets or sets the prefix to apply to a resource owner's username when used as the username in an <see cref="IPrincipal"/>.
@@ -66,6 +77,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// Discovers what access the client should have considering the access token in the current request.
 		/// </summary>
 		/// <param name="httpRequestInfo">The HTTP request info.</param>
+		/// <param name="requiredScopes">The set of scopes required to approve this request.</param>
 		/// <returns>
 		/// The access token describing the authorization the client has.  Never <c>null</c>.
 		/// </returns>
@@ -73,7 +85,9 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// Thrown when the client is not authorized.  This exception should be caught and the
 		/// <see cref="ProtocolFaultResponseException.ErrorResponse"/> message should be returned to the client.
 		/// </exception>
-		public virtual AccessToken GetAccessToken(HttpRequestBase httpRequestInfo = null) {
+		public virtual AccessToken GetAccessToken(HttpRequestBase httpRequestInfo = null, params string[] requiredScopes) {
+			Requires.NotNull(requiredScopes, "requiredScopes");
+			Requires.ValidState(this.ScopeSatisfiedCheck != null, Strings.RequiredPropertyNotYetPreset);
 			if (httpRequestInfo == null) {
 				httpRequestInfo = this.Channel.GetRequestFromContext();
 			}
@@ -89,14 +103,25 @@ namespace DotNetOpenAuth.OAuth2 {
 						ErrorUtilities.ThrowProtocol(ResourceServerStrings.InvalidAccessToken);
 					}
 
+					var requiredScopesSet = OAuthUtilities.ParseScopeSet(requiredScopes);
+					if (!this.ScopeSatisfiedCheck.IsScopeSatisfied(requiredScope: requiredScopesSet, grantedScope: accessToken.Scope)) {
+						var response = UnauthorizedResponse.InsufficientScope(request, requiredScopesSet);
+						throw new ProtocolFaultResponseException(this.Channel, response);
+					}
+
 					return accessToken;
 				} else {
 					var ex = new ProtocolException(ResourceServerStrings.MissingAccessToken);
-					var response = new UnauthorizedResponse(ex);
+					var response = UnauthorizedResponse.InvalidRequest(ex);
 					throw new ProtocolFaultResponseException(this.Channel, response, innerException: ex);
 				}
 			} catch (ProtocolException ex) {
-				var response = request != null ? new UnauthorizedResponse(request, ex) : new UnauthorizedResponse(ex);
+				if (ex is ProtocolFaultResponseException) {
+					// This doesn't need to be wrapped again.
+					throw;
+				}
+
+				var response = request != null ? UnauthorizedResponse.InvalidToken(request, ex) : UnauthorizedResponse.InvalidRequest(ex);
 				throw new ProtocolFaultResponseException(this.Channel, response, innerException: ex);
 			}
 		}
@@ -105,6 +130,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// Discovers what access the client should have considering the access token in the current request.
 		/// </summary>
 		/// <param name="httpRequestInfo">The HTTP request info.</param>
+		/// <param name="requiredScopes">The set of scopes required to approve this request.</param>
 		/// <returns>
 		/// The principal that contains the user and roles that the access token is authorized for.  Never <c>null</c>.
 		/// </returns>
@@ -113,8 +139,8 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <see cref="ProtocolFaultResponseException.ErrorResponse"/> message should be returned to the client.
 		/// </exception>
 		[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "1#", Justification = "Try pattern")]
-		public virtual IPrincipal GetPrincipal(HttpRequestBase httpRequestInfo = null) {
-			AccessToken accessToken = this.GetAccessToken(httpRequestInfo);
+		public virtual IPrincipal GetPrincipal(HttpRequestBase httpRequestInfo = null, params string[] requiredScopes) {
+			AccessToken accessToken = this.GetAccessToken(httpRequestInfo, requiredScopes);
 
 			// Mitigates attacks on this approach of differentiating clients from resource owners
 			// by checking that a username doesn't look suspiciously engineered to appear like the other type.
@@ -135,6 +161,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <param name="request">HTTP details from an incoming WCF message.</param>
 		/// <param name="requestUri">The URI of the WCF service endpoint.</param>
+		/// <param name="requiredScopes">The set of scopes required to approve this request.</param>
 		/// <returns>
 		/// The principal that contains the user and roles that the access token is authorized for.  Never <c>null</c>.
 		/// </returns>
@@ -144,11 +171,11 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </exception>
 		[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "1#", Justification = "Try pattern")]
 		[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "2#", Justification = "Try pattern")]
-		public virtual IPrincipal GetPrincipal(HttpRequestMessageProperty request, Uri requestUri) {
+		public virtual IPrincipal GetPrincipal(HttpRequestMessageProperty request, Uri requestUri, params string[] requiredScopes) {
 			Requires.NotNull(request, "request");
 			Requires.NotNull(requestUri, "requestUri");
 
-			return this.GetPrincipal(new HttpRequestInfo(request, requestUri));
+			return this.GetPrincipal(new HttpRequestInfo(request, requestUri), requiredScopes);
 		}
 	}
 }

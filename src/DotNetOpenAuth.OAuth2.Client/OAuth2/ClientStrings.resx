@@ -112,10 +112,10 @@
     <value>2.0</value>
   </resheader>
   <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AccessTokenRefreshFailed" xml:space="preserve">
     <value>Access token has expired and cannot be automatically refreshed.</value>
@@ -129,9 +129,6 @@
   </data>
   <data name="CannotObtainAccessTokenWithReason" xml:space="preserve">
     <value>Failed to obtain access token.  Authorization Server reports reason: {0}</value>
-  </data>
-  <data name="RequiredPropertyNotYetPreset" xml:space="preserve">
-    <value>The property {0} must be set before this operation is allowed.</value>
   </data>
   <data name="UnexpectedResponseContentType" xml:space="preserve">
     <value>Unexpected response Content-Type {0}</value>

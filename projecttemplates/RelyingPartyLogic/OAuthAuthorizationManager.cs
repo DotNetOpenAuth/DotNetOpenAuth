@@ -38,7 +38,7 @@ namespace RelyingPartyLogic {
 				var resourceServer = new ResourceServer(tokenAnalyzer);
 
 				try {
-					IPrincipal principal = resourceServer.GetPrincipal(httpDetails, requestUri);
+					IPrincipal principal = resourceServer.GetPrincipal(httpDetails, requestUri, operationContext.IncomingMessageHeaders.Action);
 					var policy = new OAuthPrincipalAuthorizationPolicy(principal);
 					var policies = new List<IAuthorizationPolicy> {
 						policy,
@@ -57,13 +57,10 @@ namespace RelyingPartyLogic {
 						principal.Identity,
 					};
 
-					// Only allow this method call if the access token scope permits it.
-					if (principal.IsInRole(operationContext.IncomingMessageHeaders.Action)) {
-						return true;
-					}
+					return true;
 				} catch (ProtocolFaultResponseException ex) {
 					// Return the appropriate unauthorized response to the client.
-					ex.ErrorResponse.Send();
+					ex.CreateErrorResponse().Send();
 				} catch (DotNetOpenAuth.Messaging.ProtocolException/* ex*/) {
 					////Logger.Error("Error processing OAuth messages.", ex);
 				}

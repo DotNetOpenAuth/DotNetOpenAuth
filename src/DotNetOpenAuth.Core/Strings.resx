@@ -112,10 +112,10 @@
     <value>2.0</value>
   </resheader>
   <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="ConfigurationTypeMustBePublic" xml:space="preserve">
     <value>The configuration-specified type {0} must be public, and is not.</value>
@@ -134,5 +134,11 @@
   </data>
   <data name="InvalidArgument" xml:space="preserve">
     <value>The argument has an unexpected value.</value>
+  </data>
+  <data name="RequiredPropertyNotYetPreset" xml:space="preserve">
+    <value>The property {0} must be set before this operation is allowed.</value>
+  </data>
+  <data name="ResponseBodyNotSupported" xml:space="preserve">
+    <value>This object contains a response body, which is not supported.</value>
   </data>
 </root>

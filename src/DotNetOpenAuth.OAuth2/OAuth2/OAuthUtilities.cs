@@ -55,29 +55,6 @@ namespace DotNetOpenAuth.OAuth2 {
 																				@"!#$%&'()*+-./:<=>?@[]^_`{|}~\,;";
 
 		/// <summary>
-		/// Determines whether one given scope is a subset of another scope.
-		/// </summary>
-		/// <param name="requestedScope">The requested scope, which may be a subset of <paramref name="grantedScope"/>.</param>
-		/// <param name="grantedScope">The granted scope, the suspected superset.</param>
-		/// <returns>
-		/// 	<c>true</c> if all the elements that appear in <paramref name="requestedScope"/> also appear in <paramref name="grantedScope"/>;
-		/// <c>false</c> otherwise.
-		/// </returns>
-		public static bool IsScopeSubset(string requestedScope, string grantedScope) {
-			if (string.IsNullOrEmpty(requestedScope)) {
-				return true;
-			}
-
-			if (string.IsNullOrEmpty(grantedScope)) {
-				return false;
-			}
-
-			var requestedScopes = new HashSet<string>(requestedScope.Split(scopeDelimiter, StringSplitOptions.RemoveEmptyEntries));
-			var grantedScopes = new HashSet<string>(grantedScope.Split(scopeDelimiter, StringSplitOptions.RemoveEmptyEntries));
-			return requestedScopes.IsSubsetOf(grantedScopes);
-		}
-
-		/// <summary>
 		/// Identifies individual scope elements
 		/// </summary>
 		/// <param name="scope">The space-delimited list of scopes.</param>
@@ -97,10 +74,30 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <param name="scopes">The scopes to serialize.</param>
 		/// <returns>A space-delimited list.</returns>
-		public static string JoinScopes(HashSet<string> scopes) {
+		public static string JoinScopes(ISet<string> scopes) {
 			Requires.NotNull(scopes, "scopes");
 			VerifyValidScopeTokens(scopes);
 			return string.Join(" ", scopes.ToArray());
+		}
+
+		/// <summary>
+		/// Parses a space-delimited list of scopes into a set.
+		/// </summary>
+		/// <param name="scopes">The space-delimited string.</param>
+		/// <returns>A set.</returns>
+		internal static ISet<string> ParseScopeSet(string scopes) {
+			Requires.NotNull(scopes, "scopes");
+			return ParseScopeSet(scopes.Split(scopeDelimiter, StringSplitOptions.RemoveEmptyEntries));
+		}
+
+		/// <summary>
+		/// Creates a set out of an array of strings.
+		/// </summary>
+		/// <param name="scopes">The array of strings.</param>
+		/// <returns>A set.</returns>
+		internal static ISet<string> ParseScopeSet(string[] scopes) {
+			Requires.NotNull(scopes, "scopes");
+			return new HashSet<string>(scopes, StringComparer.Ordinal);
 		}
 
 		/// <summary>

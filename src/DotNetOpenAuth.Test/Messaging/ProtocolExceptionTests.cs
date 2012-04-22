@@ -37,7 +37,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			Assert.AreSame(message, ex.FaultedMessage);
 		}
 
-		[Test, ExpectedException(typeof(ArgumentNullException))]
+		[Test]
 		public void CtorWithNullProtocolMessage() {
 			new ProtocolException("message", (IProtocolMessage)null);
 		}

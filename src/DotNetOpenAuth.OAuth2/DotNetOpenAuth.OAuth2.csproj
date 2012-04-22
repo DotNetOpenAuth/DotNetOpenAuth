@@ -24,12 +24,14 @@
     <Compile Include="OAuth2\ChannelElements\AuthorizationDataBag.cs" />
     <Compile Include="OAuth2\ChannelElements\ClientAuthenticationResult.cs" />
     <Compile Include="OAuth2\ChannelElements\IAccessTokenCarryingRequest.cs" />
+    <Compile Include="OAuth2\IScopeSatisfiedCheck.cs" />
     <Compile Include="OAuth2\ChannelElements\ScopeEncoder.cs" />
     <Compile Include="OAuth2\ChannelElements\IAuthorizationDescription.cs" />
     <Compile Include="OAuth2\ChannelElements\IAuthorizationCarryingRequest.cs" />
     <Compile Include="OAuth2\Messages\AccessProtectedResourceRequest.cs" />
     <Compile Include="OAuth2\Messages\UnauthorizedResponse.cs" />
     <Compile Include="OAuth2\OAuthUtilities.cs" />
+    <Compile Include="OAuth2\StandardScopeSatisfiedCheck.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="OAuth2\Messages\MessageBase.cs" />
     <Compile Include="OAuth2\Protocol.cs" />

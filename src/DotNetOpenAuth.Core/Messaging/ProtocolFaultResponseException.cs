@@ -22,11 +22,6 @@ namespace DotNetOpenAuth.Messaging {
 		private readonly Channel channel;
 
 		/// <summary>
-		/// A cached value for the <see cref="ErrorResponse"/> property.
-		/// </summary>
-		private OutgoingWebResponse response;
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref="ProtocolFaultResponseException"/> class
 		/// such that it can be sent as a protocol message response to a remote caller.
 		/// </summary>
@@ -63,16 +58,11 @@ namespace DotNetOpenAuth.Messaging {
 		public IDirectResponseProtocolMessage ErrorResponseMessage { get; private set; }
 
 		/// <summary>
-		/// Gets the HTTP response to forward to the client to report the error.
+		/// Creates the HTTP response to forward to the client to report the error.
 		/// </summary>
-		public OutgoingWebResponse ErrorResponse {
-			get {
-				if (this.response == null) {
-					this.response = this.channel.PrepareResponse(this.ErrorResponseMessage);
-				}
-
-				return this.response;
-			}
+		public OutgoingWebResponse CreateErrorResponse() {
+			var response = this.channel.PrepareResponse(this.ErrorResponseMessage);
+			return response;
 		}
 	}
 }
