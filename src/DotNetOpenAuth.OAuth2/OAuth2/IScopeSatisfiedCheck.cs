@@ -32,6 +32,6 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </para>
 		/// <para>Great care should be taken in implementing this method as this is a critical security module for the authorization and resource servers.</para>
 		/// </remarks>
-		bool IsScopeSatisfied(ISet<string> requiredScope, ISet<string> grantedScope);
+		bool IsScopeSatisfied(HashSet<string> requiredScope, HashSet<string> grantedScope);
 	}
 }

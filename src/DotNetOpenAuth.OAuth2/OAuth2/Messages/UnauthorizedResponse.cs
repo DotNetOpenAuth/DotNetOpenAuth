@@ -90,7 +90,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// </summary>
 		/// <value>The scope.</value>
 		[MessagePart(Protocol.BearerTokenUnauthorizedResponseParameters.Scope, Encoder = typeof(ScopeEncoder))]
-		public ISet<string> Scope { get; set; }
+		public HashSet<string> Scope { get; set; }
 
 		/// <summary>
 		/// Gets the scheme to use in the WWW-Authenticate header.
@@ -143,7 +143,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <param name="request">The request.</param>
 		/// <param name="requiredScopes">The set of scopes required to perform this operation.</param>
 		/// <returns>The error message.</returns>
-		internal static UnauthorizedResponse InsufficientScope(IDirectedProtocolMessage request, ISet<string> requiredScopes) {
+		internal static UnauthorizedResponse InsufficientScope(IDirectedProtocolMessage request, HashSet<string> requiredScopes) {
 			Requires.NotNull(request, "request");
 			Requires.NotNull(requiredScopes, "requiredScopes");
 			var message = new UnauthorizedResponse(request) {

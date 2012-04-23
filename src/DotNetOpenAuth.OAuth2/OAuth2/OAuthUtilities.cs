@@ -74,7 +74,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <param name="scopes">The scopes to serialize.</param>
 		/// <returns>A space-delimited list.</returns>
-		public static string JoinScopes(ISet<string> scopes) {
+		public static string JoinScopes(HashSet<string> scopes) {
 			Requires.NotNull(scopes, "scopes");
 			VerifyValidScopeTokens(scopes);
 			return string.Join(" ", scopes.ToArray());
@@ -85,7 +85,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <param name="scopes">The space-delimited string.</param>
 		/// <returns>A set.</returns>
-		internal static ISet<string> ParseScopeSet(string scopes) {
+		internal static HashSet<string> ParseScopeSet(string scopes) {
 			Requires.NotNull(scopes, "scopes");
 			return ParseScopeSet(scopes.Split(scopeDelimiter, StringSplitOptions.RemoveEmptyEntries));
 		}
@@ -95,7 +95,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <param name="scopes">The array of strings.</param>
 		/// <returns>A set.</returns>
-		internal static ISet<string> ParseScopeSet(string[] scopes) {
+		internal static HashSet<string> ParseScopeSet(string[] scopes) {
 			Requires.NotNull(scopes, "scopes");
 			return new HashSet<string>(scopes, StringComparer.Ordinal);
 		}

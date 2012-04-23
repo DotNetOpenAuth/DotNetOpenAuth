@@ -28,7 +28,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </para>
 		/// <para>Great care should be taken in implementing this method as this is a critical security module for the authorization and resource servers.</para>
 		/// </remarks>
-		public bool IsScopeSatisfied(ISet<string> requiredScope, ISet<string> grantedScope) {
+		public bool IsScopeSatisfied(HashSet<string> requiredScope, HashSet<string> grantedScope) {
 			Requires.NotNull(requiredScope, "requiredScope");
 			Requires.NotNull(grantedScope, "grantedScope");
 			return grantedScope.IsSupersetOf(requiredScope);
