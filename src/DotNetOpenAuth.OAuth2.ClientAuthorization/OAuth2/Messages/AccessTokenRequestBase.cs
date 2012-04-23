@@ -40,9 +40,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <value>
 		/// Always true, because of our base class.
 		/// </value>
-		bool IAccessTokenRequest.ClientAuthenticated {
-			get { return true; }
-		}
+		public bool ClientAuthenticated { get; internal set; }
 
 		/// <summary>
 		/// Gets or sets the access token creation parameters.

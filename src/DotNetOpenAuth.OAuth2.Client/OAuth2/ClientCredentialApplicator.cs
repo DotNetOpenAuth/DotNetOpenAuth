@@ -126,11 +126,13 @@ namespace DotNetOpenAuth.OAuth2 {
 			/// <param name="clientIdentifier">The identifier by which the authorization server should recognize this client.</param>
 			/// <param name="request">The outbound message to apply authentication information to.</param>
 			public override void ApplyClientCredential(string clientIdentifier, HttpWebRequest request) {
-				if (this.credential != null && this.credential.UserName == clientIdentifier) {
-					ErrorUtilities.VerifyHost(false, "Client identifiers \"{0}\" and \"{1}\" do not match.", this.credential.UserName, clientIdentifier);
-				}
+				if (clientIdentifier != null) {
+					if (this.credential != null && this.credential.UserName == clientIdentifier) {
+						ErrorUtilities.VerifyHost(false, "Client identifiers \"{0}\" and \"{1}\" do not match.", this.credential.UserName, clientIdentifier);
+					}
 
-				request.Credentials = this.credential ?? new NetworkCredential(clientIdentifier, this.clientSecret);
+					request.Credentials = this.credential ?? new NetworkCredential(clientIdentifier, this.clientSecret);
+				}
 			}
 		}
 
@@ -158,7 +160,9 @@ namespace DotNetOpenAuth.OAuth2 {
 			/// <param name="clientIdentifier">The identifier by which the authorization server should recognize this client.</param>
 			/// <param name="request">The outbound message to apply authentication information to.</param>
 			public override void ApplyClientCredential(string clientIdentifier, AuthenticatedClientRequestBase request) {
-				request.ClientSecret = this.secret;
+				if (clientIdentifier != null) {
+					request.ClientSecret = this.secret;
+				}
 			}
 		}
 	}

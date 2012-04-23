@@ -43,13 +43,28 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 			coordinator.Run();
 		}
 
-		[Test]
-		public void ResourceOwnerPasswordCredentialGrant() {
+		[Theory]
+		public void ResourceOwnerPasswordCredentialGrant(bool anonymousClient) {
+			var authHostMock = CreateAuthorizationServerMock();
+			if (anonymousClient) {
+				authHostMock.Setup(
+					m =>
+					m.IsAuthorizationValid(
+						It.Is<IAuthorizationDescription>(
+							d =>
+							d.ClientIdentifier == null && d.User == ResourceOwnerUsername &&
+							MessagingUtilities.AreEquivalent(d.Scope, TestScopes)))).Returns(true);
+			}
+
 			var coordinator = new OAuth2Coordinator<WebServerClient>(
 				AuthorizationServerDescription,
-				AuthorizationServerMock,
+				authHostMock.Object,
 				new WebServerClient(AuthorizationServerDescription),
 				client => {
+					if (anonymousClient) {
+						client.ClientIdentifier = null;
+					}
+
 					var authState = client.ExchangeUserCredentialForToken(ResourceOwnerUsername, ResourceOwnerPassword, TestScopes);
 					Assert.That(authState.AccessToken, Is.Not.Null.And.Not.Empty);
 					Assert.That(authState.RefreshToken, Is.Not.Null.And.Not.Empty);

@@ -36,7 +36,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// Gets the authorization that the code or token describes.
 		/// </summary>
 		IAuthorizationDescription IAuthorizationCarryingRequest.AuthorizationDescription {
-			get { return this.CredentialsValidated ? this : null; }
+			get { return this.ClientAuthenticated ? this : null; }
 		}
 
 		#endregion
@@ -74,10 +74,5 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		internal override GrantType GrantType {
 			get { return Messages.GrantType.ClientCredentials; }
 		}
-
-		/// <summary>
-		/// Gets or sets a value indicating whether the resource owner's credentials have been validated at the authorization server.
-		/// </summary>
-		internal bool CredentialsValidated { get; set; }
 	}
 }

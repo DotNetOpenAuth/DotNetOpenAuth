@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
+	using System.Globalization;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.OAuth2.Messages;
@@ -94,22 +95,29 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			var clientCredentialOnly = message as AccessTokenClientCredentialsRequest;
 			var authenticatedClientRequest = message as AuthenticatedClientRequestBase;
 			var accessTokenRequest = authenticatedClientRequest as AccessTokenRequestBase; // currently the only type of message.
+			var resourceOwnerPasswordCarrier = message as AccessTokenResourceOwnerPasswordCredentialsRequest;
 			if (authenticatedClientRequest != null) {
 				string clientIdentifier;
 				var result = this.clientAuthenticationModule.TryAuthenticateClient(this.AuthServerChannel.AuthorizationServer, authenticatedClientRequest, out clientIdentifier);
-				AuthServerUtilities.TokenEndpointVerify(result != ClientAuthenticationResult.ClientIdNotAuthenticated, accessTokenRequest, Protocol.AccessTokenRequestErrorCodes.UnauthorizedClient); // an empty secret is not allowed for client authenticated calls.
-				AuthServerUtilities.TokenEndpointVerify(result == ClientAuthenticationResult.ClientAuthenticated, accessTokenRequest, Protocol.AccessTokenRequestErrorCodes.InvalidClient, this.clientAuthenticationModule, AuthServerStrings.ClientSecretMismatch);
-				authenticatedClientRequest.ClientIdentifier = clientIdentifier;
-
-				if (clientCredentialOnly != null) {
-					clientCredentialOnly.CredentialsValidated = true;
+				switch (result) {
+					case ClientAuthenticationResult.ClientAuthenticated:
+						break;
+					case ClientAuthenticationResult.NoAuthenticationRecognized:
+					case ClientAuthenticationResult.ClientIdNotAuthenticated:
+						// The only grant type that allows no client credentials is the resource owner credentials grant.
+						AuthServerUtilities.TokenEndpointVerify(resourceOwnerPasswordCarrier != null, accessTokenRequest, Protocol.AccessTokenRequestErrorCodes.InvalidClient, this.clientAuthenticationModule, AuthServerStrings.ClientSecretMismatch);
+						break;
+					default:
+						AuthServerUtilities.TokenEndpointVerify(false, accessTokenRequest, Protocol.AccessTokenRequestErrorCodes.InvalidClient, this.clientAuthenticationModule, AuthServerStrings.ClientSecretMismatch);
+						break;
 				}
 
+				authenticatedClientRequest.ClientIdentifier = result == ClientAuthenticationResult.NoAuthenticationRecognized ? null : clientIdentifier;
+				accessTokenRequest.ClientAuthenticated = result == ClientAuthenticationResult.ClientAuthenticated;
 				applied = true;
 			}
 
 			// Check that any resource owner password credential is correct.
-			var resourceOwnerPasswordCarrier = message as AccessTokenResourceOwnerPasswordCredentialsRequest;
 			if (resourceOwnerPasswordCarrier != null) {
 				try {
 					string canonicalUserName;
