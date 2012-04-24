@@ -83,7 +83,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </returns>
 		/// <exception cref="ProtocolFaultResponseException">
 		/// Thrown when the client is not authorized.  This exception should be caught and the
-		/// <see cref="ProtocolFaultResponseException.ErrorResponse"/> message should be returned to the client.
+		/// <see cref="ProtocolFaultResponseException.ErrorResponseMessage"/> message should be returned to the client.
 		/// </exception>
 		public virtual AccessToken GetAccessToken(HttpRequestBase httpRequestInfo = null, params string[] requiredScopes) {
 			Requires.NotNull(requiredScopes, "requiredScopes");
@@ -136,7 +136,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </returns>
 		/// <exception cref="ProtocolFaultResponseException">
 		/// Thrown when the client is not authorized.  This exception should be caught and the
-		/// <see cref="ProtocolFaultResponseException.ErrorResponse"/> message should be returned to the client.
+		/// <see cref="ProtocolFaultResponseException.ErrorResponseMessage"/> message should be returned to the client.
 		/// </exception>
 		public virtual IPrincipal GetPrincipal(HttpRequestBase httpRequestInfo = null, params string[] requiredScopes) {
 			AccessToken accessToken = this.GetAccessToken(httpRequestInfo, requiredScopes);
@@ -166,7 +166,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </returns>
 		/// <exception cref="ProtocolFaultResponseException">
 		/// Thrown when the client is not authorized.  This exception should be caught and the
-		/// <see cref="ProtocolFaultResponseException.ErrorResponse"/> message should be returned to the client.
+		/// <see cref="ProtocolFaultResponseException.ErrorResponseMessage"/> message should be returned to the client.
 		/// </exception>
 		public virtual IPrincipal GetPrincipal(HttpRequestMessageProperty request, Uri requestUri, params string[] requiredScopes) {
 			Requires.NotNull(request, "request");
