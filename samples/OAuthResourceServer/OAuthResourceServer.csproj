@@ -94,9 +94,11 @@
     <Compile Include="Code\TracePageAppender.cs" />
     <Compile Include="Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="TracePage.aspx.cs">
       <DependentUpon>TracePage.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="TracePage.aspx.designer.cs">
       <DependentUpon>TracePage.aspx</DependentUpon>
