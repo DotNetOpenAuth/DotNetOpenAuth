@@ -28,11 +28,25 @@
 			<Output TaskParameter="TargetOutputs" ItemName="TargetOutputs40"/>
 		</MSBuild>
 		<MSBuild
+			Projects="$(ProjectRoot)src\DotNetOpenAuth\DotNetOpenAuth.proj"
+			Targets="@(ProductTargets)"
+			Properties="TargetFrameworkVersion=v4.5"
+			BuildInParallel="$(BuildInParallel)">
+			<Output TaskParameter="TargetOutputs" ItemName="TargetOutputs45"/>
+		</MSBuild>
+		<MSBuild
 			Projects="$(ProjectRoot)src\DotNetOpenAuth.AspNet\DotNetOpenAuth.AspNet.csproj"
 			Targets="@(AspNetTargets)"
 			Properties="TargetFrameworkVersion=v4.0"
 			BuildInParallel="$(BuildInParallel)">
 			<Output TaskParameter="TargetOutputs" ItemName="TargetOutputs40"/>
+		</MSBuild>
+		<MSBuild
+			Projects="$(ProjectRoot)src\DotNetOpenAuth.AspNet\DotNetOpenAuth.AspNet.csproj"
+			Targets="@(AspNetTargets)"
+			Properties="TargetFrameworkVersion=v4.5"
+			BuildInParallel="$(BuildInParallel)">
+			<Output TaskParameter="TargetOutputs" ItemName="TargetOutputs45"/>
 		</MSBuild>
 
 		<ItemGroup>
@@ -42,10 +56,14 @@
 			<ResignedAssembliesOutputs Include="@(TargetOutputs40)" Condition=" '%(MSBuildSourceTargetName)' == 'Sign' ">
 				<TargetFramework>v4.0</TargetFramework>
 			</ResignedAssembliesOutputs>
+			<ResignedAssembliesOutputs Include="@(TargetOutputs45)" Condition=" '%(MSBuildSourceTargetName)' == 'Sign' ">
+				<TargetFramework>v4.5</TargetFramework>
+			</ResignedAssembliesOutputs>
 		</ItemGroup>
 		<PropertyGroup>
 			<OutputPath35 Condition=" '%(MSBuildSourceTargetName)' == 'GetOutputPath' ">@(TargetOutputs35)</OutputPath35>
 			<OutputPath40 Condition=" '%(MSBuildSourceTargetName)' == 'GetOutputPath' ">@(TargetOutputs40)</OutputPath40>
+			<OutputPath45 Condition=" '%(MSBuildSourceTargetName)' == 'GetOutputPath' ">@(TargetOutputs45)</OutputPath45>
 		</PropertyGroup>
 	</Target>
 
@@ -69,6 +87,7 @@
 			<NuGetProperties Include="oauth2version=$(OAuth2PackagesVersion)" />
 			<NuGetProperties Include="OutputPath35=$(OutputPath35)" />
 			<NuGetProperties Include="OutputPath40=$(OutputPath40)" />
+			<NuGetProperties Include="OutputPath45=$(OutputPath45)" />
 		</ItemGroup>
 
 		<NuGetPack

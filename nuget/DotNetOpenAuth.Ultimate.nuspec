@@ -21,12 +21,15 @@
 	<files>
 		<file src="$OutputPath35$unified\signed\DotNetOpenAuth.dll" target="lib\net35-full\" />
 		<file src="$OutputPath40$unified\signed\DotNetOpenAuth.dll" target="lib\net40-full\" />
+		<file src="$OutputPath45$unified\signed\DotNetOpenAuth.dll" target="lib\net45-full\" />
 
 		<file src="$OutputPath35$unified\DotNetOpenAuth.pdb" target="lib\net35-full\" />
 		<file src="$OutputPath40$unified\DotNetOpenAuth.pdb" target="lib\net40-full\" />
+		<file src="$OutputPath45$unified\DotNetOpenAuth.pdb" target="lib\net45-full\" />
 
 		<file src="$OutputPath35$unified\DotNetOpenAuth.xml" target="lib\net35-full\" />
 		<file src="$OutputPath40$unified\DotNetOpenAuth.xml" target="lib\net40-full\" />
+		<file src="$OutputPath45$unified\DotNetOpenAuth.xml" target="lib\net45-full\" />
 
 		<file src="content\Ultimate\web.config.transform" target="content\web.config.transform" />
 

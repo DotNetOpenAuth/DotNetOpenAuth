@@ -18,6 +18,7 @@
 		<CodeContractsInstallDir>$(ProjectRoot)tools\Contracts\</CodeContractsInstallDir>
 		<DefineConstants Condition=" '$(SignAssembly)' == 'true' ">$(DefineConstants);StrongNameSigned</DefineConstants>
 		<DefineConstants Condition=" '$(ClrVersion)' == '4' ">$(DefineConstants);CLR4</DefineConstants>
+		<DefineConstants Condition=" '$(TargetFrameworkVersion)' == 'v4.5' ">$(DefineConstants);NetFx45</DefineConstants>
 		<AssemblySearchPaths>$(ProjectRoot)lib;$(AssemblySearchPaths)</AssemblySearchPaths>
 		<AssemblySearchPaths Condition="Exists('$(ProjectRoot)lib\net-$(TargetFrameworkVersion)')">$(ProjectRoot)lib\net-$(TargetFrameworkVersion);$(AssemblySearchPaths)</AssemblySearchPaths>
 	</PropertyGroup>

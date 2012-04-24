@@ -12,6 +12,10 @@
 		         Properties="TargetFrameworkVersion=v4.0"
 		         Targets="BuildUnifiedProduct"
 		         BuildInParallel="$(BuildInParallel)" />
+		<MSBuild Projects="$(ProjectRoot)src\$(ProductName)\$(ProductName).proj"
+		         Properties="TargetFrameworkVersion=v4.5"
+		         Targets="BuildUnifiedProduct"
+		         BuildInParallel="$(BuildInParallel)" />
 		<MSBuild Projects="@(DelaySignedProjects)"
 		         Properties="TargetFrameworkVersion=v3.5"
 		         Targets="Sign"
@@ -48,6 +52,7 @@
 		<PropertyGroup>
 			<DropBin35Directory>$(DropDirectory)Bin-net3.5\</DropBin35Directory>
 			<DropBin40Directory>$(DropDirectory)Bin-net4.0\</DropBin40Directory>
+			<DropBin45Directory>$(DropDirectory)Bin-net4.5\</DropBin45Directory>
 			<DropLibDirectory>$(DropDirectory)Lib\</DropLibDirectory>
 			<DropProjectTemplatesDirectory>$(DropDirectory)Project Templates\</DropProjectTemplatesDirectory>
 			<DropSamplesDirectory>$(DropDirectory)Samples\</DropSamplesDirectory>
@@ -63,6 +68,7 @@
 						 $(DropDirectory);
 						 $(DropBin35Directory);
 						 $(DropBin40Directory);
+						 $(DropBin45Directory);
 						 $(DropLibDirectory);
 						 $(DropProjectTemplatesDirectory);
 						 $(DropSamplesDirectory);
@@ -89,6 +95,14 @@
 																$(ILMergeOutputAssembly40Directory)$(ProductName).pdb;
 																$(ILMergeOutputAssembly40Directory)$(ProductName).xml;
 																$(OutputPath40)CodeContracts\$(SignedSubPath)$(ProductName).Contracts.???;
+																$(ProjectRoot)Doc\README.Bin.html;
+																$(ProjectRoot)src\$(ProductName).Core\Configuration\$(ProductName).xsd;
+													" />
+			<DropBin45SourceFiles Include="
+																$(ILMergeOutputAssembly45Directory)$(SignedSubPath)$(ProductName).dll;
+																$(ILMergeOutputAssembly45Directory)$(ProductName).pdb;
+																$(ILMergeOutputAssembly45Directory)$(ProductName).xml;
+																$(OutputPath45)CodeContracts\$(SignedSubPath)$(ProductName).Contracts.???;
 																$(ProjectRoot)Doc\README.Bin.html;
 																$(ProjectRoot)src\$(ProductName).Core\Configuration\$(ProductName).xsd;
 													" />
@@ -134,6 +148,7 @@
 			<DropFiles Include="@(DropSourceFiles->'$(DropDirectory)%(RecursiveDir)%(FileName)%(Extension)')"/>
 			<DropBin35Files Include="@(DropBin35SourceFiles->'$(DropBin35Directory)%(RecursiveDir)%(FileName)%(Extension)')"/>
 			<DropBin40Files Include="@(DropBin40SourceFiles->'$(DropBin40Directory)%(RecursiveDir)%(FileName)%(Extension)')"/>
+			<DropBin45Files Include="@(DropBin45SourceFiles->'$(DropBin45Directory)%(RecursiveDir)%(FileName)%(Extension)')"/>
 			<DropSatelliteFiles Include="@(DropSatelliteSourceFiles->'$(DropBinDirectory)%(CultureDir)%(FileName)%(Extension)')" />
 			<DropLibFiles Include="@(DropLibSourceFiles->'$(DropLibDirectory)%(RecursiveDir)%(FileName)%(Extension)')"/>
 			<DropProjectTemplatesFiles Include="@(DropProjectTemplatesSourceFiles->'$(DropProjectTemplatesDirectory)%(FileName)%(Extension)')" />
@@ -147,6 +162,7 @@
 										@(DropSourceFiles);
 										@(DropBin35SourceFiles);
 										@(DropBin40SourceFiles);
+										@(DropBin45SourceFiles);
 										@(DropSatelliteSourceFiles);
 										@(DropLibSourceFiles);
 										@(DropProjectTemplatesSourceFiles);
@@ -161,6 +177,7 @@
 										@(DropFiles);
 										@(DropBin35Files);
 										@(DropBin40Files);
+										@(DropBin45Files);
 										@(DropSatelliteFiles);
 										@(DropLibFiles);
 										@(DropProjectTemplatesFiles);

@@ -25,6 +25,10 @@
 		<file src="$OutputPath40$DotNetOpenAuth.AspNet.pdb" target="lib\net40-full\DotNetOpenAuth.AspNet.pdb" />
 		<file src="$OutputPath40$DotNetOpenAuth.AspNet.xml" target="lib\net40-full\DotNetOpenAuth.AspNet.xml" />
 
+		<file src="$OutputPath45$signed\DotNetOpenAuth.AspNet.dll" target="lib\net45-full\DotNetOpenAuth.AspNet.dll" />
+		<file src="$OutputPath45$DotNetOpenAuth.AspNet.pdb" target="lib\net45-full\DotNetOpenAuth.AspNet.pdb" />
+		<file src="$OutputPath45$DotNetOpenAuth.AspNet.xml" target="lib\net45-full\DotNetOpenAuth.AspNet.xml" />
+
 		<file src="..\src\DotNetOpenAuth.AspNet\**\*.cs" target="src" />
 	</files>
 </package>
