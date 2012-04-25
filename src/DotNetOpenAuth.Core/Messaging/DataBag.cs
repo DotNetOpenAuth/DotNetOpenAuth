@@ -105,7 +105,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </remarks>
 		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Accessed by reflection")]
 		[MessagePart("t", IsRequired = true, AllowEmpty = false)]
-		private Type BagType {
+		protected virtual Type BagType {
 			get { return this.GetType(); }
 		}
 

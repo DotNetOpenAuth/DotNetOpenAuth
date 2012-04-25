@@ -143,30 +143,30 @@ namespace DotNetOpenAuth.OAuth2 {
 			IProtocolMessage responseMessage;
 			try {
 				if (this.Channel.TryReadFromRequest(request, out requestMessage)) {
-					IAccessTokenRequestInternal accessRequestInternal = requestMessage;
-					accessRequestInternal.AccessTokenCreationParameters = this.AuthorizationServerServices.GetAccessTokenParameters(requestMessage);
-					ErrorUtilities.VerifyHost(accessRequestInternal.AccessTokenCreationParameters != null, "IAuthorizationServerHost.GetAccessTokenParameters must not return null.");
+					var accessTokenResult = this.AuthorizationServerServices.CreateAccessToken(requestMessage);
+					ErrorUtilities.VerifyHost(accessTokenResult != null, "IAuthorizationServerHost.CreateAccessToken must not return null.");
 
-					var successResponseMessage = this.PrepareAccessTokenResponse(requestMessage, accessRequestInternal.AccessTokenCreationParameters.IncludeRefreshToken);
-					successResponseMessage.Lifetime = accessRequestInternal.AccessTokenCreationParameters.AccessTokenLifetime;
+					IAccessTokenRequestInternal accessRequestInternal = requestMessage;
+					accessRequestInternal.AccessTokenResult = accessTokenResult;
+
+					var successResponseMessage = this.PrepareAccessTokenResponse(requestMessage, accessTokenResult.AllowRefreshToken);
+					successResponseMessage.Lifetime = accessTokenResult.AccessToken.Lifetime;
 
 					var authCarryingRequest = requestMessage as IAuthorizationCarryingRequest;
 					if (authCarryingRequest != null) {
+						accessTokenResult.AccessToken.ApplyAuthorization(authCarryingRequest.AuthorizationDescription);
 						IAccessTokenIssuingResponse accessTokenIssuingResponse = successResponseMessage;
-						accessTokenIssuingResponse.AuthorizationDescription = new AccessToken(authCarryingRequest.AuthorizationDescription, successResponseMessage.Lifetime);
-						accessTokenIssuingResponse.AuthorizationDescription.ExtraData.AddRange(accessRequestInternal.AccessTokenCreationParameters.ExtraClaims);
+						accessTokenIssuingResponse.AuthorizationDescription = accessTokenResult.AccessToken;
 					}
 
 					responseMessage = successResponseMessage;
 				} else {
-					responseMessage = new AccessTokenFailedResponse() { Error = Protocol.AccessTokenRequestErrorCodes.InvalidRequest, };
+					responseMessage = new AccessTokenFailedResponse() { Error = Protocol.AccessTokenRequestErrorCodes.InvalidRequest };
 				}
 			} catch (TokenEndpointProtocolException ex) {
 				responseMessage = ex.GetResponse();
 			} catch (ProtocolException) {
-				responseMessage = new AccessTokenFailedResponse() {
-					Error = Protocol.AccessTokenRequestErrorCodes.InvalidRequest,
-				};
+				responseMessage = new AccessTokenFailedResponse() { Error = Protocol.AccessTokenRequestErrorCodes.InvalidRequest };
 			}
 
 			return this.Channel.PrepareResponse(responseMessage);
@@ -212,16 +212,17 @@ namespace DotNetOpenAuth.OAuth2 {
 			switch (authorizationRequest.ResponseType) {
 				case EndUserAuthorizationResponseType.AccessToken:
 					IAccessTokenRequestInternal accessRequestInternal = (EndUserAuthorizationImplicitRequest)authorizationRequest;
-					accessRequestInternal.AccessTokenCreationParameters = this.AuthorizationServerServices.GetAccessTokenParameters(accessRequestInternal);
+					var accessTokenResult = this.AuthorizationServerServices.CreateAccessToken(accessRequestInternal);
+					ErrorUtilities.VerifyHost(accessTokenResult != null, "IAuthorizationServerHost.CreateAccessToken must not return null.");
+
+					accessRequestInternal.AccessTokenResult = accessTokenResult;
 
 					var implicitGrantResponse = new EndUserAuthorizationSuccessAccessTokenResponse(callback, authorizationRequest);
-					implicitGrantResponse.Lifetime = accessRequestInternal.AccessTokenCreationParameters.AccessTokenLifetime;
+					implicitGrantResponse.Lifetime = accessTokenResult.AccessToken.Lifetime;
+					accessTokenResult.AccessToken.ApplyAuthorization(implicitGrantResponse.Scope, userName, implicitGrantResponse.Lifetime);
+
 					IAccessTokenCarryingRequest tokenCarryingResponse = implicitGrantResponse;
-					tokenCarryingResponse.AuthorizationDescription = new AccessToken(
-						implicitGrantResponse.Scope,
-						userName,
-						implicitGrantResponse.Lifetime);
-					tokenCarryingResponse.AuthorizationDescription.ExtraData.AddRange(accessRequestInternal.AccessTokenCreationParameters.ExtraClaims);
+					tokenCarryingResponse.AuthorizationDescription = accessTokenResult.AccessToken;
 
 					response = implicitGrantResponse;
 					break;
@@ -279,24 +280,24 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// Prepares the response to an access token request.
 		/// </summary>
 		/// <param name="request">The request for an access token.</param>
-		/// <param name="includeRefreshToken">If set to <c>true</c>, the response will include a long-lived refresh token.</param>
+		/// <param name="allowRefreshToken">If set to <c>true</c>, the response will include a long-lived refresh token.</param>
 		/// <returns>The response message to send to the client.</returns>
-		private AccessTokenSuccessResponse PrepareAccessTokenResponse(AccessTokenRequestBase request, bool includeRefreshToken = true) {
+		private AccessTokenSuccessResponse PrepareAccessTokenResponse(AccessTokenRequestBase request, bool allowRefreshToken = true) {
 			Requires.NotNull(request, "request");
 
-			if (includeRefreshToken) {
+			if (allowRefreshToken) {
 				if (request is AccessTokenClientCredentialsRequest) {
 					// Per OAuth 2.0 section 4.4.3 (draft 23), refresh tokens should never be included
 					// in a response to an access token request that used the client credential grant type.
 					Logger.OAuth.Debug("Suppressing refresh token in access token response because the grant type used by the client disallows it.");
-					includeRefreshToken = false;
+					allowRefreshToken = false;
 				}
 			}
 
 			var tokenRequest = (IAuthorizationCarryingRequest)request;
 			var accessTokenRequest = (IAccessTokenRequestInternal)request;
 			var response = new AccessTokenSuccessResponse(request) {
-				HasRefreshToken = includeRefreshToken,
+				HasRefreshToken = allowRefreshToken,
 			};
 			response.Scope.ResetContents(tokenRequest.AuthorizationDescription.Scope);
 			return response;

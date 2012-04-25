@@ -24,44 +24,25 @@ namespace DotNetOpenAuth.OAuth2 {
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="AccessToken"/> class.
-		/// </summary>
-		/// <param name="authorization">The authorization to be described by the access token.</param>
-		/// <param name="lifetime">The lifetime of the access token.</param>
-		internal AccessToken(IAuthorizationDescription authorization, TimeSpan? lifetime) {
-			Requires.NotNull(authorization, "authorization");
-
-			this.ClientIdentifier = authorization.ClientIdentifier;
-			this.UtcCreationDate = authorization.UtcIssued;
-			this.User = authorization.User;
-			this.Scope.ResetContents(authorization.Scope);
-			this.Lifetime = lifetime;
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="AccessToken"/> class.
-		/// </summary>
-		/// <param name="scopes">The scopes.</param>
-		/// <param name="username">The username of the account that authorized this token.</param>
-		/// <param name="lifetime">The lifetime for this access token.</param>
-		/// <remarks>
-		/// The <see cref="AuthorizationDataBag.ClientIdentifier"/> is left <c>null</c> in this case because this constructor
-		/// is invoked in the case where the client is <em>not</em> authenticated, and therefore no
-		/// trust in the client_id is appropriate.
-		/// </remarks>
-		internal AccessToken(IEnumerable<string> scopes, string username, TimeSpan? lifetime) {
-			this.Scope.ResetContents(scopes);
-			this.User = username;
-			this.Lifetime = lifetime;
-			this.UtcCreationDate = DateTime.UtcNow;
-		}
-
-		/// <summary>
 		/// Gets or sets the lifetime of the access token.
 		/// </summary>
 		/// <value>The lifetime.</value>
 		[MessagePart(Encoder = typeof(TimespanSecondsEncoder))]
 		public TimeSpan? Lifetime { get; set; }
+
+		/// <summary>
+		/// Gets the type of this instance.
+		/// </summary>
+		/// <value>The type of the bag.</value>
+		/// <remarks>
+		/// This ensures that one token cannot be misused as another kind of token.
+		/// </remarks>
+		protected override Type BagType {
+			get {
+				// different roles (authorization server vs. Client) may derive from AccessToken, but they are all interoperable.
+				return typeof(AccessToken);
+			}
+		}
 
 		/// <summary>
 		/// Creates a formatter capable of serializing/deserializing an access token.
@@ -75,6 +56,46 @@ namespace DotNetOpenAuth.OAuth2 {
 			Contract.Ensures(Contract.Result<IDataBagFormatter<AccessToken>>() != null);
 
 			return new UriStyleMessageFormatter<AccessToken>(signingKey, encryptingKey);
+		}
+
+		/// <summary>
+		/// Initializes this instance of the <see cref="AccessToken"/> class.
+		/// </summary>
+		/// <param name="authorization">The authorization to apply to this access token.</param>
+		internal void ApplyAuthorization(IAuthorizationDescription authorization) {
+			Requires.NotNull(authorization, "authorization");
+
+			this.ClientIdentifier = authorization.ClientIdentifier;
+			this.UtcCreationDate = authorization.UtcIssued;
+			this.User = authorization.User;
+			this.Scope.ResetContents(authorization.Scope);
+		}
+
+		/// <summary>
+		/// Initializes this instance of the <see cref="AccessToken"/> class.
+		/// </summary>
+		/// <param name="scopes">The scopes.</param>
+		/// <param name="username">The username of the account that authorized this token.</param>
+		/// <param name="lifetime">The lifetime for this access token.</param>
+		/// <remarks>
+		/// The <see cref="AuthorizationDataBag.ClientIdentifier"/> is left <c>null</c> in this case because this constructor
+		/// is invoked in the case where the client is <em>not</em> authenticated, and therefore no
+		/// trust in the client_id is appropriate.
+		/// </remarks>
+		internal void ApplyAuthorization(IEnumerable<string> scopes, string username, TimeSpan? lifetime) {
+			this.Scope.ResetContents(scopes);
+			this.User = username;
+			this.Lifetime = lifetime;
+			this.UtcCreationDate = DateTime.UtcNow;
+		}
+
+		/// <summary>
+		/// Serializes this instance to a simple string for transmission to the client.
+		/// </summary>
+		/// <returns>A non-empty string.</returns>
+		protected internal virtual string Serialize() {
+			Contract.Ensures(!string.IsNullOrEmpty(Contract.Result<string>()));
+			throw new NotSupportedException();
 		}
 
 		/// <summary>

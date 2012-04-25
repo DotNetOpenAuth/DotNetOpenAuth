@@ -20,6 +20,7 @@
   <ItemGroup>
     <Compile Include="Configuration\OAuth2AuthorizationServerSection.cs" />
     <Compile Include="OAuth2\AuthorizationServer.cs" />
+    <Compile Include="OAuth2\AuthorizationServerAccessToken.cs" />
     <Compile Include="OAuth2\AuthServerStrings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

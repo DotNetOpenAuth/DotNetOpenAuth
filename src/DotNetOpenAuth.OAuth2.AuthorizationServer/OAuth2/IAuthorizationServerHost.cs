@@ -38,14 +38,15 @@ namespace DotNetOpenAuth.OAuth2 {
 		INonceStore NonceStore { get; }
 
 		/// <summary>
-		/// Obtains parameters to go into the formulation of an access token.
+		/// Acquires the access token and related parameters that go into the formulation of the token endpoint's response to a client.
 		/// </summary>
 		/// <param name="accessTokenRequestMessage">Details regarding the resources that the access token will grant access to, and the identity of the client
 		/// that will receive that access.
 		/// Based on this information the receiving resource server can be determined and the lifetime of the access
-		/// token can be set based on the sensitivity of the resources.</param>
+		/// token can be set based on the sensitivity of the resources.
+		/// </param>
 		/// <returns>A non-null parameters instance that DotNetOpenAuth will dispose after it has been used.</returns>
-		AccessTokenParameters GetAccessTokenParameters(IAccessTokenRequest accessTokenRequestMessage);
+		AccessTokenResult CreateAccessToken(IAccessTokenRequest accessTokenRequestMessage);
 
 		/// <summary>
 		/// Gets the client with a given identifier.
@@ -205,9 +206,9 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <returns>
 		/// A non-null parameters instance that DotNetOpenAuth will dispose after it has been used.
 		/// </returns>
-		AccessTokenParameters IAuthorizationServerHost.GetAccessTokenParameters(IAccessTokenRequest accessTokenRequestMessage) {
+		AccessTokenResult IAuthorizationServerHost.CreateAccessToken(IAccessTokenRequest accessTokenRequestMessage) {
 			Contract.Requires(accessTokenRequestMessage != null);
-			Contract.Ensures(Contract.Result<AccessTokenParameters>() != null);
+			Contract.Ensures(Contract.Result<AccessTokenResult>() != null);
 			throw new NotImplementedException();
 		}
 	}

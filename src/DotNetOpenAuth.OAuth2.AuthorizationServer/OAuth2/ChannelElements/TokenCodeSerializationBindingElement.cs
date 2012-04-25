@@ -71,10 +71,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			var accessTokenResponse = message as IAccessTokenIssuingResponse;
 			if (accessTokenResponse != null && accessTokenResponse.AuthorizationDescription != null) {
 				ErrorUtilities.VerifyInternal(request != null, "We should always have a direct request message for this case.");
-				var accessTokenFormatter = AccessToken.CreateFormatter(
-					request.AccessTokenCreationParameters.AccessTokenSigningKey,
-					request.AccessTokenCreationParameters.ResourceServerEncryptionKey);
-				accessTokenResponse.AccessToken = accessTokenFormatter.Serialize(accessTokenResponse.AuthorizationDescription);
+				accessTokenResponse.AccessToken = accessTokenResponse.AuthorizationDescription.Serialize();
 			}
 
 			return null;
@@ -105,14 +102,16 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			var authCodeCarrier = message as IAuthorizationCodeCarryingRequest;
 			if (authCodeCarrier != null) {
 				var authorizationCodeFormatter = AuthorizationCode.CreateFormatter(this.AuthorizationServer);
-				var authorizationCode = authorizationCodeFormatter.Deserialize(message, authCodeCarrier.Code, Protocol.code);
+				var authorizationCode = new AuthorizationCode();
+				authorizationCodeFormatter.Deserialize(authorizationCode, message, authCodeCarrier.Code, Protocol.code);
 				authCodeCarrier.AuthorizationDescription = authorizationCode;
 			}
 
 			var refreshTokenCarrier = message as IRefreshTokenCarryingRequest;
 			if (refreshTokenCarrier != null) {
 				var refreshTokenFormatter = RefreshToken.CreateFormatter(this.AuthorizationServer.CryptoKeyStore);
-				var refreshToken = refreshTokenFormatter.Deserialize(message, refreshTokenCarrier.RefreshToken, Protocol.refresh_token);
+				var refreshToken = new RefreshToken();
+				refreshTokenFormatter.Deserialize(refreshToken, message, refreshTokenCarrier.RefreshToken, Protocol.refresh_token);
 				refreshTokenCarrier.AuthorizationDescription = refreshToken;
 			}
 

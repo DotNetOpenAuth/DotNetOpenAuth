@@ -16,7 +16,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	/// <summary>
 	/// A message sent from the client to the authorization server to exchange a previously obtained grant for an access token.
 	/// </summary>
-	public abstract class AccessTokenRequestBase : AuthenticatedClientRequestBase, IAccessTokenRequestInternal, IDisposable {
+	public abstract class AccessTokenRequestBase : AuthenticatedClientRequestBase, IAccessTokenRequestInternal {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AccessTokenRequestBase"/> class.
 		/// </summary>
@@ -43,12 +43,9 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		public bool ClientAuthenticated { get; internal set; }
 
 		/// <summary>
-		/// Gets or sets the access token creation parameters.
+		/// Gets or sets the result of calling the authorization server host's access token creation method.
 		/// </summary>
-		/// <remarks>
-		/// This property's value is set by a binding element in the OAuth 2 channel.
-		/// </remarks>
-		AccessTokenParameters IAccessTokenRequestInternal.AccessTokenCreationParameters { get; set; }
+		AccessTokenResult IAccessTokenRequestInternal.AccessTokenResult { get; set; }
 
 		/// <summary>
 		/// Gets the type of the grant.
@@ -61,25 +58,6 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// Gets the scope of operations the client is allowed to invoke.
 		/// </summary>
 		protected abstract HashSet<string> RequestedScope { get; }
-
-		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
-		public void Dispose() {
-			this.Dispose(true);
-			GC.SuppressFinalize(this);
-		}
-
-		/// <summary>
-		/// Releases unmanaged and - optionally - managed resources
-		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-		protected virtual void Dispose(bool disposing) {
-			IAccessTokenRequestInternal self = this;
-			if (self.AccessTokenCreationParameters != null) {
-				self.AccessTokenCreationParameters.Dispose();
-			}
-		}
 
 		/// <summary>
 		/// Checks the message state for conformity to the protocol specification

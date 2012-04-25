@@ -65,13 +65,16 @@ namespace RelyingPartyLogic {
 		/// <returns>
 		/// A non-null parameters instance that DotNetOpenAuth will dispose after it has been used.
 		/// </returns>
-		public AccessTokenParameters GetAccessTokenParameters(IAccessTokenRequest accessTokenRequestMessage) {
-			return new AccessTokenParameters() {
+		public AccessTokenResult CreateAccessToken(IAccessTokenRequest accessTokenRequestMessage) {
+			var accessToken = new AuthorizationServerAccessToken() {
 				// For this sample, we assume just one resource server.
 				// If this authorization server needs to mint access tokens for more than one resource server,
 				// we'd look at the request message passed to us and decide which public key to return.
 				ResourceServerEncryptionKey = OAuthResourceServer.CreateRSA(),
 			};
+
+			var result = new AccessTokenResult(accessToken);
+			return result;
 		}
 
 		/// <summary>

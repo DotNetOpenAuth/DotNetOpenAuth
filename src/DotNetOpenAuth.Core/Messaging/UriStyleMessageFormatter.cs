@@ -20,7 +20,7 @@ namespace DotNetOpenAuth.Messaging {
 	/// A serializer for <see cref="DataBag"/>-derived types
 	/// </summary>
 	/// <typeparam name="T">The DataBag-derived type that is to be serialized/deserialized.</typeparam>
-	internal class UriStyleMessageFormatter<T> : DataBagFormatterBase<T> where T : DataBag, new() {
+	internal class UriStyleMessageFormatter<T> : DataBagFormatterBase<T> where T : DataBag {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="UriStyleMessageFormatter&lt;T&gt;"/> class.
 		/// </summary>

@@ -15,11 +15,8 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	/// </summary>
 	public interface IAccessTokenRequestInternal : IAccessTokenRequest {
 		/// <summary>
-		/// Gets or sets the access token creation parameters.
+		/// Gets or sets the result of calling the authorization server host's access token creation method.
 		/// </summary>
-		/// <remarks>
-		/// This property's value is set by a binding element in the OAuth 2 channel.
-		/// </remarks>
-		AccessTokenParameters AccessTokenCreationParameters { get; set; }
+		AccessTokenResult AccessTokenResult { get; set; }
 	}
 }
