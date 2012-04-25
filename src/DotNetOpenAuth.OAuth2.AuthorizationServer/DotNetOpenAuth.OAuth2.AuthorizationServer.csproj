@@ -38,6 +38,7 @@
     <Compile Include="OAuth2\ChannelElements\RefreshToken.cs" />
     <Compile Include="OAuth2\ChannelElements\ClientAuthenticationModule.cs" />
     <Compile Include="OAuth2\ClientDescription.cs" />
+    <Compile Include="OAuth2\IAuthorizationServerHost.cs" />
     <Compile Include="OAuth2\Messages\AccessTokenAuthorizationCodeRequestAS.cs" />
     <Compile Include="OAuth2\Messages\AccessTokenRefreshRequestAS.cs" />
     <Compile Include="OAuth2\Messages\EndUserAuthorizationSuccessAuthCodeResponseAS.cs" />

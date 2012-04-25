@@ -28,7 +28,6 @@
       <DependentUpon>ClientAuthorizationStrings.resx</DependentUpon>
     </Compile>
     <Compile Include="OAuth2\ClientType.cs" />
-    <Compile Include="OAuth2\IAuthorizationServerHost.cs" />
     <Compile Include="OAuth2\IClientDescription.cs" />
     <Compile Include="OAuth2\Messages\AccessTokenAuthorizationCodeRequest.cs" />
     <Compile Include="OAuth2\Messages\AccessTokenClientCredentialsRequest.cs" />
