@@ -99,7 +99,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdRelyingParty"/> class.
 		/// </summary>
-		/// <param name="applicationStore">The application store.  If <c>null</c>, the relying party will always operate in "dumb mode".</param>
+		/// <param name="applicationStore">The application store.  If <c>null</c>, the relying party will always operate in "stateless/dumb mode".</param>
 		public OpenIdRelyingParty(IOpenIdApplicationStore applicationStore)
 			: this(applicationStore, applicationStore) {
 		}
@@ -107,8 +107,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdRelyingParty"/> class.
 		/// </summary>
-		/// <param name="cryptoKeyStore">The association store.  If null, the relying party will always operate in "dumb mode".</param>
-		/// <param name="nonceStore">The nonce store to use.  If null, the relying party will always operate in "dumb mode".</param>
+		/// <param name="cryptoKeyStore">The association store.  If <c>null</c>, the relying party will always operate in "stateless/dumb mode".</param>
+		/// <param name="nonceStore">The nonce store to use.  If <c>null</c>, the relying party will always operate in "stateless/dumb mode".</param>
 		[SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = "Unavoidable")]
 		private OpenIdRelyingParty(ICryptoKeyStore cryptoKeyStore, INonceStore nonceStore) {
 			// If we are a smart-mode RP (supporting associations), then we MUST also be 
@@ -133,12 +133,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				this.SecuritySettings.MinimumRequiredOpenIdVersion = ProtocolVersion.V20;
 			}
 
-			if (cryptoKeyStore == null) {
-				cryptoKeyStore = new MemoryCryptoKeyStore();
-			}
-
 			this.channel = new OpenIdRelyingPartyChannel(cryptoKeyStore, nonceStore, this.SecuritySettings);
-			this.AssociationManager = new AssociationManager(this.Channel, new CryptoKeyStoreAsRelyingPartyAssociationStore(cryptoKeyStore), this.SecuritySettings);
+			var associationStore = cryptoKeyStore != null ? new CryptoKeyStoreAsRelyingPartyAssociationStore(cryptoKeyStore) : null;
+			this.AssociationManager = new AssociationManager(this.Channel, associationStore, this.SecuritySettings);
 			this.discoveryServices = new IdentifierDiscoveryServices(this);
 
 			Reporting.RecordFeatureAndDependencyUse(this, cryptoKeyStore, nonceStore);
