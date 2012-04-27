@@ -28,15 +28,15 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		public static readonly ServiceProviderDescription TwitterServiceDescription = new ServiceProviderDescription {
 			RequestTokenEndpoint =
 				new MessageReceivingEndpoint(
-					"http://twitter.com/oauth/request_token",
+					"https://twitter.com/oauth/request_token",
 					HttpDeliveryMethods.GetRequest | HttpDeliveryMethods.AuthorizationHeaderRequest),
 			UserAuthorizationEndpoint =
 				new MessageReceivingEndpoint(
-					"http://twitter.com/oauth/authenticate",
+					"https://twitter.com/oauth/authenticate",
 					HttpDeliveryMethods.GetRequest | HttpDeliveryMethods.AuthorizationHeaderRequest),
 			AccessTokenEndpoint =
 				new MessageReceivingEndpoint(
-					"http://twitter.com/oauth/access_token",
+					"https://twitter.com/oauth/access_token",
 					HttpDeliveryMethods.GetRequest | HttpDeliveryMethods.AuthorizationHeaderRequest),
 			TamperProtectionElements = new ITamperProtectionChannelBindingElement[] { new HmacSha1SigningBindingElement() },
 		};
@@ -58,6 +58,16 @@ namespace DotNetOpenAuth.AspNet.Clients {
 			Justification = "We can't dispose the object because we still need it through the app lifetime.")]
 		public TwitterClient(string consumerKey, string consumerSecret)
 			: base("twitter", TwitterServiceDescription, consumerKey, consumerSecret) { }
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="TwitterClient"/> class.
+		/// </summary>
+		/// <param name="consumerKey">The consumer key.</param>
+		/// <param name="consumerSecret">The consumer secret.</param>
+		/// <param name="tokenManager">The token manager.</param>
+		public TwitterClient(string consumerKey, string consumerSecret, IOAuthTokenManager tokenManager)
+			: base("twitter", TwitterServiceDescription, new SimpleConsumerTokenManager(consumerKey, consumerSecret, tokenManager)) {
+		}
 
 		#endregion
 
