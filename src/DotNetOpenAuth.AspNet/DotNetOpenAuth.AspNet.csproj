@@ -42,6 +42,8 @@
   <ItemGroup>
     <Compile Include="AuthenticationResult.cs" />
     <Compile Include="Clients\DictionaryExtensions.cs" />
+    <Compile Include="Clients\OAuth\IOAuthTokenManager.cs" />
+    <Compile Include="Clients\OAuth\SimpleConsumerTokenManager.cs" />
     <Compile Include="IAuthenticationClient.cs" />
     <Compile Include="Clients\OAuth2\FacebookClient.cs" />
     <Compile Include="Clients\OAuth2\FacebookGraphData.cs" />
