@@ -23,6 +23,7 @@
 			<dependency id="DotNetOpenAuth.OAuth.Consumer" version="[$version$]" />
 			<dependency id="DotNetOpenAuth.OAuth.ServiceProvider" version="[$version$]" />
 			<dependency id="DotNetOpenAuth.OpenIdInfoCard.UI" version="[$version$]" />
+			<dependency id="DotNetOpenAuth.OpenIdOAuth" version="[$version$]" />
 		</dependencies>
 	</metadata>
 	<files>
