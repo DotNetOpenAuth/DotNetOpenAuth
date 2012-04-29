@@ -16,11 +16,13 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Linq;
 	using System.Net;
 	using System.Net.Mime;
+	using System.Runtime.Serialization.Json;
 	using System.Security;
 	using System.Security.Cryptography;
 	using System.Text;
 	using System.Web;
 	using System.Web.Mvc;
+	using System.Xml;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.Messaging.Reflection;
 
@@ -133,6 +135,21 @@ namespace DotNetOpenAuth.Messaging {
 			{ ">", @"\x3e" },
 			{ "=", @"\x3d" },
 		};
+
+		/// <summary>
+		/// The available compression algorithms.
+		/// </summary>
+		internal enum CompressionMethod {
+			/// <summary>
+			/// The Deflate algorithm.
+			/// </summary>
+			Deflate,
+
+			/// <summary>
+			/// The GZip algorithm.
+			/// </summary>
+			Gzip,
+		}
 
 		/// <summary>
 		/// Transforms an OutgoingWebResponse to an MVC-friendly ActionResult.
@@ -838,19 +855,36 @@ namespace DotNetOpenAuth.Messaging {
 		/// Compresses a given buffer.
 		/// </summary>
 		/// <param name="buffer">The buffer to compress.</param>
+		/// <param name="method">The compression algorithm to use.</param>
 		/// <returns>The compressed data.</returns>
 		[SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "This Dispose is safe.")]
 		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "No apparent problem.  False positive?")]
-		internal static byte[] Compress(byte[] buffer) {
+		internal static byte[] Compress(byte[] buffer, CompressionMethod method = CompressionMethod.Deflate) {
 			Requires.NotNull(buffer, "buffer");
 			Contract.Ensures(Contract.Result<byte[]>() != null);
 
 			using (var ms = new MemoryStream()) {
-				using (var compressingStream = new DeflateStream(ms, CompressionMode.Compress, true)) {
-					compressingStream.Write(buffer, 0, buffer.Length);
-				}
+				Stream compressingStream = null;
+				try {
+					switch (method) {
+						case CompressionMethod.Deflate:
+							compressingStream = new DeflateStream(ms, CompressionMode.Compress, true);
+							break;
+						case CompressionMethod.Gzip:
+							compressingStream = new GZipStream(ms, CompressionMode.Compress, true);
+							break;
+						default:
+							Requires.InRange(false, "method");
+							break;
+					}
 
-				return ms.ToArray();
+					compressingStream.Write(buffer, 0, buffer.Length);
+					return ms.ToArray();
+				} finally {
+					if (compressingStream != null) {
+						compressingStream.Dispose();
+					}
+				}
 			}
 		}
 
@@ -858,17 +892,35 @@ namespace DotNetOpenAuth.Messaging {
 		/// Decompresses a given buffer.
 		/// </summary>
 		/// <param name="buffer">The buffer to decompress.</param>
+		/// <param name="method">The compression algorithm used.</param>
 		/// <returns>The decompressed data.</returns>
 		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "No apparent problem.  False positive?")]
 		[SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "This Dispose is safe.")]
-		internal static byte[] Decompress(byte[] buffer) {
+		internal static byte[] Decompress(byte[] buffer, CompressionMethod method = CompressionMethod.Deflate) {
 			Requires.NotNull(buffer, "buffer");
 			Contract.Ensures(Contract.Result<byte[]>() != null);
 
 			using (var compressedDataStream = new MemoryStream(buffer)) {
 				using (var decompressedDataStream = new MemoryStream()) {
-					using (var decompressingStream = new DeflateStream(compressedDataStream, CompressionMode.Decompress, true)) {
+					Stream decompressingStream = null;
+					try {
+						switch (method) {
+							case CompressionMethod.Deflate:
+								decompressingStream = new DeflateStream(compressedDataStream, CompressionMode.Decompress, true);
+								break;
+							case CompressionMethod.Gzip:
+								decompressingStream = new GZipStream(compressedDataStream, CompressionMode.Decompress, true);
+								break;
+							default:
+								Requires.InRange(false, "method");
+								break;
+						}
+
 						decompressingStream.CopyTo(decompressedDataStream);
+					} finally {
+						if (decompressingStream != null) {
+							decompressingStream.Dispose();
+						}
 					}
 
 					return decompressedDataStream.ToArray();
