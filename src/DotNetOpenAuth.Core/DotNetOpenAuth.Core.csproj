@@ -19,6 +19,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Assumes.cs" />
+    <Compile Include="Messaging\Base64WebEncoder.cs" />
     <Compile Include="Messaging\Bindings\AsymmetricCryptoKeyStoreWrapper.cs" />
     <Compile Include="Messaging\Bindings\CryptoKey.cs" />
     <Compile Include="Messaging\Bindings\CryptoKeyCollisionException.cs" />
