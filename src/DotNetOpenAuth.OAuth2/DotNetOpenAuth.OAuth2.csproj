@@ -20,6 +20,16 @@
   <ItemGroup>
     <Compile Include="Configuration\OAuth2SectionGroup.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="OAuth2\Crypto\JwtRsaShaSigningAlgorithm.cs" />
+    <Compile Include="OAuth2\Crypto\JweHeader.cs" />
+    <Compile Include="OAuth2\Crypto\JweRsaEncryptionAlgorithm.cs" />
+    <Compile Include="OAuth2\Crypto\JwsHeader.cs" />
+    <Compile Include="OAuth2\Crypto\JwtEncryptionAlgorithm.cs" />
+    <Compile Include="OAuth2\Crypto\JsonWebAlgorithms.cs" />
+    <Compile Include="OAuth2\Crypto\JwtHeader.cs" />
+    <Compile Include="OAuth2\Crypto\JwtHmacShaSigningAlgorithm.cs" />
+    <Compile Include="OAuth2\Crypto\JwtMessageBase.cs" />
+    <Compile Include="OAuth2\Crypto\JwtSigningAlgorithm.cs" />
     <Compile Include="OAuth2\AccessToken.cs" />
     <Compile Include="OAuth2\ChannelElements\AuthorizationDataBag.cs" />
     <Compile Include="OAuth2\ChannelElements\ClientAuthenticationResult.cs" />
@@ -28,6 +38,7 @@
     <Compile Include="OAuth2\ChannelElements\ScopeEncoder.cs" />
     <Compile Include="OAuth2\ChannelElements\IAuthorizationDescription.cs" />
     <Compile Include="OAuth2\ChannelElements\IAuthorizationCarryingRequest.cs" />
+    <Compile Include="OAuth2\JsonWebTokenFormatter.cs" />
     <Compile Include="OAuth2\Messages\AccessProtectedResourceRequest.cs" />
     <Compile Include="OAuth2\Messages\UnauthorizedResponse.cs" />
     <Compile Include="OAuth2\OAuthUtilities.cs" />

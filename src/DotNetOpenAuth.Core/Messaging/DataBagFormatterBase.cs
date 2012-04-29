@@ -139,20 +139,40 @@ namespace DotNetOpenAuth.Messaging {
 			this.compressed = compressed;
 		}
 
+		protected bool Encrypted {
+			get { return this.encrypted; }
+		}
+
+		protected bool Compressed {
+			get { return this.compressed; }
+		}
+
+		protected RSACryptoServiceProvider SigningKey {
+			get { return this.asymmetricSigning; }
+		}
+
+		protected RSACryptoServiceProvider EncryptingKey {
+			get { return this.asymmetricEncrypting; }
+		}
+
+		protected ICryptoKeyStore CryptoKeyStore {
+			get { return this.cryptoKeyStore; }
+		}
+
+		protected string CryptoKeyBucket {
+			get { return this.cryptoKeyBucket; }
+		}
+
 		/// <summary>
 		/// Serializes the specified message, including compression, encryption, signing, and nonce handling where applicable.
 		/// </summary>
 		/// <param name="message">The message to serialize.  Must not be null.</param>
 		/// <returns>A non-null, non-empty value.</returns>
 		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "No apparent problem.  False positive?")]
-		public string Serialize(T message) {
+		public virtual string Serialize(T message) {
 			Requires.NotNull(message, "message");
 
-			message.UtcCreationDate = DateTime.UtcNow;
-
-			if (this.decodeOnceOnly != null) {
-				message.Nonce = MessagingUtilities.GetNonCryptoRandomData(NonceLength);
-			}
+			this.BeforeSerialize(message);
 
 			byte[] encoded = this.SerializeCore(message);
 
@@ -189,6 +209,14 @@ namespace DotNetOpenAuth.Messaging {
 			}
 		}
 
+		protected virtual void BeforeSerialize(T message) {
+			message.UtcCreationDate = DateTime.UtcNow;
+
+			if (this.decodeOnceOnly != null) {
+				message.Nonce = MessagingUtilities.GetNonCryptoRandomData(NonceLength);
+			}
+		}
+
 		/// <summary>
 		/// Deserializes a <see cref="DataBag"/>, including decompression, decryption, signature and nonce validation where applicable.
 		/// </summary>
@@ -197,7 +225,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="value">The serialized form of the <see cref="DataBag"/> to deserialize.  Must not be null or empty.</param>
 		/// <param name="messagePartName">The name of the parameter whose value is to be deserialized.  Used for error message generation.</param>
 		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "No apparent problem.  False positive?")]
-		public void Deserialize(T message, IProtocolMessage containingMessage, string value, string messagePartName) {
+		public virtual void Deserialize(T message, IProtocolMessage containingMessage, string value, string messagePartName) {
 			Requires.NotNull(message, "message");
 			Requires.NotNull(containingMessage, "containingMessage");
 			Requires.NotNullOrEmpty(value, "value");
@@ -236,6 +264,10 @@ namespace DotNetOpenAuth.Messaging {
 			this.DeserializeCore(message, data);
 			message.Signature = signature; // TODO: we don't really need this any more, do we?
 
+			this.AfterDeserialize(message, containingMessage);
+		}
+
+		protected virtual void AfterDeserialize(T message, IProtocolMessage containingMessage) {
 			if (this.maximumAge.HasValue) {
 				// Has message verification code expired?
 				DateTime expirationDate = message.UtcCreationDate + this.maximumAge.Value;
