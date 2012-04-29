@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 	using System.Diagnostics;
 	using System.IO;
 	using System.Net;
+	using System.Text;
 	using System.Text.RegularExpressions;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
@@ -227,6 +228,27 @@ namespace DotNetOpenAuth.Test.Messaging {
 
 			string roundTripped = MessagingUtilities.Decrypt(cipher, key);
 			Assert.AreEqual(PlainText, roundTripped);
+		}
+
+		[Test]
+		public void SerializeAsJsonTest() {
+			var message = new TestMessageWithDate() {
+				Age = 18,
+				Timestamp = DateTime.Parse("4/28/2012"),
+				Name = "Andrew",
+			};
+			string json = MessagingUtilities.SerializeAsJson(message, this.MessageDescriptions);
+			Assert.That(json, Is.EqualTo("{\"ts\":\"2012-04-28T00:00:00Z\",\"age\":18,\"Name\":\"Andrew\"}"));
+		}
+
+		[Test]
+		public void DeserializeFromJson() {
+			var message = new TestMessageWithDate();
+			string json = "{\"ts\":\"2012-04-28T00:00:00Z\",\"age\":18,\"Name\":\"Andrew\"}";
+			MessagingUtilities.DeserializeFromJson(Encoding.UTF8.GetBytes(json), message, this.MessageDescriptions);
+			Assert.That(message.Age, Is.EqualTo(18));
+			Assert.That(message.Timestamp, Is.EqualTo(DateTime.Parse("4/28/2012")));
+			Assert.That(message.Name, Is.EqualTo("Andrew"));
 		}
 
 		/// <summary>

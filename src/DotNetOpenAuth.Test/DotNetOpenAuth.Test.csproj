@@ -234,6 +234,7 @@
     <Compile Include="Mocks\TestBaseMessage.cs" />
     <Compile Include="Mocks\TestDerivedMessage.cs" />
     <Compile Include="Mocks\TestDirectResponseMessageWithHttpStatus.cs" />
+    <Compile Include="Mocks\TestMessageWithDate.cs" />
     <Compile Include="Mocks\TestReplayProtectedMessage.cs" />
     <Compile Include="Mocks\TestDirectedMessage.cs" />
     <Compile Include="Mocks\TestBadChannel.cs" />

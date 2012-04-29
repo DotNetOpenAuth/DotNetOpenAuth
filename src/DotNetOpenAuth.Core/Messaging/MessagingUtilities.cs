@@ -1672,6 +1672,68 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Serializes the given message as a JSON string.
+		/// </summary>
+		/// <param name="message">The message to serialize.</param>
+		/// <param name="messageDescriptions">The cached message descriptions to use for reflection.</param>
+		/// <returns>A JSON string.</returns>
+		[SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "This Dispose is safe.")]
+		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "No apparent problem.  False positive?")]
+		internal static string SerializeAsJson(IMessage message, MessageDescriptionCollection messageDescriptions) {
+			Requires.NotNull(message, "message");
+			Requires.NotNull(messageDescriptions, "messageDescriptions");
+
+			var encoding = Encoding.UTF8;
+			var bytes = SerializeAsJsonBytes(message, messageDescriptions, encoding);
+			string json = encoding.GetString(bytes);
+			return json;
+		}
+
+		/// <summary>
+		/// Serializes the given message as a JSON string.
+		/// </summary>
+		/// <param name="message">The message to serialize.</param>
+		/// <param name="messageDescriptions">The cached message descriptions to use for reflection.</param>
+		/// <param name="encoding">The encoding to use.  Defaults to <see cref="Encoding.UTF8"/></param>
+		/// <returns>A JSON string.</returns>
+		[SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "This Dispose is safe.")]
+		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "No apparent problem.  False positive?")]
+		internal static byte[] SerializeAsJsonBytes(IMessage message, MessageDescriptionCollection messageDescriptions, Encoding encoding = null) {
+			Requires.NotNull(message, "message");
+			Requires.NotNull(messageDescriptions, "messageDescriptions");
+
+			encoding = encoding ?? Encoding.UTF8;
+			MessageDictionary messageDictionary = messageDescriptions.GetAccessor(message);
+			using (var memoryStream = new MemoryStream()) {
+				using (var jsonWriter = JsonReaderWriterFactory.CreateJsonWriter(memoryStream, encoding)) {
+					MessageSerializer.Serialize(messageDictionary, jsonWriter);
+					jsonWriter.Flush();
+				}
+
+				return memoryStream.ToArray();
+			}
+		}
+
+		/// <summary>
+		/// Deserializes a JSON object into a message.
+		/// </summary>
+		/// <param name="jsonBytes">The buffer containing the JSON string.</param>
+		/// <param name="receivingMessage">The message to deserialize the object into.</param>
+		/// <param name="messageDescriptions">The cache of message descriptions.</param>
+		/// <param name="encoding">The encoding that the JSON bytes are in.</param>
+		internal static void DeserializeFromJson(byte[] jsonBytes, IMessage receivingMessage, MessageDescriptionCollection messageDescriptions, Encoding encoding = null) {
+			Requires.NotNull(jsonBytes, "jsonBytes");
+			Requires.NotNull(receivingMessage, "receivingMessage");
+			Requires.NotNull(messageDescriptions, "messageDescriptions");
+
+			encoding = encoding ?? Encoding.UTF8;
+			MessageDictionary messageDictionary = messageDescriptions.GetAccessor(receivingMessage);
+			using (var jsonReader = JsonReaderWriterFactory.CreateJsonReader(jsonBytes, 0, jsonBytes.Length, encoding, Channel.DefaultUntrustedXmlDictionaryReaderQuotas, null)) {
+				MessageSerializer.Deserialize(messageDictionary, jsonReader);
+			}
+		}
+
+		/// <summary>
 		/// Prepares what SHOULD be simply a string value for safe injection into Javascript
 		/// by using appropriate character escaping.
 		/// </summary>

@@ -38,6 +38,16 @@ namespace DotNetOpenAuth.Messaging {
 		internal static readonly Encoding PostEntityEncoding = new UTF8Encoding(false);
 
 		/// <summary>
+		/// A default set of XML dictionary reader quotas that are relatively safe from causing unbounded memory consumption.
+		/// </summary>
+		internal static readonly XmlDictionaryReaderQuotas DefaultUntrustedXmlDictionaryReaderQuotas = new XmlDictionaryReaderQuotas {
+			MaxArrayLength = 1,
+			MaxDepth = 2,
+			MaxBytesPerRead = 8 * 1024,
+			MaxStringContentLength = 16 * 1024,
+		};
+
+		/// <summary>
 		/// The content-type used on HTTP POST requests where the POST entity is a
 		/// URL-encoded series of key=value pairs.
 		/// </summary>
@@ -152,12 +162,7 @@ namespace DotNetOpenAuth.Messaging {
 
 			this.messageTypeProvider = messageTypeProvider;
 			this.WebRequestHandler = new StandardWebRequestHandler();
-			this.XmlDictionaryReaderQuotas = new XmlDictionaryReaderQuotas {
-				MaxArrayLength = 1,
-				MaxDepth = 2,
-				MaxBytesPerRead = 8 * 1024,
-				MaxStringContentLength = 16 * 1024,
-			};
+			this.XmlDictionaryReaderQuotas = DefaultUntrustedXmlDictionaryReaderQuotas;
 
 			this.outgoingBindingElements = new List<IChannelBindingElement>(ValidateAndPrepareBindingElements(bindingElements));
 			this.incomingBindingElements = new List<IChannelBindingElement>(this.outgoingBindingElements);
@@ -991,17 +996,7 @@ namespace DotNetOpenAuth.Messaging {
 		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "No apparent problem.  False positive?")]
 		protected virtual string SerializeAsJson(IMessage message) {
 			Requires.NotNull(message, "message");
-
-			MessageDictionary messageDictionary = this.MessageDescriptions.GetAccessor(message);
-			using (var memoryStream = new MemoryStream()) {
-				using (var jsonWriter = JsonReaderWriterFactory.CreateJsonWriter(memoryStream, Encoding.UTF8)) {
-					MessageSerializer.Serialize(messageDictionary, jsonWriter);
-					jsonWriter.Flush();
-				}
-
-				string json = Encoding.UTF8.GetString(memoryStream.ToArray());
-				return json;
-			}
+			return MessagingUtilities.SerializeAsJson(message, this.MessageDescriptions);
 		}
 
 		/// <summary>
