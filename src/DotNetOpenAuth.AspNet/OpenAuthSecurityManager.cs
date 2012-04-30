@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.AspNet {
 	using System;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Web;
+	using DotNetOpenAuth.AspNet.Clients;
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
@@ -166,6 +167,46 @@ namespace DotNetOpenAuth.AspNet {
 			}
 
 			return result;
+		}
+
+		/// <summary>
+		/// Checks if user is successfully authenticated when user is redirected back to this user.
+		/// </summary>
+		/// <param name="returnUrl">The return Url which must match exactly the Url passed into RequestAuthentication() earlier.</param>
+		/// <returns>
+		/// The result of the authentication.
+		/// </returns>
+		public AuthenticationResult VerifyAuthentication(string returnUrl) {
+			Requires.NotNullOrEmpty(returnUrl, "returnUrl");
+
+			// Only OAuth2 requires the return url value for the verify authenticaiton step
+			OAuth2Client oauth2Client = this.authenticationProvider as OAuth2Client;
+			if (oauth2Client != null) {
+				// convert returnUrl to an absolute path
+				Uri uri;
+				if (!string.IsNullOrEmpty(returnUrl)) {
+					uri = UriHelper.ConvertToAbsoluteUri(returnUrl, this.requestContext);
+				}
+				else {
+					uri = this.requestContext.Request.GetPublicFacingUrl();
+				}
+
+				AuthenticationResult result = oauth2Client.VerifyAuthentication(this.requestContext, uri);
+				if (!result.IsSuccessful) {
+					// if the result is a Failed result, creates a new Failed response which has providerName info.
+					result = new AuthenticationResult(
+						isSuccessful: false,
+						provider: this.authenticationProvider.ProviderName,
+						providerUserId: null,
+						userName: null,
+						extraData: null);
+				}
+
+				return result;
+			}
+			else {
+				return this.VerifyAuthentication();
+			}
 		}
 
 		#endregion
