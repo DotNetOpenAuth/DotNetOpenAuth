@@ -20,18 +20,20 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		#region Constants and Fields
 
 		/// <summary>
-		/// The _openid relaying party.
+		/// The openid relying party.
 		/// </summary>
-		private static readonly OpenIdRelyingParty RelyingParty =
-			new OpenIdRelyingParty(new StandardRelyingPartyApplicationStore());
+		/// <remarks>
+		/// Pass null as applicationStore to specify dumb mode
+		/// </remarks>
+		private static readonly OpenIdRelyingParty RelyingParty = new OpenIdRelyingParty(applicationStore: null);
 
 		/// <summary>
-		/// The _provider identifier.
+		/// The provider identifier.
 		/// </summary>
 		private readonly Identifier providerIdentifier;
 
 		/// <summary>
-		/// The _provider name.
+		/// The provider name.
 		/// </summary>
 		private readonly string providerName;
 
