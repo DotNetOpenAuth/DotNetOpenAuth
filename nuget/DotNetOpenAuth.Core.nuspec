@@ -32,7 +32,7 @@
 
 		<file src="content\Core\web.config.transform" target="content\web.config.transform" />
 
-		<file src="..\src\DotNetOpenAuth.Core\**\*.cs" target="src" />
+		<file src="..\src\$Identity$\**\*.cs" target="src" exclude="..\src\$Identity$\obj\**" />
 		<file src="$GeneratedAssemblyInfoSourceFile$" target="src" />
 	</files>
 </package>
