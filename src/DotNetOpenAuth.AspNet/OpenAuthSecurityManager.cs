@@ -191,6 +191,10 @@ namespace DotNetOpenAuth.AspNet {
 					uri = this.requestContext.Request.GetPublicFacingUrl();
 				}
 
+				// attach the provider parameter so that we know which provider initiated
+				// the login when user is redirected back to this page
+				uri = uri.AttachQueryStringParameter(ProviderQueryStringName, this.authenticationProvider.ProviderName);
+
 				AuthenticationResult result = oauth2Client.VerifyAuthentication(this.requestContext, uri);
 				if (!result.IsSuccessful) {
 					// if the result is a Failed result, creates a new Failed response which has providerName info.
