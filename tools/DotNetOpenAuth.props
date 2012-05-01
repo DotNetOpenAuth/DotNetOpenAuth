@@ -12,6 +12,7 @@
 		<OutputPath45>$(ProjectRoot)bin\v4.5\$(Configuration)\</OutputPath45>
 		<DocOutputPath>$(ProjectRoot)doc\</DocOutputPath>
 		<IntermediatePath>$(ProjectRoot)obj\$(TargetFrameworkVersion)\$(Configuration)\</IntermediatePath>
+		<IntermediatePath40>$(ProjectRoot)obj\v4.0\$(Configuration)\</IntermediatePath40>
 		<BaseIntermediateOutputPath Condition=" '$(BaseIntermediateOutputPath)' == '' ">obj\$(TargetFrameworkVersion)\</BaseIntermediateOutputPath>
 		<ToolsDir>$(ProjectRoot)tools\</ToolsDir>
 		<ZipLevel>6</ZipLevel>

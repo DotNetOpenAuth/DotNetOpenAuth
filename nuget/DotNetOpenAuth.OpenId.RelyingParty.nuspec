@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 	<metadata>
-		<id>DotNetOpenAuth.OpenId.RelyingParty</id>
+		<id>$identity$</id>
 		<version>$version$</version>
 		<title>DotNetOpenAuth OpenID Relying Party</title>
 		<authors>Andrew Arnott</authors>
@@ -20,20 +20,21 @@
 		</dependencies>
 	</metadata>
 	<files>
-		<file src="$OutputPath35$signed\DotNetOpenAuth.OpenId.RelyingParty.dll" target="lib\net35-full\" />
-		<file src="$OutputPath40$signed\DotNetOpenAuth.OpenId.RelyingParty.dll" target="lib\net40-full\" />
-		<file src="$OutputPath45$signed\DotNetOpenAuth.OpenId.RelyingParty.dll" target="lib\net45-full\" />
+		<file src="$OutputPath35$signed\$identity$.dll" target="lib\net35-full\" />
+		<file src="$OutputPath40$signed\$identity$.dll" target="lib\net40-full\" />
+		<file src="$OutputPath45$signed\$identity$.dll" target="lib\net45-full\" />
 
-		<file src="$OutputPath35$DotNetOpenAuth.OpenId.RelyingParty.pdb" target="lib\net35-full\" />
-		<file src="$OutputPath40$DotNetOpenAuth.OpenId.RelyingParty.pdb" target="lib\net40-full\" />
-		<file src="$OutputPath45$DotNetOpenAuth.OpenId.RelyingParty.pdb" target="lib\net45-full\" />
+		<file src="$OutputPath35$$identity$.pdb" target="lib\net35-full\" />
+		<file src="$OutputPath40$$identity$.pdb" target="lib\net40-full\" />
+		<file src="$OutputPath45$$identity$.pdb" target="lib\net45-full\" />
 
-		<file src="$OutputPath35$DotNetOpenAuth.OpenId.RelyingParty.xml" target="lib\net35-full\" />
-		<file src="$OutputPath40$DotNetOpenAuth.OpenId.RelyingParty.xml" target="lib\net40-full\" />
-		<file src="$OutputPath45$DotNetOpenAuth.OpenId.RelyingParty.xml" target="lib\net45-full\" />
+		<file src="$OutputPath35$$identity$.xml" target="lib\net35-full\" />
+		<file src="$OutputPath40$$identity$.xml" target="lib\net40-full\" />
+		<file src="$OutputPath45$$identity$.xml" target="lib\net45-full\" />
 
 		<file src="content\OpenId.RelyingParty\web.config.transform" target="content\web.config.transform" />
 
-		<file src="..\src\DotNetOpenAuth.OpenId.RelyingParty\**\*.cs" target="src" />
+		<file src="..\src\$Identity$\**\*.cs" target="src" exclude="..\src\$Identity$\obj\**" />
+		<file src="$GeneratedAssemblyInfoSourceFile$" target="src" />
 	</files>
 </package>

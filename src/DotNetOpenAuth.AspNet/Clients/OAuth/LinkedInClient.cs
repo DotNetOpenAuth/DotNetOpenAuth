@@ -59,6 +59,16 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		public LinkedInClient(string consumerKey, string consumerSecret)
 			: base("linkedIn", LinkedInServiceDescription, consumerKey, consumerSecret) { }
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="LinkedInClient"/> class.
+		/// </summary>
+		/// <param name="consumerKey">The consumer key.</param>
+		/// <param name="consumerSecret">The consumer secret.</param>
+		/// <param name="tokenManager">The token manager.</param>
+		public LinkedInClient(string consumerKey, string consumerSecret, IOAuthTokenManager tokenManager)
+			: base("linkedIn", LinkedInServiceDescription, new SimpleConsumerTokenManager(consumerKey, consumerSecret, tokenManager)) {
+		}
+
 		#endregion
 
 		#region Methods

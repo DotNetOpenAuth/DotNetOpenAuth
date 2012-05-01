@@ -39,14 +39,12 @@
 			Targets="@(AspNetTargets)"
 			Properties="TargetFrameworkVersion=v4.0"
 			BuildInParallel="$(BuildInParallel)">
-			<Output TaskParameter="TargetOutputs" ItemName="TargetOutputs40"/>
 		</MSBuild>
 		<MSBuild
 			Projects="$(ProjectRoot)src\DotNetOpenAuth.AspNet\DotNetOpenAuth.AspNet.csproj"
 			Targets="@(AspNetTargets)"
 			Properties="TargetFrameworkVersion=v4.5"
 			BuildInParallel="$(BuildInParallel)">
-			<Output TaskParameter="TargetOutputs" ItemName="TargetOutputs45"/>
 		</MSBuild>
 
 		<ItemGroup>
@@ -69,6 +67,13 @@
 
 	<Target Name="Build" DependsOnTargets="BuildIntermediates" Returns="@(NuGetPackages)">
 		<ItemGroup>
+			<NuGetProperties Include="version=$(NuGetPackageVersion)" />
+			<NuGetProperties Include="oauth2version=$(OAuth2PackagesVersion)" />
+			<NuGetProperties Include="OutputPath35=$(OutputPath35)" />
+			<NuGetProperties Include="OutputPath40=$(OutputPath40)" />
+			<NuGetProperties Include="OutputPath45=$(OutputPath45)" />
+			<NuGetProperties Include="IntermediatePath=$(IntermediatePath40)" />
+
 			<NuGetSpecifications Include="*.nuspec" Exclude="*oauth2*.nuspec;DotNetOpenAuth.nuspec">
 				<Symbols>true</Symbols>
 				<PackageVersion>$(NuGetPackageVersion)</PackageVersion>
@@ -82,18 +87,20 @@
 			</NuGetSpecifications>
 
 			<NuGetPackages Include="@(NuGetSpecifications->'$(DropsRoot)%(FileName).%(PackageVersion).nupkg')" />
-
-			<NuGetProperties Include="version=$(NuGetPackageVersion)" />
-			<NuGetProperties Include="oauth2version=$(OAuth2PackagesVersion)" />
-			<NuGetProperties Include="OutputPath35=$(OutputPath35)" />
-			<NuGetProperties Include="OutputPath40=$(OutputPath40)" />
-			<NuGetProperties Include="OutputPath45=$(OutputPath45)" />
+		</ItemGroup>
+		<PropertyGroup>
+			<_NuGetProperties>@(NuGetProperties)</_NuGetProperties>
+		</PropertyGroup>
+		<ItemGroup>
+			<NuGetSpecifications>
+				<Properties>$(_NuGetProperties);Identity=%(FileName);GeneratedAssemblyInfoSourceFile=$(IntermediatePath40)%(FileName).Version.cs</Properties>
+			</NuGetSpecifications>
 		</ItemGroup>
 
 		<NuGetPack
 			NuSpec="%(NuGetSpecifications.Identity)"
 			OutputPackageDirectory="$(DropsRoot)"
-			Properties="@(NuGetProperties)"
+			Properties="%(NuGetSpecifications.Properties)"
 			Symbols="%(NuGetSpecifications.Symbols)"
 			ToolPath="$(NuGetToolPath)" />
 	</Target>
