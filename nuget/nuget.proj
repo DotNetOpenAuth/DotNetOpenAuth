@@ -32,7 +32,6 @@
 			Targets="@(AspNetTargets)"
 			Properties="TargetFrameworkVersion=v4.0"
 			BuildInParallel="$(BuildInParallel)">
-			<Output TaskParameter="TargetOutputs" ItemName="TargetOutputs40"/>
 		</MSBuild>
 
 		<ItemGroup>
@@ -51,20 +50,28 @@
 
 	<Target Name="Build" DependsOnTargets="BuildIntermediates">
 		<ItemGroup>
-			<NuGetPackages Include="*.nuspec" Exclude="DotNetOpenAuth.nuspec">
-				<Symbols>true</Symbols>
-			</NuGetPackages>
-			<NuGetPackages Include="DotNetOpenAuth.nuspec" />
-
 			<NuGetProperties Include="version=$(NuGetPackageVersion)" />
 			<NuGetProperties Include="oauth2version=$(OAuth2PackagesVersion)" />
 			<NuGetProperties Include="OutputPath35=$(OutputPath35)" />
 			<NuGetProperties Include="OutputPath40=$(OutputPath40)" />
+
+			<NuGetPackages Include="*.nuspec" Exclude="DotNetOpenAuth.nuspec">
+				<Symbols>true</Symbols>
+			</NuGetPackages>
+			<NuGetPackages Include="DotNetOpenAuth.nuspec" />
+		</ItemGroup>
+		<PropertyGroup>
+			<_NuGetProperties>@(NuGetProperties)</_NuGetProperties>
+		</PropertyGroup>
+		<ItemGroup>
+			<NuGetPackages>
+				<Properties>$(_NuGetProperties);Identity=%(FileName);GeneratedAssemblyInfoSourceFile=$(IntermediatePath)%(FileName).Version.cs</Properties>
+			</NuGetPackages>
 		</ItemGroup>
 		<NuGetPack
 			NuSpec="%(NuGetPackages.Identity)"
 			OutputPackageDirectory="$(DropsRoot)"
-			Properties="@(NuGetProperties)"
+			Properties="%(NuGetPackages.Properties)"
 			Symbols="%(NuGetPackages.Symbols)"
 			ToolPath="$(NuGetToolPath)" />
 	</Target>

@@ -33,5 +33,6 @@
 		<file src="content\Core\web.config.transform" target="content\web.config.transform" />
 
 		<file src="..\src\DotNetOpenAuth.Core\**\*.cs" target="src" />
+		<file src="$GeneratedAssemblyInfoSourceFile$" target="src" />
 	</files>
 </package>
