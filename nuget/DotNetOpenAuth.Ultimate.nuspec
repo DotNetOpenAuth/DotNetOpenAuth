@@ -30,6 +30,6 @@
 
 		<file src="content\Ultimate\web.config.transform" target="content\web.config.transform" />
 
-		<file src="..\src\**\*.cs" target="src" />
+		<file src="..\src\**\*.cs" target="src" exclude="..\src\*\obj\**" />
 	</files>
 </package>

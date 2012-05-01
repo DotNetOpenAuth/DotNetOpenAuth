@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 	<metadata>
-		<id>DotNetOpenAuth.OAuth.Common</id>
+		<id>$identity$</id>
 		<version>$version$</version>
 		<title>DotNetOpenAuth OAuth 1/2 shared bits</title>
 		<authors>Andrew Arnott</authors>
@@ -17,15 +17,16 @@
 		</dependencies>
 	</metadata>
 	<files>
-		<file src="$OutputPath35$signed\DotNetOpenAuth.OAuth.Common.dll" target="lib\net35-full\" />
-		<file src="$OutputPath40$signed\DotNetOpenAuth.OAuth.Common.dll" target="lib\net40-full\" />
+		<file src="$OutputPath35$signed\$identity$.dll" target="lib\net35-full\" />
+		<file src="$OutputPath40$signed\$identity$.dll" target="lib\net40-full\" />
 
-		<file src="$OutputPath35$DotNetOpenAuth.OAuth.Common.pdb" target="lib\net35-full\" />
-		<file src="$OutputPath40$DotNetOpenAuth.OAuth.Common.pdb" target="lib\net40-full\" />
+		<file src="$OutputPath35$$identity$.pdb" target="lib\net35-full\" />
+		<file src="$OutputPath40$$identity$.pdb" target="lib\net40-full\" />
 
-		<file src="$OutputPath35$DotNetOpenAuth.OAuth.Common.xml" target="lib\net35-full\" />
-		<file src="$OutputPath40$DotNetOpenAuth.OAuth.Common.xml" target="lib\net40-full\" />
+		<file src="$OutputPath35$$identity$.xml" target="lib\net35-full\" />
+		<file src="$OutputPath40$$identity$.xml" target="lib\net40-full\" />
 
-		<file src="..\src\DotNetOpenAuth.OAuth.Common\**\*.cs" target="src" />
+		<file src="..\src\$Identity$\**\*.cs" target="src" exclude="..\src\$Identity$\obj\**" />
+		<file src="$GeneratedAssemblyInfoSourceFile$" target="src" />
 	</files>
 </package>
