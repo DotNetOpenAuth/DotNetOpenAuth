@@ -106,9 +106,15 @@ namespace DotNetOpenAuth.AspNet {
 
 			var cookie = new HttpCookie(FormsAuthentication.FormsCookieName, encryptedTicket) {
 				HttpOnly = true,
-				Path = FormsAuthentication.FormsCookiePath,
-				Secure = FormsAuthentication.RequireSSL
+				Path = FormsAuthentication.FormsCookiePath
 			};
+
+			// only set Secure if FormsAuthentication requires SSL. 
+			// otherwise, leave it to default value
+			if (FormsAuthentication.RequireSSL)
+			{
+				cookie.Secure = true;
+			}
 
 			if (FormsAuthentication.CookieDomain != null) {
 				cookie.Domain = FormsAuthentication.CookieDomain;

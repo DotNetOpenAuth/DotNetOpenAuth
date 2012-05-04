@@ -140,7 +140,8 @@ namespace DotNetOpenAuth.AspNet {
 			Uri uri;
 			if (!string.IsNullOrEmpty(returnUrl)) {
 				uri = UriHelper.ConvertToAbsoluteUri(returnUrl, this.requestContext);
-			} else {
+			}
+			else {
 				uri = this.requestContext.Request.GetPublicFacingUrl();
 			}
 
@@ -155,24 +156,16 @@ namespace DotNetOpenAuth.AspNet {
 		/// </summary>
 		/// <returns>The result of the authentication.</returns>
 		public AuthenticationResult VerifyAuthentication() {
-			AuthenticationResult result = this.authenticationProvider.VerifyAuthentication(this.requestContext);
-			if (!result.IsSuccessful) {
-				// if the result is a Failed result, creates a new Failed response which has providerName info.
-				result = new AuthenticationResult(
-					isSuccessful: false,
-					provider: this.authenticationProvider.ProviderName,
-					providerUserId: null,
-					userName: null,
-					extraData: null);
-			}
-
-			return result;
+			return this.VerifyAuthenticationCore(() => this.authenticationProvider.VerifyAuthentication(this.requestContext));
 		}
 
 		/// <summary>
 		/// Checks if user is successfully authenticated when user is redirected back to this user.
 		/// </summary>
 		/// <param name="returnUrl">The return Url which must match exactly the Url passed into RequestAuthentication() earlier.</param>
+		/// <remarks>
+		/// This method only applies to OAuth2 providers. For other providers, it ignores the returnUrl parameter.
+		/// </remarks>
 		/// <returns>
 		/// The result of the authentication.
 		/// </returns>
@@ -195,7 +188,21 @@ namespace DotNetOpenAuth.AspNet {
 				// the login when user is redirected back to this page
 				uri = uri.AttachQueryStringParameter(ProviderQueryStringName, this.authenticationProvider.ProviderName);
 
-				AuthenticationResult result = oauth2Client.VerifyAuthentication(this.requestContext, uri);
+				return this.VerifyAuthenticationCore(() => oauth2Client.VerifyAuthentication(this.requestContext, uri));
+			}
+			else {
+				return this.VerifyAuthentication();
+			}
+		}
+
+		/// <summary>
+		/// Helper to verify authentiation.
+		/// </summary>
+		/// <param name="verifyAuthenticationCall">The real authentication action.</param>
+		/// <returns>Authentication result</returns>
+		private AuthenticationResult VerifyAuthenticationCore(Func<AuthenticationResult> verifyAuthenticationCall) {
+			try {
+				AuthenticationResult result = verifyAuthenticationCall();
 				if (!result.IsSuccessful) {
 					// if the result is a Failed result, creates a new Failed response which has providerName info.
 					result = new AuthenticationResult(
@@ -208,8 +215,8 @@ namespace DotNetOpenAuth.AspNet {
 
 				return result;
 			}
-			else {
-				return this.VerifyAuthentication();
+			catch (HttpException exception) {
+				return new AuthenticationResult(exception.GetBaseException(), this.authenticationProvider.ProviderName);
 			}
 		}
 

@@ -37,12 +37,24 @@ namespace DotNetOpenAuth.AspNet {
 		/// The exception. 
 		/// </param>
 		public AuthenticationResult(Exception exception)
-			: this(isSuccessful: false) {
-			if (exception == null) {
+			: this(exception, provider: null) {
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="AuthenticationResult"/> class.
+		/// </summary>
+		/// <param name="exception">The exception.</param>
+		/// <param name="provider">The provider name.</param>
+		public AuthenticationResult(Exception exception, string provider)
+			: this(isSuccessful: false)
+		{
+			if (exception == null)
+			{
 				throw new ArgumentNullException("exception");
 			}
 
 			this.Error = exception;
+			this.Provider = provider;
 		}
 
 		/// <summary>

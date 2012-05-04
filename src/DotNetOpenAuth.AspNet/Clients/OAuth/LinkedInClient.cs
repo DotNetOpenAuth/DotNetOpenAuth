@@ -48,6 +48,9 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="LinkedInClient"/> class.
 		/// </summary>
+		/// <remarks>
+		/// Tokens exchanged during the OAuth handshake are stored in cookies.
+		/// </remarks>
 		/// <param name="consumerKey">
 		/// The LinkedIn app's consumer key. 
 		/// </param>
@@ -57,7 +60,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope",
 			Justification = "We can't dispose the object because we still need it through the app lifetime.")]
 		public LinkedInClient(string consumerKey, string consumerSecret)
-			: base("linkedIn", LinkedInServiceDescription, consumerKey, consumerSecret) { }
+			: this(consumerKey, consumerSecret, new AuthenticationOnlyCookieOAuthTokenManager()) { }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="LinkedInClient"/> class.
