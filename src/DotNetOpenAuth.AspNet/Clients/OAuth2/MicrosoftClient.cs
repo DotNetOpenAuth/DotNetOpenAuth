@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="WindowsLiveClient.cs" company="Microsoft">
+// <copyright file="MicrosoftClient.cs" company="Microsoft">
 //     Copyright (c) Microsoft. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -14,7 +14,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 	/// <summary>
 	/// The windows live client.
 	/// </summary>
-	public sealed class WindowsLiveClient : OAuth2Client {
+	public sealed class MicrosoftClient : OAuth2Client {
 		#region Constants and Fields
 
 		/// <summary>
@@ -42,7 +42,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		#region Constructors and Destructors
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="WindowsLiveClient"/> class.
+		/// Initializes a new instance of the <see cref="MicrosoftClient"/> class.
 		/// </summary>
 		/// <param name="appId">
 		/// The app id.
@@ -50,7 +50,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <param name="appSecret">
 		/// The app secret.
 		/// </param>
-		public WindowsLiveClient(string appId, string appSecret)
+		public MicrosoftClient(string appId, string appSecret)
 			: base("windowslive") {
 			Requires.NotNullOrEmpty(appId, "appId");
 			Requires.NotNullOrEmpty(appSecret, "appSecret");
@@ -93,13 +93,13 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// A dictionary contains key-value pairs of user data 
 		/// </returns>
 		protected override IDictionary<string, string> GetUserData(string accessToken) {
-			WindowsLiveUserData graph;
+			MicrosoftClientUserData graph;
 			var request =
 				WebRequest.Create(
 					"https://apis.live.net/v5.0/me?access_token=" + MessagingUtilities.EscapeUriDataStringRfc3986(accessToken));
 			using (var response = request.GetResponse()) {
 				using (var responseStream = response.GetResponseStream()) {
-					graph = JsonHelper.Deserialize<WindowsLiveUserData>(responseStream);
+					graph = JsonHelper.Deserialize<MicrosoftClientUserData>(responseStream);
 				}
 			}
 
