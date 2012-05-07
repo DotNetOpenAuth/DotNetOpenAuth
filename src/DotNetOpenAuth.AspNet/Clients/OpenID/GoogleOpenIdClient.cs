@@ -37,8 +37,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 			if (fetchResponse != null) {
 				var extraData = new Dictionary<string, string>();
 				extraData.AddItemIfNotEmpty("email", fetchResponse.GetAttributeValue(WellKnownAttributes.Contact.Email));
-				extraData.AddItemIfNotEmpty(
-					"country", fetchResponse.GetAttributeValue(WellKnownAttributes.Contact.HomeAddress.Country));
+				extraData.AddItemIfNotEmpty("country", fetchResponse.GetAttributeValue(WellKnownAttributes.Contact.HomeAddress.Country));
 				extraData.AddItemIfNotEmpty("firstName", fetchResponse.GetAttributeValue(WellKnownAttributes.Name.First));
 				extraData.AddItemIfNotEmpty("lastName", fetchResponse.GetAttributeValue(WellKnownAttributes.Name.Last));
 
