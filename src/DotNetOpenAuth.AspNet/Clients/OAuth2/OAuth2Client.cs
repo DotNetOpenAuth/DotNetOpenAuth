@@ -21,11 +21,6 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// </summary>
 		private readonly string providerName;
 
-		/// <summary>
-		/// The return url.
-		/// </summary>
-		private Uri returnUrl;
-
 		#endregion
 
 		#region Constructors and Destructors
@@ -71,8 +66,6 @@ namespace DotNetOpenAuth.AspNet.Clients {
 			Requires.NotNull(context, "context");
 			Requires.NotNull(returnUrl, "returnUrl");
 
-			this.returnUrl = returnUrl;
-
 			string redirectUrl = this.GetServiceLoginUrl(returnUrl).AbsoluteUri;
 			context.Response.Redirect(redirectUrl, endResponse: true);
 		}
@@ -87,8 +80,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// An instance of <see cref="AuthenticationResult"/> containing authentication result. 
 		/// </returns>
 		public AuthenticationResult VerifyAuthentication(HttpContextBase context) {
-			Requires.NotNull(this.returnUrl, "this.returnUrl");
-			return VerifyAuthentication(context, this.returnUrl);
+			throw new InvalidOperationException(WebResources.OAuthRequireReturnUrl);
 		}
 
 		/// <summary>

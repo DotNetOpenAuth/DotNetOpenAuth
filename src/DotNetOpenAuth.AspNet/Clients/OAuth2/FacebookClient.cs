@@ -76,7 +76,10 @@ namespace DotNetOpenAuth.AspNet.Clients {
 			// Note: Facebook doesn't like us to url-encode the redirect_uri value
 			var builder = new UriBuilder(AuthorizationEndpoint);
 			builder.AppendQueryArgs(
-				new Dictionary<string, string> { { "client_id", this.appId }, { "redirect_uri", returnUrl.AbsoluteUri }, });
+				new Dictionary<string, string> {
+					{ "client_id", this.appId },
+					{ "redirect_uri", returnUrl.AbsoluteUri }
+				});
 			return builder.Uri;
 		}
 
@@ -127,7 +130,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 			builder.AppendQueryArgs(
 				new Dictionary<string, string> {
 					{ "client_id", this.appId },
-					{ "redirect_uri", returnUrl.AbsoluteUri },
+					{ "redirect_uri", NormalizeHexEncoding(returnUrl.AbsoluteUri) },
 					{ "client_secret", this.appSecret },
 					{ "code", authorizationCode },
 				});
@@ -141,6 +144,28 @@ namespace DotNetOpenAuth.AspNet.Clients {
 				var parsedQueryString = HttpUtility.ParseQueryString(data);
 				return parsedQueryString["access_token"];
 			}
+		}
+
+		/// <summary>
+		/// Converts any % encoded values in the URL to uppercase.
+		/// </summary>
+		/// <param name="url">The URL string to normalize</param>
+		/// <returns>The normalized url</returns>
+		/// <example>NormalizeHexEncoding("Login.aspx?ReturnUrl=%2fAccount%2fManage.aspx") returns "Login.aspx?ReturnUrl=%2FAccount%2FManage.aspx"</example>
+		/// <remarks>
+		/// There is an issue in Facebook whereby it will rejects the redirect_uri value if
+		/// the url contains lowercase % encoded values.
+		/// </remarks>
+		private static string NormalizeHexEncoding(string url) {
+			var chars = url.ToCharArray();
+			for (int i = 0; i < chars.Length - 2; i++) {
+				if (chars[i] == '%') {
+					chars[i + 1] = char.ToUpperInvariant(chars[i + 1]);
+					chars[i + 2] = char.ToUpperInvariant(chars[i + 2]);
+					i += 2;
+				}
+			}
+			return new string(chars);
 		}
 
 		#endregion

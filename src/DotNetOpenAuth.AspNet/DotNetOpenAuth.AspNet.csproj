@@ -42,6 +42,10 @@
   <ItemGroup>
     <Compile Include="AuthenticationResult.cs" />
     <Compile Include="Clients\DictionaryExtensions.cs" />
+    <Compile Include="Clients\OAuth2\WindowsLiveClient.cs" />
+    <Compile Include="Clients\OAuth\AuthenticationOnlyCookieOAuthTokenManager.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Clients\OAuth\IOAuthTokenManager.cs" />
     <Compile Include="Clients\OAuth\SimpleConsumerTokenManager.cs" />
     <Compile Include="IAuthenticationClient.cs" />
@@ -50,8 +54,8 @@
     <Compile Include="Clients\OAuth2\JsonHelper.cs" />
     <Compile Include="Clients\OAuth2\OAuth2AccessTokenData.cs" />
     <Compile Include="Clients\OAuth2\OAuth2Client.cs" />
-    <Compile Include="Clients\OAuth2\WindowsLiveClient.cs" />
-    <Compile Include="Clients\OAuth2\WindowsLiveUserData.cs" />
+    <Compile Include="Clients\OAuth2\MicrosoftClient.cs" />
+    <Compile Include="Clients\OAuth2\MicrosoftClientUserData.cs" />
     <Compile Include="Clients\OAuth\DotNetOpenAuthWebConsumer.cs" />
     <Compile Include="Clients\OAuth\InMemoryOAuthTokenManager.cs" />
     <Compile Include="Clients\OAuth\IOAuthWebWorker.cs" />
@@ -61,6 +65,7 @@
     <Compile Include="Clients\OpenID\GoogleOpenIdClient.cs" />
     <Compile Include="Clients\OpenID\OpenIdClient.cs" />
     <Compile Include="Clients\OpenID\YahooOpenIdClient.cs" />
+    <Compile Include="MachineKeyUtil.cs" />
     <Compile Include="UriHelper.cs" />
     <Compile Include="IOpenAuthDataProvider.cs" />
     <Compile Include="OpenAuthAuthenticationTicketHelper.cs" />
