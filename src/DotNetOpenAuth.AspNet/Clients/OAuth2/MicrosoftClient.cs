@@ -12,9 +12,9 @@ namespace DotNetOpenAuth.AspNet.Clients {
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
-	/// The windows live client.
+	/// The Microsoft account client.
 	/// </summary>
-	public sealed class MicrosoftClient : OAuth2Client {
+	public class MicrosoftClient : OAuth2Client {
 		#region Constants and Fields
 
 		/// <summary>
@@ -51,7 +51,17 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// The app secret.
 		/// </param>
 		public MicrosoftClient(string appId, string appSecret)
-			: base("windowslive") {
+			: this("microsoft", appId, appSecret) {
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="MicrosoftClient"/> class.
+		/// </summary>
+		/// <param name="providerName">The provider name.</param>
+		/// <param name="appId">The app id.</param>
+		/// <param name="appSecret">The app secret.</param>
+		protected MicrosoftClient(string providerName, string appId, string appSecret)
+			: base(providerName) {
 			Requires.NotNullOrEmpty(appId, "appId");
 			Requires.NotNullOrEmpty(appSecret, "appSecret");
 
