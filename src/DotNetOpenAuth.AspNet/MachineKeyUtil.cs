@@ -24,7 +24,7 @@ namespace DotNetOpenAuth.AspNet {
 	/// since the implementation will change when upgrading 4.0 -> 4.5. This should be
 	/// used for transient data only.
 	/// </summary>
-	public static class MachineKeyUtil {
+	internal static class MachineKeyUtil {
 		/// <summary>
 		/// MachineKey implementation depending on the target .NET framework version
 		/// </summary>
