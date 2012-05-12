@@ -8,7 +8,6 @@
     <ProjectGuid>{51835086-9611-4C53-819B-F2D5C9320873}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DotNetOpenAuth.AspNet</RootNamespace>
     <AssemblyName>DotNetOpenAuth.AspNet</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <CodeAnalysisRuleSet>ExtendedDesignGuidelineRules.ruleset</CodeAnalysisRuleSet>
@@ -28,6 +27,9 @@
   </PropertyGroup>
   <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.props" />
   <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.Product.props" />
+  <PropertyGroup>
+     <RootNamespace>DotNetOpenAuth.AspNet</RootNamespace>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
