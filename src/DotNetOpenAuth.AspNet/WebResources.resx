@@ -130,7 +130,7 @@
     <value>An OAuth data provider has already been registered for this application.</value>
   </data>
   <data name="OAuthRequireReturnUrl" xml:space="preserve">
-    <value>This operation is not supported on the current provider.</value>
+    <value>This operation is not supported on the current provider. Call the overload of VerifyAuthentication() which accepts a return url.</value>
   </data>
   <data name="OpenIDFailedToGetResponse" xml:space="preserve">
     <value>Failed to obtain the authentication response from service provider.</value>
