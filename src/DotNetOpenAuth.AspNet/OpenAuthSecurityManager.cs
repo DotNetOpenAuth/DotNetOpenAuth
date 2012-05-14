@@ -156,7 +156,7 @@ namespace DotNetOpenAuth.AspNet {
 		/// </summary>
 		/// <returns>The result of the authentication.</returns>
 		public AuthenticationResult VerifyAuthentication() {
-			return this.VerifyAuthenticationCore(() => this.authenticationProvider.VerifyAuthentication(this.requestContext));
+			return VerifyAuthentication(returnUrl: null);
 		}
 
 		/// <summary>
@@ -170,8 +170,6 @@ namespace DotNetOpenAuth.AspNet {
 		/// The result of the authentication.
 		/// </returns>
 		public AuthenticationResult VerifyAuthentication(string returnUrl) {
-			Requires.NotNullOrEmpty(returnUrl, "returnUrl");
-
 			// Only OAuth2 requires the return url value for the verify authenticaiton step
 			OAuth2Client oauth2Client = this.authenticationProvider as OAuth2Client;
 			if (oauth2Client != null) {
@@ -188,35 +186,26 @@ namespace DotNetOpenAuth.AspNet {
 				// the login when user is redirected back to this page
 				uri = uri.AttachQueryStringParameter(ProviderQueryStringName, this.authenticationProvider.ProviderName);
 
-				return this.VerifyAuthenticationCore(() => oauth2Client.VerifyAuthentication(this.requestContext, uri));
+				try {
+					AuthenticationResult result = oauth2Client.VerifyAuthentication(this.requestContext, uri);
+					if (!result.IsSuccessful) {
+						// if the result is a Failed result, creates a new Failed response which has providerName info.
+						result = new AuthenticationResult(
+							isSuccessful: false,
+							provider: this.authenticationProvider.ProviderName,
+							providerUserId: null,
+							userName: null,
+							extraData: null);
+					}
+
+					return result;
+				}
+				catch (HttpException exception) {
+					return new AuthenticationResult(exception.GetBaseException(), this.authenticationProvider.ProviderName);
+				}
 			}
 			else {
 				return this.VerifyAuthentication();
-			}
-		}
-
-		/// <summary>
-		/// Helper to verify authentiation.
-		/// </summary>
-		/// <param name="verifyAuthenticationCall">The real authentication action.</param>
-		/// <returns>Authentication result</returns>
-		private AuthenticationResult VerifyAuthenticationCore(Func<AuthenticationResult> verifyAuthenticationCall) {
-			try {
-				AuthenticationResult result = verifyAuthenticationCall();
-				if (!result.IsSuccessful) {
-					// if the result is a Failed result, creates a new Failed response which has providerName info.
-					result = new AuthenticationResult(
-						isSuccessful: false,
-						provider: this.authenticationProvider.ProviderName,
-						providerUserId: null,
-						userName: null,
-						extraData: null);
-				}
-
-				return result;
-			}
-			catch (HttpException exception) {
-				return new AuthenticationResult(exception.GetBaseException(), this.authenticationProvider.ProviderName);
 			}
 		}
 
