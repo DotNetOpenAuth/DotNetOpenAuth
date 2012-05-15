@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.AspNet {
 	using System;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Web;
+	using System.Web.Security;
 	using DotNetOpenAuth.AspNet.Clients;
 	using DotNetOpenAuth.Messaging;
 
@@ -21,6 +22,12 @@ namespace DotNetOpenAuth.AspNet {
 		/// The provider query string name.
 		/// </summary>
 		private const string ProviderQueryStringName = "__provider__";
+
+		/// <summary>
+		/// The query string name for session id.
+		/// </summary>
+		private const string SessionIdQueryStringName = "__sid__";
+		private const string SessionIdCookieName = "__csid__";
 
 		/// <summary>
 		/// The _authentication provider.
@@ -148,6 +155,20 @@ namespace DotNetOpenAuth.AspNet {
 			// attach the provider parameter so that we know which provider initiated 
 			// the login when user is redirected back to this page
 			uri = uri.AttachQueryStringParameter(ProviderQueryStringName, this.authenticationProvider.ProviderName);
+
+			// Guard against XSRF attack by injecting session id into the redirect url and response cookie.
+			// Upon returning from the external provider, we'll compare the session id value in the query 
+			// string and the cookie. If they don't match, we'll reject the request.
+			string sessionId = Guid.NewGuid().ToString();
+			uri = uri.AttachQueryStringParameter(SessionIdQueryStringName, sessionId);
+
+			var xsrfCookie = new HttpCookie(SessionIdCookieName, sessionId);
+			if (FormsAuthentication.RequireSSL) {
+				xsrfCookie.Secure = true;
+			}
+			this.requestContext.Response.Cookies.Add(xsrfCookie);
+
+			// issue the redirect to the external auth provider
 			this.authenticationProvider.RequestAuthentication(this.requestContext, uri);
 		}
 
@@ -164,12 +185,23 @@ namespace DotNetOpenAuth.AspNet {
 		/// </summary>
 		/// <param name="returnUrl">The return Url which must match exactly the Url passed into RequestAuthentication() earlier.</param>
 		/// <remarks>
-		/// This method only applies to OAuth2 providers. For other providers, it ignores the returnUrl parameter.
+		/// This returnUrl parameter only applies to OAuth2 providers. For other providers, it ignores the returnUrl parameter.
 		/// </remarks>
 		/// <returns>
 		/// The result of the authentication.
 		/// </returns>
 		public AuthenticationResult VerifyAuthentication(string returnUrl) {
+			// check for XSRF attack
+			bool successful = ValidateRequestAgainstXsrfAttack();
+			if (!successful) {
+				return new AuthenticationResult(
+							isSuccessful: false,
+							provider: this.authenticationProvider.ProviderName,
+							providerUserId: null,
+							userName: null,
+							extraData: null);
+			}
+
 			// Only OAuth2 requires the return url value for the verify authenticaiton step
 			OAuth2Client oauth2Client = this.authenticationProvider as OAuth2Client;
 			if (oauth2Client != null) {
@@ -205,8 +237,27 @@ namespace DotNetOpenAuth.AspNet {
 				}
 			}
 			else {
-				return this.VerifyAuthentication();
+				return this.authenticationProvider.VerifyAuthentication(this.requestContext);
 			}
+		}
+
+		private bool ValidateRequestAgainstXsrfAttack() {
+			// get the session id query string parameter
+			string queryStringSessionId = this.requestContext.Request.QueryString[SessionIdQueryStringName];
+
+			// get the cookie id query string parameter
+			var cookie = this.requestContext.Request.Cookies[SessionIdCookieName];
+
+			bool successful = !String.IsNullOrEmpty(queryStringSessionId) &&
+								cookie != null &&
+								queryStringSessionId == cookie.Value;
+
+			if (successful) {
+				// be a good citizen, clean up cookie when the authentication succeeds
+				this.requestContext.Response.Cookies.Remove(SessionIdCookieName);
+			}
+
+			return successful;
 		}
 
 		#endregion
