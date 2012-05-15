@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.AspNet {
 	using System;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Web;
+	using System.Web.Security;
 	using DotNetOpenAuth.AspNet.Clients;
 	using DotNetOpenAuth.Messaging;
 
@@ -21,6 +22,16 @@ namespace DotNetOpenAuth.AspNet {
 		/// The provider query string name.
 		/// </summary>
 		private const string ProviderQueryStringName = "__provider__";
+
+		/// <summary>
+		/// The query string name for session id.
+		/// </summary>
+		private const string SessionIdQueryStringName = "__sid__";
+
+		/// <summary>
+		/// The cookie name for session id.
+		/// </summary>
+		private const string SessionIdCookieName = "__csid__";
 
 		/// <summary>
 		/// The _authentication provider.
@@ -148,6 +159,20 @@ namespace DotNetOpenAuth.AspNet {
 			// attach the provider parameter so that we know which provider initiated 
 			// the login when user is redirected back to this page
 			uri = uri.AttachQueryStringParameter(ProviderQueryStringName, this.authenticationProvider.ProviderName);
+
+			// Guard against XSRF attack by injecting session id into the redirect url and response cookie.
+			// Upon returning from the external provider, we'll compare the session id value in the query 
+			// string and the cookie. If they don't match, we'll reject the request.
+			string sessionId = Guid.NewGuid().ToString();
+			uri = uri.AttachQueryStringParameter(SessionIdQueryStringName, sessionId);
+
+			var xsrfCookie = new HttpCookie(SessionIdCookieName, sessionId);
+			if (FormsAuthentication.RequireSSL) {
+				xsrfCookie.Secure = true;
+			}
+			this.requestContext.Response.Cookies.Add(xsrfCookie);
+
+			// issue the redirect to the external auth provider
 			this.authenticationProvider.RequestAuthentication(this.requestContext, uri);
 		}
 
@@ -156,7 +181,7 @@ namespace DotNetOpenAuth.AspNet {
 		/// </summary>
 		/// <returns>The result of the authentication.</returns>
 		public AuthenticationResult VerifyAuthentication() {
-			return this.VerifyAuthenticationCore(() => this.authenticationProvider.VerifyAuthentication(this.requestContext));
+			return VerifyAuthentication(returnUrl: null);
 		}
 
 		/// <summary>
@@ -164,13 +189,22 @@ namespace DotNetOpenAuth.AspNet {
 		/// </summary>
 		/// <param name="returnUrl">The return Url which must match exactly the Url passed into RequestAuthentication() earlier.</param>
 		/// <remarks>
-		/// This method only applies to OAuth2 providers. For other providers, it ignores the returnUrl parameter.
+		/// This returnUrl parameter only applies to OAuth2 providers. For other providers, it ignores the returnUrl parameter.
 		/// </remarks>
 		/// <returns>
 		/// The result of the authentication.
 		/// </returns>
 		public AuthenticationResult VerifyAuthentication(string returnUrl) {
-			Requires.NotNullOrEmpty(returnUrl, "returnUrl");
+			// check for XSRF attack
+			bool successful = this.ValidateRequestAgainstXsrfAttack();
+			if (!successful) {
+				return new AuthenticationResult(
+							isSuccessful: false,
+							provider: this.authenticationProvider.ProviderName,
+							providerUserId: null,
+							userName: null,
+							extraData: null);
+			}
 
 			// Only OAuth2 requires the return url value for the verify authenticaiton step
 			OAuth2Client oauth2Client = this.authenticationProvider as OAuth2Client;
@@ -188,36 +222,50 @@ namespace DotNetOpenAuth.AspNet {
 				// the login when user is redirected back to this page
 				uri = uri.AttachQueryStringParameter(ProviderQueryStringName, this.authenticationProvider.ProviderName);
 
-				return this.VerifyAuthenticationCore(() => oauth2Client.VerifyAuthentication(this.requestContext, uri));
+				try {
+					AuthenticationResult result = oauth2Client.VerifyAuthentication(this.requestContext, uri);
+					if (!result.IsSuccessful) {
+						// if the result is a Failed result, creates a new Failed response which has providerName info.
+						result = new AuthenticationResult(
+							isSuccessful: false,
+							provider: this.authenticationProvider.ProviderName,
+							providerUserId: null,
+							userName: null,
+							extraData: null);
+					}
+
+					return result;
+				}
+				catch (HttpException exception) {
+					return new AuthenticationResult(exception.GetBaseException(), this.authenticationProvider.ProviderName);
+				}
 			}
 			else {
-				return this.VerifyAuthentication();
+				return this.authenticationProvider.VerifyAuthentication(this.requestContext);
 			}
 		}
 
 		/// <summary>
-		/// Helper to verify authentiation.
+		/// Validates the request against XSRF attack.
 		/// </summary>
-		/// <param name="verifyAuthenticationCall">The real authentication action.</param>
-		/// <returns>Authentication result</returns>
-		private AuthenticationResult VerifyAuthenticationCore(Func<AuthenticationResult> verifyAuthenticationCall) {
-			try {
-				AuthenticationResult result = verifyAuthenticationCall();
-				if (!result.IsSuccessful) {
-					// if the result is a Failed result, creates a new Failed response which has providerName info.
-					result = new AuthenticationResult(
-						isSuccessful: false,
-						provider: this.authenticationProvider.ProviderName,
-						providerUserId: null,
-						userName: null,
-						extraData: null);
-				}
+		/// <returns><c>true</c> if the request is safe. Otherwise, <c>false</c>.</returns>
+		private bool ValidateRequestAgainstXsrfAttack() {
+			// get the session id query string parameter
+			string queryStringSessionId = this.requestContext.Request.QueryString[SessionIdQueryStringName];
 
-				return result;
+			// get the cookie id query string parameter
+			var cookie = this.requestContext.Request.Cookies[SessionIdCookieName];
+
+			bool successful = !string.IsNullOrEmpty(queryStringSessionId) &&
+								cookie != null &&
+								queryStringSessionId == cookie.Value;
+
+			if (successful) {
+				// be a good citizen, clean up cookie when the authentication succeeds
+				this.requestContext.Response.Cookies.Remove(SessionIdCookieName);
 			}
-			catch (HttpException exception) {
-				return new AuthenticationResult(exception.GetBaseException(), this.authenticationProvider.ProviderName);
-			}
+
+			return successful;
 		}
 
 		#endregion
