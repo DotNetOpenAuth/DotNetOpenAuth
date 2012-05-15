@@ -163,10 +163,12 @@ namespace DotNetOpenAuth.AspNet {
 			// Guard against XSRF attack by injecting session id into the redirect url and response cookie.
 			// Upon returning from the external provider, we'll compare the session id value in the query 
 			// string and the cookie. If they don't match, we'll reject the request.
-			string sessionId = Guid.NewGuid().ToString();
+			string sessionId = Guid.NewGuid().ToString("N");
 			uri = uri.AttachQueryStringParameter(SessionIdQueryStringName, sessionId);
 
-			var xsrfCookie = new HttpCookie(SessionIdCookieName, sessionId);
+			var xsrfCookie = new HttpCookie(SessionIdCookieName, sessionId) {
+				HttpOnly = true
+			};
 			if (FormsAuthentication.RequireSSL) {
 				xsrfCookie.Secure = true;
 			}
@@ -253,12 +255,16 @@ namespace DotNetOpenAuth.AspNet {
 			// get the session id query string parameter
 			string queryStringSessionId = this.requestContext.Request.QueryString[SessionIdQueryStringName];
 
+			// verify that the query string value is a valid guid
+			Guid guid;
+			if (!Guid.TryParse(queryStringSessionId, out guid)) {
+				return false;
+			}
+
 			// get the cookie id query string parameter
 			var cookie = this.requestContext.Request.Cookies[SessionIdCookieName];
 
-			bool successful = !string.IsNullOrEmpty(queryStringSessionId) &&
-								cookie != null &&
-								queryStringSessionId == cookie.Value;
+			bool successful = cookie != null && queryStringSessionId == cookie.Value;
 
 			if (successful) {
 				// be a good citizen, clean up cookie when the authentication succeeds
