@@ -27,6 +27,10 @@ namespace DotNetOpenAuth.AspNet {
 		/// The query string name for session id.
 		/// </summary>
 		private const string SessionIdQueryStringName = "__sid__";
+
+		/// <summary>
+		/// The cookie name for session id.
+		/// </summary>
 		private const string SessionIdCookieName = "__csid__";
 
 		/// <summary>
@@ -192,7 +196,7 @@ namespace DotNetOpenAuth.AspNet {
 		/// </returns>
 		public AuthenticationResult VerifyAuthentication(string returnUrl) {
 			// check for XSRF attack
-			bool successful = ValidateRequestAgainstXsrfAttack();
+			bool successful = this.ValidateRequestAgainstXsrfAttack();
 			if (!successful) {
 				return new AuthenticationResult(
 							isSuccessful: false,
@@ -241,6 +245,10 @@ namespace DotNetOpenAuth.AspNet {
 			}
 		}
 
+		/// <summary>
+		/// Validates the request against XSRF attack.
+		/// </summary>
+		/// <returns><c>true</c> if the request is safe. Otherwise, <c>false</c>.</returns>
 		private bool ValidateRequestAgainstXsrfAttack() {
 			// get the session id query string parameter
 			string queryStringSessionId = this.requestContext.Request.QueryString[SessionIdQueryStringName];
@@ -248,7 +256,7 @@ namespace DotNetOpenAuth.AspNet {
 			// get the cookie id query string parameter
 			var cookie = this.requestContext.Request.Cookies[SessionIdCookieName];
 
-			bool successful = !String.IsNullOrEmpty(queryStringSessionId) &&
+			bool successful = !string.IsNullOrEmpty(queryStringSessionId) &&
 								cookie != null &&
 								queryStringSessionId == cookie.Value;
 
