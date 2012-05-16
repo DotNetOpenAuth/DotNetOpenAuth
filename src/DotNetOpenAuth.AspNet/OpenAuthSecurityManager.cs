@@ -181,14 +181,6 @@ namespace DotNetOpenAuth.AspNet {
 		/// <summary>
 		/// Checks if user is successfully authenticated when user is redirected back to this user.
 		/// </summary>
-		/// <returns>The result of the authentication.</returns>
-		public AuthenticationResult VerifyAuthentication() {
-			return VerifyAuthentication(returnUrl: null);
-		}
-
-		/// <summary>
-		/// Checks if user is successfully authenticated when user is redirected back to this user.
-		/// </summary>
 		/// <param name="returnUrl">The return Url which must match exactly the Url passed into RequestAuthentication() earlier.</param>
 		/// <remarks>
 		/// This returnUrl parameter only applies to OAuth2 providers. For other providers, it ignores the returnUrl parameter.
@@ -198,7 +190,8 @@ namespace DotNetOpenAuth.AspNet {
 		/// </returns>
 		public AuthenticationResult VerifyAuthentication(string returnUrl) {
 			// check for XSRF attack
-			bool successful = this.ValidateRequestAgainstXsrfAttack();
+			string sessionId;
+			bool successful = this.ValidateRequestAgainstXsrfAttack(out sessionId);
 			if (!successful) {
 				return new AuthenticationResult(
 							isSuccessful: false,
@@ -223,6 +216,10 @@ namespace DotNetOpenAuth.AspNet {
 				// attach the provider parameter so that we know which provider initiated
 				// the login when user is redirected back to this page
 				uri = uri.AttachQueryStringParameter(ProviderQueryStringName, this.authenticationProvider.ProviderName);
+
+				// When we called RequestAuthentication(), we put the sessionId in the returnUrl query string.
+				// Hence, we need to put it in the VerifyAuthentication url again to please FB/Microsoft account providers.
+				uri = uri.AttachQueryStringParameter(SessionIdQueryStringName, sessionId);
 
 				try {
 					AuthenticationResult result = oauth2Client.VerifyAuthentication(this.requestContext, uri);
@@ -250,14 +247,18 @@ namespace DotNetOpenAuth.AspNet {
 		/// <summary>
 		/// Validates the request against XSRF attack.
 		/// </summary>
-		/// <returns><c>true</c> if the request is safe. Otherwise, <c>false</c>.</returns>
-		private bool ValidateRequestAgainstXsrfAttack() {
+		/// <param name="sessionId">The session id embedded in the query string.</param>
+		/// <returns>
+		///   <c>true</c> if the request is safe. Otherwise, <c>false</c>.
+		/// </returns>
+		private bool ValidateRequestAgainstXsrfAttack(out string sessionId) {
 			// get the session id query string parameter
 			string queryStringSessionId = this.requestContext.Request.QueryString[SessionIdQueryStringName];
 
 			// verify that the query string value is a valid guid
 			Guid guid;
 			if (!Guid.TryParse(queryStringSessionId, out guid)) {
+				sessionId = null;
 				return false;
 			}
 
@@ -271,6 +272,7 @@ namespace DotNetOpenAuth.AspNet {
 				this.requestContext.Response.Cookies.Remove(SessionIdCookieName);
 			}
 
+			sessionId = queryStringSessionId;
 			return successful;
 		}
 
