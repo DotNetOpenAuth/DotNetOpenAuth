@@ -8,7 +8,10 @@ namespace DotNetOpenAuth.AspNet.Clients {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
+	using System.IO;
 	using System.Web;
+	using System.Xml;
+	using System.Xml.Linq;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.ChannelElements;
@@ -152,6 +155,20 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		#endregion
 
 		#region Methods
+
+		/// <summary>
+		/// Helper method to load an XDocument from an input stream.
+		/// </summary>
+		/// <param name="stream">The input stream from which to load the document.</param>
+		/// <returns>The XML document.</returns>
+		internal static XDocument LoadXDocumentFromStream(Stream stream) {
+			const int MaxChars = 0x10000; // 64k
+
+			XmlReaderSettings settings = new XmlReaderSettings() {
+				MaxCharactersInDocument = MaxChars
+			};
+			return XDocument.Load(XmlReader.Create(stream, settings));
+		}
 
 		/// <summary>
 		/// Check if authentication succeeded after user is redirected back from the service provider.
