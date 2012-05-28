@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="DotNetOpenAuth.OAuth2.Messages.AccessTokenRequestBase" Collapsed="true">
+    <Position X="3.75" Y="0.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAQAAAAgAAAAAKAAAQAAAAAAAAAAAAAAAACAA=</HashCode>
+      <FileName>OAuth2\Messages\AccessTokenRequestBase.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DotNetOpenAuth.OAuth2.Messages.ScopedAccessTokenRequest">
+    <Position X="3" Y="2" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAACAA=</HashCode>
+      <FileName>OAuth2\Messages\ScopedAccessTokenRequest.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotNetOpenAuth.OAuth2.Messages.AccessTokenResourceOwnerPasswordCredentialsRequest" Collapsed="true">
+    <Position X="0.5" Y="4.75" Width="4" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAgAAAIAAQAAAAAAECAQAAAAAABIA=</HashCode>
+      <FileName>OAuth2\Messages\AccessTokenResourceOwnerPasswordCredentialsRequest.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DotNetOpenAuth.OAuth2.Messages.AccessTokenRefreshRequest" Collapsed="true">
+    <Position X="5" Y="5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAQAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>OAuth2\Messages\AccessTokenRefreshRequest.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DotNetOpenAuth.OAuth2.Messages.AccessTokenClientCredentialsRequest" Collapsed="true">
+    <Position X="7.5" Y="5" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAgAAAIAAQAAAAAAEAAAAAAAAABAA=</HashCode>
+      <FileName>OAuth2\Messages\AccessTokenClientCredentialsRequest.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DotNetOpenAuth.OAuth2.Messages.AccessTokenAuthorizationCodeRequest" Collapsed="true">
+    <Position X="5.75" Y="2" Width="3" />
+    <TypeIdentifier>
+      <HashCode>ACAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAASAA=</HashCode>
+      <FileName>OAuth2\Messages\AccessTokenAuthorizationCodeRequest.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
