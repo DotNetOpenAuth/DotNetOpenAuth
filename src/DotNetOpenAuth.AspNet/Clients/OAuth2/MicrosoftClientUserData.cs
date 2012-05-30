@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="WindowsLiveUserData.cs" company="Microsoft">
+// <copyright file="MicrosoftClientUserData.cs" company="Microsoft">
 //     Copyright (c) Microsoft. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -17,7 +17,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 	/// </remarks>
 	[DataContract]
 	[EditorBrowsable(EditorBrowsableState.Never)]
-	public class WindowsLiveUserData {
+	public class MicrosoftClientUserData {
 		#region Public Properties
 
 		/// <summary>

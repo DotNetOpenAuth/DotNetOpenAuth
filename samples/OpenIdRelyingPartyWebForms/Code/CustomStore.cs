@@ -84,7 +84,7 @@ namespace OpenIdRelyingPartyWebForms.Code {
 
 		public CryptoKey GetKey(string bucket, string handle) {
 			var assocRow = dataSet.CryptoKey.FindByBucketHandle(bucket, handle);
-			return new CryptoKey(assocRow.Secret, assocRow.ExpiresUtc);
+			return assocRow == null ? null : new CryptoKey(assocRow.Secret, assocRow.ExpiresUtc);
 		}
 
 		public IEnumerable<KeyValuePair<string, CryptoKey>> GetKeys(string bucket) {

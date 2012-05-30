@@ -28,15 +28,15 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		public static readonly ServiceProviderDescription TwitterServiceDescription = new ServiceProviderDescription {
 			RequestTokenEndpoint =
 				new MessageReceivingEndpoint(
-					"https://twitter.com/oauth/request_token",
+					"https://api.twitter.com/oauth/request_token",
 					HttpDeliveryMethods.GetRequest | HttpDeliveryMethods.AuthorizationHeaderRequest),
 			UserAuthorizationEndpoint =
 				new MessageReceivingEndpoint(
-					"https://twitter.com/oauth/authenticate",
+					"https://api.twitter.com/oauth/authenticate",
 					HttpDeliveryMethods.GetRequest | HttpDeliveryMethods.AuthorizationHeaderRequest),
 			AccessTokenEndpoint =
 				new MessageReceivingEndpoint(
-					"https://twitter.com/oauth/access_token",
+					"https://api.twitter.com/oauth/access_token",
 					HttpDeliveryMethods.GetRequest | HttpDeliveryMethods.AuthorizationHeaderRequest),
 			TamperProtectionElements = new ITamperProtectionChannelBindingElement[] { new HmacSha1SigningBindingElement() },
 		};
@@ -48,6 +48,9 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="TwitterClient"/> class with the specified consumer key and consumer secret.
 		/// </summary>
+		/// <remarks>
+		/// Tokens exchanged during the OAuth handshake are stored in cookies.
+		/// </remarks>
 		/// <param name="consumerKey">
 		/// The consumer key. 
 		/// </param>
@@ -57,7 +60,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope",
 			Justification = "We can't dispose the object because we still need it through the app lifetime.")]
 		public TwitterClient(string consumerKey, string consumerSecret)
-			: base("twitter", TwitterServiceDescription, consumerKey, consumerSecret) { }
+			: this(consumerKey, consumerSecret, new AuthenticationOnlyCookieOAuthTokenManager()) { }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="TwitterClient"/> class.
