@@ -194,7 +194,7 @@ namespace DotNetOpenAuth.OAuth2 {
 
 		/// <summary>
 		/// Determines whether a given set of resource owner credentials is valid based on the authorization server's user database
-		/// and if so records an authorization entry such that subsequent calls to <see cref="IsAuthorizationValid"/> would
+		/// and if so records an authorization entry such that subsequent calls to <see cref="IAuthorizationServerHost.IsAuthorizationValid"/> would
 		/// return <c>true</c>.
 		/// </summary>
 		/// <param name="userName">Username on the account.</param>
@@ -223,7 +223,7 @@ namespace DotNetOpenAuth.OAuth2 {
 
 		/// <summary>
 		/// Determines whether an access token request given a client credential grant should be authorized
-		/// and if so records an authorization entry such that subsequent calls to <see cref="IsAuthorizationValid"/> would
+		/// and if so records an authorization entry such that subsequent calls to <see cref="IAuthorizationServerHost.IsAuthorizationValid"/> would
 		/// return <c>true</c>.
 		/// </summary>
 		/// <param name="accessRequest">
