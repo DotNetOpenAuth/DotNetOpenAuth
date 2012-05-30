@@ -138,6 +138,19 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 				}
 
 				applied = true;
+			} else if (clientCredentialOnly != null) {
+				try {
+					if (!this.AuthorizationServer.TryAuthorizeClientCredentialsGrant(clientCredentialOnly)) {
+						Logger.OAuth.ErrorFormat(
+							"Client credentials grant access request for client \"{0}\" rejected by authorization server host.",
+							clientCredentialOnly.ClientIdentifier);
+						throw new TokenEndpointProtocolException(accessTokenRequest, Protocol.AccessTokenRequestErrorCodes.UnauthorizedClient);
+					}
+				} catch (NotSupportedException) {
+					throw new TokenEndpointProtocolException(accessTokenRequest, Protocol.AccessTokenRequestErrorCodes.UnsupportedGrantType);
+				} catch (NotImplementedException) {
+					throw new TokenEndpointProtocolException(accessTokenRequest, Protocol.AccessTokenRequestErrorCodes.UnsupportedGrantType);
+				}
 			} else {
 				// Check that authorization requests come with an acceptable callback URI.
 				var authorizationRequest = message as EndUserAuthorizationRequest;

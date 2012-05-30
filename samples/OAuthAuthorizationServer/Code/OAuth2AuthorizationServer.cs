@@ -83,6 +83,10 @@
 			throw new NotSupportedException();
 		}
 
+		public bool TryAuthorizeClientCredentialsGrant(IAccessTokenRequest accessRequest) {
+			throw new NotImplementedException();
+		}
+
 		#endregion
 
 		public bool CanBeAutoApproved(EndUserAuthorizationRequest authorizationRequest) {
