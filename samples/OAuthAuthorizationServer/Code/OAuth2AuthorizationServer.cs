@@ -78,7 +78,7 @@
 			return this.IsAuthorizationValid(authorization.Scope, authorization.ClientIdentifier, authorization.UtcIssued, authorization.User);
 		}
 
-		public bool IsResourceOwnerCredentialValid(string userName, string password, IAccessTokenRequest accessRequest, out string canonicalUserName) {
+		public bool TryAuthorizeResourceOwnerCredentialGrant(string userName, string password, IAccessTokenRequest accessRequest, out string canonicalUserName) {
 			// This web site delegates user authentication to OpenID Providers, and as such no users have local passwords with this server.
 			throw new NotSupportedException();
 		}

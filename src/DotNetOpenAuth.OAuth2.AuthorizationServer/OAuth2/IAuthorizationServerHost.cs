@@ -81,7 +81,9 @@ namespace DotNetOpenAuth.OAuth2 {
 		bool IsAuthorizationValid(IAuthorizationDescription authorization);
 
 		/// <summary>
-		/// Determines whether a given set of resource owner credentials is valid based on the authorization server's user database.
+		/// Determines whether a given set of resource owner credentials is valid based on the authorization server's user database
+		/// and if so records an authorization entry such that subsequent calls to <see cref="IsAuthorizationValid"/> would
+		/// return <c>true</c>.
 		/// </summary>
 		/// <param name="userName">Username on the account.</param>
 		/// <param name="password">The user's password.</param>
@@ -94,10 +96,10 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// Or <c>null</c> if the return value is false.
 		/// </param>
 		/// <returns>
-		///   <c>true</c> if the given credentials are valid; otherwise, <c>false</c>.
+		///   <c>true</c> if the given credentials are valid and the authorization granted; otherwise, <c>false</c>.
 		/// </returns>
 		/// <exception cref="NotSupportedException">May be thrown if the authorization server does not support the resource owner password credential grant type.</exception>
-		bool IsResourceOwnerCredentialValid(string userName, string password, IAccessTokenRequest accessRequest, out string canonicalUserName);
+		bool TryAuthorizeResourceOwnerCredentialGrant(string userName, string password, IAccessTokenRequest accessRequest, out string canonicalUserName);
 	}
 
 	/// <summary>
@@ -188,7 +190,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		///   <c>true</c> if the given credentials are valid; otherwise, <c>false</c>.
 		/// </returns>
 		/// <exception cref="NotSupportedException">May be thrown if the authorization server does not support the resource owner password credential grant type.</exception>
-		bool IAuthorizationServerHost.IsResourceOwnerCredentialValid(string userName, string password, IAccessTokenRequest accessRequest, out string canonicalUserName) {
+		bool IAuthorizationServerHost.TryAuthorizeResourceOwnerCredentialGrant(string userName, string password, IAccessTokenRequest accessRequest, out string canonicalUserName) {
 			Contract.Requires(!string.IsNullOrEmpty(userName));
 			Contract.Requires(password != null);
 			Contract.Requires(accessRequest != null);

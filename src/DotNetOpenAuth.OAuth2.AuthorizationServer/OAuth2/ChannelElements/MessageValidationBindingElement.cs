@@ -121,7 +121,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			if (resourceOwnerPasswordCarrier != null) {
 				try {
 					string canonicalUserName;
-					if (this.AuthorizationServer.IsResourceOwnerCredentialValid(resourceOwnerPasswordCarrier.UserName, resourceOwnerPasswordCarrier.Password, resourceOwnerPasswordCarrier, out canonicalUserName)) {
+					if (this.AuthorizationServer.TryAuthorizeResourceOwnerCredentialGrant(resourceOwnerPasswordCarrier.UserName, resourceOwnerPasswordCarrier.Password, resourceOwnerPasswordCarrier, out canonicalUserName)) {
 						ErrorUtilities.VerifyHost(!string.IsNullOrEmpty(canonicalUserName), "IsResourceOwnerCredentialValid did not initialize out parameter.");
 						resourceOwnerPasswordCarrier.CredentialsValidated = true;
 						resourceOwnerPasswordCarrier.UserName = canonicalUserName;
@@ -136,49 +136,51 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 				} catch (NotImplementedException) {
 					throw new TokenEndpointProtocolException(accessTokenRequest, Protocol.AccessTokenRequestErrorCodes.UnsupportedGrantType);
 				}
-			}
 
-			// Check that authorization requests come with an acceptable callback URI.
-			var authorizationRequest = message as EndUserAuthorizationRequest;
-			if (authorizationRequest != null) {
-				var client = this.AuthorizationServer.GetClientOrThrow(authorizationRequest.ClientIdentifier);
-				ErrorUtilities.VerifyProtocol(authorizationRequest.Callback == null || client.IsCallbackAllowed(authorizationRequest.Callback), AuthServerStrings.ClientCallbackDisallowed, authorizationRequest.Callback);
-				ErrorUtilities.VerifyProtocol(authorizationRequest.Callback != null || client.DefaultCallback != null, AuthServerStrings.NoCallback);
 				applied = true;
-			}
+			} else {
+				// Check that authorization requests come with an acceptable callback URI.
+				var authorizationRequest = message as EndUserAuthorizationRequest;
+				if (authorizationRequest != null) {
+					var client = this.AuthorizationServer.GetClientOrThrow(authorizationRequest.ClientIdentifier);
+					ErrorUtilities.VerifyProtocol(authorizationRequest.Callback == null || client.IsCallbackAllowed(authorizationRequest.Callback), AuthServerStrings.ClientCallbackDisallowed, authorizationRequest.Callback);
+					ErrorUtilities.VerifyProtocol(authorizationRequest.Callback != null || client.DefaultCallback != null, AuthServerStrings.NoCallback);
+					applied = true;
+				}
 
-			// Check that the callback URI in a direct message from the client matches the one in the indirect message received earlier.
-			var request = message as AccessTokenAuthorizationCodeRequestAS;
-			if (request != null) {
-				IAuthorizationCodeCarryingRequest tokenRequest = request;
-				tokenRequest.AuthorizationDescription.VerifyCallback(request.Callback);
-				applied = true;
-			}
+				// Check that the callback URI in a direct message from the client matches the one in the indirect message received earlier.
+				var request = message as AccessTokenAuthorizationCodeRequestAS;
+				if (request != null) {
+					IAuthorizationCodeCarryingRequest tokenRequest = request;
+					tokenRequest.AuthorizationDescription.VerifyCallback(request.Callback);
+					applied = true;
+				}
 
-			var authCarrier = message as IAuthorizationCarryingRequest;
-			if (authCarrier != null) {
-				var accessRequest = authCarrier as AccessTokenRequestBase;
-				if (accessRequest != null) {
-					// Make sure the client sending us this token is the client we issued the token to.
-					AuthServerUtilities.TokenEndpointVerify(string.Equals(accessRequest.ClientIdentifier, authCarrier.AuthorizationDescription.ClientIdentifier, StringComparison.Ordinal), accessTokenRequest, Protocol.AccessTokenRequestErrorCodes.InvalidClient);
+				var authCarrier = message as IAuthorizationCarryingRequest;
+				if (authCarrier != null) {
+					var accessRequest = authCarrier as AccessTokenRequestBase;
+					if (accessRequest != null) {
+						// Make sure the client sending us this token is the client we issued the token to.
+						AuthServerUtilities.TokenEndpointVerify(string.Equals(accessRequest.ClientIdentifier, authCarrier.AuthorizationDescription.ClientIdentifier, StringComparison.Ordinal), accessTokenRequest, Protocol.AccessTokenRequestErrorCodes.InvalidClient);
 
-					var scopedAccessRequest = accessRequest as ScopedAccessTokenRequest;
-					if (scopedAccessRequest != null) {
-						// Make sure the scope the client is requesting does not exceed the scope in the grant.
-						if (!this.AuthServerChannel.ScopeSatisfiedCheck.IsScopeSatisfied(requiredScope: scopedAccessRequest.Scope, grantedScope: authCarrier.AuthorizationDescription.Scope)) {
-							Logger.OAuth.ErrorFormat("The requested access scope (\"{0}\") exceeds the grant scope (\"{1}\").", scopedAccessRequest.Scope, authCarrier.AuthorizationDescription.Scope);
-							throw new TokenEndpointProtocolException(accessTokenRequest, Protocol.AccessTokenRequestErrorCodes.InvalidScope, AuthServerStrings.AccessScopeExceedsGrantScope);
+						var scopedAccessRequest = accessRequest as ScopedAccessTokenRequest;
+						if (scopedAccessRequest != null) {
+							// Make sure the scope the client is requesting does not exceed the scope in the grant.
+							if (!this.AuthServerChannel.ScopeSatisfiedCheck.IsScopeSatisfied(requiredScope: scopedAccessRequest.Scope, grantedScope: authCarrier.AuthorizationDescription.Scope)) {
+								Logger.OAuth.ErrorFormat("The requested access scope (\"{0}\") exceeds the grant scope (\"{1}\").", scopedAccessRequest.Scope, authCarrier.AuthorizationDescription.Scope);
+								throw new TokenEndpointProtocolException(accessTokenRequest, Protocol.AccessTokenRequestErrorCodes.InvalidScope, AuthServerStrings.AccessScopeExceedsGrantScope);
+							}
 						}
 					}
-				}
 
-				// Make sure the authorization this token represents hasn't already been revoked.
-				if (!this.AuthorizationServer.IsAuthorizationValid(authCarrier.AuthorizationDescription)) {
-					Logger.OAuth.Error("Rejecting access token request because the IAuthorizationServerHost.IsAuthorizationValid method returned false.");
-					throw new TokenEndpointProtocolException(accessTokenRequest, Protocol.AccessTokenRequestErrorCodes.InvalidGrant);
-				}
+					// Make sure the authorization this token represents hasn't already been revoked.
+					if (!this.AuthorizationServer.IsAuthorizationValid(authCarrier.AuthorizationDescription)) {
+						Logger.OAuth.Error("Rejecting access token request because the IAuthorizationServerHost.IsAuthorizationValid method returned false.");
+						throw new TokenEndpointProtocolException(accessTokenRequest, Protocol.AccessTokenRequestErrorCodes.InvalidGrant);
+					}
 
-				applied = true;
+					applied = true;
+				}
 			}
 
 			return applied ? (MessageProtections?)MessageProtections.None : null;
