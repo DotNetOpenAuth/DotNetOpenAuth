@@ -104,8 +104,8 @@ http://opensource.org/licenses/ms-pl.html
 		<Reference Include="System.IdentityModel">
 			<RequiredTargetFramework>3.0</RequiredTargetFramework>
 		</Reference>
-		<Reference Include="System.IdentityModel.Selectors">
-			<RequiredTargetFramework>3.0</RequiredTargetFramework>
+		<Reference Include="System.IdentityModel.Selectors" Condition=" '$(ClrVersion)' == '4' ">
+			<RequiredTargetFramework>4.0</RequiredTargetFramework>
 		</Reference>
 		<Reference Include="System.Runtime.Serialization">
 			<RequiredTargetFramework>3.0</RequiredTargetFramework>
