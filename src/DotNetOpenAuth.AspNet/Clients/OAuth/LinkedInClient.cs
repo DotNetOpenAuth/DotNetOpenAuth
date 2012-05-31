@@ -89,7 +89,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 			Justification = "We don't care if the request fails.")]
 		protected override AuthenticationResult VerifyAuthenticationCore(AuthorizedTokenResponse response) {
 			// See here for Field Selectors API http://developer.linkedin.com/docs/DOC-1014
-			const string ProfileRequestUrl = "http://api.linkedin.com/v1/people/~:(id,first-name,last-name,headline,industry,summary)";
+			const string ProfileRequestUrl = "https://api.linkedin.com/v1/people/~:(id,first-name,last-name,headline,industry,summary)";
 
 			string accessToken = response.AccessToken;
 
@@ -99,7 +99,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 			try {
 				using (WebResponse profileResponse = request.GetResponse()) {
 					using (Stream responseStream = profileResponse.GetResponseStream()) {
-						XDocument document = XDocument.Load(responseStream);
+						XDocument document = LoadXDocumentFromStream(responseStream);
 						string userId = document.Root.Element("id").Value;
 
 						string firstName = document.Root.Element("first-name").Value;
@@ -117,7 +117,8 @@ namespace DotNetOpenAuth.AspNet.Clients {
 							isSuccessful: true, provider: this.ProviderName, providerUserId: userId, userName: userName, extraData: extraData);
 					}
 				}
-			} catch (Exception exception) {
+			}
+			catch (Exception exception) {
 				return new AuthenticationResult(exception);
 			}
 		}

@@ -10,8 +10,10 @@ namespace DotNetOpenAuth.AspNet {
 	using System.Diagnostics.CodeAnalysis;
 	using System.IO;
 	using System.Net;
+	using System.Reflection;
 	using System.Security.Cryptography;
 	using System.Text;
+	using System.Web;
 	using System.Web.Security;
 
 	/// <summary>
@@ -84,12 +86,20 @@ namespace DotNetOpenAuth.AspNet {
 		/// </summary>
 		/// <returns>The machine key implementation</returns>
 		private static IMachineKey GetMachineKeyImpl() {
-			ProtectUnprotect protectThunk = (ProtectUnprotect)Delegate.CreateDelegate(typeof(ProtectUnprotect), typeof(MachineKey), "Protect", ignoreCase: false, throwOnBindFailure: false);
-			ProtectUnprotect unprotectThunk = (ProtectUnprotect)Delegate.CreateDelegate(typeof(ProtectUnprotect), typeof(MachineKey), "Unprotect", ignoreCase: false, throwOnBindFailure: false);
+			// Late bind to the MachineKey.Protect / Unprotect methods only if <httpRuntime targetFramework="4.5" />.
+			// This helps ensure that round-tripping the payloads continues to work even if the application is
+			// deployed to a mixed 4.0 / 4.5 farm environment.
+			PropertyInfo targetFrameworkProperty = typeof(HttpRuntime).GetProperty("TargetFramework", typeof(Version));
+			Version targetFramework = (targetFrameworkProperty != null) ? targetFrameworkProperty.GetValue(null, null) as Version : null;
+			if (targetFramework != null && targetFramework >= new Version(4, 5)) {
+				ProtectUnprotect protectThunk = (ProtectUnprotect)Delegate.CreateDelegate(typeof(ProtectUnprotect), typeof(MachineKey), "Protect", ignoreCase: false, throwOnBindFailure: false);
+				ProtectUnprotect unprotectThunk = (ProtectUnprotect)Delegate.CreateDelegate(typeof(ProtectUnprotect), typeof(MachineKey), "Unprotect", ignoreCase: false, throwOnBindFailure: false);
+				if (protectThunk != null && unprotectThunk != null) {
+					return new MachineKey45(protectThunk, unprotectThunk); // ASP.NET 4.5
+				}
+			}
 
-			return (protectThunk != null && unprotectThunk != null)
-				? (IMachineKey)new MachineKey45(protectThunk, unprotectThunk) // ASP.NET 4.5
-				: (IMachineKey)new MachineKey40(); // ASP.NET 4.0
+			return new MachineKey40(); // ASP.NET 4.0
 		}
 
 		/// <summary>

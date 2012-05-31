@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.AspNet {
 	using System;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Text;
 	using System.Web;
 	using System.Web.Security;
 	using DotNetOpenAuth.AspNet.Clients;
@@ -17,6 +18,11 @@ namespace DotNetOpenAuth.AspNet {
 	/// </summary>
 	public class OpenAuthSecurityManager {
 		#region Constants and Fields
+
+		/// <summary>
+		/// Purposes string used for protecting the anti-XSRF token.
+		/// </summary>
+		private const string AntiXsrfPurposeString = "DotNetOpenAuth.AspNet.AntiXsrfToken.v1";
 
 		/// <summary>
 		/// The provider query string name.
@@ -166,7 +172,10 @@ namespace DotNetOpenAuth.AspNet {
 			string sessionId = Guid.NewGuid().ToString("N");
 			uri = uri.AttachQueryStringParameter(SessionIdQueryStringName, sessionId);
 
-			var xsrfCookie = new HttpCookie(SessionIdCookieName, sessionId) {
+			// The cookie value will be the current username secured against the session id we just created.
+			byte[] encryptedCookieBytes = MachineKeyUtil.Protect(Encoding.UTF8.GetBytes(GetUsername(this.requestContext)), AntiXsrfPurposeString, "Token: " + sessionId);
+
+			var xsrfCookie = new HttpCookie(SessionIdCookieName, HttpServerUtility.UrlTokenEncode(encryptedCookieBytes)) {
 				HttpOnly = true
 			};
 			if (FormsAuthentication.RequireSSL) {
@@ -245,6 +254,19 @@ namespace DotNetOpenAuth.AspNet {
 		}
 
 		/// <summary>
+		/// Returns the username of the current logged-in user.
+		/// </summary>
+		/// <param name="context">The HTTP request context.</param>
+		/// <returns>The username, or String.Empty if anonymous.</returns>
+		private static string GetUsername(HttpContextBase context) {
+			string username = null;
+			if (context.User.Identity.IsAuthenticated) {
+				username = context.User.Identity.Name;
+			}
+			return username ?? string.Empty;
+		}
+
+		/// <summary>
 		/// Validates the request against XSRF attack.
 		/// </summary>
 		/// <param name="sessionId">The session id embedded in the query string.</param>
@@ -252,24 +274,45 @@ namespace DotNetOpenAuth.AspNet {
 		///   <c>true</c> if the request is safe. Otherwise, <c>false</c>.
 		/// </returns>
 		private bool ValidateRequestAgainstXsrfAttack(out string sessionId) {
+			sessionId = null;
+
 			// get the session id query string parameter
 			string queryStringSessionId = this.requestContext.Request.QueryString[SessionIdQueryStringName];
 
 			// verify that the query string value is a valid guid
 			Guid guid;
 			if (!Guid.TryParse(queryStringSessionId, out guid)) {
-				sessionId = null;
 				return false;
 			}
 
-			// get the cookie id query string parameter
+			// the cookie value should be the current username secured against this guid
 			var cookie = this.requestContext.Request.Cookies[SessionIdCookieName];
+			if (cookie == null || string.IsNullOrEmpty(cookie.Value)) {
+				return false;
+			}
 
-			bool successful = cookie != null && queryStringSessionId == cookie.Value;
+			// extract the username embedded within the cookie
+			// if there is any error at all (crypto, malformed, etc.), fail gracefully
+			string usernameInCookie = null;
+			try {
+				byte[] encryptedCookieBytes = HttpServerUtility.UrlTokenDecode(cookie.Value);
+				byte[] decryptedCookieBytes = MachineKeyUtil.Unprotect(encryptedCookieBytes, AntiXsrfPurposeString, "Token: " + queryStringSessionId);
+				usernameInCookie = Encoding.UTF8.GetString(decryptedCookieBytes);
+			}
+			catch {
+				return false;
+			}
+
+			string currentUsername = GetUsername(this.requestContext);
+			bool successful = string.Equals(currentUsername, usernameInCookie, StringComparison.OrdinalIgnoreCase);
 
 			if (successful) {
 				// be a good citizen, clean up cookie when the authentication succeeds
-				this.requestContext.Response.Cookies.Remove(SessionIdCookieName);
+				var xsrfCookie = new HttpCookie(SessionIdCookieName, string.Empty) {
+					HttpOnly = true,
+					Expires = DateTime.Now.AddYears(-1)
+				};
+				this.requestContext.Response.Cookies.Set(xsrfCookie);
 			}
 
 			sessionId = queryStringSessionId;

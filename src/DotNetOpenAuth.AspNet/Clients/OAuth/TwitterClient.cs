@@ -92,7 +92,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 			string userId = response.ExtraData["user_id"];
 			string userName = response.ExtraData["screen_name"];
 
-			var profileRequestUrl = new Uri("http://api.twitter.com/1/users/show.xml?user_id="
+			var profileRequestUrl = new Uri("https://api.twitter.com/1/users/show.xml?user_id="
 									   + MessagingUtilities.EscapeUriDataStringRfc3986(userId));
 			var profileEndpoint = new MessageReceivingEndpoint(profileRequestUrl, HttpDeliveryMethods.GetRequest);
 			HttpWebRequest request = this.WebWorker.PrepareAuthorizedRequest(profileEndpoint, accessToken);
@@ -102,14 +102,15 @@ namespace DotNetOpenAuth.AspNet.Clients {
 			try {
 				using (WebResponse profileResponse = request.GetResponse()) {
 					using (Stream responseStream = profileResponse.GetResponseStream()) {
-						XDocument document = XDocument.Load(responseStream);
+						XDocument document = LoadXDocumentFromStream(responseStream);
 						extraData.AddDataIfNotEmpty(document, "name");
 						extraData.AddDataIfNotEmpty(document, "location");
 						extraData.AddDataIfNotEmpty(document, "description");
 						extraData.AddDataIfNotEmpty(document, "url");
 					}
 				}
-			} catch (Exception) {
+			}
+			catch (Exception) {
 				// At this point, the authentication is already successful.
 				// Here we are just trying to get additional data if we can.
 				// If it fails, no problem.

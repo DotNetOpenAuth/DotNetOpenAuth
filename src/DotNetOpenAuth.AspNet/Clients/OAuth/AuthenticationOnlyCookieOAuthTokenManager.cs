@@ -86,7 +86,10 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <param name="requestToken">The request token.</param>
 		/// <param name="requestTokenSecret">The request token secret.</param>
 		public void StoreRequestToken(string requestToken, string requestTokenSecret) {
-			var cookie = new HttpCookie(TokenCookieKey);
+			var cookie = new HttpCookie(TokenCookieKey) {
+				HttpOnly = true
+			};
+
 			if (FormsAuthentication.RequireSSL) {
 				cookie.Secure = true;
 			}
