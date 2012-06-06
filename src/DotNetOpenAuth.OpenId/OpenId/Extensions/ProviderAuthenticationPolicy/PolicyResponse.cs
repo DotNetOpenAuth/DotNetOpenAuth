@@ -71,9 +71,9 @@ namespace DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy {
 		/// actively authenticated to the OP in a manner fitting the asserted policies.
 		/// </summary>
 		/// <remarks>
-		/// If the RP's request included the "openid.max_auth_age" parameter 
-		/// then the OP MUST include "openid.auth_time" in its response. 
-		/// If "openid.max_auth_age" was not requested, the OP MAY choose to include 
+		/// If the RP's request included the "openid.pape.max_auth_age" parameter 
+		/// then the OP MUST include "openid.pape.auth_time" in its response. 
+		/// If "openid.pape.max_auth_age" was not requested, the OP MAY choose to include 
 		/// "openid.auth_time" in its response.
 		/// </remarks>
 		[MessagePart("auth_time", Encoder = typeof(DateTimeEncoder))]
