@@ -22,7 +22,6 @@ namespace DotNetOpenAuth.ApplicationBlock {
 		/// </summary>
 		public WindowsLiveClient()
 			: base(WindowsLiveDescription) {
-			this.AuthorizationTracker = new TokenManager();
 		}
 
 		/// <summary>
