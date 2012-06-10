@@ -26,6 +26,11 @@
 		         Targets="Sign"
 		         BuildInParallel="$(BuildInParallel)"
 		         Condition=" '%(DelaySignedProjects.Nonshipping)' != 'true' " />
+		<MSBuild Projects="@(DelaySignedProjects)"
+		         Properties="TargetFrameworkVersion=v4.5"
+		         Targets="Sign"
+		         BuildInParallel="$(BuildInParallel)"
+		         Condition=" '%(DelaySignedProjects.Nonshipping)' != 'true' " />
 	</Target>
 
 	<Target Name="Layout" DependsOnTargets="LayoutDependencies">
