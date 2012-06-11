@@ -17,7 +17,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="@(ProductProjects)">
+		<ProjectReference Include="stub.csproj;@(ProductProjects)">
 			<PrimaryProductOutput Condition=" '%(MergeIntoUnifiedAssembly)' != 'false' ">true</PrimaryProductOutput>
 		</ProjectReference>
 		<SignDependsOn Include="BuildUnifiedProduct" />
@@ -58,16 +58,19 @@
 		<MakeDir Directories="$(ILMergeOutputAssemblyDirectory)" />
 		<Message Text="Merging $(ILMergeOutputAssembly)" Importance="high" />
 
-		<!-- Arrange for DNOA.Core to appear *last* in the input assemblies list so that its assembly attributes overrides the rest. -->
+		<!-- Arrange for DNOA.Core to appear *last* in the input assemblies list so that its assembly attributes overrides the rest. 
+		     Also, this project's output must appear *first* in the list so that ILMerge will use its PE Header as the final one,
+		     allowing file Properties in Windows Explorer to show DotNetOpenAuth.dll as the "Original Filename" along with other properties. -->
 		<ItemGroup>
-			<ILMergeProductInputCoreAssembly Include="@(ILMergeProductInputAssemblies)" Condition=" '%(Filename)' == 'DotNetOpenAuth.Core' " />
-			<ILMergeProductInputAssemblies Remove="@(ILMergeProductInputCoreAssembly)" />
-			<ILMergeProductInputAssemblies Include="@(ILMergeProductInputCoreAssembly)" />
+			<OrderedMergeInputAssemblies Include="@(ILMergeProductInputAssemblies)" Condition=" '%(ILMergeProductInputAssemblies.FileName)' == 'DotNetOpenAuth' " />
+			<OrderedMergeInputAssemblies Include="@(ILMergeProductInputAssemblies)" Condition=" '%(ILMergeProductInputAssemblies.FileName)' != 'DotNetOpenAuth.Core' and '%(ILMergeProductInputAssemblies.FileName)' != 'DotNetOpenAuth' " />
+			<OrderedMergeInputAssemblies Include="@(ILMergeInputAssemblies)" />
+			<OrderedMergeInputAssemblies Include="@(ILMergeProductInputAssemblies)" Condition=" '%(ILMergeProductInputAssemblies.FileName)' == 'DotNetOpenAuth.Core' " />
 		</ItemGroup>
 
 		<ILMerge
 			ExcludeFile="$(ProjectRoot)ILMergeInternalizeExceptions.txt"
-			InputAssemblies="@(ILMergeInputAssemblies);@(ILMergeProductInputAssemblies)"
+			InputAssemblies="@(OrderedMergeInputAssemblies)"
 			OutputFile="$(ILMergeOutputAssembly)"
 			SearchDirectories="@(ILMergeSearchDirectories)"
 			KeyFile="$(PublicKeyFile)"
