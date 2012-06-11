@@ -21,7 +21,8 @@ namespace DotNetOpenAuth.AspNet {
 		/// The url.
 		/// </param>
 		/// <param name="parameterName">
-		/// The parameter name.
+		/// The parameter name. This value should not be provided by an end user; the caller should
+        /// ensure that this value comes only from a literal string.
 		/// </param>
 		/// <param name="parameterValue">
 		/// The parameter value.

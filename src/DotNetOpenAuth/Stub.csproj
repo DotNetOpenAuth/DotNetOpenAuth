@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+	<Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.props))\EnlistmentInfo.props" Condition=" '$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.props))' != '' " />
+
+	<PropertyGroup>
+		<SuppressBuildTarget>true</SuppressBuildTarget>
+		<AddContractsAssemblyForDelaySigning>false</AddContractsAssemblyForDelaySigning>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+		<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+	</PropertyGroup>
+	<Import Project="$(ProjectRoot)tools\DotNetOpenAuth.props" />
+	<PropertyGroup>
+		<SchemaVersion>2.0</SchemaVersion>
+		<ProjectGuid>{7BAB551D-768A-4C34-9D9D-8299DEDFF778}</ProjectGuid>
+		<AppDesignerFolder>Properties</AppDesignerFolder>
+		<AssemblyName>DotNetOpenAuth</AssemblyName>
+		<OutputPath>$(IntermediatePath)\stub\</OutputPath>
+		<NoCodeContracts>true</NoCodeContracts>
+	</PropertyGroup>
+	<Import Project="$(ProjectRoot)tools\DotNetOpenAuth.Product.props" />
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+	</PropertyGroup>
+	<ItemGroup>
+		<Compile Include="Properties\AssemblyInfo.cs" />
+	</ItemGroup>
+
+	<Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+	<Import Project="$(ProjectRoot)tools\DotNetOpenAuth.targets" />
+	<Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))\EnlistmentInfo.targets" Condition=" '$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))' != '' " />
+</Project>
