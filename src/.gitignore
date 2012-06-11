@@ -1,6 +1,6 @@
 Backup*
 _UpgradeReport_Files
-UpgradeLog.XML
+UpgradeLog*.XML
 PrecompiledWeb
 _ReSharper.*
 *.suo
