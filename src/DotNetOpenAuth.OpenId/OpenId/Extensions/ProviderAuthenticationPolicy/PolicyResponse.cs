@@ -74,7 +74,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy {
 		/// If the RP's request included the "openid.pape.max_auth_age" parameter 
 		/// then the OP MUST include "openid.pape.auth_time" in its response. 
 		/// If "openid.pape.max_auth_age" was not requested, the OP MAY choose to include 
-		/// "openid.auth_time" in its response.
+		/// "openid.pape.auth_time" in its response.
 		/// </remarks>
 		[MessagePart("auth_time", Encoder = typeof(DateTimeEncoder))]
 		public DateTime? AuthenticationTimeUtc {
