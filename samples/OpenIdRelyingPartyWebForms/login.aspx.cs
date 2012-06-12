@@ -50,11 +50,10 @@ namespace OpenIdRelyingPartyWebForms {
 				foreach (string policy in policies) {
 					pape.PreferredPolicies.Add(policy);
 				}
-
 			}
 
-			if (maxAuthTimeBox.Text.Length > 0) {
-				pape.MaximumAuthenticationAge = TimeSpan.FromSeconds(double.Parse(maxAuthTimeBox.Text));
+			if (this.maxAuthTimeBox.Text.Length > 0) {
+				pape.MaximumAuthenticationAge = TimeSpan.FromSeconds(double.Parse(this.maxAuthTimeBox.Text));
 			}
 
 			if (pape.PreferredPolicies.Count > 0 || pape.MaximumAuthenticationAge.HasValue) {
