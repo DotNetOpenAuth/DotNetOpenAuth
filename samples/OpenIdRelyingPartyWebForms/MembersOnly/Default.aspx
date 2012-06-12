@@ -18,6 +18,9 @@
 	<% }
 	foreach (string policy in State.PapePolicies.ActualPolicies) { %>
 		<li><%=HttpUtility.HtmlEncode(policy) %></li>
+	<% }
+	if (State.PapePolicies.AuthenticationTimeUtc.HasValue) { %>		
+		<li>The provider authenticated the user at <%=State.PapePolicies.AuthenticationTimeUtc.Value.ToLocalTime() %> (local time)</li>
 	<% } %>
 	</ul>
 <% } %>
