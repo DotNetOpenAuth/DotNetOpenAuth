@@ -42,6 +42,7 @@
 			<Output TaskParameter="TargetOutputs" ItemName="SignedProductAssemblies" />
 		</MSBuild>
 		<ItemGroup>
+			<UnifiedSignedProductAssembly Include="@(SignedProductAssemblies)" Condition=" '%(SignedProductAssemblies.FileName)' == '$(ProductName)' " />
 			<TemplateProjects Include="**\*.csproj" Exclude="$(MSBuildThisFile)">
 				<AfterTokens>$safeprojectname$</AfterTokens>
 				<!-- Projects can get changed after the transform+copy operation, so don't skip copying them. -->
@@ -53,9 +54,9 @@
 			<TemplateProjectsLayout Include="@(TemplateProjects->'$(ProjectTemplatesLayoutPath)%(RecursiveDir)%(FileName)%(Extension)')"/>
 
 			<!-- Add external libraries and their symbols -->
-			<ProjectTemplateLibraries Include="@(SignedProductAssemblies)" />
-			<ProjectTemplateLibraries Include="@(SignedProductAssemblies->'%(SymbolPath)')" />
-			<ProjectTemplateLibraries Include="$(OutputPath)$(ProductName).xml" />
+			<ProjectTemplateLibraries Include="@(UnifiedSignedProductAssembly)" />
+			<ProjectTemplateLibraries Include="@(UnifiedSignedProductAssembly->'%(SymbolPath)')" />
+			<ProjectTemplateLibraries Include="$(ILMergeOutputAssemblyDirectory)$(ProductName).xml" />
 			<!-- ... and log4net -->
 			<ProjectTemplateLibraries Include="$(ProjectRoot)lib\log4net.dll" />
 			<ProjectTemplateLibraries Include="$(ProjectRoot)lib\log4net.xml" />

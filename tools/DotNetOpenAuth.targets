@@ -26,7 +26,7 @@
 		<DelaySignedAssemblies Include="$(TargetPath)" Condition=" '$(SuppressTargetPathDelaySignedAssembly)' != 'true' "/>
 	</ItemGroup>
 
-	<ItemGroup Condition=" '$(ClrVersion)' != '4' ">
+	<ItemGroup Condition=" '$(ClrVersion)' != '4' and '$(NoCodeContracts)' != 'true' ">
 		<Reference Include="Microsoft.Contracts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=736440c9b414ea16, processorArchitecture=MSIL">
 			<SpecificVersion>False</SpecificVersion>
 			<HintPath>..\..\lib\Microsoft.Contracts.dll</HintPath>
