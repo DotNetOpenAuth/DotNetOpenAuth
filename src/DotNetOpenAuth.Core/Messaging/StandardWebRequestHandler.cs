@@ -27,7 +27,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// The value to use for the User-Agent HTTP header.
 		/// </summary>
-		private static string userAgentValue = Assembly.GetExecutingAssembly().GetName().Name + "/" + Assembly.GetExecutingAssembly().GetName().Version;
+		private static string userAgentValue = Assembly.GetExecutingAssembly().GetName().Name + "/" + GetAssemblyFileVersion();
 
 		#region IWebRequestHandler Members
 
@@ -244,6 +244,20 @@ namespace DotNetOpenAuth.Messaging {
 					request.UserAgent = userAgentValue;
 				}
 			}
+		}
+
+		/// <summary>
+		/// Gets the assembly file version of the executing assembly, otherwise falls back to the assembly version.
+		/// </summary>
+		private static string GetAssemblyFileVersion() {
+			var assembly = Assembly.GetExecutingAssembly();
+			var attributes = assembly.GetCustomAttributes(typeof(AssemblyFileVersionAttribute), false);
+			if (attributes.Length == 1) {
+				var fileVersionAttribute = (AssemblyFileVersionAttribute)attributes[0];
+				return fileVersionAttribute.Version;
+			}
+
+			return assembly.GetName().Version.ToString();
 		}
 	}
 }
