@@ -27,7 +27,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// The value to use for the User-Agent HTTP header.
 		/// </summary>
-		private static string userAgentValue = Assembly.GetExecutingAssembly().GetName().Name + "/" + Assembly.GetExecutingAssembly().GetName().Version;
+		private static string userAgentValue = Assembly.GetExecutingAssembly().GetName().Name + "/" + Util.AssemblyFileVersion;
 
 		#region IWebRequestHandler Members
 
