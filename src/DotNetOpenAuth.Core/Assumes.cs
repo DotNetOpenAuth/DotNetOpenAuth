@@ -58,6 +58,14 @@ namespace DotNetOpenAuth {
 		}
 
 		/// <summary>
+		/// Throws an internal error exception.
+		/// </summary>
+		/// <returns>Nothing.  This method always throws.</returns>
+		internal static Exception NotReachable() {
+			throw new InternalErrorException();
+		}
+
+		/// <summary>
 		/// An internal error exception that should never be caught.
 		/// </summary>
 		[SuppressMessage("Microsoft.Design", "CA1064:ExceptionsShouldBePublic", Justification = "This exception should never be caught.")]

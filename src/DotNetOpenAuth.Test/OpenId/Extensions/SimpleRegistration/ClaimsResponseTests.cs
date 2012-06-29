@@ -19,12 +19,12 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 	public class ClaimsResponseTests {
 		[Test]
 		public void EmptyMailAddress() {
-			ClaimsResponse response = new ClaimsResponse(Constants.sreg_ns);
+			ClaimsResponse response = new ClaimsResponse(Constants.TypeUris.Standard);
 			response.Email = string.Empty;
 			Assert.IsNull(response.MailAddress);
 		}
 
-		[TestCase, Ignore("serialization no longer supported")]
+		[Test, Ignore("serialization no longer supported")]
 		public void BinarySerialization() {
 			ClaimsResponse fields = this.GetFilledData();
 			MemoryStream ms = new MemoryStream();
@@ -36,7 +36,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			Assert.AreEqual(fields, fields2);
 		}
 
-		[TestCase, Ignore("serialization no longer supported")]
+		[Test, Ignore("serialization no longer supported")]
 		public void XmlSerialization() {
 			ClaimsResponse fields = this.GetFilledData();
 			MemoryStream ms = new MemoryStream();
@@ -125,7 +125,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			Assert.IsFalse(response.BirthDate.HasValue);
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentException))]
+		[Test, ExpectedException(typeof(ArgumentException))]
 		public void InvalidRawBirthdate() {
 			var response = new ClaimsResponse();
 			response.BirthDateRaw = "2008";
@@ -133,17 +133,17 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 
 		[Test]
 		public void ResponseAlternateTypeUriTests() {
-			var request = new ClaimsRequest(Constants.sreg_ns10);
+			var request = new ClaimsRequest(Constants.TypeUris.Variant10);
 			request.Email = DemandLevel.Require;
 
-			var response = new ClaimsResponse(Constants.sreg_ns10);
+			var response = new ClaimsResponse(Constants.TypeUris.Variant10);
 			response.Email = "a@b.com";
 
 			ExtensionTestUtilities.Roundtrip(Protocol.Default, new[] { request }, new[] { response });
 		}
 
 		private ClaimsResponse GetFilledData() {
-			return new ClaimsResponse(Constants.sreg_ns) {
+			return new ClaimsResponse(Constants.TypeUris.Standard) {
 				BirthDate = new DateTime(2005, 2, 3),
 				Culture = new System.Globalization.CultureInfo("en-US"),
 				Email = "a@b.com",

@@ -38,6 +38,16 @@ namespace DotNetOpenAuth.Messaging {
 		internal static readonly Encoding PostEntityEncoding = new UTF8Encoding(false);
 
 		/// <summary>
+		/// A default set of XML dictionary reader quotas that are relatively safe from causing unbounded memory consumption.
+		/// </summary>
+		internal static readonly XmlDictionaryReaderQuotas DefaultUntrustedXmlDictionaryReaderQuotas = new XmlDictionaryReaderQuotas {
+			MaxArrayLength = 1,
+			MaxDepth = 2,
+			MaxBytesPerRead = 8 * 1024,
+			MaxStringContentLength = 16 * 1024,
+		};
+
+		/// <summary>
 		/// The content-type used on HTTP POST requests where the POST entity is a
 		/// URL-encoded series of key=value pairs.
 		/// </summary>
@@ -143,18 +153,16 @@ namespace DotNetOpenAuth.Messaging {
 		/// A class prepared to analyze incoming messages and indicate what concrete
 		/// message types can deserialize from it.
 		/// </param>
-		/// <param name="bindingElements">The binding elements to use in sending and receiving messages.</param>
+		/// <param name="bindingElements">
+		/// The binding elements to use in sending and receiving messages.
+		/// The order they are provided is used for outgoing messgaes, and reversed for incoming messages.
+		/// </param>
 		protected Channel(IMessageFactory messageTypeProvider, params IChannelBindingElement[] bindingElements) {
 			Requires.NotNull(messageTypeProvider, "messageTypeProvider");
 
 			this.messageTypeProvider = messageTypeProvider;
 			this.WebRequestHandler = new StandardWebRequestHandler();
-			this.XmlDictionaryReaderQuotas = new XmlDictionaryReaderQuotas {
-				MaxArrayLength = 1,
-				MaxDepth = 2,
-				MaxBytesPerRead = 8 * 1024,
-				MaxStringContentLength = 16 * 1024,
-			};
+			this.XmlDictionaryReaderQuotas = DefaultUntrustedXmlDictionaryReaderQuotas;
 
 			this.outgoingBindingElements = new List<IChannelBindingElement>(ValidateAndPrepareBindingElements(bindingElements));
 			this.incomingBindingElements = new List<IChannelBindingElement>(this.outgoingBindingElements);
@@ -475,6 +483,14 @@ namespace DotNetOpenAuth.Messaging {
 			IDirectedProtocolMessage requestMessage = this.ReadFromRequestCore(httpRequest);
 			if (requestMessage != null) {
 				Logger.Channel.DebugFormat("Incoming request received: {0}", requestMessage.GetType().Name);
+
+				var directRequest = requestMessage as IHttpDirectRequest;
+				if (directRequest != null) {
+					foreach (string header in httpRequest.Headers) {
+						directRequest.Headers[header] = httpRequest.Headers[header];
+					}
+				}
+
 				this.ProcessIncomingMessage(requestMessage);
 			}
 
@@ -714,6 +730,13 @@ namespace DotNetOpenAuth.Messaging {
 			Requires.True(request.Recipient != null, "request", MessagingStrings.DirectedMessageMissingRecipient);
 
 			HttpWebRequest webRequest = this.CreateHttpRequest(request);
+			var directRequest = request as IHttpDirectRequest;
+			if (directRequest != null) {
+				foreach (string header in directRequest.Headers) {
+					webRequest.Headers[header] = directRequest.Headers[header];
+				}
+			}
+
 			IDictionary<string, string> responseFields;
 			IDirectResponseProtocolMessage responseMessage;
 
@@ -973,17 +996,7 @@ namespace DotNetOpenAuth.Messaging {
 		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "No apparent problem.  False positive?")]
 		protected virtual string SerializeAsJson(IMessage message) {
 			Requires.NotNull(message, "message");
-
-			MessageDictionary messageDictionary = this.MessageDescriptions.GetAccessor(message);
-			using (var memoryStream = new MemoryStream()) {
-				using (var jsonWriter = JsonReaderWriterFactory.CreateJsonWriter(memoryStream, Encoding.UTF8)) {
-					MessageSerializer.Serialize(messageDictionary, jsonWriter);
-					jsonWriter.Flush();
-				}
-
-				string json = Encoding.UTF8.GetString(memoryStream.ToArray());
-				return json;
-			}
+			return MessagingUtilities.SerializeAsJson(message, this.MessageDescriptions);
 		}
 
 		/// <summary>
@@ -1079,6 +1092,7 @@ namespace DotNetOpenAuth.Messaging {
 			UriBuilder builder = new UriBuilder(requestMessage.Recipient);
 			MessagingUtilities.AppendQueryArgs(builder, fields);
 			HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create(builder.Uri);
+			this.PrepareHttpWebRequest(httpRequest);
 
 			return httpRequest;
 		}
@@ -1119,6 +1133,7 @@ namespace DotNetOpenAuth.Messaging {
 			var fields = messageAccessor.Serialize();
 
 			var httpRequest = (HttpWebRequest)WebRequest.Create(requestMessage.Recipient);
+			this.PrepareHttpWebRequest(httpRequest);
 			httpRequest.CachePolicy = this.CachePolicy;
 			httpRequest.Method = "POST";
 
@@ -1296,6 +1311,14 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Performs additional processing on an outgoing web request before it is sent to the remote server.
+		/// </summary>
+		/// <param name="request">The request.</param>
+		protected virtual void PrepareHttpWebRequest(HttpWebRequest request) {
+			Requires.NotNull(request, "request");
+		}
+
+		/// <summary>
 		/// Customizes the binding element order for outgoing and incoming messages.
 		/// </summary>
 		/// <param name="outgoingOrder">The outgoing order.</param>
@@ -1357,7 +1380,7 @@ namespace DotNetOpenAuth.Messaging {
 
 			// Now sort the protection binding elements among themselves and add them to the list.
 			orderedList.AddRange(protectionElements.OrderBy(element => element.Protection, BindingElementOutgoingMessageApplicationOrder));
-			return orderedList;
+			return orderedList.AsEnumerable();
 		}
 
 		/// <summary>

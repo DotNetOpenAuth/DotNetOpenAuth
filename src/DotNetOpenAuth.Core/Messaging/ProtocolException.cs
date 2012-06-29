@@ -42,10 +42,10 @@ namespace DotNetOpenAuth.Messaging {
 		/// such that it can be sent as a protocol message response to a remote caller.
 		/// </summary>
 		/// <param name="message">The human-readable exception message.</param>
-		/// <param name="faultedMessage">The message that was the cause of the exception.  Must not be null.</param>
-		protected internal ProtocolException(string message, IProtocolMessage faultedMessage)
-			: base(message) {
-			Requires.NotNull(faultedMessage, "faultedMessage");
+		/// <param name="faultedMessage">The message that was the cause of the exception.  May be null.</param>
+		/// <param name="innerException">The inner exception to include.</param>
+		protected internal ProtocolException(string message, IProtocolMessage faultedMessage, Exception innerException = null)
+			: base(message, innerException) {
 			this.FaultedMessage = faultedMessage;
 		}
 
@@ -68,6 +68,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		internal IProtocolMessage FaultedMessage { get; private set; }
 
+#if false
 		/// <summary>
 		/// When overridden in a derived class, sets the <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with information about the exception.
 		/// </summary>
@@ -89,5 +90,6 @@ namespace DotNetOpenAuth.Messaging {
 			base.GetObjectData(info, context);
 			throw new NotImplementedException();
 		}
+#endif
 	}
 }

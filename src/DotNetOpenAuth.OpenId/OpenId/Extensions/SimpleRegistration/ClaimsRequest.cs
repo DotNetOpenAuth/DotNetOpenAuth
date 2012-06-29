@@ -24,7 +24,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 		/// The factory method that may be used in deserialization of this message.
 		/// </summary>
 		internal static readonly StandardOpenIdExtensionFactory.CreateDelegate Factory = (typeUri, data, baseMessage, isProviderRole) => {
-			if (typeUri == Constants.sreg_ns && isProviderRole) {
+			if (typeUri == Constants.TypeUris.Standard && isProviderRole) {
 				return new ClaimsRequest(typeUri);
 			}
 
@@ -41,7 +41,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 		/// Initializes a new instance of the <see cref="ClaimsRequest"/> class.
 		/// </summary>
 		public ClaimsRequest()
-			: base(new Version(1, 0), Constants.sreg_ns, Constants.AdditionalTypeUris) {
+			: base(new Version(1, 0), Constants.TypeUris.Standard, Constants.AdditionalTypeUris) {
 		}
 
 		/// <summary>

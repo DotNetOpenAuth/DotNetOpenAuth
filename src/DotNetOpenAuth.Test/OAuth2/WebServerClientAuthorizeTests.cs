@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Net;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2;
@@ -42,13 +43,28 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 			coordinator.Run();
 		}
 
-		[Test]
-		public void ResourceOwnerPasswordCredentialGrant() {
+		[Theory]
+		public void ResourceOwnerPasswordCredentialGrant(bool anonymousClient) {
+			var authHostMock = CreateAuthorizationServerMock();
+			if (anonymousClient) {
+				authHostMock.Setup(
+					m =>
+					m.IsAuthorizationValid(
+						It.Is<IAuthorizationDescription>(
+							d =>
+							d.ClientIdentifier == null && d.User == ResourceOwnerUsername &&
+							MessagingUtilities.AreEquivalent(d.Scope, TestScopes)))).Returns(true);
+			}
+
 			var coordinator = new OAuth2Coordinator<WebServerClient>(
 				AuthorizationServerDescription,
-				AuthorizationServerMock,
+				authHostMock.Object,
 				new WebServerClient(AuthorizationServerDescription),
 				client => {
+					if (anonymousClient) {
+						client.ClientIdentifier = null;
+					}
+
 					var authState = client.ExchangeUserCredentialForToken(ResourceOwnerUsername, ResourceOwnerPassword, TestScopes);
 					Assert.That(authState.AccessToken, Is.Not.Null.And.Not.Empty);
 					Assert.That(authState.RefreshToken, Is.Not.Null.And.Not.Empty);
@@ -64,6 +80,9 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 			var authServer = CreateAuthorizationServerMock();
 			authServer.Setup(
 				a => a.IsAuthorizationValid(It.Is<IAuthorizationDescription>(d => d.User == null && d.ClientIdentifier == ClientId && MessagingUtilities.AreEquivalent(d.Scope, TestScopes))))
+				.Returns(true);
+			authServer.Setup(
+				a => a.TryAuthorizeClientCredentialsGrant(It.Is<IAccessTokenRequest>(d => d.ClientIdentifier == ClientId && MessagingUtilities.AreEquivalent(d.Scope, TestScopes))))
 				.Returns(true);
 			var coordinator = new OAuth2Coordinator<WebServerClient>(
 				AuthorizationServerDescription,

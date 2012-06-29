@@ -13,10 +13,31 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 	/// <summary>
 	/// Simple Registration constants
 	/// </summary>
-	internal static class Constants {
-		internal const string sreg_ns = "http://openid.net/extensions/sreg/1.1";
-		internal const string sreg_ns10 = "http://openid.net/sreg/1.0";
-		internal const string sreg_ns11other = "http://openid.net/sreg/1.1";
+	public static class Constants {
+		/// <summary>
+		/// Commonly used type URIs to represent the Simple Registration extension.
+		/// </summary>
+		public static class TypeUris {
+			/// <summary>
+			/// The URI "http://openid.net/extensions/sreg/1.1".  
+			/// </summary>
+			/// <remarks>
+			/// This is the type URI prescribed by the Simple Registration 1.1 spec. 
+			/// http://openid.net/specs/openid-simple-registration-extension-1_1-01.html#anchor3
+			/// </remarks>
+			public const string Standard = "http://openid.net/extensions/sreg/1.1";
+
+			/// <summary>
+			/// The URI "http://openid.net/sreg/1.0"
+			/// </summary>
+			public const string Variant10 = "http://openid.net/sreg/1.0";
+
+			/// <summary>
+			/// The URI "http://openid.net/sreg/1.1"
+			/// </summary>
+			public const string Variant11 = "http://openid.net/sreg/1.1";
+		}
+
 		internal const string sreg_compatibility_alias = "sreg";
 		internal const string policy_url = "policy_url";
 		internal const string optional = "optional";
@@ -39,8 +60,8 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 		/// Additional type URIs that this extension is sometimes known by remote parties.
 		/// </summary>
 		internal static readonly string[] AdditionalTypeUris = new string[] {
-			Constants.sreg_ns10,
-			Constants.sreg_ns11other,
+			Constants.TypeUris.Variant10,
+			Constants.TypeUris.Variant11,
 		};
 	}
 }

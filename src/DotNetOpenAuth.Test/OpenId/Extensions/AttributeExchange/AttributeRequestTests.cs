@@ -20,22 +20,22 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			Assert.IsFalse(req.IsRequired);
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentException))]
+		[Test, ExpectedException(typeof(ArgumentException))]
 		public void CtorEmptyTypeUri() {
 			new AttributeRequest(string.Empty);
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNullTypeUri() {
 			new AttributeRequest(null);
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentOutOfRangeException))]
+		[Test, ExpectedException(typeof(ArgumentOutOfRangeException))]
 		public void CtorCountZero() {
 			new AttributeRequest(WellKnownAttributes.Contact.Email, false, 0);
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentOutOfRangeException))]
+		[Test, ExpectedException(typeof(ArgumentOutOfRangeException))]
 		public void CtorCountNegative() {
 			new AttributeRequest(WellKnownAttributes.Contact.Email, false, -1);
 		}
@@ -48,13 +48,13 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			Assert.AreEqual(5, req.Count);
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentOutOfRangeException))]
+		[Test, ExpectedException(typeof(ArgumentOutOfRangeException))]
 		public void SetCountZero() {
 			var req = new AttributeRequest();
 			req.Count = 0;
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentOutOfRangeException))]
+		[Test, ExpectedException(typeof(ArgumentOutOfRangeException))]
 		public void SetCountNegative() {
 			var req = new AttributeRequest();
 			req.Count = -1;

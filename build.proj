@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" InitialTargets="TouchUpProjectsForDualFrameworks">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<Import Project="EnlistmentInfo.props" />
 	<Import Project="$(MSBuildProjectDirectory)\tools\DotNetOpenAuth.automated.props"/>
 	<Import Project="$(ProjectRoot)tools\Translation.targets"/>
@@ -7,28 +7,31 @@
 		<!--Removed from NightlyProjects until it can be fixed up. samples\tools.proj;-->
 		<NightlyProjects Include="
 										nuget\nuget.proj;
-										" />
-		<NightlyProjects Include="
 										tools\drop.proj;
 										 ">
-			<BuildOnlyOnClr2>true</BuildOnlyOnClr2>
+			<Properties>TargetFrameworkVersion=v4.0</Properties>
 		</NightlyProjects>
-		<NightlyProjects Include="
-										samples\samples.proj;
-										doc\doc.proj;
-										">
+		<NightlyProjects Include="samples\samples.proj">
 			<Targets>DeployableArchive</Targets>
-			<BuildOnlyOnClr2>true</BuildOnlyOnClr2>
+			<Properties>TargetFrameworkVersion=v4.0</Properties>
+		</NightlyProjects>
+		<NightlyProjects Include="doc\doc.proj">
+			<Targets>DeployableArchive</Targets>
+			<Properties>TargetFrameworkVersion=v3.5</Properties>
 		</NightlyProjects>
 
 		<ProjectsToClean Include="
-										 $(SolutionPath);
-										 projecttemplates\projecttemplates.proj;
-										 vsi\vsi.proj;
-										 vsix\vsix.proj;
-										 samples\samples.proj;
-										 doc\doc.proj;
-										 "/>
+		                          $(SolutionPath);
+		                          projecttemplates\projecttemplates.proj;
+		                          vsi\vsi.proj;
+		                          vsix\vsix.proj;
+		                          samples\samples.proj;
+		                          ">
+			<Properties>TargetFrameworkVersion=v4.0</Properties>
+		</ProjectsToClean>
+		<ProjectsToClean Include="doc\doc.proj">
+			<Properties>TargetFrameworkVersion=v3.5</Properties>
+		</ProjectsToClean>
 
 		<DirectoriesToClean Include="
 			                           $(ProjectRoot)bin;
@@ -47,31 +50,15 @@
 		<TestAssemblies Include="$(OutputPath)$(ProductName).Test.dll"  Condition=" '$(ClrVersion)' == '2' " />
 		<TestAssemblies Include="$(OutputPath)$(ProductName).AspNet.Test.dll" Condition=" '$(ClrVersion)' == '4' " />
 
-		<ProjectsToPublish Include="
-											 doc\doc.proj;
-											 samples\samples.proj;
-											 ">
+		<ProjectsToPublish Include="doc\doc.proj">
 			<Targets>Publish</Targets>
+			<Properties>TargetFrameworkVersion=v3.5</Properties>
+		</ProjectsToPublish>
+		<ProjectsToPublish Include="samples\samples.proj">
+			<Targets>Publish</Targets>
+			<Properties>TargetFrameworkVersion=v4.0</Properties>
 		</ProjectsToPublish>
 	</ItemGroup>
-
-	<Target Name="TouchUpProjectsForDualFrameworks">
-		<ItemGroup>
-			<!-- The point here is to duplicate all projects, once targeting each version of .NET that we support. -->
-			<NightlyProjects>
-				<Properties>TargetFrameworkVersion=v3.5</Properties>
-			</NightlyProjects>
-			<NightlyProjects Include="@(NightlyProjects)" Condition=" '%(NightlyProjects.BuildOnlyOnClr2)' != 'true' ">
-				<Properties>TargetFrameworkVersion=v4.0</Properties>
-			</NightlyProjects>
-			<ProjectsToClean>
-				<Properties>TargetFrameworkVersion=v3.5</Properties>
-			</ProjectsToClean>
-			<ProjectsToClean Include="@(ProjectsToClean)">
-				<Properties>TargetFrameworkVersion=v4.0</Properties>
-			</ProjectsToClean>
-		</ItemGroup>
-	</Target>
 
 	<Target Name="BuildTests" DependsOnTargets="SkipVerification">
 		<MSBuild Projects="$(SolutionPath)" Targets="@(TestProjects)" BuildInParallel="$(BuildInParallel)" />
@@ -103,7 +90,10 @@
 	</Target>
 
 	<Target Name="Publish">
-		<MSBuild Projects="@(ProjectsToPublish)" Targets="%(ProjectsToPublish.Targets)" BuildInParallel="$(BuildInParallel)" />
+		<MSBuild Projects="@(ProjectsToPublish)"
+						 Targets="%(ProjectsToPublish.Targets)"
+						 Properties="%(ProjectsToPublish.Properties)"
+						 BuildInParallel="$(BuildInParallel)" />
 	</Target>
 
 	<Import Project="$(ProjectRoot)tools\DotNetOpenAuth.automated.targets"/>

@@ -26,13 +26,16 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <param name="authorizationServer">The token issuer.</param>
 		/// <param name="clientIdentifier">The client identifier.</param>
-		/// <param name="clientSecret">The client secret.</param>
-		protected ClientBase(AuthorizationServerDescription authorizationServer, string clientIdentifier = null, string clientSecret = null) {
+		/// <param name="clientCredentialApplicator">
+		/// The tool to use to apply client credentials to authenticated requests to the Authorization Server.  
+		/// May be <c>null</c> for clients with no secret or other means of authentication.
+		/// </param>
+		protected ClientBase(AuthorizationServerDescription authorizationServer, string clientIdentifier = null, ClientCredentialApplicator clientCredentialApplicator = null) {
 			Requires.NotNull(authorizationServer, "authorizationServer");
 			this.AuthorizationServer = authorizationServer;
 			this.Channel = new OAuth2ClientChannel();
 			this.ClientIdentifier = clientIdentifier;
-			this.ClientSecret = clientSecret;
+			this.ClientCredentialApplicator = clientCredentialApplicator;
 		}
 
 		/// <summary>
@@ -50,12 +53,26 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <summary>
 		/// Gets or sets the identifier by which this client is known to the Authorization Server.
 		/// </summary>
-		public string ClientIdentifier { get; set; }
+		public string ClientIdentifier {
+			get { return this.OAuthChannel.ClientIdentifier; }
+			set { this.OAuthChannel.ClientIdentifier = value; }
+		}
 
 		/// <summary>
-		/// Gets or sets the client secret shared with the Authorization Server.
+		/// Gets or sets the tool to use to apply client credentials to authenticated requests to the Authorization Server.
 		/// </summary>
-		public string ClientSecret { get; set; }
+		/// <value>May be <c>null</c> if this client has no client secret.</value>
+		public ClientCredentialApplicator ClientCredentialApplicator {
+			get { return this.OAuthChannel.ClientCredentialApplicator; }
+			set { this.OAuthChannel.ClientCredentialApplicator = value; }
+		}
+
+		/// <summary>
+		/// Gets the OAuth client channel.
+		/// </summary>
+		internal IOAuth2ChannelWithClient OAuthChannel {
+			get { return (IOAuth2ChannelWithClient)this.Channel; }
+		}
 
 		/// <summary>
 		/// Adds the necessary HTTP Authorization header to an HTTP request for protected resources
@@ -80,10 +97,10 @@ namespace DotNetOpenAuth.OAuth2 {
 			Requires.NotNull(request, "request");
 			Requires.NotNull(authorization, "authorization");
 			Requires.True(!string.IsNullOrEmpty(authorization.AccessToken), "authorization");
-			ErrorUtilities.VerifyProtocol(!authorization.AccessTokenExpirationUtc.HasValue || authorization.AccessTokenExpirationUtc < DateTime.UtcNow || authorization.RefreshToken != null, OAuth2Strings.AuthorizationExpired);
+			ErrorUtilities.VerifyProtocol(!authorization.AccessTokenExpirationUtc.HasValue || authorization.AccessTokenExpirationUtc < DateTime.UtcNow || authorization.RefreshToken != null, ClientStrings.AuthorizationExpired);
 
 			if (authorization.AccessTokenExpirationUtc.HasValue && authorization.AccessTokenExpirationUtc.Value < DateTime.UtcNow) {
-				ErrorUtilities.VerifyProtocol(authorization.RefreshToken != null, OAuth2Strings.AccessTokenRefreshFailed);
+				ErrorUtilities.VerifyProtocol(authorization.RefreshToken != null, ClientStrings.AccessTokenRefreshFailed);
 				this.RefreshAuthorization(authorization);
 			}
 
@@ -116,11 +133,12 @@ namespace DotNetOpenAuth.OAuth2 {
 				}
 			}
 
-			var request = new AccessTokenRefreshRequest(this.AuthorizationServer) {
+			var request = new AccessTokenRefreshRequestC(this.AuthorizationServer) {
 				ClientIdentifier = this.ClientIdentifier,
-				ClientSecret = this.ClientSecret,
 				RefreshToken = authorization.RefreshToken,
 			};
+
+			this.ApplyClientCredential(request);
 
 			var response = this.Channel.Request<AccessTokenSuccessResponse>(request);
 			UpdateAuthorizationWithResponse(authorization, response);
@@ -143,11 +161,12 @@ namespace DotNetOpenAuth.OAuth2 {
 			Requires.NotNull(scope, "scope");
 			Contract.Ensures(Contract.Result<IAuthorizationState>() != null);
 
-			var request = new AccessTokenRefreshRequest(this.AuthorizationServer) {
+			var request = new AccessTokenRefreshRequestC(this.AuthorizationServer) {
 				ClientIdentifier = this.ClientIdentifier,
-				ClientSecret = this.ClientSecret,
 				RefreshToken = refreshToken,
 			};
+
+			this.ApplyClientCredential(request);
 
 			var response = this.Channel.Request<AccessTokenSuccessResponse>(request);
 			var authorization = new AuthorizationState();
@@ -248,12 +267,12 @@ namespace DotNetOpenAuth.OAuth2 {
 			Requires.NotNull(authorizationState, "authorizationState");
 			Requires.NotNull(authorizationSuccess, "authorizationSuccess");
 
-			var accessTokenRequest = new AccessTokenAuthorizationCodeRequest(this.AuthorizationServer) {
+			var accessTokenRequest = new AccessTokenAuthorizationCodeRequestC(this.AuthorizationServer) {
 				ClientIdentifier = this.ClientIdentifier,
-				ClientSecret = this.ClientSecret,
 				Callback = authorizationState.Callback,
 				AuthorizationCode = authorizationSuccess.AuthorizationCode,
 			};
+			this.ApplyClientCredential(accessTokenRequest);
 			IProtocolMessage accessTokenResponse = this.Channel.Request(accessTokenRequest);
 			var accessTokenSuccess = accessTokenResponse as AccessTokenSuccessResponse;
 			var failedAccessTokenResponse = accessTokenResponse as AccessTokenFailedResponse;
@@ -262,7 +281,28 @@ namespace DotNetOpenAuth.OAuth2 {
 			} else {
 				authorizationState.Delete();
 				string error = failedAccessTokenResponse != null ? failedAccessTokenResponse.Error : "(unknown)";
-				ErrorUtilities.ThrowProtocol(OAuthStrings.CannotObtainAccessTokenWithReason, error);
+				ErrorUtilities.ThrowProtocol(ClientStrings.CannotObtainAccessTokenWithReason, error);
+			}
+		}
+
+		/// <summary>
+		/// Applies the default client authentication mechanism given a client secret.
+		/// </summary>
+		/// <param name="secret">The client secret.  May be <c>null</c></param>
+		/// <returns>The client credential applicator.</returns>
+		protected static ClientCredentialApplicator DefaultSecretApplicator(string secret) {
+			return secret == null ? ClientCredentialApplicator.NoSecret() : ClientCredentialApplicator.NetworkCredential(secret);
+		}
+
+		/// <summary>
+		/// Applies any applicable client credential to an authenticated outbound request to the authorization server.
+		/// </summary>
+		/// <param name="request">The request to apply authentication information to.</param>
+		protected void ApplyClientCredential(AuthenticatedClientRequestBase request) {
+			Requires.NotNull(request, "request");
+
+			if (this.ClientCredentialApplicator != null) {
+				this.ClientCredentialApplicator.ApplyClientCredential(this.ClientIdentifier, request);
 			}
 		}
 
@@ -295,7 +335,7 @@ namespace DotNetOpenAuth.OAuth2 {
 			var authorizationState = new AuthorizationState(scopes);
 
 			request.ClientIdentifier = this.ClientIdentifier;
-			request.ClientSecret = this.ClientSecret;
+			this.ApplyClientCredential(request);
 			request.Scope.UnionWith(authorizationState.Scope);
 
 			var response = this.Channel.Request(request);

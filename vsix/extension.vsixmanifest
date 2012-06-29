@@ -17,12 +17,16 @@
 				<Edition>Premium</Edition>
 				<Edition>Ultimate</Edition>
 			</VisualStudio>
+			<VisualStudio Version="11.0">
+				<Edition>Pro</Edition>
+				<Edition>Premium</Edition>
+				<Edition>Ultimate</Edition>
+			</VisualStudio>
 		</SupportedProducts>
-		<SupportedFrameworkRuntimeEdition MinVersion="3.5" MaxVersion="3.5" />
+		<SupportedFrameworkRuntimeEdition MinVersion="3.5" MaxVersion="4.5" />
 	</Identifier>
 	<References />
 	<Content>
 		<ProjectTemplate>PT</ProjectTemplate>
-		<!--<VsPackage>DotNetOpenAuthSDK.pkgdef</VsPackage>-->
 	</Content>
 </Vsix>

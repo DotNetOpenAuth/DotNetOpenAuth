@@ -13,7 +13,7 @@ namespace DotNetOpenAuth.Messaging {
 	/// </summary>
 	/// <typeparam name="T">The DataBag-derived type that is to be serialized/deserialized.</typeparam>
 	[ContractClass(typeof(IDataBagFormatterContract<>))]
-	internal interface IDataBagFormatter<T> where T : DataBag, new() {
+	internal interface IDataBagFormatter<in T> where T : DataBag {
 		/// <summary>
 		/// Serializes the specified message.
 		/// </summary>
@@ -24,13 +24,11 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Deserializes a <see cref="DataBag"/>.
 		/// </summary>
+		/// <param name="message">The instance to deserialize into</param>
 		/// <param name="containingMessage">The message that contains the <see cref="DataBag"/> serialized value.  Must not be null.</param>
 		/// <param name="data">The serialized form of the <see cref="DataBag"/> to deserialize.  Must not be null or empty.</param>
 		/// <param name="messagePartName">The name of the parameter whose value is to be deserialized.  Used for error message generation.</param>
-		/// <returns>
-		/// The deserialized value.  Never null.
-		/// </returns>
-		T Deserialize(IProtocolMessage containingMessage, string data, string messagePartName);
+		void Deserialize(T message, IProtocolMessage containingMessage, string data, string messagePartName);
 	}
 
 	/// <summary>
@@ -62,13 +60,12 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Deserializes a <see cref="DataBag"/>.
 		/// </summary>
+		/// <param name="message">The instance to deserialize into</param>
 		/// <param name="containingMessage">The message that contains the <see cref="DataBag"/> serialized value.  Must not be nulll.</param>
 		/// <param name="data">The serialized form of the <see cref="DataBag"/> to deserialize.  Must not be null or empty.</param>
 		/// <param name="messagePartName">Name of the message part whose value is to be deserialized.  Used for exception messages.</param>
-		/// <returns>
-		/// The deserialized value.  Never null.
-		/// </returns>
-		T IDataBagFormatter<T>.Deserialize(IProtocolMessage containingMessage, string data, string messagePartName) {
+		void IDataBagFormatter<T>.Deserialize(T message, IProtocolMessage containingMessage, string data, string messagePartName) {
+			Requires.NotNull(message, "message");
 			Requires.NotNull(containingMessage, "containingMessage");
 			Requires.NotNullOrEmpty(data, "data");
 			Requires.NotNullOrEmpty(messagePartName, "messagePartName");

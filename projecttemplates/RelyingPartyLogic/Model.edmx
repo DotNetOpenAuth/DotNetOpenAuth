@@ -1,19 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<edmx:Edmx Version="1.0" xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx">
+<edmx:Edmx Version="2.0" xmlns:edmx="http://schemas.microsoft.com/ado/2008/10/edmx">
   <!-- EF Runtime content -->
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="DatabaseModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2006/04/edm/ssdl">
+    <Schema Namespace="DatabaseModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns="http://schemas.microsoft.com/ado/2009/02/edm/ssdl">
         <EntityContainer Name="DatabaseModelStoreContainer">
-          <EntitySet Name="AuthenticationToken" EntityType="DatabaseModel.Store.AuthenticationToken" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="Client" EntityType="DatabaseModel.Store.Client" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="ClientAuthorization" EntityType="DatabaseModel.Store.ClientAuthorization" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="CryptoKey" EntityType="DatabaseModel.Store.CryptoKey" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="Nonce" EntityType="DatabaseModel.Store.Nonce" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="Role" EntityType="DatabaseModel.Store.Role" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="User" EntityType="DatabaseModel.Store.User" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="UserRole" EntityType="DatabaseModel.Store.UserRole" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="AuthenticationToken" EntityType="DatabaseModel.Store.AuthenticationToken" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="Client" EntityType="DatabaseModel.Store.Client" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="ClientAuthorization" EntityType="DatabaseModel.Store.ClientAuthorization" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="CryptoKey" EntityType="DatabaseModel.Store.CryptoKey" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="Nonce" EntityType="DatabaseModel.Store.Nonce" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="Role" EntityType="DatabaseModel.Store.Role" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="User" EntityType="DatabaseModel.Store.User" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="UserRole" EntityType="DatabaseModel.Store.UserRole" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
           <AssociationSet Name="FK_AuthenticationToken_User" Association="DatabaseModel.Store.FK_AuthenticationToken_User">
             <End Role="User" EntitySet="User" />
             <End Role="AuthenticationToken" EntitySet="AuthenticationToken" />
@@ -190,7 +190,7 @@
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
-      <Schema Namespace="DatabaseModel" Alias="Self" xmlns="http://schemas.microsoft.com/ado/2006/04/edm">
+      <Schema Namespace="DatabaseModel" Alias="Self" xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
         <EntityContainer Name="DatabaseEntities">
           <EntitySet Name="Roles" EntityType="DatabaseModel.Role" />
           <EntitySet Name="Users" EntityType="DatabaseModel.User" />
@@ -309,7 +309,7 @@
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
-      <Mapping Space="C-S" xmlns="urn:schemas-microsoft-com:windows:storage:mapping:CS">
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2008/09/mapping/cs">
         <EntityContainerMapping StorageEntityContainer="DatabaseModelStoreContainer" CdmEntityContainer="DatabaseEntities">
           <EntitySetMapping Name="Roles">
             <EntityTypeMapping TypeName="IsTypeOf(DatabaseModel.Role)">
@@ -417,12 +417,12 @@
   <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
   <edmx:Designer>
     <edmx:Connection>
-      <DesignerInfoPropertySet xmlns="http://schemas.microsoft.com/ado/2007/06/edmx">
+      <DesignerInfoPropertySet xmlns="http://schemas.microsoft.com/ado/2008/10/edmx">
         <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
       </DesignerInfoPropertySet>
     </edmx:Connection>
     <edmx:Options>
-      <DesignerInfoPropertySet xmlns="http://schemas.microsoft.com/ado/2007/06/edmx">
+      <DesignerInfoPropertySet xmlns="http://schemas.microsoft.com/ado/2008/10/edmx">
         <DesignerProperty Name="ValidateOnBuild" Value="true" />
         <DesignerProperty Name="EnablePluralization" Value="True" />
         <DesignerProperty Name="IncludeForeignKeysInModel" Value="False" />
@@ -430,7 +430,7 @@
     </edmx:Options>
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram Name="Model" ZoomLevel="101" xmlns="http://schemas.microsoft.com/ado/2007/06/edmx">
+      <Diagram Name="Model" ZoomLevel="101" xmlns="http://schemas.microsoft.com/ado/2008/10/edmx">
         <EntityTypeShape EntityType="DatabaseModel.AuthenticationToken" Width="1.875" PointX="5.25" PointY="0.75" Height="2.5571907552083339" IsExpanded="true" />
         <EntityTypeShape EntityType="DatabaseModel.Role" Width="1.5" PointX="0.75" PointY="1.25" Height="1.59568359375" IsExpanded="true" />
         <EntityTypeShape EntityType="DatabaseModel.User" Width="1.75" PointX="2.875" PointY="0.5" Height="3.1340950520833339" IsExpanded="true" />
@@ -446,11 +446,11 @@
         <EntityTypeShape EntityType="DatabaseModel.Nonce" Width="1.5" PointX="9.625" PointY="0.75" Height="1.9802864583333326" />
         <EntityTypeShape EntityType="DatabaseModel.Client" Width="1.625" PointX="5.25" PointY="3.75" Height="2.3648893229166665" />
         <EntityTypeShape EntityType="DatabaseModel.ClientAuthorization" Width="1.75" PointX="2.875" PointY="3.75" Height="2.1725878906250031" />
-        <AssociationConnector Association="DatabaseModel.FK_IssuedToken_Consumer" >
+        <AssociationConnector Association="DatabaseModel.FK_IssuedToken_Consumer">
           <ConnectorPoint PointX="5.25" PointY="4.8362939453125016" />
           <ConnectorPoint PointX="4.625" PointY="4.8362939453125016" />
         </AssociationConnector>
-        <AssociationConnector Association="DatabaseModel.FK_IssuedToken_User" >
+        <AssociationConnector Association="DatabaseModel.FK_IssuedToken_User">
           <ConnectorPoint PointX="3.75" PointY="3.2494921875" />
           <ConnectorPoint PointX="3.75" PointY="3.75" />
         </AssociationConnector>

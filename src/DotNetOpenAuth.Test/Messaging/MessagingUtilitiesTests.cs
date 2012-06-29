@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 	using System.Diagnostics;
 	using System.IO;
 	using System.Net;
+	using System.Text;
 	using System.Text.RegularExpressions;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
@@ -32,7 +33,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			Assert.AreEqual(0, MessagingUtilities.CreateQueryString(new Dictionary<string, string>()).Length);
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void CreateQueryStringNullDictionary() {
 			MessagingUtilities.CreateQueryString(null);
 		}
@@ -51,7 +52,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			Assert.AreEqual("http://baseline.org/page?a=b&c%2Fd=e%2Ff&g=h", uri.Uri.AbsoluteUri);
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void AppendQueryArgsNullUriBuilder() {
 			MessagingUtilities.AppendQueryArgs(null, new Dictionary<string, string>());
 		}
@@ -73,7 +74,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			Assert.AreEqual(nvc["c"], actual["c"]);
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentException))]
+		[Test, ExpectedException(typeof(ArgumentException))]
 		public void ToDictionaryWithNullKey() {
 			NameValueCollection nvc = new NameValueCollection();
 			nvc[null] = "a";
@@ -96,17 +97,17 @@ namespace DotNetOpenAuth.Test.Messaging {
 			Assert.IsNull(MessagingUtilities.ToDictionary(null));
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void ApplyHeadersToResponseNullAspNetResponse() {
 			MessagingUtilities.ApplyHeadersToResponse(new WebHeaderCollection(), (HttpResponseBase)null);
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void ApplyHeadersToResponseNullListenerResponse() {
 			MessagingUtilities.ApplyHeadersToResponse(new WebHeaderCollection(), (HttpListenerResponse)null);
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void ApplyHeadersToResponseNullHeaders() {
 			MessagingUtilities.ApplyHeadersToResponse(null, new HttpResponseWrapper(new HttpResponse(new StringWriter())));
 		}
@@ -192,7 +193,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 		/// <summary>
 		/// Verifies proper behavior of GetHttpVerb on invalid input.
 		/// </summary>
-		[TestCase, ExpectedException(typeof(ArgumentException))]
+		[Test, ExpectedException(typeof(ArgumentException))]
 		public void GetHttpVerbOutOfRangeTest() {
 			MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.PutRequest | HttpDeliveryMethods.PostRequest);
 		}
@@ -212,7 +213,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 		/// <summary>
 		/// Verifies proper behavior of GetHttpDeliveryMethod for an unexpected input
 		/// </summary>
-		[TestCase, ExpectedException(typeof(ArgumentException))]
+		[Test, ExpectedException(typeof(ArgumentException))]
 		public void GetHttpDeliveryMethodOutOfRangeTest() {
 			MessagingUtilities.GetHttpDeliveryMethod("UNRECOGNIZED");
 		}
@@ -227,6 +228,27 @@ namespace DotNetOpenAuth.Test.Messaging {
 
 			string roundTripped = MessagingUtilities.Decrypt(cipher, key);
 			Assert.AreEqual(PlainText, roundTripped);
+		}
+
+		[Test]
+		public void SerializeAsJsonTest() {
+			var message = new TestMessageWithDate() {
+				Age = 18,
+				Timestamp = DateTime.Parse("4/28/2012"),
+				Name = "Andrew",
+			};
+			string json = MessagingUtilities.SerializeAsJson(message, this.MessageDescriptions);
+			Assert.That(json, Is.EqualTo("{\"ts\":\"2012-04-28T00:00:00Z\",\"age\":18,\"Name\":\"Andrew\"}"));
+		}
+
+		[Test]
+		public void DeserializeFromJson() {
+			var message = new TestMessageWithDate();
+			string json = "{\"ts\":\"2012-04-28T00:00:00Z\",\"age\":18,\"Name\":\"Andrew\"}";
+			MessagingUtilities.DeserializeFromJson(Encoding.UTF8.GetBytes(json), message, this.MessageDescriptions);
+			Assert.That(message.Age, Is.EqualTo(18));
+			Assert.That(message.Timestamp, Is.EqualTo(DateTime.Parse("4/28/2012")));
+			Assert.That(message.Name, Is.EqualTo("Andrew"));
 		}
 
 		/// <summary>
@@ -249,7 +271,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 		/// <summary>
 		/// Verifies that EqualsConstantTime actually has the same execution time regardless of how well a value matches.
 		/// </summary>
-		[TestCase, Category("Performance")]
+		[Test, Category("Performance")]
 		public void EqualsConstantTimeIsActuallyConstantTime() {
 			string expected = new string('A', 5000);
 			string totalmismatch = new string('B', 5000);

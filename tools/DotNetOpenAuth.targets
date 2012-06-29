@@ -18,6 +18,7 @@
 		<CodeContractsInstallDir>$(ProjectRoot)tools\Contracts\</CodeContractsInstallDir>
 		<DefineConstants Condition=" '$(SignAssembly)' == 'true' ">$(DefineConstants);StrongNameSigned</DefineConstants>
 		<DefineConstants Condition=" '$(ClrVersion)' == '4' ">$(DefineConstants);CLR4</DefineConstants>
+		<DefineConstants Condition=" '$(TargetFrameworkVersion)' == 'v4.5' ">$(DefineConstants);NetFx45</DefineConstants>
 		<AssemblySearchPaths>$(ProjectRoot)lib;$(AssemblySearchPaths)</AssemblySearchPaths>
 		<AssemblySearchPaths Condition="Exists('$(ProjectRoot)lib\net-$(TargetFrameworkVersion)')">$(ProjectRoot)lib\net-$(TargetFrameworkVersion);$(AssemblySearchPaths)</AssemblySearchPaths>
 	</PropertyGroup>
@@ -26,7 +27,7 @@
 		<DelaySignedAssemblies Include="$(TargetPath)" Condition=" '$(SuppressTargetPathDelaySignedAssembly)' != 'true' "/>
 	</ItemGroup>
 
-	<ItemGroup Condition=" '$(ClrVersion)' != '4' ">
+	<ItemGroup Condition=" '$(ClrVersion)' != '4' and '$(NoCodeContracts)' != 'true' ">
 		<Reference Include="Microsoft.Contracts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=736440c9b414ea16, processorArchitecture=MSIL">
 			<SpecificVersion>False</SpecificVersion>
 			<HintPath>..\..\lib\Microsoft.Contracts.dll</HintPath>
@@ -97,6 +98,7 @@
 			<SignedAssemblyTargets Include="@(AssembliesToSign->'%(RootDir)%(Directory)$(SignedSubPath)%(FileName)%(Extension)')">
 				<UnsignedAssemblyPath>%(AssembliesToSign.Identity)</UnsignedAssemblyPath>
 				<SymbolPath Condition="Exists('%(RootDir)%(Directory)%(FileName).pdb')">%(RootDir)%(Directory)%(FileName).pdb</SymbolPath>
+				<XmlDocumentationFile Condition="Exists('%(RootDir)%(Directory)%(FileName).xml')">%(RootDir)%(Directory)%(FileName).xml</XmlDocumentationFile>
 			</SignedAssemblyTargets>
 		</ItemGroup>
 
@@ -109,15 +111,15 @@
 	</Target>
 
 	<Target Name="ResignDelaySignedAssemblies" Outputs="@(ResignedAssembliesOutputs)">
-		<ItemGroup>
-			<DelaySignedProjects Include="
-													 @(ProductProjects);
-													 $(ProjectRoot)src\dotnetopenauth\dotnetopenauth.proj;
-													 $(ProjectRoot)src\dotnetopenauth.test\dotnetopenauth.test.csproj;
-													 $(ProjectRoot)samples\openidofflineprovider\openidofflineprovider.csproj;
-													 " />
-		</ItemGroup>
-		<MSBuild Projects="@(DelaySignedProjects)" Targets="Sign" BuildInParallel="$(BuildInParallel)">
+		<MSBuild Projects="@(DelaySignedProjects)" Targets="Sign" BuildInParallel="$(BuildInParallel)"
+						 Condition=" '%(DelaySignedProjects.TargetFrameworkVersion)' == '' or '%(DelaySignedProjects.TargetFrameworkVersion)' == '$(TargetFrameworkVersion)' ">
+			<Output TaskParameter="TargetOutputs" ItemName="ResignedAssembliesOutputs"/>
+		</MSBuild>
+	</Target>
+
+	<Target Name="ResignShippingDelaySignedAssemblies" Outputs="@(ResignedAssembliesOutputs)">
+		<MSBuild Projects="@(DelaySignedProjects)" Targets="Sign" BuildInParallel="$(BuildInParallel)"
+						 Condition=" '%(DelaySignedProjects.Nonshipping)' != 'true' and ('%(DelaySignedProjects.TargetFrameworkVersion)' == '' or '%(DelaySignedProjects.TargetFrameworkVersion)' == '$(TargetFrameworkVersion)') ">
 			<Output TaskParameter="TargetOutputs" ItemName="ResignedAssembliesOutputs"/>
 		</MSBuild>
 	</Target>

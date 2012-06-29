@@ -88,7 +88,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 		[Test]
 		public void SpreadSregToAxNoOpIfOPSupportsSreg() {
 			this.authReq.AddExtension(this.sreg);
-			this.InjectAdvertisedTypeUri(DotNetOpenAuth.OpenId.Extensions.SimpleRegistration.Constants.sreg_ns);
+			this.InjectAdvertisedTypeUri(DotNetOpenAuth.OpenId.Extensions.SimpleRegistration.Constants.TypeUris.Standard);
 			ExtensionsInteropHelper.SpreadSregToAX(this.authReq, AXAttributeFormats.All);
 			Assert.IsFalse(this.authReq.AppliedExtensions.OfType<FetchRequest>().Any());
 		}

@@ -14,7 +14,7 @@
 	public partial class WindowsLive : System.Web.UI.Page {
 		private static readonly WindowsLiveClient client = new WindowsLiveClient {
 			ClientIdentifier = ConfigurationManager.AppSettings["windowsLiveAppID"],
-			ClientSecret = ConfigurationManager.AppSettings["WindowsLiveAppSecret"],
+			ClientCredentialApplicator = ClientCredentialApplicator.PostParameter(ConfigurationManager.AppSettings["WindowsLiveAppSecret"]),
 		};
 
 		protected void Page_Load(object sender, EventArgs e) {

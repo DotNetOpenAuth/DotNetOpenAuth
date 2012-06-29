@@ -13,7 +13,7 @@ namespace DotNetOpenAuth.OAuth2 {
 	using System.Security.Cryptography;
 	using System.Text;
 	using System.Web;
-
+	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2.ChannelElements;
 	using DotNetOpenAuth.OAuth2.Messages;
@@ -23,12 +23,30 @@ namespace DotNetOpenAuth.OAuth2 {
 	/// </summary>
 	public class AuthorizationServer {
 		/// <summary>
+		/// A reusable instance of the scope satisfied checker.
+		/// </summary>
+		private static readonly IScopeSatisfiedCheck DefaultScopeSatisfiedCheck = new StandardScopeSatisfiedCheck();
+
+		/// <summary>
+		/// The list of modules that verify client authentication data.
+		/// </summary>
+		private readonly List<ClientAuthenticationModule> clientAuthenticationModules = new List<ClientAuthenticationModule>();
+
+		/// <summary>
+		/// The lone aggregate client authentication module that uses the <see cref="clientAuthenticationModules"/> and applies aggregating policy.
+		/// </summary>
+		private readonly ClientAuthenticationModule aggregatingClientAuthenticationModule;
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="AuthorizationServer"/> class.
 		/// </summary>
 		/// <param name="authorizationServer">The authorization server.</param>
-		public AuthorizationServer(IAuthorizationServer authorizationServer) {
+		public AuthorizationServer(IAuthorizationServerHost authorizationServer) {
 			Requires.NotNull(authorizationServer, "authorizationServer");
-			this.Channel = new OAuth2AuthorizationServerChannel(authorizationServer);
+			this.aggregatingClientAuthenticationModule = new AggregatingClientCredentialReader(this.clientAuthenticationModules);
+			this.Channel = new OAuth2AuthorizationServerChannel(authorizationServer, this.aggregatingClientAuthenticationModule);
+			this.clientAuthenticationModules.AddRange(OAuth2AuthorizationServerSection.Configuration.ClientAuthenticationModules.CreateInstances(true));
+			this.ScopeSatisfiedCheck = DefaultScopeSatisfiedCheck;
 		}
 
 		/// <summary>
@@ -41,8 +59,23 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// Gets the authorization server.
 		/// </summary>
 		/// <value>The authorization server.</value>
-		public IAuthorizationServer AuthorizationServerServices {
+		public IAuthorizationServerHost AuthorizationServerServices {
 			get { return ((IOAuth2ChannelWithAuthorizationServer)this.Channel).AuthorizationServer; }
+		}
+
+		/// <summary>
+		/// Gets the extension modules that can read client authentication data from incoming messages.
+		/// </summary>
+		public IList<ClientAuthenticationModule> ClientAuthenticationModules {
+			get { return this.clientAuthenticationModules; }
+		}
+
+		/// <summary>
+		/// Gets or sets the service that checks whether a granted set of scopes satisfies a required set of scopes.
+		/// </summary>
+		public IScopeSatisfiedCheck ScopeSatisfiedCheck {
+			get { return ((IOAuth2ChannelWithAuthorizationServer)this.Channel).ScopeSatisfiedCheck; }
+			set { ((IOAuth2ChannelWithAuthorizationServer)this.Channel).ScopeSatisfiedCheck = value; }
 		}
 
 		/// <summary>
@@ -63,7 +96,7 @@ namespace DotNetOpenAuth.OAuth2 {
 				if (message.ResponseType == EndUserAuthorizationResponseType.AuthorizationCode) {
 					// Clients with no secrets can only request implicit grant types.
 					var client = this.AuthorizationServerServices.GetClientOrThrow(message.ClientIdentifier);
-					ErrorUtilities.VerifyProtocol(!string.IsNullOrEmpty(client.Secret), Protocol.unauthorized_client);
+					ErrorUtilities.VerifyProtocol(client.HasNonEmptySecret, Protocol.EndUserAuthorizationRequestErrorCodes.UnauthorizedClient);
 				}
 			}
 
@@ -110,17 +143,30 @@ namespace DotNetOpenAuth.OAuth2 {
 			IProtocolMessage responseMessage;
 			try {
 				if (this.Channel.TryReadFromRequest(request, out requestMessage)) {
-					// TODO: refreshToken should be set appropriately based on authorization server policy.
-					responseMessage = this.PrepareAccessTokenResponse(requestMessage);
+					var accessTokenResult = this.AuthorizationServerServices.CreateAccessToken(requestMessage);
+					ErrorUtilities.VerifyHost(accessTokenResult != null, "IAuthorizationServerHost.CreateAccessToken must not return null.");
+
+					IAccessTokenRequestInternal accessRequestInternal = requestMessage;
+					accessRequestInternal.AccessTokenResult = accessTokenResult;
+
+					var successResponseMessage = this.PrepareAccessTokenResponse(requestMessage, accessTokenResult.AllowRefreshToken);
+					successResponseMessage.Lifetime = accessTokenResult.AccessToken.Lifetime;
+
+					var authCarryingRequest = requestMessage as IAuthorizationCarryingRequest;
+					if (authCarryingRequest != null) {
+						accessTokenResult.AccessToken.ApplyAuthorization(authCarryingRequest.AuthorizationDescription);
+						IAccessTokenIssuingResponse accessTokenIssuingResponse = successResponseMessage;
+						accessTokenIssuingResponse.AuthorizationDescription = accessTokenResult.AccessToken;
+					}
+
+					responseMessage = successResponseMessage;
 				} else {
-					responseMessage = new AccessTokenFailedResponse() {
-						Error = Protocol.AccessTokenRequestErrorCodes.InvalidRequest,
-					};
+					responseMessage = new AccessTokenFailedResponse() { Error = Protocol.AccessTokenRequestErrorCodes.InvalidRequest };
 				}
+			} catch (TokenEndpointProtocolException ex) {
+				responseMessage = ex.GetResponse();
 			} catch (ProtocolException) {
-				responseMessage = new AccessTokenFailedResponse() {
-					Error = Protocol.AccessTokenRequestErrorCodes.InvalidRequest,
-				};
+				responseMessage = new AccessTokenFailedResponse() { Error = Protocol.AccessTokenRequestErrorCodes.InvalidRequest };
 			}
 
 			return this.Channel.PrepareResponse(responseMessage);
@@ -165,12 +211,30 @@ namespace DotNetOpenAuth.OAuth2 {
 			EndUserAuthorizationSuccessResponseBase response;
 			switch (authorizationRequest.ResponseType) {
 				case EndUserAuthorizationResponseType.AccessToken:
-					var accessTokenResponse = new EndUserAuthorizationSuccessAccessTokenResponse(callback, authorizationRequest);
-					accessTokenResponse.Lifetime = this.AuthorizationServerServices.GetAccessTokenLifetime((EndUserAuthorizationImplicitRequest)authorizationRequest);
-					response = accessTokenResponse;
+					IAccessTokenRequestInternal accessRequestInternal = (EndUserAuthorizationImplicitRequest)authorizationRequest;
+					var accessTokenResult = this.AuthorizationServerServices.CreateAccessToken(accessRequestInternal);
+					ErrorUtilities.VerifyHost(accessTokenResult != null, "IAuthorizationServerHost.CreateAccessToken must not return null.");
+
+					accessRequestInternal.AccessTokenResult = accessTokenResult;
+
+					var implicitGrantResponse = new EndUserAuthorizationSuccessAccessTokenResponse(callback, authorizationRequest);
+					implicitGrantResponse.Lifetime = accessTokenResult.AccessToken.Lifetime;
+					accessTokenResult.AccessToken.ApplyAuthorization(implicitGrantResponse.Scope, userName, implicitGrantResponse.Lifetime);
+
+					IAccessTokenCarryingRequest tokenCarryingResponse = implicitGrantResponse;
+					tokenCarryingResponse.AuthorizationDescription = accessTokenResult.AccessToken;
+
+					response = implicitGrantResponse;
 					break;
 				case EndUserAuthorizationResponseType.AuthorizationCode:
-					response = new EndUserAuthorizationSuccessAuthCodeResponse(callback, authorizationRequest);
+					var authCodeResponse = new EndUserAuthorizationSuccessAuthCodeResponseAS(callback, authorizationRequest);
+					IAuthorizationCodeCarryingRequest codeCarryingResponse = authCodeResponse;
+					codeCarryingResponse.AuthorizationDescription = new AuthorizationCode(
+						authorizationRequest.ClientIdentifier,
+						authorizationRequest.Callback,
+						authCodeResponse.Scope,
+						userName);
+					response = authCodeResponse;
 					break;
 				default:
 					throw ErrorUtilities.ThrowInternal("Unexpected response type.");
@@ -208,7 +272,7 @@ namespace DotNetOpenAuth.OAuth2 {
 			// Since the request didn't include a callback URL, look up the callback from
 			// the client's preregistration with this authorization server.
 			Uri defaultCallback = client.DefaultCallback;
-			ErrorUtilities.VerifyProtocol(defaultCallback != null, OAuthStrings.NoCallback);
+			ErrorUtilities.VerifyProtocol(defaultCallback != null, AuthServerStrings.NoCallback);
 			return defaultCallback;
 		}
 
@@ -216,24 +280,24 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// Prepares the response to an access token request.
 		/// </summary>
 		/// <param name="request">The request for an access token.</param>
-		/// <param name="includeRefreshToken">If set to <c>true</c>, the response will include a long-lived refresh token.</param>
+		/// <param name="allowRefreshToken">If set to <c>true</c>, the response will include a long-lived refresh token.</param>
 		/// <returns>The response message to send to the client.</returns>
-		private IDirectResponseProtocolMessage PrepareAccessTokenResponse(AccessTokenRequestBase request, bool includeRefreshToken = true) {
+		private AccessTokenSuccessResponse PrepareAccessTokenResponse(AccessTokenRequestBase request, bool allowRefreshToken = true) {
 			Requires.NotNull(request, "request");
 
-			if (includeRefreshToken) {
+			if (allowRefreshToken) {
 				if (request is AccessTokenClientCredentialsRequest) {
 					// Per OAuth 2.0 section 4.4.3 (draft 23), refresh tokens should never be included
 					// in a response to an access token request that used the client credential grant type.
 					Logger.OAuth.Debug("Suppressing refresh token in access token response because the grant type used by the client disallows it.");
-					includeRefreshToken = false;
+					allowRefreshToken = false;
 				}
 			}
 
 			var tokenRequest = (IAuthorizationCarryingRequest)request;
+			var accessTokenRequest = (IAccessTokenRequestInternal)request;
 			var response = new AccessTokenSuccessResponse(request) {
-				Lifetime = this.AuthorizationServerServices.GetAccessTokenLifetime(request),
-				HasRefreshToken = includeRefreshToken,
+				HasRefreshToken = allowRefreshToken,
 			};
 			response.Scope.ResetContents(tokenRequest.AuthorizationDescription.Scope);
 			return response;

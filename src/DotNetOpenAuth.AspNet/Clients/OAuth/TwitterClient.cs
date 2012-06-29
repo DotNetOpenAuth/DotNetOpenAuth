@@ -28,15 +28,15 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		public static readonly ServiceProviderDescription TwitterServiceDescription = new ServiceProviderDescription {
 			RequestTokenEndpoint =
 				new MessageReceivingEndpoint(
-					"http://twitter.com/oauth/request_token",
+					"https://api.twitter.com/oauth/request_token",
 					HttpDeliveryMethods.GetRequest | HttpDeliveryMethods.AuthorizationHeaderRequest),
 			UserAuthorizationEndpoint =
 				new MessageReceivingEndpoint(
-					"http://twitter.com/oauth/authenticate",
+					"https://api.twitter.com/oauth/authenticate",
 					HttpDeliveryMethods.GetRequest | HttpDeliveryMethods.AuthorizationHeaderRequest),
 			AccessTokenEndpoint =
 				new MessageReceivingEndpoint(
-					"http://twitter.com/oauth/access_token",
+					"https://api.twitter.com/oauth/access_token",
 					HttpDeliveryMethods.GetRequest | HttpDeliveryMethods.AuthorizationHeaderRequest),
 			TamperProtectionElements = new ITamperProtectionChannelBindingElement[] { new HmacSha1SigningBindingElement() },
 		};
@@ -48,6 +48,9 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="TwitterClient"/> class with the specified consumer key and consumer secret.
 		/// </summary>
+		/// <remarks>
+		/// Tokens exchanged during the OAuth handshake are stored in cookies.
+		/// </remarks>
 		/// <param name="consumerKey">
 		/// The consumer key. 
 		/// </param>
@@ -57,7 +60,17 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope",
 			Justification = "We can't dispose the object because we still need it through the app lifetime.")]
 		public TwitterClient(string consumerKey, string consumerSecret)
-			: base("twitter", TwitterServiceDescription, consumerKey, consumerSecret) { }
+			: this(consumerKey, consumerSecret, new AuthenticationOnlyCookieOAuthTokenManager()) { }
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="TwitterClient"/> class.
+		/// </summary>
+		/// <param name="consumerKey">The consumer key.</param>
+		/// <param name="consumerSecret">The consumer secret.</param>
+		/// <param name="tokenManager">The token manager.</param>
+		public TwitterClient(string consumerKey, string consumerSecret, IOAuthTokenManager tokenManager)
+			: base("twitter", TwitterServiceDescription, new SimpleConsumerTokenManager(consumerKey, consumerSecret, tokenManager)) {
+		}
 
 		#endregion
 
@@ -79,7 +92,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 			string userId = response.ExtraData["user_id"];
 			string userName = response.ExtraData["screen_name"];
 
-			var profileRequestUrl = new Uri("http://api.twitter.com/1/users/show.xml?user_id="
+			var profileRequestUrl = new Uri("https://api.twitter.com/1/users/show.xml?user_id="
 									   + MessagingUtilities.EscapeUriDataStringRfc3986(userId));
 			var profileEndpoint = new MessageReceivingEndpoint(profileRequestUrl, HttpDeliveryMethods.GetRequest);
 			HttpWebRequest request = this.WebWorker.PrepareAuthorizedRequest(profileEndpoint, accessToken);
@@ -89,14 +102,15 @@ namespace DotNetOpenAuth.AspNet.Clients {
 			try {
 				using (WebResponse profileResponse = request.GetResponse()) {
 					using (Stream responseStream = profileResponse.GetResponseStream()) {
-						XDocument document = XDocument.Load(responseStream);
+						XDocument document = LoadXDocumentFromStream(responseStream);
 						extraData.AddDataIfNotEmpty(document, "name");
 						extraData.AddDataIfNotEmpty(document, "location");
 						extraData.AddDataIfNotEmpty(document, "description");
 						extraData.AddDataIfNotEmpty(document, "url");
 					}
 				}
-			} catch (Exception) {
+			}
+			catch (Exception) {
 				// At this point, the authentication is already successful.
 				// Here we are just trying to get additional data if we can.
 				// If it fails, no problem.

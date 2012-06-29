@@ -20,7 +20,7 @@ namespace RelyingPartyLogic {
 	/// <summary>
 	/// Provides OAuth 2.0 authorization server information to DotNetOpenAuth.
 	/// </summary>
-	public class OAuthAuthorizationServer : IAuthorizationServer {
+	public class OAuthAuthorizationServer : IAuthorizationServerHost {
 		private static readonly RSACryptoServiceProvider SigningKey = new RSACryptoServiceProvider();
 
 		private readonly INonceStore nonceStore = new NonceDbStore();
@@ -32,7 +32,7 @@ namespace RelyingPartyLogic {
 			this.CryptoKeyStore = new RelyingPartyApplicationDbStore();
 		}
 
-		#region IAuthorizationServer Members
+		#region IAuthorizationServerHost Members
 
 		public ICryptoKeyStore CryptoKeyStore { get; private set; }
 
@@ -40,7 +40,7 @@ namespace RelyingPartyLogic {
 		/// Gets the authorization code nonce store to use to ensure that authorization codes can only be used once.
 		/// </summary>
 		/// <value>The authorization code nonce store.</value>
-		public INonceStore VerificationCodeNonceStore {
+		public INonceStore NonceStore {
 			get { return this.nonceStore; }
 		}
 
@@ -56,37 +56,25 @@ namespace RelyingPartyLogic {
 		}
 
 		/// <summary>
-		/// Obtains the lifetime for a new access token.
+		/// Obtains parameters to go into the formulation of an access token.
 		/// </summary>
 		/// <param name="accessTokenRequestMessage">Details regarding the resources that the access token will grant access to, and the identity of the client
 		/// that will receive that access.
 		/// Based on this information the receiving resource server can be determined and the lifetime of the access
 		/// token can be set based on the sensitivity of the resources.</param>
 		/// <returns>
-		/// Receives the lifetime for this access token.  Note that within this lifetime, authorization <i>may</i> not be revokable.
-		/// Short lifetimes are recommended (i.e. one hour), particularly when the client is not authenticated or
-		/// the resources to which access is being granted are sensitive.
+		/// A non-null parameters instance that DotNetOpenAuth will dispose after it has been used.
 		/// </returns>
-		public TimeSpan GetAccessTokenLifetime(IAccessTokenRequest accessTokenRequestMessage) {
-			return TimeSpan.FromHours(1);
-		}
+		public AccessTokenResult CreateAccessToken(IAccessTokenRequest accessTokenRequestMessage) {
+			var accessToken = new AuthorizationServerAccessToken() {
+				// For this sample, we assume just one resource server.
+				// If this authorization server needs to mint access tokens for more than one resource server,
+				// we'd look at the request message passed to us and decide which public key to return.
+				ResourceServerEncryptionKey = OAuthResourceServer.CreateRSA(),
+			};
 
-		/// <summary>
-		/// Obtains the encryption key for an access token being created.
-		/// </summary>
-		/// <param name="accessTokenRequestMessage">Details regarding the resources that the access token will grant access to, and the identity of the client
-		/// that will receive that access.
-		/// Based on this information the receiving resource server can be determined and the lifetime of the access
-		/// token can be set based on the sensitivity of the resources.</param>
-		/// <returns>
-		/// The crypto service provider with the asymmetric public key to use for encrypting access tokens for a specific resource server.
-		/// The caller is responsible to dispose of this value.
-		/// </returns>
-		public RSACryptoServiceProvider GetResourceServerEncryptionKey(IAccessTokenRequest accessTokenRequestMessage) {
-			// For this sample, we assume just one resource server.
-			// If this authorization server needs to mint access tokens for more than one resource server,
-			// we'd look at the request message passed to us and decide which public key to return.
-			return OAuthResourceServer.CreateRSA();
+			var result = new AccessTokenResult(accessToken);
+			return result;
 		}
 
 		/// <summary>
@@ -130,17 +118,48 @@ namespace RelyingPartyLogic {
 		}
 
 		/// <summary>
-		/// Determines whether a given set of resource owner credentials is valid based on the authorization server's user database.
+		/// Determines whether a given set of resource owner credentials is valid based on the authorization server's user database
+		/// and if so records an authorization entry such that subsequent calls to <see cref="IsAuthorizationValid"/> would
+		/// return <c>true</c>.
 		/// </summary>
 		/// <param name="userName">Username on the account.</param>
 		/// <param name="password">The user's password.</param>
+		/// <param name="accessRequest">
+		/// The access request the credentials came with.
+		/// This may be useful if the authorization server wishes to apply some policy based on the client that is making the request.
+		/// </param>
+		/// <param name="canonicalUserName">
+		/// Receives the canonical username (normalized for the resource server) of the user, for valid credentials;
+		/// Or <c>null</c> if the return value is false.
+		/// </param>
 		/// <returns>
-		///   <c>true</c> if the given credentials are valid; otherwise, <c>false</c>.
+		///   <c>true</c> if the given credentials are valid and the authorization granted; otherwise, <c>false</c>.
 		/// </returns>
-		/// <exception cref="NotSupportedException">May be thrown if the authorization server does not support the resource owner password credential grant type.</exception>
-		public bool IsResourceOwnerCredentialValid(string userName, string password) {
+		/// <exception cref="NotSupportedException">
+		/// May be thrown if the authorization server does not support the resource owner password credential grant type.
+		/// </exception>
+		public bool TryAuthorizeResourceOwnerCredentialGrant(string userName, string password, IAccessTokenRequest accessRequest, out string canonicalUserName) {
 			// This web site delegates user authentication to OpenID Providers, and as such no users have local passwords with this server.
 			throw new NotSupportedException();
+		}
+
+		/// <summary>
+		/// Determines whether an access token request given a client credential grant should be authorized
+		/// and if so records an authorization entry such that subsequent calls to <see cref="IsAuthorizationValid"/> would
+		/// return <c>true</c>.
+		/// </summary>
+		/// <param name="accessRequest">
+		/// The access request the credentials came with.
+		/// This may be useful if the authorization server wishes to apply some policy based on the client that is making the request.
+		/// </param>
+		/// <returns>
+		///   <c>true</c> if the given credentials are valid and the authorization granted; otherwise, <c>false</c>.
+		/// </returns>
+		/// <exception cref="NotSupportedException">
+		/// May be thrown if the authorization server does not support the client credential grant type.
+		/// </exception>
+		public bool TryAuthorizeClientCredentialsGrant(IAccessTokenRequest accessRequest) {
+			throw new NotImplementedException();
 		}
 
 		#endregion

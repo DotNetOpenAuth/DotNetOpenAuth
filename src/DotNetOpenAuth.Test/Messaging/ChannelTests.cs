@@ -17,7 +17,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 
 	[TestFixture]
 	public class ChannelTests : MessagingTestBase {
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNull() {
 			// This bad channel is deliberately constructed to pass null to
 			// its protected base class' constructor.
@@ -38,31 +38,31 @@ namespace DotNetOpenAuth.Test.Messaging {
 		/// Verifies compliance to OpenID 2.0 section 5.1.1 by verifying the channel
 		/// will reject messages that come with an unexpected HTTP verb.
 		/// </summary>
-		[TestCase, ExpectedException(typeof(ProtocolException))]
+		[Test, ExpectedException(typeof(ProtocolException))]
 		public void ReadFromRequestDisallowedHttpMethod() {
 			var fields = GetStandardTestFields(FieldFill.CompleteBeforeBindings);
 			fields["GetOnly"] = "true";
 			this.Channel.ReadFromRequest(CreateHttpRequestInfo("POST", fields));
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void SendNull() {
 			this.Channel.PrepareResponse(null);
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentException))]
+		[Test, ExpectedException(typeof(ArgumentException))]
 		public void SendIndirectedUndirectedMessage() {
 			IProtocolMessage message = new TestDirectedMessage(MessageTransport.Indirect);
 			this.Channel.PrepareResponse(message);
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentException))]
+		[Test, ExpectedException(typeof(ArgumentException))]
 		public void SendDirectedNoRecipientMessage() {
 			IProtocolMessage message = new TestDirectedMessage(MessageTransport.Indirect);
 			this.Channel.PrepareResponse(message);
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentException))]
+		[Test, ExpectedException(typeof(ArgumentException))]
 		public void SendInvalidMessageTransport() {
 			IProtocolMessage message = new TestDirectedMessage((MessageTransport)100);
 			this.Channel.PrepareResponse(message);
@@ -88,20 +88,20 @@ namespace DotNetOpenAuth.Test.Messaging {
 			}
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void SendIndirectMessage301GetNullMessage() {
 			TestBadChannel badChannel = new TestBadChannel(false);
 			badChannel.Create301RedirectResponse(null, new Dictionary<string, string>());
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentException))]
+		[Test, ExpectedException(typeof(ArgumentException))]
 		public void SendIndirectMessage301GetEmptyRecipient() {
 			TestBadChannel badChannel = new TestBadChannel(false);
 			var message = new TestDirectedMessage(MessageTransport.Indirect);
 			badChannel.Create301RedirectResponse(message, new Dictionary<string, string>());
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void SendIndirectMessage301GetNullFields() {
 			TestBadChannel badChannel = new TestBadChannel(false);
 			var message = new TestDirectedMessage(MessageTransport.Indirect);
@@ -133,20 +133,20 @@ namespace DotNetOpenAuth.Test.Messaging {
 			StringAssert.Contains(".submit()", body, "There should be some javascript to automate form submission.");
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void SendIndirectMessageFormPostNullMessage() {
 			TestBadChannel badChannel = new TestBadChannel(false);
 			badChannel.CreateFormPostResponse(null, new Dictionary<string, string>());
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentException))]
+		[Test, ExpectedException(typeof(ArgumentException))]
 		public void SendIndirectMessageFormPostEmptyRecipient() {
 			TestBadChannel badChannel = new TestBadChannel(false);
 			var message = new TestDirectedMessage(MessageTransport.Indirect);
 			badChannel.CreateFormPostResponse(message, new Dictionary<string, string>());
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void SendIndirectMessageFormPostNullFields() {
 			TestBadChannel badChannel = new TestBadChannel(false);
 			var message = new TestDirectedMessage(MessageTransport.Indirect);
@@ -161,7 +161,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 		/// Since this is a mock channel that doesn't actually formulate a direct message response,
 		/// we just check that the right method was called.
 		/// </remarks>
-		[TestCase, ExpectedException(typeof(NotImplementedException))]
+		[Test, ExpectedException(typeof(NotImplementedException))]
 		public void SendDirectMessageResponse() {
 			IProtocolMessage message = new TestDirectedMessage {
 				Age = 15,
@@ -171,13 +171,13 @@ namespace DotNetOpenAuth.Test.Messaging {
 			this.Channel.PrepareResponse(message);
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void SendIndirectMessageNull() {
 			TestBadChannel badChannel = new TestBadChannel(false);
 			badChannel.PrepareIndirectResponse(null);
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void ReceiveNull() {
 			TestBadChannel badChannel = new TestBadChannel(false);
 			badChannel.Receive(null, null);
@@ -201,14 +201,14 @@ namespace DotNetOpenAuth.Test.Messaging {
 			Assert.AreEqual(expectedMessage.Age, ((TestMessage)message).Age);
 		}
 
-		[TestCase, ExpectedException(typeof(InvalidOperationException))]
+		[Test, ExpectedException(typeof(InvalidOperationException))]
 		public void ReadFromRequestNoContext() {
 			HttpContext.Current = null;
 			TestBadChannel badChannel = new TestBadChannel(false);
 			badChannel.ReadFromRequest();
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void ReadFromRequestNull() {
 			TestBadChannel badChannel = new TestBadChannel(false);
 			badChannel.ReadFromRequest(null);
@@ -224,7 +224,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			Assert.IsNotNull(((IReplayProtectedProtocolMessage)message).Nonce);
 		}
 
-		[TestCase, ExpectedException(typeof(InvalidSignatureException))]
+		[Test, ExpectedException(typeof(InvalidSignatureException))]
 		public void ReceivedInvalidSignature() {
 			this.Channel = CreateChannel(MessageProtections.TamperProtection);
 			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow, true);
@@ -236,21 +236,21 @@ namespace DotNetOpenAuth.Test.Messaging {
 			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow, false);
 		}
 
-		[TestCase, ExpectedException(typeof(ReplayedMessageException))]
+		[Test, ExpectedException(typeof(ReplayedMessageException))]
 		public void ReceivedReplayProtectedMessageTwice() {
 			this.Channel = CreateChannel(MessageProtections.ReplayProtection);
 			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow, false);
 			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow, false);
 		}
 
-		[TestCase, ExpectedException(typeof(ProtocolException))]
+		[Test, ExpectedException(typeof(ProtocolException))]
 		public void MessageExpirationWithoutTamperResistance() {
 			new TestChannel(
 				new TestMessageFactory(),
 				new StandardExpirationBindingElement());
 		}
 
-		[TestCase, ExpectedException(typeof(ProtocolException))]
+		[Test, ExpectedException(typeof(ProtocolException))]
 		public void TooManyBindingElementsProvidingSameProtection() {
 			Channel channel = new TestChannel(
 				new TestMessageFactory(),
@@ -283,20 +283,20 @@ namespace DotNetOpenAuth.Test.Messaging {
 			Assert.AreSame(sign, channel.BindingElements[4]);
 		}
 
-		[TestCase, ExpectedException(typeof(UnprotectedMessageException))]
+		[Test, ExpectedException(typeof(UnprotectedMessageException))]
 		public void InsufficientlyProtectedMessageSent() {
 			var message = new TestSignedDirectedMessage(MessageTransport.Direct);
 			message.Recipient = new Uri("http://localtest");
 			this.Channel.PrepareResponse(message);
 		}
 
-		[TestCase, ExpectedException(typeof(UnprotectedMessageException))]
+		[Test, ExpectedException(typeof(UnprotectedMessageException))]
 		public void InsufficientlyProtectedMessageReceived() {
 			this.Channel = CreateChannel(MessageProtections.None, MessageProtections.TamperProtection);
 			this.ParameterizedReceiveProtectedTest(DateTime.Now, false);
 		}
 
-		[TestCase, ExpectedException(typeof(ProtocolException))]
+		[Test, ExpectedException(typeof(ProtocolException))]
 		public void IncomingMessageMissingRequiredParameters() {
 			var fields = GetStandardTestFields(FieldFill.IdentifiableButNotAllRequired);
 			this.Channel.ReadFromRequest(CreateHttpRequestInfo("GET", fields));

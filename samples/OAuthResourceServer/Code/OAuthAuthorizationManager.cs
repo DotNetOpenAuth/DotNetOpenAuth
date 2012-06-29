@@ -7,10 +7,9 @@
 	using System.ServiceModel;
 	using System.ServiceModel.Channels;
 	using System.ServiceModel.Security;
-
+	using System.ServiceModel.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2;
-
 	using ProtocolException = System.ServiceModel.ProtocolException;
 
 	/// <summary>
@@ -29,7 +28,7 @@
 			var requestUri = operationContext.RequestContext.RequestMessage.Properties.Via;
 
 			try {
-				var principal = VerifyOAuth2(httpDetails, requestUri);
+				var principal = VerifyOAuth2(httpDetails, requestUri, operationContext.IncomingMessageHeaders.Action ?? operationContext.IncomingMessageHeaders.To.AbsolutePath);
 				if (principal != null) {
 					var policy = new OAuthPrincipalAuthorizationPolicy(principal);
 					var policies = new List<IAuthorizationPolicy> {
@@ -49,11 +48,16 @@
 						principal.Identity,
 					};
 
-					// Only allow this method call if the access token scope permits it.
-					return principal.IsInRole(operationContext.IncomingMessageHeaders.Action ?? operationContext.IncomingMessageHeaders.To.AbsolutePath);
+					return true;
 				} else {
 					return false;
 				}
+			} catch (ProtocolFaultResponseException ex) {
+				Global.Logger.Error("Error processing OAuth messages.", ex);
+
+				// Return the appropriate unauthorized response to the client.
+				var outgoingResponse = ex.CreateErrorResponse();
+				outgoingResponse.Respond(WebOperationContext.Current.OutgoingResponse);
 			} catch (ProtocolException ex) {
 				Global.Logger.Error("Error processing OAuth messages.", ex);
 			}
@@ -61,18 +65,13 @@
 			return false;
 		}
 
-		private static IPrincipal VerifyOAuth2(HttpRequestMessageProperty httpDetails, Uri requestUri) {
+		private static IPrincipal VerifyOAuth2(HttpRequestMessageProperty httpDetails, Uri requestUri, params string[] requiredScopes) {
 			// for this sample where the auth server and resource server are the same site,
 			// we use the same public/private key.
 			using (var signing = Global.CreateAuthorizationServerSigningServiceProvider()) {
 				using (var encrypting = Global.CreateResourceServerEncryptionServiceProvider()) {
 					var resourceServer = new ResourceServer(new StandardAccessTokenAnalyzer(signing, encrypting));
-
-					IPrincipal result;
-					var error = resourceServer.VerifyAccess(HttpRequestInfo.Create(httpDetails, requestUri), out result);
-
-					// TODO: return the prepared error code.
-					return error != null ? null : result;
+					return resourceServer.GetPrincipal(httpDetails, requestUri, requiredScopes);
 				}
 			}
 		}

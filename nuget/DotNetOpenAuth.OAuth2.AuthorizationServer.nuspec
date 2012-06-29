@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 	<metadata>
-		<id>DotNetOpenAuth.OAuth2.AuthorizationServer</id>
+		<id>$identity$</id>
 		<version>$oauth2version$</version>
 		<title>DotNetOpenAuth OAuth 2.0 Authorization Server</title>
 		<authors>Andrew Arnott</authors>
@@ -16,19 +16,23 @@
 			all without disclosing their login credential with you to 3rd parties.  
 		</description>
 		<dependencies>
-			<dependency id="DotNetOpenAuth.OAuth2.Core" version="[$oauth2version$]" />
+			<dependency id="DotNetOpenAuth.OAuth2.ClientAuthorization" version="[$oauth2version$]" />
 		</dependencies>
 	</metadata>
 	<files>
-		<file src="$OutputPath35$signed\DotNetOpenAuth.OAuth2.AuthorizationServer.dll" target="lib\net35-full" />
-		<file src="$OutputPath40$signed\DotNetOpenAuth.OAuth2.AuthorizationServer.dll" target="lib\net40-full" />
+		<file src="$OutputPath35$signed\$identity$.dll" target="lib\net35-full" />
+		<file src="$OutputPath40$signed\$identity$.dll" target="lib\net40-full" />
+		<file src="$OutputPath45$signed\$identity$.dll" target="lib\net45-full" />
 
-		<file src="$OutputPath35$DotNetOpenAuth.OAuth2.AuthorizationServer.pdb" target="lib\net35-full" />
-		<file src="$OutputPath40$DotNetOpenAuth.OAuth2.AuthorizationServer.pdb" target="lib\net40-full" />
+		<file src="$OutputPath35$$identity$.pdb" target="lib\net35-full" />
+		<file src="$OutputPath40$$identity$.pdb" target="lib\net40-full" />
+		<file src="$OutputPath45$$identity$.pdb" target="lib\net45-full" />
 
-		<file src="$OutputPath35$DotNetOpenAuth.OAuth2.AuthorizationServer.xml" target="lib\net35-full" />
-		<file src="$OutputPath40$DotNetOpenAuth.OAuth2.AuthorizationServer.xml" target="lib\net40-full" />
+		<file src="$OutputPath35$$identity$.xml" target="lib\net35-full" />
+		<file src="$OutputPath40$$identity$.xml" target="lib\net40-full" />
+		<file src="$OutputPath45$$identity$.xml" target="lib\net45-full" />
 
-		<file src="..\src\DotNetOpenAuth.OAuth2.AuthorizationServer\**\*.cs" target="src" />
+		<file src="..\src\$Identity$\**\*.cs" target="src" exclude="..\src\$Identity$\obj\**" />
+		<file src="$GeneratedAssemblyInfoSourceFile$" target="src" />
 	</files>
 </package>

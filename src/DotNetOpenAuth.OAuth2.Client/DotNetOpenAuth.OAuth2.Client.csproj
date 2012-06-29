@@ -18,10 +18,22 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="OAuth2\OAuth2Strings.Designer.cs">
+    <Compile Include="Configuration\OAuth2ClientSection.cs" />
+    <Compile Include="OAuth2\AuthorizationServerDescription.cs" />
+    <Compile Include="OAuth2\AuthorizationState.cs" />
+    <Compile Include="OAuth2\ChannelElements\IOAuth2ChannelWithClient.cs" />
+    <Compile Include="OAuth2\ChannelElements\OAuth2ClientChannel.cs" />
+    <Compile Include="OAuth2\ClientCredentialApplicator.cs" />
+    <Compile Include="OAuth2\IAuthorizationState.cs" />
+    <Compile Include="OAuth2\IClientAuthorizationTracker.cs" />
+    <Compile Include="OAuth2\Messages\AccessTokenAuthorizationCodeRequestC.cs" />
+    <Compile Include="OAuth2\Messages\AccessTokenRefreshRequestC.cs" />
+    <Compile Include="OAuth2\Messages\EndUserAuthorizationImplicitRequestC.cs" />
+    <Compile Include="OAuth2\Messages\EndUserAuthorizationRequestC.cs" />
+    <Compile Include="OAuth2\ClientStrings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>OAuth2Strings.resx</DependentUpon>
+      <DependentUpon>ClientStrings.resx</DependentUpon>
     </Compile>
     <Compile Include="OAuth2\UserAgentClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -33,15 +45,19 @@
       <Project>{60426312-6AE5-4835-8667-37EDEA670222}</Project>
       <Name>DotNetOpenAuth.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\DotNetOpenAuth.OAuth2.ClientAuthorization\DotNetOpenAuth.OAuth2.ClientAuthorization.csproj">
+      <Project>{CCF3728A-B3D7-404A-9BC6-75197135F2D7}</Project>
+      <Name>DotNetOpenAuth.OAuth2.ClientAuthorization</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DotNetOpenAuth.OAuth2\DotNetOpenAuth.OAuth2.csproj">
       <Project>{56459A6C-6BA2-4BAC-A9C0-27E3BD961FA6}</Project>
       <Name>DotNetOpenAuth.OAuth2</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="OAuth2\OAuth2Strings.resx">
+    <EmbeddedResource Include="OAuth2\ClientStrings.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>OAuth2Strings.Designer.cs</LastGenOutput>
+      <LastGenOutput>ClientStrings.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

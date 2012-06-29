@@ -22,7 +22,7 @@ namespace DotNetOpenAuth.Messaging {
 	/// A serializer for <see cref="DataBag"/>-derived types
 	/// </summary>
 	/// <typeparam name="T">The DataBag-derived type that is to be serialized/deserialized.</typeparam>
-	internal abstract class DataBagFormatterBase<T> : IDataBagFormatter<T> where T : DataBag, new() {
+	internal abstract class DataBagFormatterBase<T> : IDataBagFormatter<T> where T : DataBag {
 		/// <summary>
 		/// The message description cache to use for data bag types.
 		/// </summary>
@@ -146,6 +146,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>A non-null, non-empty value.</returns>
 		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "No apparent problem.  False positive?")]
 		public string Serialize(T message) {
+			Requires.NotNull(message, "message");
+
 			message.UtcCreationDate = DateTime.UtcNow;
 
 			if (this.decodeOnceOnly != null) {
@@ -190,14 +192,13 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Deserializes a <see cref="DataBag"/>, including decompression, decryption, signature and nonce validation where applicable.
 		/// </summary>
+		/// <param name="message">The instance to initialize with deserialized data.</param>
 		/// <param name="containingMessage">The message that contains the <see cref="DataBag"/> serialized value.  Must not be null.</param>
 		/// <param name="value">The serialized form of the <see cref="DataBag"/> to deserialize.  Must not be null or empty.</param>
 		/// <param name="messagePartName">The name of the parameter whose value is to be deserialized.  Used for error message generation.</param>
-		/// <returns>
-		/// The deserialized value.  Never null.
-		/// </returns>
 		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "No apparent problem.  False positive?")]
-		public T Deserialize(IProtocolMessage containingMessage, string value, string messagePartName) {
+		public void Deserialize(T message, IProtocolMessage containingMessage, string value, string messagePartName) {
+			Requires.NotNull(message, "message");
 			Requires.NotNull(containingMessage, "containingMessage");
 			Requires.NotNullOrEmpty(value, "value");
 			Requires.NotNullOrEmpty(messagePartName, "messagePartName");
@@ -209,7 +210,7 @@ namespace DotNetOpenAuth.Messaging {
 				value = valueWithoutHandle;
 			}
 
-			var message = new T { ContainingMessage = containingMessage };
+			message.ContainingMessage = containingMessage;
 			byte[] data = MessagingUtilities.FromBase64WebSafeString(value);
 
 			byte[] signature = null;
@@ -254,8 +255,6 @@ namespace DotNetOpenAuth.Messaging {
 			}
 
 			((IMessage)message).EnsureValidMessage();
-
-			return message;
 		}
 
 		/// <summary>

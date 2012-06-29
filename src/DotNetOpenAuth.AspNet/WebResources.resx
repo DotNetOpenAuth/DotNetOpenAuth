@@ -123,8 +123,14 @@
   <data name="FailedToEncryptTicket" xml:space="preserve">
     <value>Unable to encrypt the authentication ticket.</value>
   </data>
+  <data name="Generic_CryptoFailure" xml:space="preserve">
+    <value>The provided data could not be decrypted. If the current application is deployed in a web farm configuration, ensure that the 'decryptionKey' and 'validationKey' attributes are explicitly specified in the &lt;machineKey&gt; configuration section.</value>
+  </data>
   <data name="OAuthDataProviderRegistered" xml:space="preserve">
     <value>An OAuth data provider has already been registered for this application.</value>
+  </data>
+  <data name="OAuthRequireReturnUrl" xml:space="preserve">
+    <value>This operation is not supported on the current provider. Call the overload of VerifyAuthentication() which accepts a return url.</value>
   </data>
   <data name="OpenIDFailedToGetResponse" xml:space="preserve">
     <value>Failed to obtain the authentication response from service provider.</value>

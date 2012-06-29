@@ -26,6 +26,11 @@ namespace DotNetOpenAuth.OAuth2 {
 	/// </summary>
 	public class ResourceServer {
 		/// <summary>
+		/// A reusable instance of the scope satisfied checker.
+		/// </summary>
+		private static readonly IScopeSatisfiedCheck DefaultScopeSatisfiedCheck = new StandardScopeSatisfiedCheck();
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="ResourceServer"/> class.
 		/// </summary>
 		/// <param name="accessTokenAnalyzer">The access token analyzer.</param>
@@ -34,6 +39,9 @@ namespace DotNetOpenAuth.OAuth2 {
 
 			this.AccessTokenAnalyzer = accessTokenAnalyzer;
 			this.Channel = new OAuth2ResourceServerChannel();
+			this.ResourceOwnerPrincipalPrefix = string.Empty;
+			this.ClientPrincipalPrefix = "client:";
+			this.ScopeSatisfiedCheck = DefaultScopeSatisfiedCheck;
 		}
 
 		/// <summary>
@@ -41,6 +49,23 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <value>The access token analyzer.</value>
 		public IAccessTokenAnalyzer AccessTokenAnalyzer { get; private set; }
+
+		/// <summary>
+		/// Gets or sets the service that checks whether a granted set of scopes satisfies a required set of scopes.
+		/// </summary>
+		public IScopeSatisfiedCheck ScopeSatisfiedCheck { get; set; }
+
+		/// <summary>
+		/// Gets or sets the prefix to apply to a resource owner's username when used as the username in an <see cref="IPrincipal"/>.
+		/// </summary>
+		/// <value>The default value is the empty string.</value>
+		public string ResourceOwnerPrincipalPrefix { get; set; }
+
+		/// <summary>
+		/// Gets or sets the prefix to apply to a client identifier when used as the username in an <see cref="IPrincipal"/>.
+		/// </summary>
+		/// <value>The default value is "client:"</value>
+		public string ClientPrincipalPrefix { get; set; }
 
 		/// <summary>
 		/// Gets the channel.
@@ -51,51 +76,53 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <summary>
 		/// Discovers what access the client should have considering the access token in the current request.
 		/// </summary>
-		/// <param name="userName">The name on the account the client has access to.</param>
-		/// <param name="scope">The set of operations the client is authorized for.</param>
-		/// <returns>An error to return to the client if access is not authorized; <c>null</c> if access is granted.</returns>
-		[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "0#", Justification = "Try pattern")]
-		[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "1#", Justification = "Try pattern")]
-		public OutgoingWebResponse VerifyAccess(out string userName, out HashSet<string> scope) {
-			return this.VerifyAccess(this.Channel.GetRequestFromContext(), out userName, out scope);
-		}
-
-		/// <summary>
-		/// Discovers what access the client should have considering the access token in the current request.
-		/// </summary>
 		/// <param name="httpRequestInfo">The HTTP request info.</param>
-		/// <param name="userName">The name on the account the client has access to.</param>
-		/// <param name="scope">The set of operations the client is authorized for.</param>
+		/// <param name="requiredScopes">The set of scopes required to approve this request.</param>
 		/// <returns>
-		/// An error to return to the client if access is not authorized; <c>null</c> if access is granted.
+		/// The access token describing the authorization the client has.  Never <c>null</c>.
 		/// </returns>
-		[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "1#", Justification = "Try pattern")]
-		[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "2#", Justification = "Try pattern")]
-		public virtual OutgoingWebResponse VerifyAccess(HttpRequestBase httpRequestInfo, out string userName, out HashSet<string> scope) {
-			Requires.NotNull(httpRequestInfo, "httpRequestInfo");
+		/// <exception cref="ProtocolFaultResponseException">
+		/// Thrown when the client is not authorized.  This exception should be caught and the
+		/// <see cref="ProtocolFaultResponseException.ErrorResponseMessage"/> message should be returned to the client.
+		/// </exception>
+		public virtual AccessToken GetAccessToken(HttpRequestBase httpRequestInfo = null, params string[] requiredScopes) {
+			Requires.NotNull(requiredScopes, "requiredScopes");
+			Requires.ValidState(this.ScopeSatisfiedCheck != null, Strings.RequiredPropertyNotYetPreset);
+			if (httpRequestInfo == null) {
+				httpRequestInfo = this.Channel.GetRequestFromContext();
+			}
 
+			AccessToken accessToken;
 			AccessProtectedResourceRequest request = null;
 			try {
 				if (this.Channel.TryReadFromRequest<AccessProtectedResourceRequest>(httpRequestInfo, out request)) {
-					if (this.AccessTokenAnalyzer.TryValidateAccessToken(request, request.AccessToken, out userName, out scope)) {
-						// No errors to return.
-						return null;
+					accessToken = this.AccessTokenAnalyzer.DeserializeAccessToken(request, request.AccessToken);
+					ErrorUtilities.VerifyHost(accessToken != null, "IAccessTokenAnalyzer.DeserializeAccessToken returned a null reslut.");
+					if (string.IsNullOrEmpty(accessToken.User) && string.IsNullOrEmpty(accessToken.ClientIdentifier)) {
+						Logger.OAuth.Error("Access token rejected because both the username and client id properties were null or empty.");
+						ErrorUtilities.ThrowProtocol(ResourceServerStrings.InvalidAccessToken);
 					}
 
-					throw ErrorUtilities.ThrowProtocol(OAuth2Strings.InvalidAccessToken);
-				} else {
-					var response = new UnauthorizedResponse(new ProtocolException(OAuth2Strings.MissingAccessToken));
+					var requiredScopesSet = OAuthUtilities.ParseScopeSet(requiredScopes);
+					if (!this.ScopeSatisfiedCheck.IsScopeSatisfied(requiredScope: requiredScopesSet, grantedScope: accessToken.Scope)) {
+						var response = UnauthorizedResponse.InsufficientScope(request, requiredScopesSet);
+						throw new ProtocolFaultResponseException(this.Channel, response);
+					}
 
-					userName = null;
-					scope = null;
-					return this.Channel.PrepareResponse(response);
+					return accessToken;
+				} else {
+					var ex = new ProtocolException(ResourceServerStrings.MissingAccessToken);
+					var response = UnauthorizedResponse.InvalidRequest(ex);
+					throw new ProtocolFaultResponseException(this.Channel, response, innerException: ex);
 				}
 			} catch (ProtocolException ex) {
-				var response = request != null ? new UnauthorizedResponse(request, ex) : new UnauthorizedResponse(ex);
+				if (ex is ProtocolFaultResponseException) {
+					// This doesn't need to be wrapped again.
+					throw;
+				}
 
-				userName = null;
-				scope = null;
-				return this.Channel.PrepareResponse(response);
+				var response = request != null ? UnauthorizedResponse.InvalidToken(request, ex) : UnauthorizedResponse.InvalidRequest(ex);
+				throw new ProtocolFaultResponseException(this.Channel, response, innerException: ex);
 			}
 		}
 
@@ -103,17 +130,29 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// Discovers what access the client should have considering the access token in the current request.
 		/// </summary>
 		/// <param name="httpRequestInfo">The HTTP request info.</param>
-		/// <param name="principal">The principal that contains the user and roles that the access token is authorized for.</param>
+		/// <param name="requiredScopes">The set of scopes required to approve this request.</param>
 		/// <returns>
-		/// An error to return to the client if access is not authorized; <c>null</c> if access is granted.
+		/// The principal that contains the user and roles that the access token is authorized for.  Never <c>null</c>.
 		/// </returns>
-		[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "1#", Justification = "Try pattern")]
-		public virtual OutgoingWebResponse VerifyAccess(HttpRequestBase httpRequestInfo, out IPrincipal principal) {
-			string username;
-			HashSet<string> scope;
-			var result = this.VerifyAccess(httpRequestInfo, out username, out scope);
-			principal = result == null ? new OAuthPrincipal(username, scope != null ? scope.ToArray() : new string[0]) : null;
-			return result;
+		/// <exception cref="ProtocolFaultResponseException">
+		/// Thrown when the client is not authorized.  This exception should be caught and the
+		/// <see cref="ProtocolFaultResponseException.ErrorResponseMessage"/> message should be returned to the client.
+		/// </exception>
+		public virtual IPrincipal GetPrincipal(HttpRequestBase httpRequestInfo = null, params string[] requiredScopes) {
+			AccessToken accessToken = this.GetAccessToken(httpRequestInfo, requiredScopes);
+
+			// Mitigates attacks on this approach of differentiating clients from resource owners
+			// by checking that a username doesn't look suspiciously engineered to appear like the other type.
+			ErrorUtilities.VerifyProtocol(accessToken.User == null || string.IsNullOrEmpty(this.ClientPrincipalPrefix) || !accessToken.User.StartsWith(this.ClientPrincipalPrefix, StringComparison.OrdinalIgnoreCase), ResourceServerStrings.ResourceOwnerNameLooksLikeClientIdentifier);
+			ErrorUtilities.VerifyProtocol(accessToken.ClientIdentifier == null || string.IsNullOrEmpty(this.ResourceOwnerPrincipalPrefix) || !accessToken.ClientIdentifier.StartsWith(this.ResourceOwnerPrincipalPrefix, StringComparison.OrdinalIgnoreCase), ResourceServerStrings.ClientIdentifierLooksLikeResourceOwnerName);
+
+			string principalUserName = !string.IsNullOrEmpty(accessToken.User)
+				? this.ResourceOwnerPrincipalPrefix + accessToken.User
+				: this.ClientPrincipalPrefix + accessToken.ClientIdentifier;
+			string[] principalScope = accessToken.Scope != null ? accessToken.Scope.ToArray() : new string[0];
+			var principal = new OAuthPrincipal(principalUserName, principalScope);
+
+			return principal;
 		}
 
 		/// <summary>
@@ -121,17 +160,19 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <param name="request">HTTP details from an incoming WCF message.</param>
 		/// <param name="requestUri">The URI of the WCF service endpoint.</param>
-		/// <param name="principal">The principal that contains the user and roles that the access token is authorized for.</param>
+		/// <param name="requiredScopes">The set of scopes required to approve this request.</param>
 		/// <returns>
-		/// An error to return to the client if access is not authorized; <c>null</c> if access is granted.
+		/// The principal that contains the user and roles that the access token is authorized for.  Never <c>null</c>.
 		/// </returns>
-		[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "1#", Justification = "Try pattern")]
-		[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "2#", Justification = "Try pattern")]
-		public virtual OutgoingWebResponse VerifyAccess(HttpRequestMessageProperty request, Uri requestUri, out IPrincipal principal) {
+		/// <exception cref="ProtocolFaultResponseException">
+		/// Thrown when the client is not authorized.  This exception should be caught and the
+		/// <see cref="ProtocolFaultResponseException.ErrorResponseMessage"/> message should be returned to the client.
+		/// </exception>
+		public virtual IPrincipal GetPrincipal(HttpRequestMessageProperty request, Uri requestUri, params string[] requiredScopes) {
 			Requires.NotNull(request, "request");
 			Requires.NotNull(requestUri, "requestUri");
 
-			return this.VerifyAccess(new HttpRequestInfo(request, requestUri), out principal);
+			return this.GetPrincipal(new HttpRequestInfo(request, requestUri), requiredScopes);
 		}
 	}
 }

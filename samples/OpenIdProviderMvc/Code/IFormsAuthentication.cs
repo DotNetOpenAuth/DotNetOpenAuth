@@ -17,6 +17,8 @@ using System.Web.Security;
 	public interface IFormsAuthentication {
 		string SignedInUsername { get; }
 
+		DateTime? SignedInTimestampUtc { get; }
+
 		void SignIn(string userName, bool createPersistentCookie);
 
 		void SignOut();

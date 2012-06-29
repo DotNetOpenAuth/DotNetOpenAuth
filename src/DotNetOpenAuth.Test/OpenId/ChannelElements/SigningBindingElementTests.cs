@@ -75,7 +75,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		/// <summary>
 		/// Regression test for bug #45 (https://github.com/AArnott/dotnetopenid/issues/45)
 		/// </summary>
-		[TestCase, ExpectedException(typeof(ProtocolException))]
+		[Test, ExpectedException(typeof(ProtocolException))]
 		public void MissingSignedParameter() {
 			var cryptoStore = new MemoryCryptoKeyStore();
 			byte[] associationSecret = Convert.FromBase64String("rsSwv1zPWfjPRQU80hciu8FPDC+GONAMJQ/AvSo1a2M=");

@@ -36,13 +36,31 @@ namespace DotNetOpenAuth {
 		/// Gets a human-readable description of the library name and version, including
 		/// whether the build is an official or private one.
 		/// </summary>
-		public static string LibraryVersion {
+		internal static string LibraryVersion {
 			get {
-				string assemblyFullName = Assembly.GetExecutingAssembly().FullName;
+				var assembly = Assembly.GetExecutingAssembly();
+				string assemblyFullName = assembly.FullName;
 				bool official = assemblyFullName.Contains("PublicKeyToken=2780ccd10d57b246");
+				assemblyFullName = assemblyFullName.Replace(assembly.GetName().Version.ToString(), AssemblyFileVersion);
 
 				// We use InvariantCulture since this is used for logging.
 				return string.Format(CultureInfo.InvariantCulture, "{0} ({1})", assemblyFullName, official ? "official" : "private");
+			}
+		}
+
+		/// <summary>
+		/// Gets the assembly file version of the executing assembly, otherwise falls back to the assembly version.
+		/// </summary>
+		internal static string AssemblyFileVersion {
+			get {
+				var assembly = Assembly.GetExecutingAssembly();
+				var attributes = assembly.GetCustomAttributes(typeof(AssemblyFileVersionAttribute), false);
+				if (attributes.Length == 1) {
+					var fileVersionAttribute = (AssemblyFileVersionAttribute)attributes[0];
+					return fileVersionAttribute.Version;
+				}
+
+				return assembly.GetName().Version.ToString();
 			}
 		}
 

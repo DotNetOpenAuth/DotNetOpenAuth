@@ -28,7 +28,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 				AuthorizationServerMock,
 				new UserAgentClient(AuthorizationServerDescription),
 				client => {
-					var request = new AccessTokenAuthorizationCodeRequest(AuthorizationServerDescription)
+					var request = new AccessTokenAuthorizationCodeRequestC(AuthorizationServerDescription)
 					{ ClientIdentifier = ClientId, ClientSecret = ClientSecret, AuthorizationCode = "foo" };
 
 					var response = client.Channel.Request<AccessTokenFailedResponse>(request);

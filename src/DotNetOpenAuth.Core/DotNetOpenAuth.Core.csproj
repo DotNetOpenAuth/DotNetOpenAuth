@@ -19,6 +19,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Assumes.cs" />
+    <Compile Include="Messaging\Base64WebEncoder.cs" />
     <Compile Include="Messaging\Bindings\AsymmetricCryptoKeyStoreWrapper.cs" />
     <Compile Include="Messaging\Bindings\CryptoKey.cs" />
     <Compile Include="Messaging\Bindings\CryptoKeyCollisionException.cs" />
@@ -29,6 +30,8 @@
     <Compile Include="Messaging\ChannelContract.cs" />
     <Compile Include="Messaging\DataBagFormatterBase.cs" />
     <Compile Include="Messaging\HttpRequestHeaders.cs" />
+    <Compile Include="Messaging\IHttpDirectRequest.cs" />
+    <Compile Include="Messaging\IHttpDirectRequestContract.cs" />
     <Compile Include="Messaging\IHttpIndirectResponse.cs" />
     <Compile Include="Messaging\IMessageOriginalPayload.cs" />
     <Compile Include="Messaging\DirectWebRequestOptions.cs" />
@@ -53,10 +56,12 @@
     <Compile Include="Messaging\MultipartPostPart.cs" />
     <Compile Include="Messaging\NetworkDirectWebResponse.cs" />
     <Compile Include="Messaging\OutgoingWebResponseActionResult.cs" />
+    <Compile Include="Messaging\ProtocolFaultResponseException.cs" />
     <Compile Include="Messaging\Reflection\IMessagePartEncoder.cs" />
     <Compile Include="Messaging\Reflection\IMessagePartNullEncoder.cs" />
     <Compile Include="Messaging\Reflection\IMessagePartOriginalEncoder.cs" />
     <Compile Include="Messaging\Reflection\MessageDescriptionCollection.cs" />
+    <Compile Include="Messaging\Reflection\DefaultEncoderAttribute.cs" />
     <Compile Include="Messaging\StandardMessageFactory.cs" />
     <Compile Include="Messaging\IDataBagFormatter.cs" />
     <Compile Include="Messaging\UriStyleMessageFormatter.cs" />

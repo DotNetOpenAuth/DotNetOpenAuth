@@ -48,6 +48,9 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="LinkedInClient"/> class.
 		/// </summary>
+		/// <remarks>
+		/// Tokens exchanged during the OAuth handshake are stored in cookies.
+		/// </remarks>
 		/// <param name="consumerKey">
 		/// The LinkedIn app's consumer key. 
 		/// </param>
@@ -57,7 +60,17 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope",
 			Justification = "We can't dispose the object because we still need it through the app lifetime.")]
 		public LinkedInClient(string consumerKey, string consumerSecret)
-			: base("linkedIn", LinkedInServiceDescription, consumerKey, consumerSecret) { }
+			: this(consumerKey, consumerSecret, new AuthenticationOnlyCookieOAuthTokenManager()) { }
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="LinkedInClient"/> class.
+		/// </summary>
+		/// <param name="consumerKey">The consumer key.</param>
+		/// <param name="consumerSecret">The consumer secret.</param>
+		/// <param name="tokenManager">The token manager.</param>
+		public LinkedInClient(string consumerKey, string consumerSecret, IOAuthTokenManager tokenManager)
+			: base("linkedIn", LinkedInServiceDescription, new SimpleConsumerTokenManager(consumerKey, consumerSecret, tokenManager)) {
+		}
 
 		#endregion
 
@@ -76,7 +89,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 			Justification = "We don't care if the request fails.")]
 		protected override AuthenticationResult VerifyAuthenticationCore(AuthorizedTokenResponse response) {
 			// See here for Field Selectors API http://developer.linkedin.com/docs/DOC-1014
-			const string ProfileRequestUrl = "http://api.linkedin.com/v1/people/~:(id,first-name,last-name,headline,industry,summary)";
+			const string ProfileRequestUrl = "https://api.linkedin.com/v1/people/~:(id,first-name,last-name,headline,industry,summary)";
 
 			string accessToken = response.AccessToken;
 
@@ -86,7 +99,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 			try {
 				using (WebResponse profileResponse = request.GetResponse()) {
 					using (Stream responseStream = profileResponse.GetResponseStream()) {
-						XDocument document = XDocument.Load(responseStream);
+						XDocument document = LoadXDocumentFromStream(responseStream);
 						string userId = document.Root.Element("id").Value;
 
 						string firstName = document.Root.Element("first-name").Value;
@@ -104,7 +117,8 @@ namespace DotNetOpenAuth.AspNet.Clients {
 							isSuccessful: true, provider: this.ProviderName, providerUserId: userId, userName: userName, extraData: extraData);
 					}
 				}
-			} catch (Exception exception) {
+			}
+			catch (Exception exception) {
 				return new AuthenticationResult(exception);
 			}
 		}

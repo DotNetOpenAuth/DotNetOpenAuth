@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+	<metadata>
+		<id>DotNetOpenAuth.OpenId.Core.UI</id>
+		<version>$version$</version>
+		<title>DotNetOpenAuth OpenID Core (ASP.NET controls)</title>
+		<authors>Andrew Arnott</authors>
+		<owners>Outercurve Foundation</owners>
+		<projectUrl>http://www.dotnetopenauth.net/</projectUrl>
+		<iconUrl>https://github.com/AArnott/dotnetopenid/raw/v3.4/doc/logo/dnoa-logo_32x32.png</iconUrl>
+		<licenseUrl>http://www.opensource.org/licenses/ms-pl.html</licenseUrl>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<summary>Common functionality required to implement an OpenID Provider or Relying Party that includes ASP.NET controls.</summary>
+		<description>This package contains shared code for other NuGet packages, and contains no public API in and of itself.</description>
+		<dependencies>
+			<dependency id="DotNetOpenAuth.Core.UI" version="[$version$]" />
+		</dependencies>
+	</metadata>
+	<files>
+		<file src="$OutputPath35$signed\$identity$.dll" target="lib\net35-full\" />
+		<file src="$OutputPath40$signed\$identity$.dll" target="lib\net40-full\" />
+		<file src="$OutputPath45$signed\$identity$.dll" target="lib\net45-full\" />
+
+		<file src="$OutputPath35$$identity$.pdb" target="lib\net35-full\" />
+		<file src="$OutputPath40$$identity$.pdb" target="lib\net40-full\" />
+		<file src="$OutputPath45$$identity$.pdb" target="lib\net45-full\" />
+
+		<file src="$OutputPath35$$identity$.xml" target="lib\net35-full\" />
+		<file src="$OutputPath40$$identity$.xml" target="lib\net40-full\" />
+		<file src="$OutputPath45$$identity$.xml" target="lib\net45-full\" />
+
+		<file src="..\src\$Identity$\**\*.cs" target="src" exclude="..\src\$Identity$\obj\**" />
+		<file src="$GeneratedAssemblyInfoSourceFile$" target="src" />
+	</files>
+</package>

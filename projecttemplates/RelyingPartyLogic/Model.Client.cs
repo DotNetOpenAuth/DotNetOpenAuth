@@ -7,18 +7,11 @@
 namespace RelyingPartyLogic {
 	using System;
 	using System.Collections.Generic;
-
+	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2;
 
 	public partial class Client : IClientDescription {
 		#region IConsumerDescription Members
-
-		/// <summary>
-		/// Gets the client secret.
-		/// </summary>
-		string IClientDescription.Secret {
-			get { return this.ClientSecret; }
-		}
 
 		/// <summary>
 		/// Gets the callback to use when an individual authorization request
@@ -36,6 +29,26 @@ namespace RelyingPartyLogic {
 		/// </summary>
 		ClientType IClientDescription.ClientType {
 			get { return (ClientType)this.ClientType; }
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether a non-empty secret is registered for this client.
+		/// </summary>
+		bool IClientDescription.HasNonEmptySecret {
+			get { return !string.IsNullOrEmpty(this.ClientSecret); }
+		}
+
+		/// <summary>
+		/// Checks whether the specified client secret is correct.
+		/// </summary>
+		/// <param name="secret">The secret obtained from the client.</param>
+		/// <returns><c>true</c> if the secret matches the one in the authorization server's record for the client; <c>false</c> otherwise.</returns>
+		/// <remarks>
+		/// All string equality checks, whether checking secrets or their hashes,
+		/// should be done using <see cref="MessagingUtilities.EqualsConstantTime"/> to mitigate timing attacks.
+		/// </remarks>
+		bool IClientDescription.IsValidClientSecret(string secret) {
+			return MessagingUtilities.EqualsConstantTime(secret, this.ClientSecret);
 		}
 
 		/// <summary>

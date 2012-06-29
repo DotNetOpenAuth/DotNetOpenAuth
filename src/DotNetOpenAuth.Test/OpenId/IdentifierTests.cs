@@ -8,7 +8,10 @@ namespace DotNetOpenAuth.Test.OpenId {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.OpenId;
+	using DotNetOpenAuth.Test.Mocks;
 	using NUnit.Framework;
 
 	[TestFixture]
@@ -75,14 +78,28 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Assert.AreEqual(this.uri, ((UriIdentifier)id).Uri.AbsoluteUri);
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void ParseNull() {
 			Identifier.Parse(null);
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentException))]
+		[Test, ExpectedException(typeof(ArgumentException))]
 		public void ParseEmpty() {
 			Identifier.Parse(string.Empty);
+		}
+
+		[Test]
+		public void MessagePartConvertibility() {
+			var message = new MessageWithIdentifier();
+			var messageDescription = new MessageDescription(message.GetType(), new Version(1, 0));
+			var messageDictionary = new MessageDictionary(message, messageDescription, false);
+			messageDictionary["Identifier"] = OpenId.OpenIdTestBase.IdentifierSelect;
+			Assert.That(messageDictionary["Identifier"], Is.EqualTo(OpenId.OpenIdTestBase.IdentifierSelect));
+		}
+
+		private class MessageWithIdentifier : TestMessage {
+			[MessagePart]
+			internal Identifier Identifier { get; set; }
 		}
 	}
 }

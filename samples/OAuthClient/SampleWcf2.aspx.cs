@@ -87,6 +87,8 @@
 				this.nameLabel.Text = this.CallService(client => client.GetName());
 			} catch (SecurityAccessDeniedException) {
 				this.nameLabel.Text = "Access denied!";
+			} catch (MessageSecurityException) {
+				this.nameLabel.Text = "Access denied!";
 			}
 		}
 
@@ -96,6 +98,8 @@
 				this.ageLabel.Text = age.HasValue ? age.Value.ToString(CultureInfo.CurrentCulture) : "not available";
 			} catch (SecurityAccessDeniedException) {
 				this.ageLabel.Text = "Access denied!";
+			} catch (MessageSecurityException) {
+				this.ageLabel.Text = "Access denied!";
 			}
 		}
 
@@ -104,6 +108,8 @@
 				string[] favoriteSites = this.CallService(client => client.GetFavoriteSites());
 				this.favoriteSitesLabel.Text = string.Join(", ", favoriteSites);
 			} catch (SecurityAccessDeniedException) {
+				this.favoriteSitesLabel.Text = "Access denied!";
+			} catch (MessageSecurityException) {
 				this.favoriteSitesLabel.Text = "Access denied!";
 			}
 		}

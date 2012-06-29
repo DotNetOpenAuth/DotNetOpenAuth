@@ -98,7 +98,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 		/// <summary>
 		/// Tests calling IEnumerator.Current before first call to MoveNext.
 		/// </summary>
-		[TestCase, ExpectedException(typeof(InvalidOperationException))]
+		[Test, ExpectedException(typeof(InvalidOperationException))]
 		public void EnumerableCacheCurrentThrowsBefore() {
 			var foo = this.NumberGenerator().CacheGeneratedResults().GetEnumerator().Current;
 		}
@@ -106,7 +106,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 		/// <summary>
 		/// Tests calling IEnumerator.Current after MoveNext returns false.
 		/// </summary>
-		[TestCase, ExpectedException(typeof(InvalidOperationException))]
+		[Test, ExpectedException(typeof(InvalidOperationException))]
 		public void EnumerableCacheCurrentThrowsAfter() {
 			var enumerator = this.NumberGenerator().CacheGeneratedResults().GetEnumerator();
 			while (enumerator.MoveNext()) {

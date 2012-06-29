@@ -14,7 +14,7 @@ namespace DotNetOpenAuth.Messaging {
 	/// A collection of message parts that will be serialized into a single string,
 	/// to be set into a larger message.
 	/// </summary>
-	internal abstract class DataBag : IMessage {
+	public abstract class DataBag : IMessage {
 		/// <summary>
 		/// The default version for DataBags.
 		/// </summary>
@@ -105,7 +105,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </remarks>
 		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Accessed by reflection")]
 		[MessagePart("t", IsRequired = true, AllowEmpty = false)]
-		private Type BagType {
+		protected virtual Type BagType {
 			get { return this.GetType(); }
 		}
 

@@ -23,3 +23,4 @@ PrecompiledWeb
 _ReSharper*
 *.vs10x
 *.docstates
+UpgradeLog*.htm

@@ -38,13 +38,13 @@ namespace DotNetOpenAuth.Test.Messaging.Bindings {
 			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow + DotNetOpenAuthSection.Messaging.MaximumClockSkew - TimeSpan.FromSeconds(1), false);
 		}
 
-		[TestCase, ExpectedException(typeof(ExpiredMessageException))]
+		[Test, ExpectedException(typeof(ExpiredMessageException))]
 		public void VerifyOldTimestampIsRejected() {
 			this.Channel = CreateChannel(MessageProtections.Expiration);
 			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow - StandardExpirationBindingElement.MaximumMessageAge - TimeSpan.FromSeconds(1), false);
 		}
 
-		[TestCase, ExpectedException(typeof(ProtocolException))]
+		[Test, ExpectedException(typeof(ProtocolException))]
 		public void VerifyFutureTimestampIsRejected() {
 			this.Channel = CreateChannel(MessageProtections.Expiration);
 			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow + DotNetOpenAuthSection.Messaging.MaximumClockSkew + TimeSpan.FromSeconds(2), false);

@@ -20,6 +20,10 @@
 			<asp:ListItem Text="Request physical multi-factor authentication" Value="http://schemas.openid.net/pape/policies/2007/06/multi-factor-physical" />
 			<asp:ListItem Text="Request PPID identifier" Value="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/privatepersonalidentifier" />
 		</asp:CheckBoxList>
+		<p>Request that the Provider have authenticated the user in the last 
+			<asp:TextBox runat="server" ID="maxAuthTimeBox" MaxLength="4" Columns="4" />
+			seconds.
+		</p>
 		<p>Try the PPID identifier functionality against the OpenIDProviderMvc sample.</p>
 	</fieldset>
 	<p><a href="loginGoogleApps.aspx">Log in using Google Apps for Domains</a>. </p>

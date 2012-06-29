@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 	<metadata>
-		<id>DotNetOpenAuth.Core.UI</id>
+		<id>$identity$</id>
 		<version>$version$</version>
 		<title>DotNetOpenAuth Core (ASP.NET controls)</title>
 		<authors>Andrew Arnott</authors>
@@ -18,15 +18,19 @@
 		</dependencies>
 	</metadata>
 	<files>
-		<file src="$OutputPath35$signed\DotNetOpenAuth.Core.UI.dll" target="lib\net35-full\" />
-		<file src="$OutputPath40$signed\DotNetOpenAuth.Core.UI.dll" target="lib\net40-full\" />
+		<file src="$OutputPath35$signed\$identity$.dll" target="lib\net35-full\" />
+		<file src="$OutputPath40$signed\$identity$.dll" target="lib\net40-full\" />
+		<file src="$OutputPath45$signed\$identity$.dll" target="lib\net45-full\" />
 
-		<file src="$OutputPath35$DotNetOpenAuth.Core.UI.pdb" target="lib\net35-full\" />
-		<file src="$OutputPath40$DotNetOpenAuth.Core.UI.pdb" target="lib\net40-full\" />
+		<file src="$OutputPath35$$identity$.pdb" target="lib\net35-full\" />
+		<file src="$OutputPath40$$identity$.pdb" target="lib\net40-full\" />
+		<file src="$OutputPath45$$identity$.pdb" target="lib\net45-full\" />
 
-		<file src="$OutputPath35$DotNetOpenAuth.Core.UI.xml" target="lib\net35-full\" />
-		<file src="$OutputPath40$DotNetOpenAuth.Core.UI.xml" target="lib\net40-full\" />
+		<file src="$OutputPath35$$identity$.xml" target="lib\net35-full\" />
+		<file src="$OutputPath40$$identity$.xml" target="lib\net40-full\" />
+		<file src="$OutputPath45$$identity$.xml" target="lib\net45-full\" />
 
-		<file src="..\src\DotNetOpenAuth.Core.UI\**\*.cs" target="src" />
+		<file src="..\src\$Identity$\**\*.cs" target="src" exclude="..\src\$Identity$\obj\**" />
+		<file src="$GeneratedAssemblyInfoSourceFile$" target="src" />
 	</files>
 </package>

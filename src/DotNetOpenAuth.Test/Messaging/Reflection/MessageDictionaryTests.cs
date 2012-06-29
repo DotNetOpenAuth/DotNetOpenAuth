@@ -25,7 +25,7 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 			this.message = new Mocks.TestDirectedMessage();
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void CtorNull() {
 			this.MessageDescriptions.GetAccessor(null);
 		}
@@ -234,7 +234,7 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 			Assert.AreEqual("Andrew", this.message.Name);
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void AddNullValue() {
 			IDictionary<string, string> target = this.MessageDescriptions.GetAccessor(this.message);
 			target.Add("extra", null);
@@ -250,14 +250,14 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 			Assert.IsTrue(target.Contains(new KeyValuePair<string, string>("extra", "value")));
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentException))]
+		[Test, ExpectedException(typeof(ArgumentException))]
 		public void AddExtraFieldThatAlreadyExists() {
 			IDictionary<string, string> target = this.MessageDescriptions.GetAccessor(this.message);
 			target.Add("extra", "value");
 			target.Add("extra", "value");
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentException))]
+		[Test, ExpectedException(typeof(ArgumentException))]
 		public void AddDeclaredValueThatAlreadyExists() {
 			IDictionary<string, string> target = this.MessageDescriptions.GetAccessor(this.message);
 			target.Add("Name", "andrew");
@@ -347,7 +347,7 @@ namespace DotNetOpenAuth.Test.Messaging.Reflection {
 		/// <summary>
 		/// Verifies that the Clear method throws the expected exception.
 		/// </summary>
-		[TestCase, ExpectedException(typeof(NotSupportedException))]
+		[Test, ExpectedException(typeof(NotSupportedException))]
 		public void Clear() {
 			MessageDictionary target = this.MessageDescriptions.GetAccessor(this.message);
 			target.Clear();

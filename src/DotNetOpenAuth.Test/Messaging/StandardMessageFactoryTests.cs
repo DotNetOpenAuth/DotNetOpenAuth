@@ -30,7 +30,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 		/// <summary>
 		/// Verifies that AddMessageTypes throws the appropriate exception on null input.
 		/// </summary>
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void AddMessageTypesNull() {
 			this.factory.AddMessageTypes(null);
 		}
@@ -38,7 +38,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 		/// <summary>
 		/// Verifies that AddMessageTypes throws the appropriate exception on null input.
 		/// </summary>
-		[TestCase, ExpectedException(typeof(ArgumentException))]
+		[Test, ExpectedException(typeof(ArgumentException))]
 		public void AddMessageTypesNullMessageDescription() {
 			this.factory.AddMessageTypes(new MessageDescription[] { null });
 		}

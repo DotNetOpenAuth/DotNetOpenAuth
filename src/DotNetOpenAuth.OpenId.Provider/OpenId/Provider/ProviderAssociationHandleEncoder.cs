@@ -68,9 +68,9 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <exception cref="ProtocolException">Thrown if the association is not of the expected type.</exception>
 		public Association Deserialize(IProtocolMessage containingMessage, bool privateAssociation, string handle) {
 			var formatter = AssociationDataBag.CreateFormatter(this.cryptoKeyStore, AssociationHandleEncodingSecretBucket);
-			AssociationDataBag bag;
+			AssociationDataBag bag = new AssociationDataBag();
 			try {
-				bag = formatter.Deserialize(containingMessage, handle, Protocol.Default.openid.assoc_handle);
+				formatter.Deserialize(bag, containingMessage, handle, Protocol.Default.openid.assoc_handle);
 			} catch (ProtocolException ex) {
 				Logger.OpenId.Error("Rejecting an association because deserialization of the encoded handle failed.", ex);
 				return null;

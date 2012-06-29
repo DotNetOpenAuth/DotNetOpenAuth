@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.props))\EnlistmentInfo.props" Condition=" '$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.props))' != '' " />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+  </PropertyGroup>
+  <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.props" />
+  <PropertyGroup>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{CCF3728A-B3D7-404A-9BC6-75197135F2D7}</ProjectGuid>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <AssemblyName>DotNetOpenAuth.OAuth2.ClientAuthorization</AssemblyName>
+  </PropertyGroup>
+  <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.Product.props" />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="OAuth2\ChannelElements\EndUserAuthorizationResponseTypeEncoder.cs" />
+    <Compile Include="OAuth2\ChannelElements\GrantTypeEncoder.cs" />
+    <Compile Include="OAuth2\ChannelElements\OAuth2ChannelBase.cs" />
+    <Compile Include="OAuth2\ClientAuthorizationStrings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ClientAuthorizationStrings.resx</DependentUpon>
+    </Compile>
+    <Compile Include="OAuth2\ClientType.cs" />
+    <Compile Include="OAuth2\IClientDescription.cs" />
+    <Compile Include="OAuth2\Messages\AccessTokenAuthorizationCodeRequest.cs" />
+    <Compile Include="OAuth2\Messages\AccessTokenClientCredentialsRequest.cs" />
+    <Compile Include="OAuth2\Messages\AccessTokenFailedResponse.cs" />
+    <Compile Include="OAuth2\Messages\AccessTokenRefreshRequest.cs" />
+    <Compile Include="OAuth2\Messages\AccessTokenRequestBase.cs" />
+    <Compile Include="OAuth2\Messages\AccessTokenResourceOwnerPasswordCredentialsRequest.cs" />
+    <Compile Include="OAuth2\Messages\AccessTokenResult.cs" />
+    <Compile Include="OAuth2\Messages\AccessTokenSuccessResponse.cs" />
+    <Compile Include="OAuth2\Messages\AuthenticatedClientRequestBase.cs" />
+    <Compile Include="OAuth2\Messages\EndUserAuthorizationFailedResponse.cs" />
+    <Compile Include="OAuth2\Messages\EndUserAuthorizationImplicitRequest.cs" />
+    <Compile Include="OAuth2\Messages\EndUserAuthorizationRequest.cs" />
+    <Compile Include="OAuth2\Messages\EndUserAuthorizationResponseType.cs" />
+    <Compile Include="OAuth2\Messages\EndUserAuthorizationSuccessAccessTokenResponse.cs" />
+    <Compile Include="OAuth2\Messages\EndUserAuthorizationSuccessAuthCodeResponse.cs" />
+    <Compile Include="OAuth2\Messages\EndUserAuthorizationSuccessResponseBase.cs" />
+    <Compile Include="OAuth2\Messages\GrantType.cs" />
+    <Compile Include="OAuth2\Messages\IAccessTokenIssuingResponse.cs" />
+    <Compile Include="OAuth2\Messages\IAccessTokenRequest.cs" />
+    <Compile Include="OAuth2\Messages\IAccessTokenRequestInternal.cs" />
+    <Compile Include="OAuth2\Messages\IMessageWithClientState.cs" />
+    <Compile Include="OAuth2\Messages\ScopedAccessTokenRequest.cs" />
+    <Compile Include="OAuth2\TokenEndpointProtocolException.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DotNetOpenAuth.Core\DotNetOpenAuth.Core.csproj">
+      <Project>{60426312-6AE5-4835-8667-37EDEA670222}</Project>
+      <Name>DotNetOpenAuth.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DotNetOpenAuth.OAuth2\DotNetOpenAuth.OAuth2.csproj">
+      <Project>{56459A6C-6BA2-4BAC-A9C0-27E3BD961FA6}</Project>
+      <Name>DotNetOpenAuth.OAuth2</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="OAuth2\ClientAuthorizationStrings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ClientAuthorizationStrings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="OAuth2\Messages\Access Token Request Messages.cd" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.targets" />
+  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))\EnlistmentInfo.targets" Condition=" '$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))' != '' " />
+</Project>

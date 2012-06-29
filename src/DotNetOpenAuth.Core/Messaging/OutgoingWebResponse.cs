@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.IO;
 	using System.Net;
 	using System.Net.Mime;
+	using System.ServiceModel.Web;
 	using System.Text;
 	using System.Threading;
 	using System.Web;
@@ -210,6 +211,23 @@ namespace DotNetOpenAuth.Messaging {
 			Requires.NotNull(context, "context");
 
 			this.Respond(context, false);
+		}
+
+		/// <summary>
+		/// Submits this response to a WCF response context.  Only available when no response body is included.
+		/// </summary>
+		/// <param name="responseContext">The response context to apply the response to.</param>
+		public virtual void Respond(OutgoingWebResponseContext responseContext) {
+			Requires.NotNull(responseContext, "responseContext");
+			if (this.ResponseStream != null) {
+				throw new NotSupportedException(Strings.ResponseBodyNotSupported);
+			}
+
+			responseContext.StatusCode = this.Status;
+			responseContext.SuppressEntityBody = true;
+			foreach (string header in this.Headers) {
+				responseContext.Headers[header] = this.Headers[header];
+			}
 		}
 
 		/// <summary>

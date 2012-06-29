@@ -30,7 +30,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			Assert.IsNull(requestMessage.AssociationHandle);
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void SecuritySettingsSetNull() {
 			var rp = new OpenIdRelyingParty(new StandardRelyingPartyApplicationStore());
 			rp.SecuritySettings = null;
@@ -78,7 +78,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			Assert.AreEqual(0, requests.Count());
 		}
 
-		[TestCase, ExpectedException(typeof(ProtocolException))]
+		[Test, ExpectedException(typeof(ProtocolException))]
 		public void CreateRequestOnNonOpenID() {
 			Uri nonOpenId = new Uri("http://www.microsoft.com/");
 			var rp = this.CreateRelyingParty();

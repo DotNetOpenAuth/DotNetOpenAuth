@@ -10,9 +10,7 @@
 	using DotNetOpenAuth.OAuth2.ChannelElements;
 	using DotNetOpenAuth.OAuth2.Messages;
 
-	internal class OAuth2AuthorizationServer : IAuthorizationServer {
-		private static readonly RSACryptoServiceProvider AsymmetricTokenSigningPrivateKey = CreateRSA();
-
+	internal class OAuth2AuthorizationServer : IAuthorizationServerHost {
 #if SAMPLESONLY
 		/// <summary>
 		/// This is the FOR SAMPLE ONLY hard-coded public key of the complementary OAuthResourceServer sample.
@@ -31,43 +29,39 @@
 		private static readonly RSAParameters ResourceServerEncryptionPublicKey;
 #endif
 
-		#region Implementation of IAuthorizationServer
+		#region Implementation of IAuthorizationServerHost
 
 		public ICryptoKeyStore CryptoKeyStore {
 			get { return MvcApplication.KeyNonceStore; }
 		}
 
-		public INonceStore VerificationCodeNonceStore {
+		public INonceStore NonceStore {
 			get { return MvcApplication.KeyNonceStore; }
 		}
 
-		public RSACryptoServiceProvider AccessTokenSigningKey {
-			get { return AsymmetricTokenSigningPrivateKey; }
-		}
+		public AccessTokenResult CreateAccessToken(IAccessTokenRequest accessTokenRequestMessage) {
+			var accessToken = new AuthorizationServerAccessToken();
 
-		public TimeSpan GetAccessTokenLifetime(IAccessTokenRequest accessTokenRequestMessage) {
 			// Just for the sake of the sample, we use a short-lived token.  This can be useful to mitigate the security risks
 			// of access tokens that are used over standard HTTP.
 			// But this is just the lifetime of the access token.  The client can still renew it using their refresh token until
 			// the authorization itself expires.
-			TimeSpan lifetime = TimeSpan.FromMinutes(2);
+			accessToken.Lifetime = TimeSpan.FromMinutes(2);
 
 			// Also take into account the remaining life of the authorization and artificially shorten the access token's lifetime
 			// to account for that if necessary.
 			//// TODO: code here
 
-			return lifetime;
-		}
-
-		public RSACryptoServiceProvider GetResourceServerEncryptionKey(IAccessTokenRequest accessTokenRequestMessage) {
-			var resourceServerEncryptionKey = new RSACryptoServiceProvider();
-
 			// For this sample, we assume just one resource server.
 			// If this authorization server needs to mint access tokens for more than one resource server,
 			// we'd look at the request message passed to us and decide which public key to return.
-			resourceServerEncryptionKey.ImportParameters(ResourceServerEncryptionPublicKey);
+			accessToken.ResourceServerEncryptionKey = new RSACryptoServiceProvider();
+			accessToken.ResourceServerEncryptionKey.ImportParameters(ResourceServerEncryptionPublicKey);
 
-			return resourceServerEncryptionKey;
+			accessToken.AccessTokenSigningKey = CreateRSA();
+
+			var result = new AccessTokenResult(accessToken);
+			return result;
 		}
 
 		public IClientDescription GetClient(string clientIdentifier) {
@@ -84,9 +78,13 @@
 			return this.IsAuthorizationValid(authorization.Scope, authorization.ClientIdentifier, authorization.UtcIssued, authorization.User);
 		}
 
-		public bool IsResourceOwnerCredentialValid(string userName, string password) {
+		public bool TryAuthorizeResourceOwnerCredentialGrant(string userName, string password, IAccessTokenRequest accessRequest, out string canonicalUserName) {
 			// This web site delegates user authentication to OpenID Providers, and as such no users have local passwords with this server.
 			throw new NotSupportedException();
+		}
+
+		public bool TryAuthorizeClientCredentialsGrant(IAccessTokenRequest accessRequest) {
+			throw new NotImplementedException();
 		}
 
 		#endregion
@@ -120,7 +118,7 @@
 		/// Creates the RSA key used by all the crypto service provider instances we create.
 		/// </summary>
 		/// <returns>RSA data that includes the private key.</returns>
-		private static RSAParameters CreateRSAKey() {
+		private static RSAParameters CreateAuthorizationServerSigningKey() {
 #if SAMPLESONLY
 			// Since the sample authorization server and the sample resource server must work together,
 			// we hard-code a FOR SAMPLE USE ONLY key pair.  The matching public key information is hard-coded into the OAuthResourceServer sample.
@@ -155,7 +153,7 @@
 
 		private static RSACryptoServiceProvider CreateRSA() {
 			var rsa = new RSACryptoServiceProvider();
-			rsa.ImportParameters(CreateRSAKey());
+			rsa.ImportParameters(CreateAuthorizationServerSigningKey());
 			return rsa;
 		}
 

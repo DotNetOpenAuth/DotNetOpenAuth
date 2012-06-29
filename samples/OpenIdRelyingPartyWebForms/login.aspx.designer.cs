@@ -40,6 +40,15 @@ namespace OpenIdRelyingPartyWebForms {
         protected global::System.Web.UI.WebControls.CheckBoxList papePolicies;
         
         /// <summary>
+        /// maxAuthTimeBox control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox maxAuthTimeBox;
+        
+        /// <summary>
         /// yahooLoginButton control.
         /// </summary>
         /// <remarks>

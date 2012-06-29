@@ -21,11 +21,6 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// </summary>
 		private readonly string providerName;
 
-		/// <summary>
-		/// The return url.
-		/// </summary>
-		private Uri returnUrl;
-
 		#endregion
 
 		#region Constructors and Destructors
@@ -71,8 +66,6 @@ namespace DotNetOpenAuth.AspNet.Clients {
 			Requires.NotNull(context, "context");
 			Requires.NotNull(returnUrl, "returnUrl");
 
-			this.returnUrl = returnUrl;
-
 			string redirectUrl = this.GetServiceLoginUrl(returnUrl).AbsoluteUri;
 			context.Response.Redirect(redirectUrl, endResponse: true);
 		}
@@ -86,7 +79,19 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <returns>
 		/// An instance of <see cref="AuthenticationResult"/> containing authentication result. 
 		/// </returns>
-		public virtual AuthenticationResult VerifyAuthentication(HttpContextBase context) {
+		public AuthenticationResult VerifyAuthentication(HttpContextBase context) {
+			throw new InvalidOperationException(WebResources.OAuthRequireReturnUrl);
+		}
+
+		/// <summary>
+		/// Check if authentication succeeded after user is redirected back from the service provider.
+		/// </summary>
+		/// <param name="context">The context.</param>
+		/// <param name="returnPageUrl">The return URL which should match the value passed to RequestAuthentication() method.</param>
+		/// <returns>
+		/// An instance of <see cref="AuthenticationResult"/> containing authentication result.
+		/// </returns>
+		public virtual AuthenticationResult VerifyAuthentication(HttpContextBase context, Uri returnPageUrl) {
 			Requires.NotNull(context, "context");
 
 			string code = context.Request.QueryString["code"];
@@ -94,7 +99,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 				return AuthenticationResult.Failed;
 			}
 
-			string accessToken = this.QueryAccessToken(this.returnUrl, code);
+			string accessToken = this.QueryAccessToken(returnPageUrl, code);
 			if (accessToken == null) {
 				return AuthenticationResult.Failed;
 			}
@@ -133,7 +138,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <returns>
 		/// An absolute URL. 
 		/// </returns>
-		[SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Login", 
+		[SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Login",
 			Justification = "Login is used more consistently in ASP.Net")]
 		protected abstract Uri GetServiceLoginUrl(Uri returnUrl);
 

@@ -26,14 +26,14 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			response.Attributes.Add(new AttributeValues("http://someOtherAttribute", "Value2"));
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentException))]
+		[Test, ExpectedException(typeof(ArgumentException))]
 		public void AddAttributeTwice() {
 			var response = new FetchResponse();
 			response.Attributes.Add(new AttributeValues("http://someattribute", "Value1"));
 			response.Attributes.Add(new AttributeValues("http://someattribute", "Value1"));
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void AddAttributeNull() {
 			var response = new FetchResponse();
 			response.Attributes.Add(null);

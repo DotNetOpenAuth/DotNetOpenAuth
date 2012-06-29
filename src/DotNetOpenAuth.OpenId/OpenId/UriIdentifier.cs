@@ -712,7 +712,10 @@ namespace DotNetOpenAuth.OpenId {
 			[SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase", Justification = "Schemes are traditionally displayed in lowercase.")]
 			internal void Initialize(bool hideNonStandardScheme) {
 				if (schemeField == null) {
-					schemeField = typeof(UriParser).GetField("m_Scheme", BindingFlags.NonPublic | BindingFlags.Instance);
+					schemeField =
+						typeof(UriParser).GetField("m_Scheme", BindingFlags.NonPublic | BindingFlags.Instance) ?? // .NET
+						typeof(UriParser).GetField("scheme_name", BindingFlags.NonPublic | BindingFlags.Instance); // Mono
+					ErrorUtilities.VerifyInternal(schemeField != null, "Unable to find the private field UriParser.m_Scheme");
 				}
 
 				this.RegisteredScheme = (string)schemeField.GetValue(this);

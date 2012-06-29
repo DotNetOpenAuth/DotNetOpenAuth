@@ -90,7 +90,7 @@ namespace DotNetOpenAuth.Messaging {
 			this.requestUri = requestUri;
 			this.form = form ?? new NameValueCollection();
 			this.queryString = HttpUtility.ParseQueryString(requestUri.Query);
-			this.headers = headers ?? new NameValueCollection();
+			this.headers = headers ?? new WebHeaderCollection();
 			this.serverVariables = new NameValueCollection();
 		}
 

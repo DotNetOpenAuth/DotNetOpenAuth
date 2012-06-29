@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
+	using System.Linq;
 
 	/// <summary>
 	/// A cache of <see cref="MessageDescription"/> instances.
@@ -35,7 +36,10 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
 		/// </returns>
 		public IEnumerator<MessageDescription> GetEnumerator() {
-			return this.reflectedMessageTypes.Values.GetEnumerator();
+			lock (this.reflectedMessageTypes) {
+				// We must clone the collection so that it's thread-safe to the caller as it leaves our lock.
+				return this.reflectedMessageTypes.Values.ToList().GetEnumerator();
+			}
 		}
 
 		#endregion
@@ -49,7 +53,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
 		/// </returns>
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
-			return this.reflectedMessageTypes.Values.GetEnumerator();
+			return this.GetEnumerator();
 		}
 
 		#endregion
@@ -71,15 +75,23 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			MessageTypeAndVersion key = new MessageTypeAndVersion(messageType, messageVersion);
 
 			MessageDescription result;
-			if (!this.reflectedMessageTypes.TryGetValue(key, out result)) {
+			lock (this.reflectedMessageTypes) {
+				this.reflectedMessageTypes.TryGetValue(key, out result);
+			}
+
+			if (result == null) {
+				// Construct the message outside the lock.
+				var newDescription = new MessageDescription(messageType, messageVersion);
+
+				// Then use the lock again to either acquire what someone else has created in the meantime, or 
+				// set and use our own result.
 				lock (this.reflectedMessageTypes) {
 					if (!this.reflectedMessageTypes.TryGetValue(key, out result)) {
-						this.reflectedMessageTypes[key] = result = new MessageDescription(messageType, messageVersion);
+						this.reflectedMessageTypes[key] = result = newDescription;
 					}
 				}
 			}
 
-			Contract.Assume(result != null, "We should never assign null values to this dictionary.");
 			return result;
 		}
 

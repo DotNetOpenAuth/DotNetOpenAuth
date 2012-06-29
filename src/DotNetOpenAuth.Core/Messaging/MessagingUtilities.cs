@@ -16,11 +16,13 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Linq;
 	using System.Net;
 	using System.Net.Mime;
+	using System.Runtime.Serialization.Json;
 	using System.Security;
 	using System.Security.Cryptography;
 	using System.Text;
 	using System.Web;
 	using System.Web.Mvc;
+	using System.Xml;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.Messaging.Reflection;
 
@@ -133,6 +135,21 @@ namespace DotNetOpenAuth.Messaging {
 			{ ">", @"\x3e" },
 			{ "=", @"\x3d" },
 		};
+
+		/// <summary>
+		/// The available compression algorithms.
+		/// </summary>
+		internal enum CompressionMethod {
+			/// <summary>
+			/// The Deflate algorithm.
+			/// </summary>
+			Deflate,
+
+			/// <summary>
+			/// The GZip algorithm.
+			/// </summary>
+			Gzip,
+		}
 
 		/// <summary>
 		/// Transforms an OutgoingWebResponse to an MVC-friendly ActionResult.
@@ -287,6 +304,56 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns><c>true</c> if the two TimeSpans are within <paramref name="marginOfError"/> of each other.</returns>
 		public static bool Equals(this TimeSpan self, TimeSpan other, TimeSpan marginOfError) {
 			return TimeSpan.FromMilliseconds(Math.Abs((self - other).TotalMilliseconds)) < marginOfError;
+		}
+
+		/// <summary>
+		/// Compares to string values for ordinal equality in such a way that its execution time does not depend on how much of the value matches.
+		/// </summary>
+		/// <param name="value1">The first value.</param>
+		/// <param name="value2">The second value.</param>
+		/// <returns>A value indicating whether the two strings share ordinal equality.</returns>
+		/// <remarks>
+		/// In signature equality checks, a difference in execution time based on how many initial characters match MAY
+		/// be used as an attack to figure out the expected signature.  It is therefore important to make a signature
+		/// equality check's execution time independent of how many characters match the expected value.
+		/// See http://codahale.com/a-lesson-in-timing-attacks/ for more information.
+		/// </remarks>
+		public static bool EqualsConstantTime(string value1, string value2) {
+			// If exactly one value is null, they don't match.
+			if (value1 == null ^ value2 == null) {
+				return false;
+			}
+
+			// If both values are null (since if one is at this point then they both are), it's a match.
+			if (value1 == null) {
+				return true;
+			}
+
+			if (value1.Length != value2.Length) {
+				return false;
+			}
+
+			// This looks like a pretty crazy way to compare values, but it provides a constant time equality check,
+			// and is more resistant to compiler optimizations than simply setting a boolean flag and returning the boolean after the loop.
+			int result = 0;
+			for (int i = 0; i < value1.Length; i++) {
+				result |= value1[i] ^ value2[i];
+			}
+
+			return result == 0;
+		}
+
+		/// <summary>
+		/// Gets the URL to the root of a web site, which may include a virtual directory path.
+		/// </summary>
+		/// <returns>An absolute URI.</returns>
+		internal static Uri GetWebRoot() {
+			HttpRequestBase requestInfo = new HttpRequestWrapper(HttpContext.Current.Request);
+			UriBuilder realmUrl = new UriBuilder(requestInfo.GetPublicFacingUrl());
+			realmUrl.Path = HttpContext.Current.Request.ApplicationPath;
+			realmUrl.Query = null;
+			realmUrl.Fragment = null;
+			return realmUrl.Uri;
 		}
 
 		/// <summary>
@@ -756,6 +823,12 @@ namespace DotNetOpenAuth.Messaging {
 			var cryptoKeyPair = cryptoKeyStore.GetKeys(bucket).FirstOrDefault(pair => pair.Value.Key.Length == keySize / 8);
 			if (cryptoKeyPair.Value == null || cryptoKeyPair.Value.ExpiresUtc < DateTime.UtcNow + minimumRemainingLife) {
 				// No key exists with enough remaining life for the required purpose.  Create a new key.
+				if (cryptoKeyPair.Value == null) {
+					Logger.Messaging.InfoFormat("{0}.GetKeys returned no keys for bucket \"{1}\" with the required key length of {2} bits.  A new key will be created", typeof(ICryptoKeyStore), bucket, keySize);
+				} else {
+					Logger.Messaging.InfoFormat("The first key returned by {0}.GetKeys for bucket \"{1}\" with the required key length of {2} bits was too near expiry to use.  A new key will be created", typeof(ICryptoKeyStore), bucket, keySize);
+				}
+
 				ErrorUtilities.VerifyHost(minimumRemainingLife <= SymmetricSecretKeyLifespan, "Unable to create a new symmetric key with the required lifespan of {0} because it is beyond the limit of {1}.", minimumRemainingLife, SymmetricSecretKeyLifespan);
 				byte[] secret = GetCryptoRandomData(keySize / 8);
 				DateTime expires = DateTime.UtcNow + SymmetricSecretKeyLifespan;
@@ -770,6 +843,7 @@ namespace DotNetOpenAuth.Messaging {
 					cryptoKeyStore.StoreKey(bucket, handle, cryptoKey);
 				} catch (CryptoKeyCollisionException) {
 					ErrorUtilities.VerifyInternal(++failedAttempts < 3, "Unable to derive a unique handle to a private symmetric key.");
+					Logger.Messaging.Warn("A randomly generated crypto key handle collided with an existing handle.  Another randomly generated handle will be attempted till the retry count is met.");
 					goto tryAgain;
 				}
 			}
@@ -781,19 +855,36 @@ namespace DotNetOpenAuth.Messaging {
 		/// Compresses a given buffer.
 		/// </summary>
 		/// <param name="buffer">The buffer to compress.</param>
+		/// <param name="method">The compression algorithm to use.</param>
 		/// <returns>The compressed data.</returns>
 		[SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "This Dispose is safe.")]
 		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "No apparent problem.  False positive?")]
-		internal static byte[] Compress(byte[] buffer) {
+		internal static byte[] Compress(byte[] buffer, CompressionMethod method = CompressionMethod.Deflate) {
 			Requires.NotNull(buffer, "buffer");
 			Contract.Ensures(Contract.Result<byte[]>() != null);
 
 			using (var ms = new MemoryStream()) {
-				using (var compressingStream = new DeflateStream(ms, CompressionMode.Compress, true)) {
-					compressingStream.Write(buffer, 0, buffer.Length);
-				}
+				Stream compressingStream = null;
+				try {
+					switch (method) {
+						case CompressionMethod.Deflate:
+							compressingStream = new DeflateStream(ms, CompressionMode.Compress, true);
+							break;
+						case CompressionMethod.Gzip:
+							compressingStream = new GZipStream(ms, CompressionMode.Compress, true);
+							break;
+						default:
+							Requires.InRange(false, "method");
+							break;
+					}
 
-				return ms.ToArray();
+					compressingStream.Write(buffer, 0, buffer.Length);
+					return ms.ToArray();
+				} finally {
+					if (compressingStream != null) {
+						compressingStream.Dispose();
+					}
+				}
 			}
 		}
 
@@ -801,17 +892,35 @@ namespace DotNetOpenAuth.Messaging {
 		/// Decompresses a given buffer.
 		/// </summary>
 		/// <param name="buffer">The buffer to decompress.</param>
+		/// <param name="method">The compression algorithm used.</param>
 		/// <returns>The decompressed data.</returns>
 		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "No apparent problem.  False positive?")]
 		[SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "This Dispose is safe.")]
-		internal static byte[] Decompress(byte[] buffer) {
+		internal static byte[] Decompress(byte[] buffer, CompressionMethod method = CompressionMethod.Deflate) {
 			Requires.NotNull(buffer, "buffer");
 			Contract.Ensures(Contract.Result<byte[]>() != null);
 
 			using (var compressedDataStream = new MemoryStream(buffer)) {
 				using (var decompressedDataStream = new MemoryStream()) {
-					using (var decompressingStream = new DeflateStream(compressedDataStream, CompressionMode.Decompress, true)) {
+					Stream decompressingStream = null;
+					try {
+						switch (method) {
+							case CompressionMethod.Deflate:
+								decompressingStream = new DeflateStream(compressedDataStream, CompressionMode.Decompress, true);
+								break;
+							case CompressionMethod.Gzip:
+								decompressingStream = new GZipStream(compressedDataStream, CompressionMode.Decompress, true);
+								break;
+							default:
+								Requires.InRange(false, "method");
+								break;
+						}
+
 						decompressingStream.CopyTo(decompressedDataStream);
+					} finally {
+						if (decompressingStream != null) {
+							decompressingStream.Dispose();
+						}
 					}
 
 					return decompressedDataStream.ToArray();
@@ -865,43 +974,6 @@ namespace DotNetOpenAuth.Messaging {
 			builder.Append('=', missingPaddingCharacters);
 
 			return Convert.FromBase64String(builder.ToString());
-		}
-
-		/// <summary>
-		/// Compares to string values for ordinal equality in such a way that its execution time does not depend on how much of the value matches.
-		/// </summary>
-		/// <param name="value1">The first value.</param>
-		/// <param name="value2">The second value.</param>
-		/// <returns>A value indicating whether the two strings share ordinal equality.</returns>
-		/// <remarks>
-		/// In signature equality checks, a difference in execution time based on how many initial characters match MAY
-		/// be used as an attack to figure out the expected signature.  It is therefore important to make a signature
-		/// equality check's execution time independent of how many characters match the expected value.
-		/// See http://codahale.com/a-lesson-in-timing-attacks/ for more information.
-		/// </remarks>
-		internal static bool EqualsConstantTime(string value1, string value2) {
-			// If exactly one value is null, they don't match.
-			if (value1 == null ^ value2 == null) {
-				return false;
-			}
-
-			// If both values are null (since if one is at this point then they both are), it's a match.
-			if (value1 == null) {
-				return true;
-			}
-
-			if (value1.Length != value2.Length) {
-				return false;
-			}
-
-			// This looks like a pretty crazy way to compare values, but it provides a constant time equality check,
-			// and is more resistant to compiler optimizations than simply setting a boolean flag and returning the boolean after the loop.
-			int result = 0;
-			for (int i = 0; i < value1.Length; i++) {
-				result |= value1[i] ^ value2[i];
-			}
-
-			return result == 0;
 		}
 
 		/// <summary>
@@ -1597,6 +1669,68 @@ namespace DotNetOpenAuth.Messaging {
 			}
 			builder.Append("}");
 			return builder.ToString();
+		}
+
+		/// <summary>
+		/// Serializes the given message as a JSON string.
+		/// </summary>
+		/// <param name="message">The message to serialize.</param>
+		/// <param name="messageDescriptions">The cached message descriptions to use for reflection.</param>
+		/// <returns>A JSON string.</returns>
+		[SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "This Dispose is safe.")]
+		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "No apparent problem.  False positive?")]
+		internal static string SerializeAsJson(IMessage message, MessageDescriptionCollection messageDescriptions) {
+			Requires.NotNull(message, "message");
+			Requires.NotNull(messageDescriptions, "messageDescriptions");
+
+			var encoding = Encoding.UTF8;
+			var bytes = SerializeAsJsonBytes(message, messageDescriptions, encoding);
+			string json = encoding.GetString(bytes);
+			return json;
+		}
+
+		/// <summary>
+		/// Serializes the given message as a JSON string.
+		/// </summary>
+		/// <param name="message">The message to serialize.</param>
+		/// <param name="messageDescriptions">The cached message descriptions to use for reflection.</param>
+		/// <param name="encoding">The encoding to use.  Defaults to <see cref="Encoding.UTF8"/></param>
+		/// <returns>A JSON string.</returns>
+		[SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "This Dispose is safe.")]
+		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "No apparent problem.  False positive?")]
+		internal static byte[] SerializeAsJsonBytes(IMessage message, MessageDescriptionCollection messageDescriptions, Encoding encoding = null) {
+			Requires.NotNull(message, "message");
+			Requires.NotNull(messageDescriptions, "messageDescriptions");
+
+			encoding = encoding ?? Encoding.UTF8;
+			MessageDictionary messageDictionary = messageDescriptions.GetAccessor(message);
+			using (var memoryStream = new MemoryStream()) {
+				using (var jsonWriter = JsonReaderWriterFactory.CreateJsonWriter(memoryStream, encoding)) {
+					MessageSerializer.Serialize(messageDictionary, jsonWriter);
+					jsonWriter.Flush();
+				}
+
+				return memoryStream.ToArray();
+			}
+		}
+
+		/// <summary>
+		/// Deserializes a JSON object into a message.
+		/// </summary>
+		/// <param name="jsonBytes">The buffer containing the JSON string.</param>
+		/// <param name="receivingMessage">The message to deserialize the object into.</param>
+		/// <param name="messageDescriptions">The cache of message descriptions.</param>
+		/// <param name="encoding">The encoding that the JSON bytes are in.</param>
+		internal static void DeserializeFromJson(byte[] jsonBytes, IMessage receivingMessage, MessageDescriptionCollection messageDescriptions, Encoding encoding = null) {
+			Requires.NotNull(jsonBytes, "jsonBytes");
+			Requires.NotNull(receivingMessage, "receivingMessage");
+			Requires.NotNull(messageDescriptions, "messageDescriptions");
+
+			encoding = encoding ?? Encoding.UTF8;
+			MessageDictionary messageDictionary = messageDescriptions.GetAccessor(receivingMessage);
+			using (var jsonReader = JsonReaderWriterFactory.CreateJsonReader(jsonBytes, 0, jsonBytes.Length, encoding, Channel.DefaultUntrustedXmlDictionaryReaderQuotas, null)) {
+				MessageSerializer.Deserialize(messageDictionary, jsonReader);
+			}
 		}
 
 		/// <summary>

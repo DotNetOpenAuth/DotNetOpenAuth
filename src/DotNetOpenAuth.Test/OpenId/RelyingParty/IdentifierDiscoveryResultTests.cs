@@ -143,37 +143,37 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			Assert.IsFalse(se.IsTypeUriPresent("http://someother"));
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void IsTypeUriPresentNull() {
 			IdentifierDiscoveryResult se = IdentifierDiscoveryResult.CreateForClaimedIdentifier(this.claimedXri, this.userSuppliedXri, this.localId, new ProviderEndpointDescription(this.providerEndpoint, this.v20TypeUris), this.servicePriority, this.uriPriority);
 			se.IsTypeUriPresent(null);
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentException))]
+		[Test, ExpectedException(typeof(ArgumentException))]
 		public void IsTypeUriPresentEmpty() {
 			IdentifierDiscoveryResult se = IdentifierDiscoveryResult.CreateForClaimedIdentifier(this.claimedXri, this.userSuppliedXri, this.localId, new ProviderEndpointDescription(this.providerEndpoint, this.v20TypeUris), this.servicePriority, this.uriPriority);
 			se.IsTypeUriPresent(string.Empty);
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void IsExtensionSupportedNullType() {
 			var se = IdentifierDiscoveryResult.CreateForProviderIdentifier(OPUri, new ProviderEndpointDescription(OPUri, this.v20TypeUris), null, null);
 			se.IsExtensionSupported((Type)null);
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void IsTypeUriPresentNullString() {
 			var se = IdentifierDiscoveryResult.CreateForProviderIdentifier(OPUri, new ProviderEndpointDescription(OPUri, this.v20TypeUris), null, null);
 			se.IsTypeUriPresent((string)null);
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentException))]
+		[Test, ExpectedException(typeof(ArgumentException))]
 		public void IsTypeUriPresentEmptyString() {
 			var se = IdentifierDiscoveryResult.CreateForProviderIdentifier(OPUri, new ProviderEndpointDescription(OPUri, this.v20TypeUris), null, null);
 			se.IsTypeUriPresent(string.Empty);
 		}
 
-		[TestCase, ExpectedException(typeof(ArgumentNullException))]
+		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void IsExtensionSupportedNullExtension() {
 			var se = IdentifierDiscoveryResult.CreateForProviderIdentifier(OPUri, new ProviderEndpointDescription(OPUri, this.v20TypeUris), null, null);
 			se.IsExtensionSupported((IOpenIdMessageExtension)null);
@@ -188,7 +188,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 
 			se = IdentifierDiscoveryResult.CreateForProviderIdentifier(
 				OPUri,
-				new ProviderEndpointDescription(OPUri, new[] { Protocol.V20.ClaimedIdentifierServiceTypeURI, "http://someextension", Constants.sreg_ns }),
+				new ProviderEndpointDescription(OPUri, new[] { Protocol.V20.ClaimedIdentifierServiceTypeURI, "http://someextension", Constants.TypeUris.Standard }),
 				null,
 				null);
 			Assert.IsTrue(se.IsExtensionSupported<ClaimsRequest>());

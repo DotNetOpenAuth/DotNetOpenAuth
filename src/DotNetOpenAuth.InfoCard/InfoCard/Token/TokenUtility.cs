@@ -97,6 +97,10 @@ namespace DotNetOpenAuth.InfoCard {
 				}),
 				MaximumClockSkew);
 
+			if (audience != null) {
+				samlAuthenticator.AllowedAudienceUris.Add(audience.AbsoluteUri);
+			}
+
 			return AuthorizationContext.CreateDefaultAuthorizationContext(samlAuthenticator.ValidateToken(token));
 		}
 

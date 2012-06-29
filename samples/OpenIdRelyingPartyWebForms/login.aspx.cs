@@ -45,12 +45,18 @@ namespace OpenIdRelyingPartyWebForms {
 			}
 
 			// Add the PAPE extension if any policy was requested.
+			var pape = new PolicyRequest();
 			if (policies.Count > 0) {
-				var pape = new PolicyRequest();
 				foreach (string policy in policies) {
 					pape.PreferredPolicies.Add(policy);
 				}
+			}
 
+			if (this.maxAuthTimeBox.Text.Length > 0) {
+				pape.MaximumAuthenticationAge = TimeSpan.FromSeconds(double.Parse(this.maxAuthTimeBox.Text));
+			}
+
+			if (pape.PreferredPolicies.Count > 0 || pape.MaximumAuthenticationAge.HasValue) {
 				request.AddExtension(pape);
 			}
 		}

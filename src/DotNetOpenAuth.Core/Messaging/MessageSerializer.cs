@@ -74,7 +74,7 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
-		/// Reads the data from a message instance and writes a XML/JSON encoding of it.
+		/// Reads the data from a message instance and writes an XML/JSON encoding of it.
 		/// </summary>
 		/// <param name="messageDictionary">The message to be serialized.</param>
 		/// <param name="writer">The writer to use for the serialized form.</param>

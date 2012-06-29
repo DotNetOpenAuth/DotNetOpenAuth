@@ -29,6 +29,7 @@ namespace DotNetOpenAuth.OpenId {
 	/// </remarks>
 	[Serializable]
 	[Pure]
+	[DefaultEncoder(typeof(MessagePartRealmConverter))]
 	public class Realm {
 		/// <summary>
 		/// A regex used to detect a wildcard that is being used in the realm.
@@ -57,17 +58,6 @@ namespace DotNetOpenAuth.OpenId {
 		/// The Uri of the realm, with the wildcard (if any) removed.
 		/// </summary>
 		private Uri uri;
-
-		/// <summary>
-		/// Initializes static members of the <see cref="Realm"/> class.
-		/// </summary>
-		static Realm() {
-			Func<string, Realm> safeRealm = str => {
-				Contract.Assume(str != null);
-				return new Realm(str);
-			};
-			MessagePart.Map<Realm>(realm => realm.ToString(), realm => realm.OriginalString, safeRealm);
-		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Realm"/> class.
@@ -126,11 +116,7 @@ namespace DotNetOpenAuth.OpenId {
 				Requires.ValidState(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
 				Contract.Ensures(Contract.Result<Realm>() != null);
 
-				HttpRequestBase requestInfo = new HttpRequestWrapper(HttpContext.Current.Request);
-				UriBuilder realmUrl = new UriBuilder(requestInfo.GetPublicFacingUrl());
-				realmUrl.Path = HttpContext.Current.Request.ApplicationPath;
-				realmUrl.Query = null;
-				realmUrl.Fragment = null;
+				var realmUrl = new UriBuilder(MessagingUtilities.GetWebRoot());
 
 				// For RP discovery, the realm url MUST NOT redirect.  To prevent this for 
 				// virtual directory hosted apps, we need to make sure that the realm path ends
@@ -508,5 +494,41 @@ namespace DotNetOpenAuth.OpenId {
 			Contract.Invariant(this.uri.AbsoluteUri != null);
 		}
 #endif
+
+		/// <summary>
+		/// Provides conversions to and from strings for messages that include members of this type.
+		/// </summary>
+		private class MessagePartRealmConverter : IMessagePartOriginalEncoder {
+			/// <summary>
+			/// Encodes the specified value.
+			/// </summary>
+			/// <param name="value">The value.  Guaranteed to never be null.</param>
+			/// <returns>The <paramref name="value"/> in string form, ready for message transport.</returns>
+			public string Encode(object value) {
+				Requires.NotNull(value, "value");
+				return value.ToString();
+			}
+
+			/// <summary>
+			/// Decodes the specified value.
+			/// </summary>
+			/// <param name="value">The string value carried by the transport.  Guaranteed to never be null, although it may be empty.</param>
+			/// <returns>The deserialized form of the given string.</returns>
+			/// <exception cref="FormatException">Thrown when the string value given cannot be decoded into the required object type.</exception>
+			public object Decode(string value) {
+				Requires.NotNull(value, "value");
+				return new Realm(value);
+			}
+
+			/// <summary>
+			/// Encodes the specified value as the original value that was formerly decoded.
+			/// </summary>
+			/// <param name="value">The value.  Guaranteed to never be null.</param>
+			/// <returns>The <paramref name="value"/> in string form, ready for message transport.</returns>
+			public string EncodeAsOriginalString(object value) {
+				Requires.NotNull(value, "value");
+				return ((Realm)value).OriginalString;
+			}
+		}
 	}
 }

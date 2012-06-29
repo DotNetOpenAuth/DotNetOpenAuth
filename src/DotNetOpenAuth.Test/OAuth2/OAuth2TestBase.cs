@@ -13,6 +13,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OAuth2;
 	using DotNetOpenAuth.OAuth2.ChannelElements;
+	using DotNetOpenAuth.OAuth2.Messages;
 	using Moq;
 
 	public class OAuth2TestBase : TestBase {
@@ -38,10 +39,10 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 			ClientCallback,
 			ClientType.Confidential);
 
-		protected static readonly IAuthorizationServer AuthorizationServerMock = CreateAuthorizationServerMock().Object;
+		protected static readonly IAuthorizationServerHost AuthorizationServerMock = CreateAuthorizationServerMock().Object;
 
-		protected static Mock<IAuthorizationServer> CreateAuthorizationServerMock() {
-			var authHostMock = new Mock<IAuthorizationServer>();
+		protected static Mock<IAuthorizationServerHost> CreateAuthorizationServerMock() {
+			var authHostMock = new Mock<IAuthorizationServerHost>();
 			var cryptoStore = new MemoryCryptoKeyStore();
 			authHostMock.Setup(m => m.GetClient(ClientId)).Returns(ClientDescription);
 			authHostMock.SetupGet(m => m.CryptoKeyStore).Returns(cryptoStore);
@@ -52,7 +53,9 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 						d =>
 						d.ClientIdentifier == ClientId && d.User == ResourceOwnerUsername &&
 						MessagingUtilities.AreEquivalent(d.Scope, TestScopes)))).Returns(true);
-			authHostMock.Setup(m => m.IsResourceOwnerCredentialValid(ResourceOwnerUsername, ResourceOwnerPassword)).Returns(true);
+			string canonicalUserName = ResourceOwnerUsername;
+			authHostMock.Setup(m => m.TryAuthorizeResourceOwnerCredentialGrant(ResourceOwnerUsername, ResourceOwnerPassword, It.IsAny<IAccessTokenRequest>(), out canonicalUserName)).Returns(true);
+			authHostMock.Setup(m => m.CreateAccessToken(It.IsAny<IAccessTokenRequest>())).Returns(new AccessTokenResult(new AuthorizationServerAccessToken()));
 			return authHostMock;
 		}
 	}

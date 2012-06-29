@@ -45,11 +45,6 @@ namespace DotNetOpenAuth.OAuth2 {
 		internal const string BearerTokenEncodedUrlParameterName = "access_token";
 
 		/// <summary>
-		/// The "type" string.
-		/// </summary>
-		internal const string type = "type";
-
-		/// <summary>
 		/// The "state" string.
 		/// </summary>
 		internal const string state = "state";
@@ -58,26 +53,6 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// The "redirect_uri_mismatch" string.
 		/// </summary>
 		internal const string redirect_uri_mismatch = "redirect_uri_mismatch";
-
-		/// <summary>
-		/// The "bad_verification_code" string.
-		/// </summary>
-		internal const string bad_verification_code = "bad_verification_code";
-
-		/// <summary>
-		/// The "incorrect_client_credentials" string.
-		/// </summary>
-		internal const string incorrect_client_credentials = "incorrect_client_credentials";
-
-		/// <summary>
-		/// The "unauthorized_client" string.
-		/// </summary>
-		internal const string unauthorized_client = "unauthorized_client";
-
-		/// <summary>
-		/// The "authorization_expired" string.
-		/// </summary>
-		internal const string authorization_expired = "authorization_expired";
 
 		/// <summary>
 		/// The "redirect_uri" string.
@@ -95,11 +70,6 @@ namespace DotNetOpenAuth.OAuth2 {
 		internal const string scope = "scope";
 
 		/// <summary>
-		/// The "immediate" string.
-		/// </summary>
-		internal const string immediate = "immediate";
-
-		/// <summary>
 		/// The "client_secret" string.
 		/// </summary>
 		internal const string client_secret = "client_secret";
@@ -110,21 +80,6 @@ namespace DotNetOpenAuth.OAuth2 {
 		internal const string code = "code";
 
 		/// <summary>
-		/// The "user_code" string.
-		/// </summary>
-		internal const string user_code = "user_code";
-
-		/// <summary>
-		/// The "verification_uri" string.
-		/// </summary>
-		internal const string verification_uri = "verification_uri";
-
-		/// <summary>
-		/// The "interval" string.
-		/// </summary>
-		internal const string interval = "interval";
-
-		/// <summary>
 		/// The "error" string.
 		/// </summary>
 		internal const string error = "error";
@@ -133,11 +88,6 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// The "access_token" string.
 		/// </summary>
 		internal const string access_token = "access_token";
-
-		/// <summary>
-		/// The "access_token_secret" string.
-		/// </summary>
-		internal const string access_token_secret = "access_token_secret";
 
 		/// <summary>
 		/// The "token_type" string.
@@ -155,11 +105,6 @@ namespace DotNetOpenAuth.OAuth2 {
 		internal const string expires_in = "expires_in";
 
 		/// <summary>
-		/// The "expired_delegation_code" string.
-		/// </summary>
-		internal const string expired_delegation_code = "expired_delegation_code";
-
-		/// <summary>
 		/// The "username" string.
 		/// </summary>
 		internal const string username = "username";
@@ -168,26 +113,6 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// The "password" string.
 		/// </summary>
 		internal const string password = "password";
-
-		/// <summary>
-		/// The "format" string.
-		/// </summary>
-		internal const string format = "format";
-
-		/// <summary>
-		/// The "assertion" string.
-		/// </summary>
-		internal const string assertion = "assertion";
-
-		/// <summary>
-		/// The "assertion_type" string.
-		/// </summary>
-		internal const string assertion_type = "assertion_type";
-
-		/// <summary>
-		/// The "user_denied" string.
-		/// </summary>
-		internal const string user_denied = "user_denied";
 
 		/// <summary>
 		/// Gets the <see cref="Protocol"/> instance with values initialized for V1.0 of the protocol.
@@ -286,27 +211,38 @@ namespace DotNetOpenAuth.OAuth2 {
 		internal static class AccessTokenRequestErrorCodes
 		{
 			/// <summary>
-			/// The request is missing a required parameter, includes an unknown parameter or parameter value, repeats a parameter, includes multiple credentials, utilizes more than one mechanism for authenticating the client, or is otherwise malformed.
+			/// The request is missing a required parameter, includes an unknown parameter or parameter value, repeats a parameter,
+			/// includes multiple credentials, utilizes more than one mechanism for authenticating the client, or is otherwise malformed.
 			/// </summary>
 			internal const string InvalidRequest = "invalid_request";
 
 			/// <summary>
-			/// The client is not authorized to use the access grant type provided.
+			/// Client authentication failed (e.g. unknown client, no client authentication included, or unsupported authentication method).
+			/// The authorization server MAY return an HTTP 401 (Unauthorized) status code to indicate which HTTP authentication schemes are supported.
+			/// If the client attempted to authenticate via the Authorization request header field, the authorization server MUST respond with
+			/// an HTTP 401 (Unauthorized) status code, and include the WWW-Authenticate response header field matching the authentication scheme
+			/// used by the client.
+			/// </summary>
+			internal const string InvalidClient = "invalid_client";
+
+			/// <summary>
+			/// The provided authorization grant (e.g. authorization code, resource owner credentials) or refresh token is invalid, expired,
+			/// revoked, does not match the redirection URI used in the authorization request, or was issued to another client.
+			/// </summary>
+			internal const string InvalidGrant = "invalid_grant";
+
+			/// <summary>
+			/// The authenticated client is not authorized to use this authorization grant type.
 			/// </summary>
 			internal const string UnauthorizedClient = "unauthorized_client";
 
 			/// <summary>
-			/// The resource owner or authorization server denied the request.
+			/// The authorization grant type is not supported by the authorization server.
 			/// </summary>
-			internal const string AccessDenied = "access_denied";
+			internal const string UnsupportedGrantType = "unsupported_grant_type";
 
 			/// <summary>
-			/// The authorization server does not support obtaining an access token using this method.
-			/// </summary>
-			internal const string UnsupportedGrantType = "unsupported_response_type";
-
-			/// <summary>
-			/// The requested scope is invalid, unknown, malformed, or exceeds the previously granted scope.
+			/// The requested scope is invalid, unknown, malformed, or exceeds the scope granted by the resource owner.
 			/// </summary>
 			internal const string InvalidScope = "invalid_scope";
 		}
@@ -360,6 +296,40 @@ namespace DotNetOpenAuth.OAuth2 {
 			/// The "bearer" token type.
 			/// </summary>
 			internal const string Bearer = "bearer";
+		}
+
+		internal static class BearerTokenUnauthorizedResponseParameters {
+			internal const string Realm = "realm";
+			internal const string ErrorCode = "error";
+			internal const string ErrorDescription = "error_description";
+			internal const string ErrorUri = "error_uri";
+			internal const string Scope = "scope";
+		}
+
+		/// <summary>
+		/// The error codes prescribed in http://self-issued.info/docs/draft-ietf-oauth-v2-bearer.html#resource-error-codes
+		/// </summary>
+		internal static class BearerTokenErrorCodes {
+			/// <summary>
+			/// The request is missing a required parameter, includes an unsupported parameter or parameter value,
+			/// repeats the same parameter, uses more than one method for including an access token, or is otherwise
+			/// malformed. The resource server SHOULD respond with the HTTP 400 (Bad Request) status code.
+			/// </summary>
+			internal const string InvalidRequest = "invalid_request";
+
+			/// <summary>
+			/// The access token provided is expired, revoked, malformed, or invalid for other reasons.
+			/// The resource SHOULD respond with the HTTP 401 (Unauthorized) status code. The client MAY request
+			/// a new access token and retry the protected resource request.
+			/// </summary>
+			internal const string InvalidToken = "invalid_token";
+
+			/// <summary>
+			/// The request requires higher privileges than provided by the access token. The resource server
+			/// SHOULD respond with the HTTP 403 (Forbidden) status code and MAY include the scope attribute
+			/// with the scope necessary to access the protected resource.
+			/// </summary>
+			internal const string InsufficientScope = "insufficient_scope";
 		}
 	}
 }

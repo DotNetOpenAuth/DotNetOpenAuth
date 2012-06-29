@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Net;
 	using System.Text;
 	using DotNetOpenAuth.OAuth2;
 	using DotNetOpenAuth.Test.Mocks;
@@ -15,12 +16,12 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 	internal class OAuth2Coordinator<TClient> : CoordinatorBase<TClient, AuthorizationServer>
 		where TClient : ClientBase {
 		private readonly AuthorizationServerDescription serverDescription;
-		private readonly IAuthorizationServer authServerHost;
+		private readonly IAuthorizationServerHost authServerHost;
 		private readonly TClient client;
 
 		internal OAuth2Coordinator(
 			AuthorizationServerDescription serverDescription,
-			IAuthorizationServer authServerHost,
+			IAuthorizationServerHost authServerHost,
 			TClient client,
 			Action<TClient> clientAction,
 			Action<AuthorizationServer> authServerAction)
@@ -34,13 +35,13 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 			this.client = client;
 
 			this.client.ClientIdentifier = OAuth2TestBase.ClientId;
-			this.client.ClientSecret = OAuth2TestBase.ClientSecret;
+			this.client.ClientCredentialApplicator = ClientCredentialApplicator.PostParameter(OAuth2TestBase.ClientSecret);
 		}
 
 		internal override void Run() {
 			var authServer = new AuthorizationServer(this.authServerHost);
 
-			var rpCoordinatingChannel = new CoordinatingChannel(this.client.Channel, this.IncomingMessageFilter, this.OutgoingMessageFilter);
+			var rpCoordinatingChannel = new CoordinatingOAuth2ClientChannel(this.client.Channel, this.IncomingMessageFilter, this.OutgoingMessageFilter);
 			var opCoordinatingChannel = new CoordinatingOAuth2AuthServerChannel(authServer.Channel, this.IncomingMessageFilter, this.OutgoingMessageFilter);
 			rpCoordinatingChannel.RemoteChannel = opCoordinatingChannel;
 			opCoordinatingChannel.RemoteChannel = rpCoordinatingChannel;
