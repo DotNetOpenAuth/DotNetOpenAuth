@@ -29,5 +29,6 @@
 		<file src="$OutputPath45$DotNetOpenAuth.OAuth2.ClientAuthorization.xml" target="lib\net45-full" />
 
 		<file src="..\src\DotNetOpenAuth.OAuth2.ClientAuthorization\**\*.cs" target="src" />
+		<file src="$GeneratedAssemblyInfoSourceFile$" target="src" />
 	</files>
 </package>
