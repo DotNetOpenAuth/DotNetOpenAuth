@@ -150,12 +150,19 @@ namespace DotNetOpenAuth.Messaging {
 					Logger.Http.InfoFormat("The HTTP error code {0} {1} is being accepted because the {2} flag is set.", (int)response.StatusCode, response.StatusCode, DirectWebRequestOptions.AcceptAllHttpResponses);
 					return new NetworkDirectWebResponse(request.RequestUri, response);
 				}
+		        string httpErrorResponse = null;
+		        if (ex.Response != null) {
+		            var stream = ex.Response.GetResponseStream();
+		            if (stream != null && stream.CanRead) {
+		                using (var reader = new StreamReader(stream)) {
+		                    httpErrorResponse = reader.ReadToEnd();
+		                }
+		            }
+		        }
 
 				if (Logger.Http.IsErrorEnabled) {
 					if (response != null) {
-						using (var reader = new StreamReader(ex.Response.GetResponseStream())) {
-							Logger.Http.ErrorFormat("WebException from {0}: {1}{2}", ex.Response.ResponseUri, Environment.NewLine, reader.ReadToEnd());
-						}
+						Logger.Http.ErrorFormat("WebException from {0}: {1}{2}", ex.Response.ResponseUri, Environment.NewLine, httpErrorResponse);
 					} else {
 						Logger.Http.ErrorFormat("WebException {1} from {0}, no response available.", request.RequestUri, ex.Status);
 					}
@@ -170,7 +177,7 @@ namespace DotNetOpenAuth.Messaging {
 					response.Close();
 				}
 
-				throw ErrorUtilities.Wrap(ex, MessagingStrings.ErrorInRequestReplyMessage);
+                throw new ProtocolWebException(ex, MessagingStrings.ErrorInRequestReplyMessage, httpErrorResponse);
 			}
 		}
 
