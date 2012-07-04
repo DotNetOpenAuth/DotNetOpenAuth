@@ -57,6 +57,7 @@
     <Compile Include="Messaging\NetworkDirectWebResponse.cs" />
     <Compile Include="Messaging\OutgoingWebResponseActionResult.cs" />
     <Compile Include="Messaging\ProtocolFaultResponseException.cs" />
+    <Compile Include="Messaging\ProtocolWebException.cs" />
     <Compile Include="Messaging\Reflection\IMessagePartEncoder.cs" />
     <Compile Include="Messaging\Reflection\IMessagePartNullEncoder.cs" />
     <Compile Include="Messaging\Reflection\IMessagePartOriginalEncoder.cs" />

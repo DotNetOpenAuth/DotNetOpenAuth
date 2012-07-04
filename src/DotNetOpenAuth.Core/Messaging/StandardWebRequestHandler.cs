@@ -177,8 +177,7 @@ namespace DotNetOpenAuth.Messaging {
 					response.Close();
 				}
 
-				throw ErrorUtilities.Wrap(ex, MessagingStrings.ErrorInRequestReplyMessage + " {0}WebHeaders: {1} {0}WebResponse: {2}",
-                    Environment.NewLine, ex.Response.Headers, httpErrorResponse);
+                throw new ProtocolWebException(ex, MessagingStrings.ErrorInRequestReplyMessage, httpErrorResponse);
 			}
 		}
 
