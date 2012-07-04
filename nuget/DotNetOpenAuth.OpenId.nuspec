@@ -51,7 +51,8 @@
 		<file src="$OutputPath40$Mono.Math.xml" target="lib\net40-full\" />
 		<file src="$OutputPath45$Mono.Math.xml" target="lib\net45-full\" />
 
-		<file src="content\OpenId.Core\web.config.transform" target="content\web.config.transform" />
+		<file src="content\OpenId.Core\net35-full\web.config.transform" target="content\net35-full\" />
+		<file src="content\OpenId.Core\net40-full\web.config.transform" target="content\net40-full\" />
 
 		<file src="..\src\$Identity$\**\*.cs" target="src\$identity$" exclude="..\src\$Identity$\obj\**" />
 		<file src="$GeneratedAssemblyInfoSourceFile$" target="src\$identity$" />
