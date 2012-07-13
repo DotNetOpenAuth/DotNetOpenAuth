@@ -1,4 +1,4 @@
-<%@ Page Language="C#" AutoEventWireup="true" Inherits="OpenIdProviderWebForms.user" CodeBehind="user.aspx.cs" MasterPageFile="~/Site.Master" %>
+<%@ Page Language="C#" EnableSessionState="False" AutoEventWireup="true" Inherits="OpenIdProviderWebForms.user" CodeBehind="user.aspx.cs" MasterPageFile="~/Site.Master" %>
 
 <%@ Register Assembly="DotNetOpenAuth.OpenId.Provider.UI" Namespace="DotNetOpenAuth.OpenId.Provider" TagPrefix="openid" %>
 <asp:Content ID="Content2" runat="server" ContentPlaceHolderID="head">
