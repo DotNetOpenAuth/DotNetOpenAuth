@@ -197,7 +197,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 					cryptoKey = this.cryptoKeyStore.GetKey(SecretUri.AbsoluteUri, returnToParameters[ReturnToSignatureHandleParameterName]);
 				}
 
-				using (var signer = new HMACSHA256(cryptoKey.Key)) {
+				using (var signer = HmacAlgorithms.Create(HmacAlgorithms.HmacSha256, cryptoKey.Key)) {
 					signature = signer.ComputeHash(bytesToSign);
 				}
 			} catch (ProtocolException ex) {

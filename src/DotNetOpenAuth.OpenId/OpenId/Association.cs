@@ -240,7 +240,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// A hash code for the current <see cref="T:System.Object"/>.
 		/// </returns>
 		public override int GetHashCode() {
-			HMACSHA1 hmac = new HMACSHA1(this.SecretKey);
+			var hmac = HmacAlgorithms.Create(HmacAlgorithms.HmacSha1, this.SecretKey);
 			try {
 				CryptoStream cs = new CryptoStream(Stream.Null, hmac, CryptoStreamMode.Write);
 

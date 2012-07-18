@@ -123,7 +123,7 @@ namespace DotNetOpenAuth.InfoCard {
 
 			ICspAsymmetricAlgorithm rsa = claim.Resource as ICspAsymmetricAlgorithm;
 			if (null != rsa) {
-				using (SHA256 sha = new SHA256Managed()) {
+				using (SHA256 sha = SHA256.Create()) {
 					return Convert.ToBase64String(sha.ComputeHash(rsa.ExportCspBlob(false)));
 				}
 			}
