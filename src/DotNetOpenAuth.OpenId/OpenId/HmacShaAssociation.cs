@@ -258,13 +258,6 @@ namespace DotNetOpenAuth.OpenId {
 			internal Func<Protocol, string> GetAssociationType { get; set; }
 
 			/// <summary>
-			/// Creates the <see cref="HashAlgorithm"/> using a given shared secret for the mac.
-			/// </summary>
-			internal HashAlgorithm CreateHasher(byte[] secret) {
-				return HmacAlgorithms.Create(this.HmacAlgorithmName, secret);
-			}
-
-			/// <summary>
 			/// Gets or sets the name of the HMAC-SHA algorithm. (e.g. "HMAC-SHA256")
 			/// </summary>
 			internal string HmacAlgorithmName { get; set; }
@@ -278,6 +271,15 @@ namespace DotNetOpenAuth.OpenId {
 			/// Gets the size of the hash (in bytes).
 			/// </summary>
 			internal int SecretLength { get { return this.BaseHashAlgorithm.HashSize / 8; } }
+
+			/// <summary>
+			/// Creates the <see cref="HashAlgorithm"/> using a given shared secret for the mac.
+			/// </summary>
+			/// <param name="secret">The HMAC secret.</param>
+			/// <returns>The algorithm.</returns>
+			internal HashAlgorithm CreateHasher(byte[] secret) {
+				return HmacAlgorithms.Create(this.HmacAlgorithmName, secret);
+			}
 		}
 	}
 }
