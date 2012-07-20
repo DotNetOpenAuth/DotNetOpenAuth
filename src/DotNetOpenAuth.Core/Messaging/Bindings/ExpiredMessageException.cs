@@ -22,7 +22,6 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		public ExpiredMessageException(DateTime utcExpirationDate, IProtocolMessage faultedMessage)
 			: base(string.Format(CultureInfo.CurrentCulture, MessagingStrings.ExpiredMessage, utcExpirationDate.ToLocalTime(), DateTime.Now), faultedMessage) {
 			Requires.True(utcExpirationDate.Kind == DateTimeKind.Utc, "utcExpirationDate");
-			Requires.NotNull(faultedMessage, "faultedMessage");
 		}
 
 		/// <summary>

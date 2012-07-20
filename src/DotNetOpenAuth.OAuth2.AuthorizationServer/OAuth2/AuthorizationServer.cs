@@ -251,6 +251,25 @@ namespace DotNetOpenAuth.OAuth2 {
 		}
 
 		/// <summary>
+		/// Decodes a refresh token into its authorization details.
+		/// </summary>
+		/// <param name="refreshToken">The encoded refresh token as it would appear to the client.</param>
+		/// <returns>A description of the authorization represented by the refresh token.</returns>
+		/// <exception cref="ProtocolException">Thrown if the refresh token is not valid due to expiration, corruption or not being authentic.</exception>
+		/// <remarks>
+		/// This can be useful if the authorization server supports the client revoking its own access (on uninstall, for example).
+		/// Outside the scope of the OAuth 2 spec, the client may contact the authorization server host requesting that its refresh
+		/// token be revoked.  The authorization server would need to decode the refresh token so it knows which authorization in
+		/// the database to delete.
+		/// </remarks>
+		public IAuthorizationDescription DecodeRefreshToken(string refreshToken) {
+			var refreshTokenFormatter = RefreshToken.CreateFormatter(this.AuthorizationServerServices.CryptoKeyStore);
+			var token = new RefreshToken();
+			refreshTokenFormatter.Deserialize(token, refreshToken);
+			return token;
+		}
+
+		/// <summary>
 		/// Gets the redirect URL to use for a particular authorization request.
 		/// </summary>
 		/// <param name="authorizationRequest">The authorization request.</param>

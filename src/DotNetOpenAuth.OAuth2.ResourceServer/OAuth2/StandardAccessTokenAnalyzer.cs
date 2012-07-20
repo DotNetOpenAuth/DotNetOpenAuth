@@ -51,7 +51,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		public virtual AccessToken DeserializeAccessToken(IDirectedProtocolMessage message, string accessToken) {
 			var accessTokenFormatter = AccessToken.CreateFormatter(this.AuthorizationServerPublicSigningKey, this.ResourceServerPrivateEncryptionKey);
 			var token = new AccessToken();
-			accessTokenFormatter.Deserialize(token, message, accessToken, Protocol.access_token);
+			accessTokenFormatter.Deserialize(token, accessToken, message, Protocol.access_token);
 			return token;
 		}
 	}
