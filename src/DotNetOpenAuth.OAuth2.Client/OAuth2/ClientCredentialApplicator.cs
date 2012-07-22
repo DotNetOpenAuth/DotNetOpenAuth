@@ -127,8 +127,12 @@ namespace DotNetOpenAuth.OAuth2 {
 			/// <param name="request">The outbound message to apply authentication information to.</param>
 			public override void ApplyClientCredential(string clientIdentifier, HttpWebRequest request) {
 				if (clientIdentifier != null) {
-					if (this.credential != null && this.credential.UserName == clientIdentifier) {
-						ErrorUtilities.VerifyHost(false, "Client identifiers \"{0}\" and \"{1}\" do not match.", this.credential.UserName, clientIdentifier);
+					if (this.credential != null) {
+						ErrorUtilities.VerifyHost(
+							String.Equals(this.credential.UserName, clientIdentifier, StringComparison.Ordinal),
+							"Client identifiers \"{0}\" and \"{1}\" do not match.",
+							this.credential.UserName,
+							clientIdentifier);
 					}
 
 					request.Credentials = this.credential ?? new NetworkCredential(clientIdentifier, this.clientSecret);
