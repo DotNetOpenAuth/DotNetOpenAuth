@@ -129,7 +129,7 @@ namespace DotNetOpenAuth.OAuth2 {
 				if (clientIdentifier != null) {
 					if (this.credential != null) {
 						ErrorUtilities.VerifyHost(
-							String.Equals(this.credential.UserName, clientIdentifier, StringComparison.Ordinal),
+							string.Equals(this.credential.UserName, clientIdentifier, StringComparison.Ordinal),
 							"Client identifiers \"{0}\" and \"{1}\" do not match.",
 							this.credential.UserName,
 							clientIdentifier);

@@ -12,7 +12,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Text;
 
 	/// <summary>
-	/// HMAC-SHA algorithm names that can be passed to the <see cref="HMAC.Create"/> method.
+	/// HMAC-SHA algorithm names that can be passed to the <see cref="HMAC.Create(string)"/> method.
 	/// </summary>
 	internal static class HmacAlgorithms {
 		/// <summary>
