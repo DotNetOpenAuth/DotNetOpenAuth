@@ -42,6 +42,7 @@
     <Compile Include="OAuth2\IAuthorizationServerHost.cs" />
     <Compile Include="OAuth2\Messages\AccessTokenAuthorizationCodeRequestAS.cs" />
     <Compile Include="OAuth2\Messages\AccessTokenRefreshRequestAS.cs" />
+    <Compile Include="OAuth2\Messages\AccessTokenResult.cs" />
     <Compile Include="OAuth2\Messages\EndUserAuthorizationSuccessAuthCodeResponseAS.cs" />
     <Compile Include="OAuth2\Messages\IAuthorizationCodeCarryingRequest.cs" />
     <Compile Include="OAuth2\Messages\IRefreshTokenCarryingRequest.cs" />
