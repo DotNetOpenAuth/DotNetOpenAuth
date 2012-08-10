@@ -521,18 +521,15 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Extracts the key handle and encrypted blob from a string previously returned from <see cref="CombineKeyHandleAndPayload"/>.
 		/// </summary>
-		/// <param name="containingMessage">The containing message.</param>
-		/// <param name="messagePart">The message part.</param>
+		/// <param name="messagePart">The message part. May be null if not applicable.</param>
 		/// <param name="keyHandleAndBlob">The value previously returned from <see cref="CombineKeyHandleAndPayload"/>.</param>
 		/// <param name="handle">The crypto key handle.</param>
 		/// <param name="dataBlob">The encrypted/signed data.</param>
-		internal static void ExtractKeyHandleAndPayload(IProtocolMessage containingMessage, string messagePart, string keyHandleAndBlob, out string handle, out string dataBlob) {
-			Requires.NotNull(containingMessage, "containingMessage");
-			Requires.NotNullOrEmpty(messagePart, "messagePart");
+		internal static void ExtractKeyHandleAndPayload(string messagePart, string keyHandleAndBlob, out string handle, out string dataBlob) {
 			Requires.NotNullOrEmpty(keyHandleAndBlob, "keyHandleAndBlob");
 
 			int privateHandleIndex = keyHandleAndBlob.IndexOf('!');
-			ErrorUtilities.VerifyProtocol(privateHandleIndex > 0, MessagingStrings.UnexpectedMessagePartValue, messagePart, keyHandleAndBlob);
+			ErrorUtilities.VerifyProtocol(privateHandleIndex > 0, MessagingStrings.UnexpectedMessagePartValue, messagePart ?? "<unknown>", keyHandleAndBlob);
 			handle = keyHandleAndBlob.Substring(0, privateHandleIndex);
 			dataBlob = keyHandleAndBlob.Substring(privateHandleIndex + 1);
 		}
@@ -1443,6 +1440,10 @@ namespace DotNetOpenAuth.Messaging {
 				return HttpDeliveryMethods.DeleteRequest;
 			} else if (httpVerb == "HEAD") {
 				return HttpDeliveryMethods.HeadRequest;
+			} else if (httpVerb == "PATCH") {
+				return HttpDeliveryMethods.PatchRequest;
+			} else if (httpVerb == "OPTION") {
+				return HttpDeliveryMethods.OptionRequest;
 			} else {
 				throw ErrorUtilities.ThrowArgumentNamed("httpVerb", MessagingStrings.UnsupportedHttpVerb, httpVerb);
 			}
@@ -1452,7 +1453,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// Gets the HTTP verb to use for a given <see cref="HttpDeliveryMethods"/> enum value.
 		/// </summary>
 		/// <param name="httpMethod">The HTTP method.</param>
-		/// <returns>An HTTP verb, such as GET, POST, PUT, or DELETE.</returns>
+		/// <returns>An HTTP verb, such as GET, POST, PUT, DELETE, PATCH, or OPTION.</returns>
 		internal static string GetHttpVerb(HttpDeliveryMethods httpMethod) {
 			if ((httpMethod & HttpDeliveryMethods.HttpVerbMask) == HttpDeliveryMethods.GetRequest) {
 				return "GET";
@@ -1464,6 +1465,10 @@ namespace DotNetOpenAuth.Messaging {
 				return "DELETE";
 			} else if ((httpMethod & HttpDeliveryMethods.HttpVerbMask) == HttpDeliveryMethods.HeadRequest) {
 				return "HEAD";
+			} else if ((httpMethod & HttpDeliveryMethods.HttpVerbMask) == HttpDeliveryMethods.PatchRequest) {
+				return "PATCH";
+			} else if ((httpMethod & HttpDeliveryMethods.HttpVerbMask) == HttpDeliveryMethods.OptionRequest) {
+				return "OPTION";
 			} else if ((httpMethod & HttpDeliveryMethods.AuthorizationHeaderRequest) != 0) {
 				return "GET"; // if AuthorizationHeaderRequest is specified without an explicit HTTP verb, assume GET.
 			} else {

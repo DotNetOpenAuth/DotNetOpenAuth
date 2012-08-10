@@ -193,20 +193,18 @@ namespace DotNetOpenAuth.Messaging {
 		/// Deserializes a <see cref="DataBag"/>, including decompression, decryption, signature and nonce validation where applicable.
 		/// </summary>
 		/// <param name="message">The instance to initialize with deserialized data.</param>
-		/// <param name="containingMessage">The message that contains the <see cref="DataBag"/> serialized value.  Must not be null.</param>
 		/// <param name="value">The serialized form of the <see cref="DataBag"/> to deserialize.  Must not be null or empty.</param>
-		/// <param name="messagePartName">The name of the parameter whose value is to be deserialized.  Used for error message generation.</param>
+		/// <param name="containingMessage">The message that contains the <see cref="DataBag"/> serialized value.  May be null if no carrying message is applicable.</param>
+		/// <param name="messagePartName">The name of the parameter whose value is to be deserialized.  Used for error message generation, but may be <c>null</c>.</param>
 		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "No apparent problem.  False positive?")]
-		public void Deserialize(T message, IProtocolMessage containingMessage, string value, string messagePartName) {
+		public void Deserialize(T message, string value, IProtocolMessage containingMessage, string messagePartName) {
 			Requires.NotNull(message, "message");
-			Requires.NotNull(containingMessage, "containingMessage");
 			Requires.NotNullOrEmpty(value, "value");
-			Requires.NotNullOrEmpty(messagePartName, "messagePartName");
 
 			string symmetricSecretHandle = null;
 			if (this.encrypted && this.cryptoKeyStore != null) {
 				string valueWithoutHandle;
-				MessagingUtilities.ExtractKeyHandleAndPayload(containingMessage, messagePartName, value, out symmetricSecretHandle, out valueWithoutHandle);
+				MessagingUtilities.ExtractKeyHandleAndPayload(messagePartName, value, out symmetricSecretHandle, out valueWithoutHandle);
 				value = valueWithoutHandle;
 			}
 
