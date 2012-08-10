@@ -1445,8 +1445,8 @@ namespace DotNetOpenAuth.Messaging {
 				return HttpDeliveryMethods.HeadRequest;
 			} else if (httpVerb == "PATCH") {
 				return HttpDeliveryMethods.PatchRequest;
-			} else if (httpVerb == "OPTION") {
-				return HttpDeliveryMethods.OptionRequest;
+			} else if (httpVerb == "OPTIONS") {
+				return HttpDeliveryMethods.OptionsRequest;
 			} else {
 				throw ErrorUtilities.ThrowArgumentNamed("httpVerb", MessagingStrings.UnsupportedHttpVerb, httpVerb);
 			}
@@ -1470,8 +1470,8 @@ namespace DotNetOpenAuth.Messaging {
 				return "HEAD";
 			} else if ((httpMethod & HttpDeliveryMethods.HttpVerbMask) == HttpDeliveryMethods.PatchRequest) {
 				return "PATCH";
-			} else if ((httpMethod & HttpDeliveryMethods.HttpVerbMask) == HttpDeliveryMethods.OptionRequest) {
-				return "OPTION";
+			} else if ((httpMethod & HttpDeliveryMethods.HttpVerbMask) == HttpDeliveryMethods.OptionsRequest) {
+				return "OPTIONS";
 			} else if ((httpMethod & HttpDeliveryMethods.AuthorizationHeaderRequest) != 0) {
 				return "GET"; // if AuthorizationHeaderRequest is specified without an explicit HTTP verb, assume GET.
 			} else {

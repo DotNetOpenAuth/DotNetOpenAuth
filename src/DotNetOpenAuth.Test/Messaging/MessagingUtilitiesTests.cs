@@ -183,7 +183,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			Assert.AreEqual("DELETE", MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.DeleteRequest));
 			Assert.AreEqual("PUT", MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.PutRequest));
 			Assert.AreEqual("PATCH", MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.PatchRequest));
-			Assert.AreEqual("OPTION", MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.OptionRequest));
+			Assert.AreEqual("OPTIONS", MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.OptionsRequest));
 
 			Assert.AreEqual("GET", MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.GetRequest | HttpDeliveryMethods.AuthorizationHeaderRequest));
 			Assert.AreEqual("POST", MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.PostRequest | HttpDeliveryMethods.AuthorizationHeaderRequest));
@@ -191,7 +191,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			Assert.AreEqual("DELETE", MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.DeleteRequest | HttpDeliveryMethods.AuthorizationHeaderRequest));
 			Assert.AreEqual("PUT", MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.PutRequest | HttpDeliveryMethods.AuthorizationHeaderRequest));
 			Assert.AreEqual("PATCH", MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.PatchRequest | HttpDeliveryMethods.AuthorizationHeaderRequest));
-			Assert.AreEqual("OPTION", MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.OptionRequest | HttpDeliveryMethods.AuthorizationHeaderRequest));
+			Assert.AreEqual("OPTIONS", MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.OptionsRequest | HttpDeliveryMethods.AuthorizationHeaderRequest));
 		}
 
 		/// <summary>
@@ -213,7 +213,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			Assert.AreEqual(HttpDeliveryMethods.PutRequest, MessagingUtilities.GetHttpDeliveryMethod("PUT"));
 			Assert.AreEqual(HttpDeliveryMethods.DeleteRequest, MessagingUtilities.GetHttpDeliveryMethod("DELETE"));
 			Assert.AreEqual(HttpDeliveryMethods.PatchRequest, MessagingUtilities.GetHttpDeliveryMethod("PATCH"));
-			Assert.AreEqual(HttpDeliveryMethods.OptionRequest, MessagingUtilities.GetHttpDeliveryMethod("OPTION"));
+			Assert.AreEqual(HttpDeliveryMethods.OptionsRequest, MessagingUtilities.GetHttpDeliveryMethod("OPTIONS"));
 		}
 
 		/// <summary>
