@@ -650,10 +650,12 @@ namespace DotNetOpenAuth.Messaging {
 		protected static bool HttpMethodHasEntity(string httpMethod) {
 			if (string.Equals(httpMethod, "GET", StringComparison.Ordinal) ||
 				string.Equals(httpMethod, "HEAD", StringComparison.Ordinal) ||
-				string.Equals(httpMethod, "DELETE", StringComparison.Ordinal)) {
+				string.Equals(httpMethod, "DELETE", StringComparison.Ordinal) ||
+				string.Equals(httpMethod, "OPTIONS", StringComparison.Ordinal)) {
 				return false;
 			} else if (string.Equals(httpMethod, "POST", StringComparison.Ordinal) ||
-				string.Equals(httpMethod, "PUT", StringComparison.Ordinal)) {
+				string.Equals(httpMethod, "PUT", StringComparison.Ordinal) ||
+				string.Equals(httpMethod, "PATCH", StringComparison.Ordinal)) {
 				return true;
 			} else {
 				throw ErrorUtilities.ThrowArgumentNamed("httpMethod", MessagingStrings.UnsupportedHttpVerb, httpMethod);
