@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.OAuth2 {
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Net;
+	using System.Net.Http;
 	using System.Security.Principal;
 	using System.ServiceModel.Channels;
 	using System.Text;
@@ -173,6 +174,24 @@ namespace DotNetOpenAuth.OAuth2 {
 			Requires.NotNull(requestUri, "requestUri");
 
 			return this.GetPrincipal(new HttpRequestInfo(request, requestUri), requiredScopes);
+		}
+
+		/// <summary>
+		/// Discovers what access the client should have considering the access token in the current request.
+		/// </summary>
+		/// <param name="request">HTTP details from an incoming Web API message.</param>
+		/// <param name="requiredScopes">The set of scopes required to approve this request.</param>
+		/// <returns>
+		/// The principal that contains the user and roles that the access token is authorized for.  Never <c>null</c>.
+		/// </returns>
+		/// <exception cref="ProtocolFaultResponseException">
+		/// Thrown when the client is not authorized.  This exception should be caught and the
+		/// <see cref="ProtocolFaultResponseException.ErrorResponseMessage"/> message should be returned to the client.
+		/// </exception>
+		public virtual IPrincipal GetPrincipal(HttpRequestMessage request, params string[] requiredScopes) {
+			Requires.NotNull(request, "request");
+
+			return this.GetPrincipal(new HttpRequestInfo(request), requiredScopes);
 		}
 	}
 }
