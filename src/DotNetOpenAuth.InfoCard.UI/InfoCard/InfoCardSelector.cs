@@ -688,7 +688,7 @@ namespace DotNetOpenAuth.InfoCard {
 				script.AppendLine(CreateParamJs("privacyVersion", this.PrivacyVersion));
 			}
 
-			script.AppendLine(@"if (document.infoCard.isSupported()) { document.write(obj.outerHTML); }
+			script.AppendLine(@"if (document.infoCard.isSupported()) { document.getElementsByTagName('head')[0].appendChild(obj); }
 }");
 
 			this.Page.ClientScript.RegisterClientScriptBlock(typeof(InfoCardSelector), this.ClientID + "tag", script.ToString(), true);
