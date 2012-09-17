@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OpenId {
 	using System;
 	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Globalization;
@@ -21,6 +22,7 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Text.RegularExpressions;
 	using System.Xml;
 	using System.Xml.XPath;
+	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using DotNetOpenAuth.Xrds;
@@ -51,6 +53,11 @@ namespace DotNetOpenAuth.OpenId {
 		/// The pattern within a host-meta file to look for to obtain the URI to the XRDS document.
 		/// </summary>
 		private static readonly Regex HostMetaLink = new Regex(@"^Link: <(?<location>.+?)>; rel=""describedby http://reltype.google.com/openid/xrd-op""; type=""application/xrds\+xml""$");
+
+		/// <summary>
+		/// A set of certificate thumbprints that have been verified.
+		/// </summary>
+		private static readonly HashSet<string> ApprovedCertificateThumbprintCache = new HashSet<string>(StringComparer.Ordinal);
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="HostMetaDiscoveryService"/> class.
@@ -232,21 +239,7 @@ namespace DotNetOpenAuth.OpenId {
 			ErrorUtilities.VerifyProtocol(certNodes.Count > 0, OpenIdStrings.MissingElement, "X509Certificate");
 			var certs = certNodes.Cast<XPathNavigator>().Select(n => new X509Certificate2(Convert.FromBase64String(n.Value.Trim()))).ToList();
 
-			// Verify that we trust the signer of the certificates.
-			// Start by trying to validate just the certificate used to sign the XRDS document,
-			// since we can do that with partial trust.
-			Logger.OpenId.Debug("Verifying that we trust the certificate used to sign the discovery document.");
-			if (!certs[0].Verify()) {
-				// We couldn't verify just the signing certificate, so try to verify the whole certificate chain.
-				try {
-					Logger.OpenId.Debug("Verifying the whole certificate chain.");
-					VerifyCertChain(certs);
-					Logger.OpenId.Debug("Certificate chain verified.");
-				} catch (SecurityException) {
-					Logger.Yadis.Warn("Signing certificate verification failed and we have insufficient code access security permissions to perform certificate chain validation.");
-					ErrorUtilities.ThrowProtocol(OpenIdStrings.X509CertificateNotTrusted);
-				}
-			}
+			VerifyCertificateChain(certs);
 
 			// Verify that the certificate is issued to the host on whom we are performing discovery.
 			string hostName = certs[0].GetNameInfo(X509NameType.DnsName, false);
@@ -272,8 +265,9 @@ namespace DotNetOpenAuth.OpenId {
 		/// an alternative plan.
 		/// </remarks>
 		/// <exception cref="ProtocolException">Thrown if the certificate chain is invalid or unverifiable.</exception>
-		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "DotNetOpenAuth.Messaging.ErrorUtilities.ThrowProtocol(System.String,System.Object[])", Justification = "The localized portion is a string resource already."), SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands", Justification = "By design")]
-		private static void VerifyCertChain(List<X509Certificate2> certs) {
+		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "DotNetOpenAuth.Messaging.ErrorUtilities.ThrowProtocol(System.String,System.Object[])", Justification = "The localized portion is a string resource already.")]
+		[SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands", Justification = "By design")]
+		private static void VerifyCertChain(IEnumerable<X509Certificate2> certs) {
 			var chain = new X509Chain();
 			foreach (var cert in certs) {
 				chain.Build(cert);
@@ -314,6 +308,48 @@ namespace DotNetOpenAuth.OpenId {
 			}
 
 			return response;
+		}
+
+		/// <summary>
+		/// Verifies that a certificate chain is trusted.
+		/// </summary>
+		/// <param name="certificates">The chain of certificates to verify.</param>
+		private static void VerifyCertificateChain(IList<X509Certificate2> certificates) {
+			Contract.Requires(certificates.Count > 0);
+			Contract.Requires(certificates.All(c => c != null));
+
+			// Before calling into the OS to validate the certificate, since that can for some bizzare reason hang for 5 seconds
+			// on some systems, check a cache of previously verified certificates first.
+			if (OpenIdElement.Configuration.RelyingParty.HostMetaDiscovery.EnableCertificateValidationCache) {
+				lock (ApprovedCertificateThumbprintCache) {
+					// HashSet<T> isn't thread-safe.
+					if (ApprovedCertificateThumbprintCache.Contains(certificates[0].Thumbprint)) {
+						return;
+					}
+				}
+			}
+
+			// Verify that we trust the signer of the certificates.
+			// Start by trying to validate just the certificate used to sign the XRDS document,
+			// since we can do that with partial trust.
+			Logger.OpenId.Debug("Verifying that we trust the certificate used to sign the discovery document.");
+			if (!certificates[0].Verify()) {
+				// We couldn't verify just the signing certificate, so try to verify the whole certificate chain.
+				try {
+					Logger.OpenId.Debug("Verifying the whole certificate chain.");
+					VerifyCertChain(certificates);
+					Logger.OpenId.Debug("Certificate chain verified.");
+				} catch (SecurityException) {
+					Logger.Yadis.Warn("Signing certificate verification failed and we have insufficient code access security permissions to perform certificate chain validation.");
+					ErrorUtilities.ThrowProtocol(OpenIdStrings.X509CertificateNotTrusted);
+				}
+			}
+
+			if (OpenIdElement.Configuration.RelyingParty.HostMetaDiscovery.EnableCertificateValidationCache) {
+				lock (ApprovedCertificateThumbprintCache) {
+					ApprovedCertificateThumbprintCache.Add(certificates[0].Thumbprint);
+				}
+			}
 		}
 
 		/// <summary>
