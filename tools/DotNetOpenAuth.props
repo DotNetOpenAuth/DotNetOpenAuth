@@ -21,6 +21,9 @@
 		<ZipFormat Condition=" '$(ZipFormat)' == '' ">.7z</ZipFormat>
 		<ClrVersion Condition=" '$(TargetFrameworkVersion)' == 'v4.0' or '$(TargetFrameworkVersion)' == 'v4.5' ">4</ClrVersion>
 		<ClrVersion Condition=" '$(ClrVersion)' == '' ">2</ClrVersion>
+		<ILMergeTargetPlatformVersion Condition=" '$(ClrVersion)' == '2' ">2.0</ILMergeTargetPlatformVersion>
+		<ILMergeTargetPlatformVersion Condition=" '$(TargetFrameworkVersion)' == 'v4.0' ">4.0</ILMergeTargetPlatformVersion>
+		<ILMergeTargetPlatformVersion Condition=" '$(TargetFrameworkVersion)' == 'v4.5' ">4.5</ILMergeTargetPlatformVersion>
 		<BuildCodeContractsReferenceAssemblies>false</BuildCodeContractsReferenceAssemblies>
 
 		<SignAssembly>true</SignAssembly>
@@ -47,8 +50,12 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition=" '$(ClrVersion)' == '4' ">
-		<ILMergeTargetPlatformDirectory>$(MSBuildProgramFiles32)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0</ILMergeTargetPlatformDirectory>
+		<ILMergeTargetPlatformDirectory>$(MSBuildProgramFiles32)\Reference Assemblies\Microsoft\Framework\.NETFramework\$(TargetFrameworkVersion)</ILMergeTargetPlatformDirectory>
 	</PropertyGroup>
+	<ItemGroup>
+		<ILMergeSearchDirectories Include="$(ProjectRoot)lib" />
+		<ILMergeSearchDirectories Include="$(ProjectRoot)lib\net-$(TargetFrameworkVersion)" />
+	</ItemGroup>
 	<ItemGroup Condition=" '$(ClrVersion)' == '4' ">
 		<ILMergeSearchDirectories Include="$(ILMergeTargetPlatformDirectory)" />
 	</ItemGroup>

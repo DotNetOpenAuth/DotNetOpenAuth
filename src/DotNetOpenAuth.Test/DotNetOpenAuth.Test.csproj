@@ -175,6 +175,7 @@
     <Reference Include="System.Data.DataSetExtensions">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Runtime.Serialization">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
@@ -224,6 +225,7 @@
     <Compile Include="Mocks\CoordinatingOAuthConsumerChannel.cs" />
     <Compile Include="Mocks\IBaseMessageExplicitMembers.cs" />
     <Compile Include="Mocks\InMemoryTokenManager.cs" />
+    <Compile Include="Mocks\MockHttpMessageHandler.cs" />
     <Compile Include="Mocks\MockHttpRequest.cs" />
     <Compile Include="Mocks\MockIdentifier.cs" />
     <Compile Include="Mocks\MockIdentifierDiscoveryService.cs" />

@@ -9,7 +9,9 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Net;
+	using System.Net.Http;
 	using System.Text;
+	using System.Threading.Tasks;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2;
 	using DotNetOpenAuth.OAuth2.ChannelElements;
@@ -97,6 +99,46 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 					server.HandleTokenRequest().Respond();
 				});
 			coordinator.Run();
+		}
+
+		[Test]
+		public void CreateAuthorizingHandlerBearer() {
+			var client = new WebServerClient(AuthorizationServerDescription);
+			string bearerToken = "mytoken";
+			var tcs = new TaskCompletionSource<HttpResponseMessage>();
+			var expectedResponse = new HttpResponseMessage();
+
+			var mockHandler = new Mocks.MockHttpMessageHandler((req, ct) => {
+				Assert.That(req.Headers.Authorization.Scheme, Is.EqualTo(Protocol.BearerHttpAuthorizationScheme));
+				Assert.That(req.Headers.Authorization.Parameter, Is.EqualTo(bearerToken));
+				tcs.SetResult(expectedResponse);
+				return tcs.Task;
+			});
+			var applicator = client.CreateAuthorizingHandler("mytoken", mockHandler);
+			var httpClient = new HttpClient(applicator);
+			var actualResponse = httpClient.GetAsync("http://localhost/someMessage").Result;
+			Assert.That(actualResponse, Is.SameAs(expectedResponse));
+		}
+
+		[Test]
+		public void CreateAuthorizingHandlerAuthorization() {
+			var client = new WebServerClient(AuthorizationServerDescription);
+			string bearerToken = "mytoken";
+			var authorization = new Mock<IAuthorizationState>();
+			authorization.SetupGet(a => a.AccessToken).Returns(bearerToken);
+			var tcs = new TaskCompletionSource<HttpResponseMessage>();
+			var expectedResponse = new HttpResponseMessage();
+
+			var mockHandler = new Mocks.MockHttpMessageHandler((req, ct) => {
+				Assert.That(req.Headers.Authorization.Scheme, Is.EqualTo(Protocol.BearerHttpAuthorizationScheme));
+				Assert.That(req.Headers.Authorization.Parameter, Is.EqualTo(bearerToken));
+				tcs.SetResult(expectedResponse);
+				return tcs.Task;
+			});
+			var applicator = client.CreateAuthorizingHandler(authorization.Object, mockHandler);
+			var httpClient = new HttpClient(applicator);
+			var actualResponse = httpClient.GetAsync("http://localhost/someMessage").Result;
+			Assert.That(actualResponse, Is.SameAs(expectedResponse));
 		}
 	}
 }
