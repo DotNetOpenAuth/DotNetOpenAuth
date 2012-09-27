@@ -2,6 +2,7 @@ namespace OpenIdProviderMvc.Controllers {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Net;
 	using System.Web;
 	using System.Web.Mvc;
 	using System.Web.Mvc.Ajax;
@@ -65,6 +66,11 @@ namespace OpenIdProviderMvc.Controllers {
 				return response;
 			}
 
+			if (!ProviderEndpoint.PendingAuthenticationRequest.IsDirectedIdentity &&
+				!this.UserControlsIdentifier(ProviderEndpoint.PendingAuthenticationRequest)) {
+				return this.Redirect(this.Url.Action("LogOn", "Account", new { returnUrl = this.Request.Url }));
+			}
+
 			this.ViewData["Realm"] = ProviderEndpoint.PendingRequest.Realm;
 
 			return this.View();
@@ -72,6 +78,13 @@ namespace OpenIdProviderMvc.Controllers {
 
 		[HttpPost, Authorize, ValidateAntiForgeryToken]
 		public ActionResult AskUserResponse(bool confirmed) {
+			if (!ProviderEndpoint.PendingAuthenticationRequest.IsDirectedIdentity &&
+				!this.UserControlsIdentifier(ProviderEndpoint.PendingAuthenticationRequest))
+			{
+				// The user shouldn't have gotten this far without controlling the identifier we'd send an assertion for.
+				return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest);
+			}
+
 			if (ProviderEndpoint.PendingAnonymousRequest != null) {
 				ProviderEndpoint.PendingAnonymousRequest.IsApproved = confirmed;
 			} else if (ProviderEndpoint.PendingAuthenticationRequest != null) {
