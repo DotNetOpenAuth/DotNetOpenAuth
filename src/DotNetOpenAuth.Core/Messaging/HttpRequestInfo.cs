@@ -225,6 +225,17 @@ namespace DotNetOpenAuth.Messaging {
 			return new HttpRequestInfo(listenerRequest);
 		}
 
+#if CLR4
+		/// <summary>
+		/// Creates an <see cref="HttpRequestBase"/> instance that describes the specified HTTP request.
+		/// </summary>
+		/// <param name="request">The HTTP request.</param>
+		/// <returns>An instance of <see cref="HttpRequestBase"/>.</returns>
+		public static HttpRequestBase Create(HttpRequestMessage request) {
+			return new HttpRequestInfo(request);
+		}
+#endif
+
 		/// <summary>
 		/// Creates an <see cref="HttpRequestBase"/> instance that describes the specified HTTP request.
 		/// </summary>
