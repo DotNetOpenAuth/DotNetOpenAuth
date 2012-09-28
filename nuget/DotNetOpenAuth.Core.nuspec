@@ -24,9 +24,6 @@
 				<dependency id="CodeContracts.Unofficial" />
 				<dependency id="System.Net.Http" />
 			</group>
-			<group targetFramework="net45">
-				<dependency id="CodeContracts.Unofficial" />
-			</group>
 		</dependencies>
 	</metadata>
 	<files>
