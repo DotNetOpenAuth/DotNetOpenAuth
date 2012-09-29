@@ -356,6 +356,7 @@ namespace DotNetOpenAuth.Messaging {
 			return realmUrl.Uri;
 		}
 
+		/// <summary>
 		/// Creates the XML reader settings to use for reading XML from untrusted sources.
 		/// </summary>
 		/// <returns>
