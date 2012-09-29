@@ -164,9 +164,8 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		internal static XDocument LoadXDocumentFromStream(Stream stream) {
 			const int MaxChars = 0x10000; // 64k
 
-			XmlReaderSettings settings = new XmlReaderSettings() {
-				MaxCharactersInDocument = MaxChars
-			};
+			var settings = MessagingUtilities.CreateUntrustedXmlReaderSettings();
+			settings.MaxCharactersInDocument = MaxChars;
 			return XDocument.Load(XmlReader.Create(stream, settings));
 		}
 

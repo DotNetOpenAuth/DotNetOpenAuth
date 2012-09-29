@@ -77,7 +77,8 @@ namespace DotNetOpenAuth.OpenId {
 			Contract.Ensures(Contract.Result<XrdsDocument>() != null);
 			XrdsDocument doc;
 			using (var xrdsResponse = Yadis.Request(requestHandler, GetXrdsUrl(identifier), identifier.IsDiscoverySecureEndToEnd)) {
-				doc = new XrdsDocument(XmlReader.Create(xrdsResponse.ResponseStream));
+				var readerSettings = MessagingUtilities.CreateUntrustedXmlReaderSettings();
+				doc = new XrdsDocument(XmlReader.Create(xrdsResponse.ResponseStream, readerSettings));
 			}
 			ErrorUtilities.VerifyProtocol(doc.IsXrdResolutionSuccessful, OpenIdStrings.XriResolutionFailed);
 			return doc;

@@ -90,6 +90,10 @@ namespace DotNetOpenAuth.OpenId {
 				// We must be running in partial trust.  Nothing more we can do.
 				Logger.OpenId.Warn("Unable to coerce .NET to stop compressing URI paths due to partial trust limitations.  Some URL identifiers may be unable to complete login.");
 				Reporting.RecordFeatureUse("PartialTrust");
+			} catch (FieldAccessException) { // one customer reported getting this exception
+				// We must be running in partial trust.  Nothing more we can do.
+				Logger.OpenId.Warn("Unable to coerce .NET to stop compressing URI paths due to partial trust limitations.  Some URL identifiers may be unable to complete login.");
+				Reporting.RecordFeatureUse("PartialTrust");
 			}
 		}
 
