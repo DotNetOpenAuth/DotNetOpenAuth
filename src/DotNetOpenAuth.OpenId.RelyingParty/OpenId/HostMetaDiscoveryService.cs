@@ -113,7 +113,8 @@ namespace DotNetOpenAuth.OpenId {
 			using (var response = GetXrdsResponse(uriIdentifier, requestHandler, out signingHost)) {
 				if (response != null) {
 					try {
-						var document = new XrdsDocument(XmlReader.Create(response.ResponseStream));
+						var readerSettings = MessagingUtilities.CreateUntrustedXmlReaderSettings();
+						var document = new XrdsDocument(XmlReader.Create(response.ResponseStream, readerSettings));
 						ValidateXmlDSig(document, uriIdentifier, response, signingHost);
 						var xrds = GetXrdElements(document, uriIdentifier.Uri.Host);
 
@@ -189,7 +190,8 @@ namespace DotNetOpenAuth.OpenId {
 					string nextAuthority = nextAuthorityNode != null ? nextAuthorityNode.Value.Trim() : identifier.Uri.Host;
 					try {
 						using (var externalXrdsResponse = GetXrdsResponse(identifier, requestHandler, externalLocation)) {
-							XrdsDocument externalXrds = new XrdsDocument(XmlReader.Create(externalXrdsResponse.ResponseStream));
+							var readerSettings = MessagingUtilities.CreateUntrustedXmlReaderSettings();
+							XrdsDocument externalXrds = new XrdsDocument(XmlReader.Create(externalXrdsResponse.ResponseStream, readerSettings));
 							ValidateXmlDSig(externalXrds, identifier, externalXrdsResponse, nextAuthority);
 							results.AddRange(GetXrdElements(externalXrds, identifier).CreateServiceEndpoints(identifier, identifier));
 						}

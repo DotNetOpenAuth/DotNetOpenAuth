@@ -51,7 +51,8 @@ namespace DotNetOpenAuth.InfoCard {
 			string decryptedString;
 
 			using (StringReader xmlReader = new StringReader(tokenXml)) {
-				using (XmlReader tokenReader = XmlReader.Create(xmlReader)) {
+				var readerSettings = MessagingUtilities.CreateUntrustedXmlReaderSettings();
+				using (XmlReader tokenReader = XmlReader.Create(xmlReader, readerSettings)) {
 					Contract.Assume(tokenReader != null); // BCL contract should say XmlReader.Create result != null
 					if (IsEncrypted(tokenReader)) {
 						Logger.InfoCard.DebugFormat("Incoming SAML token, before decryption: {0}", tokenXml);
@@ -206,7 +207,8 @@ namespace DotNetOpenAuth.InfoCard {
 			var stringReader = new StringReader(tokenXml);
 			XmlReader tokenReader;
 			try {
-				tokenReader = XmlReader.Create(stringReader);
+				var readerSettings = MessagingUtilities.CreateUntrustedXmlReaderSettings();
+				tokenReader = XmlReader.Create(stringReader, readerSettings);
 			} catch {
 				stringReader.Dispose();
 				throw;

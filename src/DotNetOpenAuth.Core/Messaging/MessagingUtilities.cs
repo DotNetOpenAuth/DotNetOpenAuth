@@ -21,6 +21,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Text;
 	using System.Web;
 	using System.Web.Mvc;
+	using System.Xml;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.Messaging.Reflection;
 
@@ -287,6 +288,28 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns><c>true</c> if the two TimeSpans are within <paramref name="marginOfError"/> of each other.</returns>
 		public static bool Equals(this TimeSpan self, TimeSpan other, TimeSpan marginOfError) {
 			return TimeSpan.FromMilliseconds(Math.Abs((self - other).TotalMilliseconds)) < marginOfError;
+		}
+
+		/// <summary>
+		/// Creates the XML reader settings to use for reading XML from untrusted sources.
+		/// </summary>
+		/// <returns>
+		/// The new instance of <see cref="XmlReaderSettings"/>.
+		/// </returns>
+		/// <remarks>
+		/// The default values set here are based on recommendations from
+		/// http://msdn.microsoft.com/en-us/magazine/ee335713.aspx
+		/// </remarks>
+		internal static XmlReaderSettings CreateUntrustedXmlReaderSettings() {
+			return new XmlReaderSettings {
+				MaxCharactersFromEntities = 1024,
+				XmlResolver = null,
+#if CLR4
+				DtdProcessing = DtdProcessing.Prohibit,
+#else
+				ProhibitDtd = true,
+#endif
+			};
 		}
 
 		/// <summary>
