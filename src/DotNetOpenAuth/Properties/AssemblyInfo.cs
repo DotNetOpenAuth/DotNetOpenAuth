@@ -19,15 +19,7 @@ using System.Web.UI;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("DotNetOpenAuth")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("DotNetOpenAuth")]
-[assembly: AssemblyCopyright("Copyright © 2011 Outercurve Foundation")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-[assembly: NeutralResourcesLanguage("en-US")]
+[assembly: AssemblyCopyright("Copyright © 2012 Outercurve Foundation")]
 [assembly: CLSCompliant(true)]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
