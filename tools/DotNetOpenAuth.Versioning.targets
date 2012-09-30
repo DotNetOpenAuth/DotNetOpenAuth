@@ -53,7 +53,7 @@
 		              AssemblyTitle="$(AssemblyName)"
 		              AssemblyProduct="DotNetOpenAuth"
 		              NeutralResourcesLanguage="en-US"
-		              UltimateResourceFallbackLocation="UltimateResourceFallbackLocation.Satellite"
+		              UltimateResourceFallbackLocation="UltimateResourceFallbackLocation.MainAssembly"
 		              GenerateClass="true" />
 		<!-- Avoid applying the newly generated AssemblyInfo.cs file to the build 
 		     unless it has changed in order to allow for incremental building. -->
