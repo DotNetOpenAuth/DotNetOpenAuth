@@ -51,8 +51,18 @@ namespace DotNetOpenAuth.Messaging {
 		HeadRequest = 0x20,
 
 		/// <summary>
+		/// Added to the URLs in the query part (as defined by [RFC3986] (Berners-Lee, T., “Uniform Resource Identifiers (URI): Generic Syntax,” .) section 3).
+		/// </summary>
+		PatchRequest = 0x40,
+
+		/// <summary>
+		/// Added to the URLs in the query part (as defined by [RFC3986] (Berners-Lee, T., “Uniform Resource Identifiers (URI): Generic Syntax,” .) section 3).
+		/// </summary>
+		OptionsRequest = 0x80,
+
+		/// <summary>
 		/// The flags that control HTTP verbs.
 		/// </summary>
-		HttpVerbMask = PostRequest | GetRequest | PutRequest | DeleteRequest | HeadRequest,
+		HttpVerbMask = PostRequest | GetRequest | PutRequest | DeleteRequest | HeadRequest | PatchRequest | OptionsRequest,
 	}
 }

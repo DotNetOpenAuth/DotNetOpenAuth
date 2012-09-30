@@ -1443,6 +1443,10 @@ namespace DotNetOpenAuth.Messaging {
 				return HttpDeliveryMethods.DeleteRequest;
 			} else if (httpVerb == "HEAD") {
 				return HttpDeliveryMethods.HeadRequest;
+			} else if (httpVerb == "PATCH") {
+				return HttpDeliveryMethods.PatchRequest;
+			} else if (httpVerb == "OPTIONS") {
+				return HttpDeliveryMethods.OptionsRequest;
 			} else {
 				throw ErrorUtilities.ThrowArgumentNamed("httpVerb", MessagingStrings.UnsupportedHttpVerb, httpVerb);
 			}
@@ -1452,7 +1456,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// Gets the HTTP verb to use for a given <see cref="HttpDeliveryMethods"/> enum value.
 		/// </summary>
 		/// <param name="httpMethod">The HTTP method.</param>
-		/// <returns>An HTTP verb, such as GET, POST, PUT, or DELETE.</returns>
+		/// <returns>An HTTP verb, such as GET, POST, PUT, DELETE, PATCH, or OPTION.</returns>
 		internal static string GetHttpVerb(HttpDeliveryMethods httpMethod) {
 			if ((httpMethod & HttpDeliveryMethods.HttpVerbMask) == HttpDeliveryMethods.GetRequest) {
 				return "GET";
@@ -1464,6 +1468,10 @@ namespace DotNetOpenAuth.Messaging {
 				return "DELETE";
 			} else if ((httpMethod & HttpDeliveryMethods.HttpVerbMask) == HttpDeliveryMethods.HeadRequest) {
 				return "HEAD";
+			} else if ((httpMethod & HttpDeliveryMethods.HttpVerbMask) == HttpDeliveryMethods.PatchRequest) {
+				return "PATCH";
+			} else if ((httpMethod & HttpDeliveryMethods.HttpVerbMask) == HttpDeliveryMethods.OptionsRequest) {
+				return "OPTIONS";
 			} else if ((httpMethod & HttpDeliveryMethods.AuthorizationHeaderRequest) != 0) {
 				return "GET"; // if AuthorizationHeaderRequest is specified without an explicit HTTP verb, assume GET.
 			} else {
