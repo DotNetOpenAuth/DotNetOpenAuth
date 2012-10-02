@@ -47,7 +47,16 @@ namespace DotNetOpenAuth.AspNet.Test {
 			var client = new MockOAuth2Client();
 
 			// Act && Assert
-			Assert.Throws<ArgumentNullException>(() => client.VerifyAuthentication(null));
+			Assert.Throws<ArgumentNullException>(() => client.VerifyAuthentication(null, new Uri("http://me.com")));
+		}
+
+		[TestCase]
+		public void VerifyAuthenticationWithoutReturnUrlThrows() {
+			// Arrange
+			var client = new MockOAuth2Client();
+
+			// Act && Assert
+			Assert.Throws<InvalidOperationException>(() => client.VerifyAuthentication(new Mock<HttpContextBase>().Object));
 		}
 
 		[TestCase]
@@ -59,7 +68,7 @@ namespace DotNetOpenAuth.AspNet.Test {
 			context.Setup(c => c.Request.QueryString).Returns(queryStrings);
 
 			// Act 
-			AuthenticationResult result = client.VerifyAuthentication(context.Object);
+            AuthenticationResult result = client.VerifyAuthentication(context.Object, new Uri("http://me.com"));
 
 			// Assert
 			Assert.IsFalse(result.IsSuccessful);
@@ -75,7 +84,7 @@ namespace DotNetOpenAuth.AspNet.Test {
 			context.Setup(c => c.Request.QueryString).Returns(queryStrings);
 
 			// Act 
-			AuthenticationResult result = client.VerifyAuthentication(context.Object);
+            AuthenticationResult result = client.VerifyAuthentication(context.Object, new Uri("http://me.com"));
 
 			// Assert
 			Assert.IsFalse(result.IsSuccessful);
@@ -91,7 +100,7 @@ namespace DotNetOpenAuth.AspNet.Test {
 			context.Setup(c => c.Request.QueryString).Returns(queryStrings);
 
 			// Act 
-			AuthenticationResult result = client.VerifyAuthentication(context.Object);
+			AuthenticationResult result = client.VerifyAuthentication(context.Object, new Uri("http://me.com"));
 
 			// Assert
 			Assert.True(result.IsSuccessful);
