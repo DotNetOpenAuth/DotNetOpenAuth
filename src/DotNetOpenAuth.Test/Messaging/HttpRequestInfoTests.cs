@@ -6,7 +6,9 @@
 
 namespace DotNetOpenAuth.Test.Messaging {
 	using System;
+	using System.Collections.Generic;
 	using System.Collections.Specialized;
+	using System.Net.Http;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using NUnit.Framework;
@@ -118,6 +120,25 @@ namespace DotNetOpenAuth.Test.Messaging {
 			Uri actual = new HttpRequestWrapper(req).GetPublicFacingUrl(serverVariables);
 			Uri expected = new Uri("http://somehost:79/a.aspx?a=b");
 			Assert.AreEqual(expected, actual);
+		}
+
+		/// <summary>
+		/// Verifies the instantiation of HttpRequestInfo with a HttpRequestMessage object.
+		/// </summary>
+		[Test]
+		public void CtorHttpRequestMessage() {
+			var requestUri = new Uri("http://somehost/somepath?a=b");
+			HttpRequestMessage req = new HttpRequestMessage(HttpMethod.Post, requestUri);
+			req.Headers.Add("X-Custom-Header", "somevalue");
+			var formData = new List<KeyValuePair<string, string>>();
+			formData.Add(new KeyValuePair<string, string>("bodyvar", "bodyval"));
+			req.Content = new FormUrlEncodedContent(formData);
+			var info = new HttpRequestInfo(req);
+			Assert.AreEqual("POST", info.HttpMethod);
+			Assert.AreEqual(requestUri, info.Url);
+			Assert.AreEqual("b", info.QueryString["a"]);
+			Assert.AreEqual("somevalue", info.Headers["X-Custom-Header"]);
+			Assert.AreEqual("bodyval", info.Form["bodyvar"]);
 		}
 	}
 }

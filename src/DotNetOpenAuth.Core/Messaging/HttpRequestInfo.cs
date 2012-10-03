@@ -12,7 +12,10 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.IO;
+	using System.Linq;
 	using System.Net;
+	using System.Net.Http;
+	using System.Net.Http.Headers;
 	using System.Net.Mime;
 	using System.ServiceModel.Channels;
 	using System.Web;
@@ -114,6 +117,23 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="HttpRequestInfo"/> class.
 		/// </summary>
+		/// <param name="request">Details on the incoming HTTP request.</param>
+		internal HttpRequestInfo(HttpRequestMessage request) {
+			Requires.NotNull(request, "request");
+
+			this.httpMethod = request.Method.Method;
+			this.requestUri = request.RequestUri;
+			this.queryString = HttpUtility.ParseQueryString(request.RequestUri.Query);
+			this.headers = ReadHeaders(request);
+			this.form = ParseFormData(request.Method.Method, this.headers, request.Content);
+			this.serverVariables = new NameValueCollection();
+
+			Reporting.RecordRequestStatistics(this);
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="HttpRequestInfo"/> class.
+		/// </summary>
 		/// <param name="httpMethod">The HTTP method.</param>
 		/// <param name="requestUri">The request URI.</param>
 		/// <param name="headers">The headers.</param>
@@ -203,6 +223,15 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Creates an <see cref="HttpRequestBase"/> instance that describes the specified HTTP request.
 		/// </summary>
+		/// <param name="request">The request.</param>
+		/// <returns>An instance of <see cref="HttpRequestBase"/>.</returns>
+		public static HttpRequestBase Create(HttpRequestMessage request) {
+			return new HttpRequestInfo(request);
+		}
+
+		/// <summary>
+		/// Creates an <see cref="HttpRequestBase"/> instance that describes the specified HTTP request.
+		/// </summary>
 		/// <param name="httpMethod">The HTTP method.</param>
 		/// <param name="requestUri">The request URI.</param>
 		/// <param name="form">The form variables.</param>
@@ -235,8 +264,7 @@ namespace DotNetOpenAuth.Messaging {
 			Requires.NotNullOrEmpty(httpMethod, "httpMethod");
 			Requires.NotNull(headers, "headers");
 
-			ContentType contentType = string.IsNullOrEmpty(headers[HttpRequestHeaders.ContentType]) ? null : new ContentType(headers[HttpRequestHeaders.ContentType]);
-			if (inputStream != null && httpMethod == "POST" && contentType != null && string.Equals(contentType.MediaType, Channel.HttpFormUrlEncoded, StringComparison.Ordinal)) {
+			if (inputStream != null && ContentTypeIsHttpFormUrlEncoded(httpMethod, headers)) {
 				var reader = new StreamReader(inputStream);
 				long originalPosition = 0;
 				if (inputStream.CanSeek) {
@@ -251,6 +279,66 @@ namespace DotNetOpenAuth.Messaging {
 			}
 
 			return new NameValueCollection();
+		}
+
+		/// <summary>
+		/// Reads name=value pairs from the POSTed form entity when the HTTP headers indicate that that is the payload of the entity.
+		/// </summary>
+		/// <param name="httpMethod">The HTTP method.</param>
+		/// <param name="headers">The headers.</param>
+		/// <param name="content">The input content.</param>
+		/// <returns>The non-null collection of form variables.</returns>
+		private static NameValueCollection ParseFormData(string httpMethod, NameValueCollection headers, HttpContent content)
+		{
+			Requires.NotNullOrEmpty(httpMethod, "httpMethod");
+			Requires.NotNull(headers, "headers");
+
+			if (content != null && ContentTypeIsHttpFormUrlEncoded(httpMethod, headers)) {
+				string postEntity = content.ReadAsStringAsync().Result;
+				return HttpUtility.ParseQueryString(postEntity);
+			}
+
+			return new NameValueCollection();
+		}
+
+		/// <summary>
+		/// Checks whether the request headers indicate a POSTed payload which is "application/x-www-form-urlencoded".
+		/// </summary>
+		/// <param name="httpMethod">The HTTP method.</param>
+		/// <param name="headers">The headers.</param>
+		/// <returns>True, if the request is "application/x-www-form-urlencoded", false otherwise.</returns>
+		private static bool ContentTypeIsHttpFormUrlEncoded(string httpMethod, NameValueCollection headers) {
+			ContentType contentType = string.IsNullOrEmpty(headers[HttpRequestHeaders.ContentType]) ? null : new ContentType(headers[HttpRequestHeaders.ContentType]);
+			return httpMethod == "POST" && contentType != null && string.Equals(contentType.MediaType, Channel.HttpFormUrlEncoded, StringComparison.Ordinal);
+		}
+
+		/// <summary>
+		/// Reads the request and content headers from the supplied HttpRequestMessage.
+		/// </summary>
+		/// <param name="request">The request.</param>
+		/// <returns>The headers.</returns>
+		private static NameValueCollection ReadHeaders(HttpRequestMessage request) {
+			var headers = new NameValueCollection();
+			AddHeaders(headers, request.Headers);
+
+			if (request.Content != null) {
+				AddHeaders(headers, request.Content.Headers);
+			}
+
+			return headers;
+		}
+
+		/// <summary>
+		/// Adds the headers from a HttpHeaders instance to the NameValueCollection.
+		/// </summary>
+		/// <param name="outputHeaders">The NameValueCollection to which the headers are added.</param>
+		/// <param name="inputHeaders">The HttpHeaders from which the headers are read.</param>
+		private static void AddHeaders(NameValueCollection outputHeaders, HttpHeaders inputHeaders) {
+			if (inputHeaders != null) {
+				foreach (var header in inputHeaders) {
+					outputHeaders.Add(header.Key, header.Value.FirstOrDefault());
+				}
+			}
 		}
 	}
 }
