@@ -68,7 +68,7 @@ namespace DotNetOpenAuth.AspNet.Test {
 			context.Setup(c => c.Request.QueryString).Returns(queryStrings);
 
 			// Act 
-            AuthenticationResult result = client.VerifyAuthentication(context.Object, new Uri("http://me.com"));
+			AuthenticationResult result = client.VerifyAuthentication(context.Object, new Uri("http://me.com"));
 
 			// Assert
 			Assert.IsFalse(result.IsSuccessful);
@@ -84,7 +84,7 @@ namespace DotNetOpenAuth.AspNet.Test {
 			context.Setup(c => c.Request.QueryString).Returns(queryStrings);
 
 			// Act 
-            AuthenticationResult result = client.VerifyAuthentication(context.Object, new Uri("http://me.com"));
+			AuthenticationResult result = client.VerifyAuthentication(context.Object, new Uri("http://me.com"));
 
 			// Assert
 			Assert.IsFalse(result.IsSuccessful);
