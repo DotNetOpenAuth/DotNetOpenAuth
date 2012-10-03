@@ -79,7 +79,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 				new Dictionary<string, string> {
 					{ "client_id", this.appId },
 					{ "redirect_uri", returnUrl.AbsoluteUri },
-					{ "scope", "email" }
+					{ "scope", "email" },
 					
 				});
 			return builder.Uri;
@@ -135,7 +135,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 					{ "redirect_uri", NormalizeHexEncoding(returnUrl.AbsoluteUri) },
 					{ "client_secret", this.appSecret },
 					{ "code", authorizationCode },
-					{ "scope", "email" }
+					{ "scope", "email" },
 				});
 
 			using (WebClient client = new WebClient()) {
