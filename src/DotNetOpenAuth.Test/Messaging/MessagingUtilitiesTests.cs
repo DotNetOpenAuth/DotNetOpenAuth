@@ -9,13 +9,17 @@ namespace DotNetOpenAuth.Test.Messaging {
 	using System.Collections.Generic;
 	using System.Collections.Specialized;
 	using System.Diagnostics;
+	using System.Globalization;
 	using System.IO;
+	using System.Linq;
 	using System.Net;
+	using System.Net.Http;
 	using System.Text;
 	using System.Text.RegularExpressions;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Test.Mocks;
+	using Moq;
 	using NUnit.Framework;
 
 	[TestFixture]
@@ -60,6 +64,30 @@ namespace DotNetOpenAuth.Test.Messaging {
 		[Test]
 		public void AppendQueryArgsNullDictionary() {
 			MessagingUtilities.AppendQueryArgs(new UriBuilder(), null);
+		}
+
+		[Test]
+		public void AsHttpResponseMessage() {
+			var responseContent = new byte[10];
+			(new Random()).NextBytes(responseContent);
+			var responseStream = new MemoryStream(responseContent);
+			var outgoingResponse = new OutgoingWebResponse();
+			outgoingResponse.Headers.Add("X-SOME-HEADER", "value");
+			outgoingResponse.Headers.Add("Content-Length", responseContent.Length.ToString(CultureInfo.InvariantCulture));
+			outgoingResponse.ResponseStream = responseStream;
+
+			var httpResponseMessage = outgoingResponse.AsHttpResponseMessage();
+			Assert.That(httpResponseMessage, Is.Not.Null);
+			Assert.That(httpResponseMessage.Headers.GetValues("X-SOME-HEADER").ToList(), Is.EqualTo(new[] { "value" }));
+			Assert.That(
+				httpResponseMessage.Content.Headers.GetValues("Content-Length").ToList(),
+				Is.EqualTo(new[] { responseContent.Length.ToString(CultureInfo.InvariantCulture) }));
+			var actualContent = new byte[responseContent.Length + 1]; // give the opportunity to provide a bit more data than we expect.
+			var bytesRead = httpResponseMessage.Content.ReadAsStreamAsync().Result.Read(actualContent, 0, actualContent.Length);
+			Assert.That(bytesRead, Is.EqualTo(responseContent.Length)); // verify that only the data we expected came back.
+			var trimmedActualContent = new byte[bytesRead];
+			Array.Copy(actualContent, trimmedActualContent, bytesRead);
+			Assert.That(trimmedActualContent, Is.EqualTo(responseContent));
 		}
 
 		[Test]
@@ -151,7 +179,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			var httpHandler = new TestWebRequestHandler();
 			bool callbackTriggered = false;
 			httpHandler.Callback = req => {
-				Match m = Regex.Match(req.ContentType, "multipart/form-data; boundary=(.+)");
+				var m = Regex.Match(req.ContentType, "multipart/form-data; boundary=(.+)");
 				Assert.IsTrue(m.Success, "Content-Type HTTP header not set correctly.");
 				string boundary = m.Groups[1].Value;
 				boundary = boundary.Substring(0, boundary.IndexOf(';')); // trim off charset
