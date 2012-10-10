@@ -77,210 +77,270 @@ namespace DotNetOpenAuth.Loggers {
 		/// See <see cref="ILog"/>.
 		/// </summary>
 		public void Debug(object message) {
-			Trace.TraceInformation(message.ToString());
+			if (this.IsDebugEnabled) {
+				Trace.TraceInformation(message.ToString());
+			}
 		}
 
 		/// <summary>
 		/// See <see cref="ILog"/>.
 		/// </summary>
 		public void Debug(object message, Exception exception) {
-			Trace.TraceInformation(message + ": " + exception.ToString());
+			if (this.IsDebugEnabled) {
+				Trace.TraceInformation(message + ": " + exception.ToString());
+			}
 		}
 
 		/// <summary>
 		/// See <see cref="ILog"/>.
 		/// </summary>
 		public void DebugFormat(string format, params object[] args) {
-			Trace.TraceInformation(format, args);
+			if (this.IsDebugEnabled) {
+				Trace.TraceInformation(format, args);
+			}
 		}
 
 		/// <summary>
 		/// See <see cref="ILog"/>.
 		/// </summary>
 		public void DebugFormat(string format, object arg0) {
-			Trace.TraceInformation(format, arg0);
+			if (this.IsDebugEnabled) {
+				Trace.TraceInformation(format, arg0);
+			}
 		}
 
 		/// <summary>
 		/// See <see cref="ILog"/>.
 		/// </summary>
 		public void DebugFormat(string format, object arg0, object arg1) {
-			Trace.TraceInformation(format, arg0, arg1);
+			if (this.IsDebugEnabled) {
+				Trace.TraceInformation(format, arg0, arg1);
+			}
 		}
 
 		/// <summary>
 		/// See <see cref="ILog"/>.
 		/// </summary>
 		public void DebugFormat(string format, object arg0, object arg1, object arg2) {
-			Trace.TraceInformation(format, arg0, arg1, arg2);
+			if (this.IsDebugEnabled) {
+				Trace.TraceInformation(format, arg0, arg1, arg2);
+			}
 		}
 
 		/// <summary>
 		/// See <see cref="ILog"/>.
 		/// </summary>
 		public void Info(object message) {
-			Trace.TraceInformation(message.ToString());
+			if (this.IsInfoEnabled) {
+				Trace.TraceInformation(message.ToString());
+			}
 		}
 
 		/// <summary>
 		/// See <see cref="ILog"/>.
 		/// </summary>
 		public void Info(object message, Exception exception) {
-			Trace.TraceInformation(message + ": " + exception.ToString());
+			if (this.IsInfoEnabled) {
+				Trace.TraceInformation(message + ": " + exception.ToString());
+			}
 		}
 
 		/// <summary>
 		/// See <see cref="ILog"/>.
 		/// </summary>
 		public void InfoFormat(string format, params object[] args) {
-			Trace.TraceInformation(format, args);
+			if (this.IsInfoEnabled) {
+				Trace.TraceInformation(format, args);
+			}
 		}
 
 		/// <summary>
 		/// See <see cref="ILog"/>.
 		/// </summary>
 		public void InfoFormat(string format, object arg0) {
-			Trace.TraceInformation(format, arg0);
+			if (this.IsInfoEnabled) {
+				Trace.TraceInformation(format, arg0);
+			}
 		}
 
 		/// <summary>
 		/// See <see cref="ILog"/>.
 		/// </summary>
 		public void InfoFormat(string format, object arg0, object arg1) {
-			Trace.TraceInformation(format, arg0, arg1);
+			if (this.IsInfoEnabled) {
+				Trace.TraceInformation(format, arg0, arg1);
+			}
 		}
 
 		/// <summary>
 		/// See <see cref="ILog"/>.
 		/// </summary>
 		public void InfoFormat(string format, object arg0, object arg1, object arg2) {
-			Trace.TraceInformation(format, arg0, arg1, arg2);
+			if (this.IsInfoEnabled) {
+				Trace.TraceInformation(format, arg0, arg1, arg2);
+			}
 		}
 
 		/// <summary>
 		/// See <see cref="ILog"/>.
 		/// </summary>
 		public void Warn(object message) {
-			Trace.TraceWarning(message.ToString());
+			if (this.IsWarnEnabled) {
+				Trace.TraceWarning(message.ToString());
+			}
 		}
 
 		/// <summary>
 		/// See <see cref="ILog"/>.
 		/// </summary>
 		public void Warn(object message, Exception exception) {
-			Trace.TraceWarning(message + ": " + exception.ToString());
+			if (this.IsWarnEnabled) {
+				Trace.TraceWarning(message + ": " + exception.ToString());
+			}
 		}
 
 		/// <summary>
 		/// See <see cref="ILog"/>.
 		/// </summary>
 		public void WarnFormat(string format, params object[] args) {
-			Trace.TraceWarning(format, args);
+			if (this.IsWarnEnabled) {
+				Trace.TraceWarning(format, args);
+			}
 		}
 
 		/// <summary>
 		/// See <see cref="ILog"/>.
 		/// </summary>
 		public void WarnFormat(string format, object arg0) {
-			Trace.TraceWarning(format, arg0);
+			if (this.IsWarnEnabled) {
+				Trace.TraceWarning(format, arg0);
+			}
 		}
 
 		/// <summary>
 		/// See <see cref="ILog"/>.
 		/// </summary>
 		public void WarnFormat(string format, object arg0, object arg1) {
-			Trace.TraceWarning(format, arg0, arg1);
+			if (this.IsWarnEnabled) {
+				Trace.TraceWarning(format, arg0, arg1);
+			}
 		}
 
 		/// <summary>
 		/// See <see cref="ILog"/>.
 		/// </summary>
 		public void WarnFormat(string format, object arg0, object arg1, object arg2) {
-			Trace.TraceWarning(format, arg0, arg1, arg2);
+			if (this.IsWarnEnabled) {
+				Trace.TraceWarning(format, arg0, arg1, arg2);
+			}
 		}
 
 		/// <summary>
 		/// See <see cref="ILog"/>.
 		/// </summary>
 		public void Error(object message) {
-			Trace.TraceError(message.ToString());
+			if (this.IsErrorEnabled) {
+				Trace.TraceError(message.ToString());
+			}
 		}
 
 		/// <summary>
 		/// See <see cref="ILog"/>.
 		/// </summary>
 		public void Error(object message, Exception exception) {
-			Trace.TraceError(message + ": " + exception.ToString());
+			if (this.IsErrorEnabled) {
+				Trace.TraceError(message + ": " + exception.ToString());
+			}
 		}
 
 		/// <summary>
 		/// See <see cref="ILog"/>.
 		/// </summary>
 		public void ErrorFormat(string format, params object[] args) {
-			Trace.TraceError(format, args);
+			if (this.IsErrorEnabled) {
+				Trace.TraceError(format, args);
+			}
 		}
 
 		/// <summary>
 		/// See <see cref="ILog"/>.
 		/// </summary>
 		public void ErrorFormat(string format, object arg0) {
-			Trace.TraceError(format, arg0);
+			if (this.IsErrorEnabled) {
+				Trace.TraceError(format, arg0);
+			}
 		}
 
 		/// <summary>
 		/// See <see cref="ILog"/>.
 		/// </summary>
 		public void ErrorFormat(string format, object arg0, object arg1) {
-			Trace.TraceError(format, arg0, arg1);
+			if (this.IsErrorEnabled) {
+				Trace.TraceError(format, arg0, arg1);
+			}
 		}
 
 		/// <summary>
 		/// See <see cref="ILog"/>.
 		/// </summary>
 		public void ErrorFormat(string format, object arg0, object arg1, object arg2) {
-			Trace.TraceError(format, arg0, arg1, arg2);
+			if (this.IsErrorEnabled) {
+				Trace.TraceError(format, arg0, arg1, arg2);
+			}
 		}
 
 		/// <summary>
 		/// See <see cref="ILog"/>.
 		/// </summary>
 		public void Fatal(object message) {
-			Trace.TraceError(message.ToString());
+			if (this.IsFatalEnabled) {
+				Trace.TraceError(message.ToString());
+			}
 		}
 
 		/// <summary>
 		/// See <see cref="ILog"/>.
 		/// </summary>
 		public void Fatal(object message, Exception exception) {
-			Trace.TraceError(message + ": " + exception.ToString());
+			if (this.IsFatalEnabled) {
+				Trace.TraceError(message + ": " + exception.ToString());
+			}
 		}
 
 		/// <summary>
 		/// See <see cref="ILog"/>.
 		/// </summary>
 		public void FatalFormat(string format, params object[] args) {
-			Trace.TraceError(format, args);
+			if (this.IsFatalEnabled) {
+				Trace.TraceError(format, args);
+			}
 		}
 
 		/// <summary>
 		/// See <see cref="ILog"/>.
 		/// </summary>
 		public void FatalFormat(string format, object arg0) {
-			Trace.TraceError(format, arg0);
+			if (this.IsFatalEnabled) {
+				Trace.TraceError(format, arg0);
+			}
 		}
 
 		/// <summary>
 		/// See <see cref="ILog"/>.
 		/// </summary>
 		public void FatalFormat(string format, object arg0, object arg1) {
-			Trace.TraceError(format, arg0, arg1);
+			if (this.IsFatalEnabled) {
+				Trace.TraceError(format, arg0, arg1);
+			}
 		}
 
 		/// <summary>
 		/// See <see cref="ILog"/>.
 		/// </summary>
 		public void FatalFormat(string format, object arg0, object arg1, object arg2) {
-			Trace.TraceError(format, arg0, arg1, arg2);
+			if (this.IsFatalEnabled) {
+				Trace.TraceError(format, arg0, arg1, arg2);
+			}
 		}
 
 		#endregion
