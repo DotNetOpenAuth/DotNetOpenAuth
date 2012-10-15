@@ -122,7 +122,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 				try {
 					string canonicalUserName;
 					if (this.AuthorizationServer.TryAuthorizeResourceOwnerCredentialGrant(resourceOwnerPasswordCarrier.UserName, resourceOwnerPasswordCarrier.Password, resourceOwnerPasswordCarrier, out canonicalUserName)) {
-						ErrorUtilities.VerifyHost(!string.IsNullOrEmpty(canonicalUserName), "IsResourceOwnerCredentialValid did not initialize out parameter.");
+						ErrorUtilities.VerifyHost(!string.IsNullOrEmpty(canonicalUserName), "TryAuthorizeResourceOwnerCredentialGrant did not initialize out parameter.");
 						resourceOwnerPasswordCarrier.CredentialsValidated = true;
 						resourceOwnerPasswordCarrier.UserName = canonicalUserName;
 					} else {

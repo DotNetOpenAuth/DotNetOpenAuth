@@ -286,7 +286,7 @@ namespace DotNetOpenAuth.Messaging {
 			Requires.NotNull(signature, "signature");
 
 			if (this.asymmetricSigning != null) {
-				using (var hasher = new SHA1CryptoServiceProvider()) {
+				using (var hasher = SHA1.Create()) {
 					return this.asymmetricSigning.VerifyData(signedData, hasher, signature);
 				}
 			} else {
@@ -309,13 +309,13 @@ namespace DotNetOpenAuth.Messaging {
 			Contract.Ensures(Contract.Result<byte[]>() != null);
 
 			if (this.asymmetricSigning != null) {
-				using (var hasher = new SHA1CryptoServiceProvider()) {
+				using (var hasher = SHA1.Create()) {
 					return this.asymmetricSigning.SignData(bytesToSign, hasher);
 				}
 			} else {
 				var key = this.cryptoKeyStore.GetKey(this.cryptoKeyBucket, symmetricSecretHandle);
 				ErrorUtilities.VerifyProtocol(key != null, MessagingStrings.MissingDecryptionKeyForHandle, this.cryptoKeyBucket, symmetricSecretHandle);
-				using (var symmetricHasher = new HMACSHA256(key.Key)) {
+				using (var symmetricHasher = HmacAlgorithms.Create(HmacAlgorithms.HmacSha256, key.Key)) {
 					return symmetricHasher.ComputeHash(bytesToSign);
 				}
 			}

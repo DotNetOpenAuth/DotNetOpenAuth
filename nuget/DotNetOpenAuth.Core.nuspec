@@ -17,7 +17,13 @@
 			<frameworkAssembly assemblyName="System.Configuration" targetFramework="net40" />
 		</frameworkAssemblies>
 		<dependencies>
-			<dependency id="CodeContracts.Unofficial" />
+			<group targetFramework="net35">
+				<dependency id="CodeContracts.Unofficial" />
+			</group>
+			<group targetFramework="net40">
+				<dependency id="CodeContracts.Unofficial" />
+				<dependency id="System.Net.Http" />
+			</group>
 		</dependencies>
 	</metadata>
 	<files>

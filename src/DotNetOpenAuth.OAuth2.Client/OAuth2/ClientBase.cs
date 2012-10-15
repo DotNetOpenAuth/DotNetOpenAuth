@@ -11,6 +11,9 @@ namespace DotNetOpenAuth.OAuth2 {
 	using System.Globalization;
 	using System.Linq;
 	using System.Net;
+#if CLR4
+	using System.Net.Http;
+#endif
 	using System.Security;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
@@ -106,6 +109,32 @@ namespace DotNetOpenAuth.OAuth2 {
 
 			AuthorizeRequest(request, authorization.AccessToken);
 		}
+
+#if CLR4
+		/// <summary>
+		/// Creates an HTTP handler that automatically applies an OAuth 2 (bearer) access token to outbound HTTP requests.
+		/// The result of this method can be supplied to the <see cref="HttpClient(HttpMessageHandler)"/> constructor.
+		/// </summary>
+		/// <param name="bearerAccessToken">The bearer token to apply to each outbound HTTP message.</param>
+		/// <param name="innerHandler">The inner HTTP handler to use.  The default uses <see cref="HttpClientHandler"/> as the inner handler.</param>
+		/// <returns>An <see cref="HttpMessageHandler"/> instance.</returns>
+		public DelegatingHandler CreateAuthorizingHandler(string bearerAccessToken, HttpMessageHandler innerHandler = null) {
+			Requires.NotNullOrEmpty(bearerAccessToken, "bearerAccessToken");
+			return new BearerTokenHttpMessageHandler(bearerAccessToken, innerHandler ?? new HttpClientHandler());
+		}
+
+		/// <summary>
+		/// Creates an HTTP handler that automatically applies the OAuth 2 access token to outbound HTTP requests.
+		/// The result of this method can be supplied to the <see cref="HttpClient(HttpMessageHandler)"/> constructor.
+		/// </summary>
+		/// <param name="authorization">The authorization to apply to the message.</param>
+		/// <param name="innerHandler">The inner HTTP handler to use.  The default uses <see cref="HttpClientHandler"/> as the inner handler.</param>
+		/// <returns>An <see cref="HttpMessageHandler"/> instance.</returns>
+		public DelegatingHandler CreateAuthorizingHandler(IAuthorizationState authorization, HttpMessageHandler innerHandler = null) {
+			Requires.NotNull(authorization, "authorization");
+			return new BearerTokenHttpMessageHandler(this, authorization, innerHandler ?? new HttpClientHandler());
+		}
+#endif
 
 		/// <summary>
 		/// Refreshes a short-lived access token using a longer-lived refresh token

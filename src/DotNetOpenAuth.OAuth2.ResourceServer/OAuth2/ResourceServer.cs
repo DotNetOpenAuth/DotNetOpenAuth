@@ -11,6 +11,9 @@ namespace DotNetOpenAuth.OAuth2 {
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Net;
+#if CLR4
+	using System.Net.Http;
+#endif
 	using System.Security.Principal;
 	using System.ServiceModel.Channels;
 	using System.Text;
@@ -126,6 +129,25 @@ namespace DotNetOpenAuth.OAuth2 {
 			}
 		}
 
+#if CLR4
+		/// <summary>
+		/// Discovers what access the client should have considering the access token in the current request.
+		/// </summary>
+		/// <param name="request">The HTTP request message.</param>
+		/// <param name="requiredScopes">The set of scopes required to approve this request.</param>
+		/// <returns>
+		/// The access token describing the authorization the client has.  Never <c>null</c>.
+		/// </returns>
+		/// <exception cref="ProtocolFaultResponseException">
+		/// Thrown when the client is not authorized.  This exception should be caught and the
+		/// <see cref="ProtocolFaultResponseException.ErrorResponseMessage"/> message should be returned to the client.
+		/// </exception>
+		public virtual AccessToken GetAccessToken(HttpRequestMessage request, params string[] requiredScopes) {
+			Requires.NotNull(request, "request");
+			return this.GetAccessToken(new HttpRequestInfo(request), requiredScopes);
+		}
+#endif
+
 		/// <summary>
 		/// Discovers what access the client should have considering the access token in the current request.
 		/// </summary>
@@ -174,5 +196,24 @@ namespace DotNetOpenAuth.OAuth2 {
 
 			return this.GetPrincipal(new HttpRequestInfo(request, requestUri), requiredScopes);
 		}
+
+#if CLR4
+		/// <summary>
+		/// Discovers what access the client should have considering the access token in the current request.
+		/// </summary>
+		/// <param name="request">HTTP details from an incoming HTTP request message.</param>
+		/// <param name="requiredScopes">The set of scopes required to approve this request.</param>
+		/// <returns>
+		/// The principal that contains the user and roles that the access token is authorized for.  Never <c>null</c>.
+		/// </returns>
+		/// <exception cref="ProtocolFaultResponseException">
+		/// Thrown when the client is not authorized.  This exception should be caught and the
+		/// <see cref="ProtocolFaultResponseException.ErrorResponseMessage"/> message should be returned to the client.
+		/// </exception>
+		public IPrincipal GetPrincipal(HttpRequestMessage request, params string[] requiredScopes) {
+			Requires.NotNull(request, "request");
+			return this.GetPrincipal(new HttpRequestInfo(request), requiredScopes);
+		}
+#endif
 	}
 }

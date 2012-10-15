@@ -47,6 +47,11 @@ namespace DotNetOpenAuth.Configuration {
 		private const string DiscoveryServicesElementName = "discoveryServices";
 
 		/// <summary>
+		/// The name of the &lt;hostMetaDiscovery&gt; sub-element.
+		/// </summary>
+		private const string HostMetaDiscoveryElementName = "hostMetaDiscovery";
+
+		/// <summary>
 		/// The built-in set of identifier discovery services.
 		/// </summary>
 		private static readonly TypeConfigurationCollection<IIdentifierDiscoveryService> defaultDiscoveryServices =
@@ -96,6 +101,15 @@ namespace DotNetOpenAuth.Configuration {
 		public TypeConfigurationElement<IOpenIdApplicationStore> ApplicationStore {
 			get { return (TypeConfigurationElement<IOpenIdApplicationStore>)this[StoreConfigName] ?? new TypeConfigurationElement<IOpenIdApplicationStore>(); }
 			set { this[StoreConfigName] = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the host meta discovery configuration element.
+		/// </summary>
+		[ConfigurationProperty(HostMetaDiscoveryElementName)]
+		internal HostMetaDiscoveryElement HostMetaDiscovery {
+			get { return (HostMetaDiscoveryElement)this[HostMetaDiscoveryElementName] ?? new HostMetaDiscoveryElement(); }
+			set { this[HostMetaDiscoveryElementName] = value; }
 		}
 
 		/// <summary>

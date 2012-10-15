@@ -115,9 +115,8 @@
 			<DropSatelliteSourceFiles>
 				<CultureDir>$([System.IO.Path]::GetDirectoryName('$([System.IO.Path]::GetDirectoryName('%(RecursiveDir)'))'))\</CultureDir>
 			</DropSatelliteSourceFiles>
-			<DropLibSourceFiles Include="
-																$(ProjectRoot)Lib\log4net.*;
-																" />
+			<_DropLibSourceFiles Include="$(ProjectRoot)Lib\**\*" />
+			<DropLibSourceFiles Include="@(_DropLibSourceFiles)" Condition=" '%(FileName)' == 'log4net' or '%(FileName)' == 'System.Net.Http' " />
 			<DropProjectTemplatesSourceFiles Include="@(ProjectTemplatesVsi)" />
 			<DropVsixSourceFiles Include="@(ExtensionVsix)" Condition=" '%(ExtensionVsix.IncludeInDrop)' == 'true' " />
 

@@ -13,6 +13,10 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Globalization;
 	using System.IO;
 	using System.Net;
+#if CLR4
+	using System.Net.Http;
+	using System.Net.Http.Headers;
+#endif
 	using System.Net.Mime;
 	using System.ServiceModel.Channels;
 	using System.Web;
@@ -105,11 +109,32 @@ namespace DotNetOpenAuth.Messaging {
 			this.requestUri = listenerRequest.Url;
 			this.queryString = listenerRequest.QueryString;
 			this.headers = listenerRequest.Headers;
-			this.form = ParseFormData(listenerRequest.HttpMethod, listenerRequest.Headers, listenerRequest.InputStream);
+			this.form = ParseFormData(listenerRequest.HttpMethod, listenerRequest.Headers, () => listenerRequest.InputStream);
 			this.serverVariables = new NameValueCollection();
 
 			Reporting.RecordRequestStatistics(this);
 		}
+
+#if CLR4
+		/// <summary>
+		/// Initializes a new instance of the <see cref="HttpRequestInfo" /> class.
+		/// </summary>
+		/// <param name="request">The request.</param>
+		internal HttpRequestInfo(HttpRequestMessage request) {
+			Requires.NotNull(request, "request");
+
+			this.httpMethod = request.Method.ToString();
+			this.requestUri = request.RequestUri;
+			this.queryString = HttpUtility.ParseQueryString(request.RequestUri.Query);
+			this.headers = new NameValueCollection();
+			AddHeaders(this.headers, request.Headers);
+			AddHeaders(this.headers, request.Content.Headers);
+			this.form = ParseFormData(this.httpMethod, this.headers, () => request.Content.ReadAsStreamAsync().Result);
+			this.serverVariables = new NameValueCollection();
+
+			Reporting.RecordRequestStatistics(this);
+		}
+#endif
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="HttpRequestInfo"/> class.
@@ -126,7 +151,7 @@ namespace DotNetOpenAuth.Messaging {
 			this.requestUri = requestUri;
 			this.headers = headers;
 			this.queryString = HttpUtility.ParseQueryString(requestUri.Query);
-			this.form = ParseFormData(httpMethod, headers, inputStream);
+			this.form = ParseFormData(httpMethod, headers, () => inputStream);
 			this.serverVariables = new NameValueCollection();
 
 			Reporting.RecordRequestStatistics(this);
@@ -200,6 +225,17 @@ namespace DotNetOpenAuth.Messaging {
 			return new HttpRequestInfo(listenerRequest);
 		}
 
+#if CLR4
+		/// <summary>
+		/// Creates an <see cref="HttpRequestBase"/> instance that describes the specified HTTP request.
+		/// </summary>
+		/// <param name="request">The HTTP request.</param>
+		/// <returns>An instance of <see cref="HttpRequestBase"/>.</returns>
+		public static HttpRequestBase Create(HttpRequestMessage request) {
+			return new HttpRequestInfo(request);
+		}
+#endif
+
 		/// <summary>
 		/// Creates an <see cref="HttpRequestBase"/> instance that describes the specified HTTP request.
 		/// </summary>
@@ -229,14 +265,15 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="httpMethod">The HTTP method.</param>
 		/// <param name="headers">The headers.</param>
-		/// <param name="inputStream">The input stream.</param>
+		/// <param name="inputStreamFunc">A function that returns the input stream.</param>
 		/// <returns>The non-null collection of form variables.</returns>
-		private static NameValueCollection ParseFormData(string httpMethod, NameValueCollection headers, Stream inputStream) {
+		private static NameValueCollection ParseFormData(string httpMethod, NameValueCollection headers, Func<Stream> inputStreamFunc) {
 			Requires.NotNullOrEmpty(httpMethod, "httpMethod");
 			Requires.NotNull(headers, "headers");
 
 			ContentType contentType = string.IsNullOrEmpty(headers[HttpRequestHeaders.ContentType]) ? null : new ContentType(headers[HttpRequestHeaders.ContentType]);
-			if (inputStream != null && httpMethod == "POST" && contentType != null && string.Equals(contentType.MediaType, Channel.HttpFormUrlEncoded, StringComparison.Ordinal)) {
+			if (httpMethod == "POST" && contentType != null && string.Equals(contentType.MediaType, Channel.HttpFormUrlEncoded, StringComparison.Ordinal) && inputStreamFunc != null) {
+				var inputStream = inputStreamFunc();
 				var reader = new StreamReader(inputStream);
 				long originalPosition = 0;
 				if (inputStream.CanSeek) {
@@ -252,5 +289,23 @@ namespace DotNetOpenAuth.Messaging {
 
 			return new NameValueCollection();
 		}
+
+#if CLR4
+		/// <summary>
+		/// Adds HTTP headers to a <see cref="NameValueCollection"/>.
+		/// </summary>
+		/// <param name="collectionToFill">The collection to be modified with added entries.</param>
+		/// <param name="headers">The collection to read from.</param>
+		private static void AddHeaders(NameValueCollection collectionToFill, HttpHeaders headers) {
+			Requires.NotNull(collectionToFill, "collectionToFill");
+			Requires.NotNull(headers, "headers");
+
+			foreach (var header in headers) {
+				foreach (var value in header.Value) {
+					collectionToFill.Add(header.Key, value);
+				}
+			}
+		}
+#endif
 	}
 }

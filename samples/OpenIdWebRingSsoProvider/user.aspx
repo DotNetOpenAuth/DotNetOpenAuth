@@ -1,4 +1,4 @@
-<%@ Page Language="C#" AutoEventWireup="true" Inherits="OpenIdWebRingSsoProvider.User"
+<%@ Page Language="C#" AutoEventWireup="true" Inherits="OpenIdWebRingSsoProvider.User" EnableSessionState="False"
 	CodeBehind="user.aspx.cs" %>
 
 <%@ Register Assembly="DotNetOpenAuth.OpenId.Provider.UI" Namespace="DotNetOpenAuth.OpenId.Provider"

@@ -190,7 +190,8 @@ namespace DotNetOpenAuth.Yadis {
 			if (response.ContentType.MediaType == ContentTypes.Xml) {
 				// This COULD be an XRDS document with an imprecise content-type.
 				response.ResponseStream.Seek(0, SeekOrigin.Begin);
-				XmlReader reader = XmlReader.Create(response.ResponseStream);
+				var readerSettings = MessagingUtilities.CreateUntrustedXmlReaderSettings();
+				XmlReader reader = XmlReader.Create(response.ResponseStream, readerSettings);
 				while (reader.Read() && reader.NodeType != XmlNodeType.Element) {
 					// intentionally blank
 				}

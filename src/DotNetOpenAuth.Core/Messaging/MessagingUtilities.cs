@@ -15,6 +15,9 @@ namespace DotNetOpenAuth.Messaging {
 	using System.IO.Compression;
 	using System.Linq;
 	using System.Net;
+#if CLR4
+	using System.Net.Http;
+#endif
 	using System.Net.Mime;
 	using System.Runtime.Serialization.Json;
 	using System.Security;
@@ -160,6 +163,28 @@ namespace DotNetOpenAuth.Messaging {
 			Requires.NotNull(response, "response");
 			return new OutgoingWebResponseActionResult(response);
 		}
+
+#if CLR4
+		/// <summary>
+		/// Transforms an OutgoingWebResponse to a Web API-friendly HttpResponseMessage.
+		/// </summary>
+		/// <param name="outgoingResponse">The response to send to the user agent.</param>
+		/// <returns>The <see cref="HttpResponseMessage"/> instance to be returned by the Web API method.</returns>
+		public static HttpResponseMessage AsHttpResponseMessage(this OutgoingWebResponse outgoingResponse) {
+			HttpResponseMessage response = new HttpResponseMessage(outgoingResponse.Status) {
+				Content = new StreamContent(outgoingResponse.ResponseStream)
+			};
+
+			var responseHeaders = outgoingResponse.Headers;
+			foreach (var header in responseHeaders.AllKeys) {
+				if (!response.Headers.TryAddWithoutValidation(header, responseHeaders[header])) {
+					response.Content.Headers.TryAddWithoutValidation(header, responseHeaders[header]);
+				}
+			}
+
+			return response;
+		}
+#endif
 
 		/// <summary>
 		/// Gets the original request URL, as seen from the browser before any URL rewrites on the server if any.
@@ -354,6 +379,28 @@ namespace DotNetOpenAuth.Messaging {
 			realmUrl.Query = null;
 			realmUrl.Fragment = null;
 			return realmUrl.Uri;
+		}
+
+		/// <summary>
+		/// Creates the XML reader settings to use for reading XML from untrusted sources.
+		/// </summary>
+		/// <returns>
+		/// The new instance of <see cref="XmlReaderSettings"/>.
+		/// </returns>
+		/// <remarks>
+		/// The default values set here are based on recommendations from
+		/// http://msdn.microsoft.com/en-us/magazine/ee335713.aspx
+		/// </remarks>
+		internal static XmlReaderSettings CreateUntrustedXmlReaderSettings() {
+			return new XmlReaderSettings {
+				MaxCharactersFromEntities = 1024,
+				XmlResolver = null,
+#if CLR4
+				DtdProcessing = DtdProcessing.Prohibit,
+#else
+				ProhibitDtd = true,
+#endif
+			};
 		}
 
 		/// <summary>

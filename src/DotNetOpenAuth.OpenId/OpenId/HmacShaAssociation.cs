@@ -226,22 +226,22 @@ namespace DotNetOpenAuth.OpenId {
 		private static HmacSha[] CreateAssociationTypes() {
 			return new[] {
 				new HmacSha {
-					CreateHasher = secretKey => new HMACSHA512(secretKey),
+					HmacAlgorithmName = HmacAlgorithms.HmacSha384,
 					GetAssociationType = protocol => protocol.Args.SignatureAlgorithm.HMAC_SHA512,
 					BaseHashAlgorithm = SHA512.Create(),
 				},
 				new HmacSha {
-					CreateHasher = secretKey => new HMACSHA384(secretKey),
+					HmacAlgorithmName = HmacAlgorithms.HmacSha384,
 					GetAssociationType = protocol => protocol.Args.SignatureAlgorithm.HMAC_SHA384,
 					BaseHashAlgorithm = SHA384.Create(),
 				},
 				new HmacSha {
-					CreateHasher = secretKey => new HMACSHA256(secretKey),
+					HmacAlgorithmName = HmacAlgorithms.HmacSha256,
 					GetAssociationType = protocol => protocol.Args.SignatureAlgorithm.HMAC_SHA256,
 					BaseHashAlgorithm = SHA256.Create(),
 				},
 				new HmacSha {
-					CreateHasher = secretKey => new HMACSHA1(secretKey),
+					HmacAlgorithmName = HmacAlgorithms.HmacSha1,
 					GetAssociationType = protocol => protocol.Args.SignatureAlgorithm.HMAC_SHA1,
 					BaseHashAlgorithm = SHA1.Create(),
 				},
@@ -258,9 +258,9 @@ namespace DotNetOpenAuth.OpenId {
 			internal Func<Protocol, string> GetAssociationType { get; set; }
 
 			/// <summary>
-			/// Gets or sets a function that will create the <see cref="HashAlgorithm"/> using a given shared secret for the mac.
+			/// Gets or sets the name of the HMAC-SHA algorithm. (e.g. "HMAC-SHA256")
 			/// </summary>
-			internal Func<byte[], HashAlgorithm> CreateHasher { get; set; }
+			internal string HmacAlgorithmName { get; set; }
 
 			/// <summary>
 			/// Gets or sets the base hash algorithm.
@@ -271,6 +271,15 @@ namespace DotNetOpenAuth.OpenId {
 			/// Gets the size of the hash (in bytes).
 			/// </summary>
 			internal int SecretLength { get { return this.BaseHashAlgorithm.HashSize / 8; } }
+
+			/// <summary>
+			/// Creates the <see cref="HashAlgorithm"/> using a given shared secret for the mac.
+			/// </summary>
+			/// <param name="secret">The HMAC secret.</param>
+			/// <returns>The algorithm.</returns>
+			internal HashAlgorithm CreateHasher(byte[] secret) {
+				return HmacAlgorithms.Create(this.HmacAlgorithmName, secret);
+			}
 		}
 	}
 }

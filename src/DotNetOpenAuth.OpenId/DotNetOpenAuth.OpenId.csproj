@@ -22,6 +22,7 @@
   <ItemGroup>
     <Compile Include="Configuration\AssociationTypeCollection.cs" />
     <Compile Include="Configuration\AssociationTypeElement.cs" />
+    <Compile Include="Configuration\HostMetaDiscoveryElement.cs" />
     <Compile Include="Configuration\OpenIdElement.cs" />
     <Compile Include="Configuration\OpenIdProviderElement.cs" />
     <Compile Include="Configuration\OpenIdProviderSecuritySettingsElement.cs" />

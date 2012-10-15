@@ -110,7 +110,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 				return null;
 			}
 
-			using (var hasher = new SHA256Managed()) {
+			using (var hasher = SHA256.Create()) {
 				return hasher.ComputeHash(Encoding.UTF8.GetBytes(callback.AbsoluteUri));
 			}
 		}
