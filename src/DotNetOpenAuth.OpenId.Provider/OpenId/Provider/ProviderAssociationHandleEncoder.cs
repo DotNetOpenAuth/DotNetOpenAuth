@@ -70,7 +70,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			var formatter = AssociationDataBag.CreateFormatter(this.cryptoKeyStore, AssociationHandleEncodingSecretBucket);
 			AssociationDataBag bag = new AssociationDataBag();
 			try {
-				formatter.Deserialize(bag, containingMessage, handle, Protocol.Default.openid.assoc_handle);
+				formatter.Deserialize(bag, handle, containingMessage, Protocol.Default.openid.assoc_handle);
 			} catch (ProtocolException ex) {
 				Logger.OpenId.Error("Rejecting an association because deserialization of the encoded handle failed.", ex);
 				return null;

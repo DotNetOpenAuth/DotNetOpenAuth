@@ -625,18 +625,15 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Extracts the key handle and encrypted blob from a string previously returned from <see cref="CombineKeyHandleAndPayload"/>.
 		/// </summary>
-		/// <param name="containingMessage">The containing message.</param>
-		/// <param name="messagePart">The message part.</param>
+		/// <param name="messagePart">The message part. May be null if not applicable.</param>
 		/// <param name="keyHandleAndBlob">The value previously returned from <see cref="CombineKeyHandleAndPayload"/>.</param>
 		/// <param name="handle">The crypto key handle.</param>
 		/// <param name="dataBlob">The encrypted/signed data.</param>
-		internal static void ExtractKeyHandleAndPayload(IProtocolMessage containingMessage, string messagePart, string keyHandleAndBlob, out string handle, out string dataBlob) {
-			Requires.NotNull(containingMessage, "containingMessage");
-			Requires.NotNullOrEmpty(messagePart, "messagePart");
+		internal static void ExtractKeyHandleAndPayload(string messagePart, string keyHandleAndBlob, out string handle, out string dataBlob) {
 			Requires.NotNullOrEmpty(keyHandleAndBlob, "keyHandleAndBlob");
 
 			int privateHandleIndex = keyHandleAndBlob.IndexOf('!');
-			ErrorUtilities.VerifyProtocol(privateHandleIndex > 0, MessagingStrings.UnexpectedMessagePartValue, messagePart, keyHandleAndBlob);
+			ErrorUtilities.VerifyProtocol(privateHandleIndex > 0, MessagingStrings.UnexpectedMessagePartValue, messagePart ?? "<unknown>", keyHandleAndBlob);
 			handle = keyHandleAndBlob.Substring(0, privateHandleIndex);
 			dataBlob = keyHandleAndBlob.Substring(privateHandleIndex + 1);
 		}

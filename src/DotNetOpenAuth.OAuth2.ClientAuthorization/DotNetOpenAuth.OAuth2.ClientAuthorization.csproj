@@ -34,7 +34,7 @@
     <Compile Include="OAuth2\Messages\AccessTokenRefreshRequest.cs" />
     <Compile Include="OAuth2\Messages\AccessTokenRequestBase.cs" />
     <Compile Include="OAuth2\Messages\AccessTokenResourceOwnerPasswordCredentialsRequest.cs" />
-    <Compile Include="OAuth2\Messages\AccessTokenResult.cs" />
+    <Compile Include="OAuth2\Messages\IAccessTokenResult.cs" />
     <Compile Include="OAuth2\Messages\AccessTokenSuccessResponse.cs" />
     <Compile Include="OAuth2\Messages\AuthenticatedClientRequestBase.cs" />
     <Compile Include="OAuth2\Messages\EndUserAuthorizationFailedResponse.cs" />

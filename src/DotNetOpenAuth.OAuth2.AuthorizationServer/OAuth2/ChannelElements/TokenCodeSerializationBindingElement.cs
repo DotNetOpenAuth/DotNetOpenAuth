@@ -103,7 +103,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			if (authCodeCarrier != null) {
 				var authorizationCodeFormatter = AuthorizationCode.CreateFormatter(this.AuthorizationServer);
 				var authorizationCode = new AuthorizationCode();
-				authorizationCodeFormatter.Deserialize(authorizationCode, message, authCodeCarrier.Code, Protocol.code);
+				authorizationCodeFormatter.Deserialize(authorizationCode, authCodeCarrier.Code, message, Protocol.code);
 				authCodeCarrier.AuthorizationDescription = authorizationCode;
 			}
 
@@ -111,7 +111,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			if (refreshTokenCarrier != null) {
 				var refreshTokenFormatter = RefreshToken.CreateFormatter(this.AuthorizationServer.CryptoKeyStore);
 				var refreshToken = new RefreshToken();
-				refreshTokenFormatter.Deserialize(refreshToken, message, refreshTokenCarrier.RefreshToken, Protocol.refresh_token);
+				refreshTokenFormatter.Deserialize(refreshToken, refreshTokenCarrier.RefreshToken, message, Protocol.refresh_token);
 				refreshTokenCarrier.AuthorizationDescription = refreshToken;
 			}
 
