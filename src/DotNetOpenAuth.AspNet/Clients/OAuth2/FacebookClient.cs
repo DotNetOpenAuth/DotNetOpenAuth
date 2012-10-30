@@ -39,6 +39,11 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// </summary>
 		private readonly string appSecret;
 
+        /// <summary>
+        /// Additional facebook permissions to request
+        /// </summary>
+        private readonly Dictionary<string,string> additionalPermissions;
+
 		#endregion
 
 		#region Constructors and Destructors
@@ -59,7 +64,38 @@ namespace DotNetOpenAuth.AspNet.Clients {
 
 			this.appId = appId;
 			this.appSecret = appSecret;
+            this.additionalPermissions = new Dictionary<string,string>();
+            this.additionalPermissions.Add("email", "email");
 		}
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FacebookClient"/> class.
+        /// </summary>
+        /// <param name="appId">
+        /// The app id.
+        /// </param>
+        /// <param name="appSecret">
+        /// The app secret.
+        /// </param>
+        ///<param name="additionalPermissions">
+        /// Comma delimeted string which contains additional facebook permissions to request. 
+        /// Example : "user_birthday,user_activities"
+        /// </param>
+        public FacebookClient(string appId, string appSecret, string additionalPermissions)
+            : this(appId, appSecret)
+        {
+            Requires.NotNullOrEmpty(additionalPermissions, "additionalPermissions");
+
+            foreach (var permission in additionalPermissions.ToLower().Split(','))
+            {
+                if (!this.additionalPermissions.ContainsKey(permission))
+                {
+                    this.additionalPermissions.Add(permission, permission);
+                }
+            }
+        }
+
+
 
 		#endregion
 
@@ -79,11 +115,25 @@ namespace DotNetOpenAuth.AspNet.Clients {
 				new Dictionary<string, string> {
 					{ "client_id", this.appId },
 					{ "redirect_uri", returnUrl.AbsoluteUri },
-					{ "scope", "email" },
+					{ "scope", getScope()},
 					
 				});
 			return builder.Uri;
 		}
+
+        /// <summary>
+        ///  Converts additionalPermissions back to a string.
+        /// </summary>
+        /// <returns>Comma delimeted string which contains additional facebook permissions to request. </returns>
+        private string getScope()
+        {
+            var scopeString = "";
+            if (this.additionalPermissions != null)
+            {
+                scopeString = string.Join(",", this.additionalPermissions.Values);
+            }
+            return scopeString; 
+        }
 
 		/// <summary>
 		/// The get user data.
@@ -135,7 +185,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 					{ "redirect_uri", NormalizeHexEncoding(returnUrl.AbsoluteUri) },
 					{ "client_secret", this.appSecret },
 					{ "code", authorizationCode },
-					{ "scope", "email" },
+					{ "scope", getScope() },
 				});
 
 			using (WebClient client = new WebClient()) {
@@ -148,6 +198,8 @@ namespace DotNetOpenAuth.AspNet.Clients {
 				return parsedQueryString["access_token"];
 			}
 		}
+
+
 
 		/// <summary>
 		/// Converts any % encoded values in the URL to uppercase.
@@ -171,6 +223,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 			return new string(chars);
 		}
 
+        
 		#endregion
 	}
 }
