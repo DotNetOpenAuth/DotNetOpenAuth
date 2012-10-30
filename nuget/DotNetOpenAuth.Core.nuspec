@@ -21,8 +21,7 @@
 				<dependency id="CodeContracts.Unofficial" />
 			</group>
 			<group targetFramework="net40">
-				<dependency id="CodeContracts.Unofficial" />
-				<dependency id="System.Net.Http" />
+				<dependency id="Microsoft.Net.Http" />
 			</group>
 		</dependencies>
 	</metadata>

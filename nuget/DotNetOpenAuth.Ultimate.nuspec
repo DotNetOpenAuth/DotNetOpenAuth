@@ -31,7 +31,9 @@
 		<file src="$OutputPath40$unified\DotNetOpenAuth.xml" target="lib\net40-full\" />
 		<file src="$OutputPath45$unified\DotNetOpenAuth.xml" target="lib\net45-full\" />
 
-		<file src="content\Ultimate\web.config.transform" target="content\web.config.transform" />
+		<file src="content\Ultimate\net35-full\web.config.transform" target="content\net35-full\web.config.transform" />
+		<file src="content\Ultimate\net40-full\web.config.transform" target="content\net40-full\web.config.transform" />
+		<file src="content\Ultimate\net45-full\web.config.transform" target="content\net45-full\web.config.transform" />
 
 		<file src="..\src\**\*.cs" target="src" exclude="..\src\*\obj\**" />
 		<file src="$IntermediatePath$*.Version.cs" target="src" />
