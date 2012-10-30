@@ -80,7 +80,6 @@ namespace DotNetOpenAuth.AspNet.Clients {
 					{ "client_id", this.appId },
 					{ "redirect_uri", returnUrl.AbsoluteUri },
 					{ "scope", "email" },
-					
 				});
 			return builder.Uri;
 		}
