@@ -372,6 +372,7 @@ namespace DotNetOpenAuth.OAuth2 {
 			var failure = response as AccessTokenFailedResponse;
 			ErrorUtilities.VerifyProtocol(success != null || failure != null, MessagingStrings.UnexpectedMessageReceivedOfMany);
 			if (success != null) {
+				authorizationState.Scope.Clear(); // clear the scope we requested so that the response will repopulate it.
 				UpdateAuthorizationWithResponse(authorizationState, success);
 			} else { // failure
 				Logger.OAuth.Info("Credentials rejected by the Authorization Server.");

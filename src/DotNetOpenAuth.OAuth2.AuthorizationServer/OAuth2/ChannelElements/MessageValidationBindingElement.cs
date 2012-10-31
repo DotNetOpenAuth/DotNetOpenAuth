@@ -120,11 +120,13 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			// Check that any resource owner password credential is correct.
 			if (resourceOwnerPasswordCarrier != null) {
 				try {
-					string canonicalUserName;
-					if (this.AuthorizationServer.TryAuthorizeResourceOwnerCredentialGrant(resourceOwnerPasswordCarrier.UserName, resourceOwnerPasswordCarrier.Password, resourceOwnerPasswordCarrier, out canonicalUserName)) {
-						ErrorUtilities.VerifyHost(!string.IsNullOrEmpty(canonicalUserName), "TryAuthorizeResourceOwnerCredentialGrant did not initialize out parameter.");
+					var authorizeResult =
+						this.AuthorizationServer.CheckAuthorizeResourceOwnerCredentialGrant(
+							resourceOwnerPasswordCarrier.UserName, resourceOwnerPasswordCarrier.Password, resourceOwnerPasswordCarrier);
+					if (authorizeResult.IsApproved) {
 						resourceOwnerPasswordCarrier.CredentialsValidated = true;
-						resourceOwnerPasswordCarrier.UserName = canonicalUserName;
+						resourceOwnerPasswordCarrier.UserName = authorizeResult.CanonicalUserName;
+						resourceOwnerPasswordCarrier.Scope.ResetContents(authorizeResult.ApprovedScope);
 					} else {
 						Logger.OAuth.ErrorFormat(
 							"Resource owner password credential for user \"{0}\" rejected by authorization server host.",
@@ -140,12 +142,15 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 				applied = true;
 			} else if (clientCredentialOnly != null) {
 				try {
-					if (!this.AuthorizationServer.TryAuthorizeClientCredentialsGrant(clientCredentialOnly)) {
+					var authorizeResult = this.AuthorizationServer.CheckAuthorizeClientCredentialsGrant(clientCredentialOnly);
+					if (!authorizeResult.IsApproved) {
 						Logger.OAuth.ErrorFormat(
 							"Client credentials grant access request for client \"{0}\" rejected by authorization server host.",
 							clientCredentialOnly.ClientIdentifier);
 						throw new TokenEndpointProtocolException(accessTokenRequest, Protocol.AccessTokenRequestErrorCodes.UnauthorizedClient);
 					}
+
+					clientCredentialOnly.Scope.ResetContents(authorizeResult.ApprovedScope);
 				} catch (NotSupportedException) {
 					throw new TokenEndpointProtocolException(accessTokenRequest, Protocol.AccessTokenRequestErrorCodes.UnsupportedGrantType);
 				} catch (NotImplementedException) {

@@ -27,6 +27,8 @@
       <DependentUpon>AuthServerStrings.resx</DependentUpon>
     </Compile>
     <Compile Include="OAuth2\AuthServerUtilities.cs" />
+    <Compile Include="OAuth2\AutomatedAuthorizationCheckResponse.cs" />
+    <Compile Include="OAuth2\AutomatedUserAuthorizationCheckResponse.cs" />
     <Compile Include="OAuth2\ChannelElements\AggregatingClientCredentialReader.cs" />
     <Compile Include="OAuth2\ChannelElements\ClientCredentialHttpBasicReader.cs" />
     <Compile Include="OAuth2\ChannelElements\ClientCredentialMessagePartReader.cs" />

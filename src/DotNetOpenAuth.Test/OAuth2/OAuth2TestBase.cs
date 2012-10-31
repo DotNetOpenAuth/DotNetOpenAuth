@@ -53,8 +53,9 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 						d =>
 						d.ClientIdentifier == ClientId && d.User == ResourceOwnerUsername &&
 						MessagingUtilities.AreEquivalent(d.Scope, TestScopes)))).Returns(true);
-			string canonicalUserName = ResourceOwnerUsername;
-			authHostMock.Setup(m => m.TryAuthorizeResourceOwnerCredentialGrant(ResourceOwnerUsername, ResourceOwnerPassword, It.IsAny<IAccessTokenRequest>(), out canonicalUserName)).Returns(true);
+			authHostMock
+				.Setup(m => m.CheckAuthorizeResourceOwnerCredentialGrant(ResourceOwnerUsername, ResourceOwnerPassword, It.IsAny<IAccessTokenRequest>()))
+				.Returns<string, string, IAccessTokenRequest>((p1, p2, p3) => new AutomatedUserAuthorizationCheckResponse(p3, true, ResourceOwnerUsername));
 			authHostMock.Setup(m => m.CreateAccessToken(It.IsAny<IAccessTokenRequest>())).Returns(new AccessTokenResult(new AuthorizationServerAccessToken()));
 			return authHostMock;
 		}
