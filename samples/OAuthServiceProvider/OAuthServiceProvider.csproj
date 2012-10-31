@@ -114,15 +114,19 @@
     </Compile>
     <Compile Include="Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Members\Authorize.aspx.cs">
       <DependentUpon>Authorize.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Members\AuthorizedConsumers.aspx.cs">
       <DependentUpon>AuthorizedConsumers.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="TracePage.aspx.cs">
       <DependentUpon>TracePage.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="TracePage.aspx.designer.cs">
       <DependentUpon>TracePage.aspx</DependentUpon>

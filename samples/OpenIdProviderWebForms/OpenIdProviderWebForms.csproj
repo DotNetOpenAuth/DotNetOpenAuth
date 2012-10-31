@@ -118,12 +118,14 @@
     <Compile Include="Code\Util.cs" />
     <Compile Include="decide.aspx.cs">
       <DependentUpon>decide.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="decide.aspx.designer.cs">
       <DependentUpon>decide.aspx</DependentUpon>
     </Compile>
     <Compile Include="Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
@@ -133,12 +135,14 @@
     </Compile>
     <Compile Include="login.aspx.cs">
       <DependentUpon>login.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="login.aspx.designer.cs">
       <DependentUpon>login.aspx</DependentUpon>
     </Compile>
     <Compile Include="ProfileFields.ascx.cs">
       <DependentUpon>ProfileFields.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="ProfileFields.ascx.designer.cs">
       <DependentUpon>ProfileFields.ascx</DependentUpon>
@@ -149,18 +153,21 @@
     </Compile>
     <Compile Include="server.aspx.cs">
       <DependentUpon>server.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="server.aspx.designer.cs">
       <DependentUpon>server.aspx</DependentUpon>
     </Compile>
     <Compile Include="TracePage.aspx.cs">
       <DependentUpon>TracePage.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="TracePage.aspx.designer.cs">
       <DependentUpon>TracePage.aspx</DependentUpon>
     </Compile>
     <Compile Include="user.aspx.cs">
       <DependentUpon>user.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="user.aspx.designer.cs">
       <DependentUpon>user.aspx</DependentUpon>
