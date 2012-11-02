@@ -91,6 +91,17 @@ namespace DotNetOpenAuth.Test.Messaging {
 		}
 
 		[Test]
+		public void AsHttpResponseMessageNoContent() {
+			var outgoingResponse = new OutgoingWebResponse();
+			outgoingResponse.Headers.Add("X-SOME-HEADER", "value");
+
+			var httpResponseMessage = outgoingResponse.AsHttpResponseMessage();
+			Assert.That(httpResponseMessage, Is.Not.Null);
+			Assert.That(httpResponseMessage.Headers.GetValues("X-SOME-HEADER").ToList(), Is.EqualTo(new[] { "value" }));
+			Assert.That(httpResponseMessage.Content, Is.Null);
+		}
+
+		[Test]
 		public void ToDictionary() {
 			NameValueCollection nvc = new NameValueCollection();
 			nvc["a"] = "b";

@@ -171,9 +171,10 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="outgoingResponse">The response to send to the user agent.</param>
 		/// <returns>The <see cref="HttpResponseMessage"/> instance to be returned by the Web API method.</returns>
 		public static HttpResponseMessage AsHttpResponseMessage(this OutgoingWebResponse outgoingResponse) {
-			HttpResponseMessage response = new HttpResponseMessage(outgoingResponse.Status) {
-				Content = new StreamContent(outgoingResponse.ResponseStream)
-			};
+			HttpResponseMessage response = new HttpResponseMessage(outgoingResponse.Status);
+			if (outgoingResponse.ResponseStream != null) {
+				response.Content = new StreamContent(outgoingResponse.ResponseStream);
+			}
 
 			var responseHeaders = outgoingResponse.Headers;
 			foreach (var header in responseHeaders.AllKeys) {
