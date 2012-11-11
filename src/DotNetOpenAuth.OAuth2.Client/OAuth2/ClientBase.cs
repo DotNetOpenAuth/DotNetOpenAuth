@@ -100,7 +100,7 @@ namespace DotNetOpenAuth.OAuth2 {
 			Requires.NotNull(request, "request");
 			Requires.NotNull(authorization, "authorization");
 			Requires.True(!string.IsNullOrEmpty(authorization.AccessToken), "authorization");
-			ErrorUtilities.VerifyProtocol(!authorization.AccessTokenExpirationUtc.HasValue || authorization.AccessTokenExpirationUtc < DateTime.UtcNow || authorization.RefreshToken != null, ClientStrings.AuthorizationExpired);
+			ErrorUtilities.VerifyProtocol(!authorization.AccessTokenExpirationUtc.HasValue || authorization.AccessTokenExpirationUtc >= DateTime.UtcNow || authorization.RefreshToken != null, ClientStrings.AuthorizationExpired);
 
 			if (authorization.AccessTokenExpirationUtc.HasValue && authorization.AccessTokenExpirationUtc.Value < DateTime.UtcNow) {
 				ErrorUtilities.VerifyProtocol(authorization.RefreshToken != null, ClientStrings.AccessTokenRefreshFailed);
