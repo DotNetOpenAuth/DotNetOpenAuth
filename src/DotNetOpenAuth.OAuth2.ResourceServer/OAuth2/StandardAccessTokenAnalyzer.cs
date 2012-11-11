@@ -49,6 +49,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <returns>The deserialized, validated token.</returns>
 		/// <exception cref="ProtocolException">Thrown if the access token is expired, invalid, or from an untrusted authorization server.</exception>
 		public virtual AccessToken DeserializeAccessToken(IDirectedProtocolMessage message, string accessToken) {
+			ErrorUtilities.VerifyProtocol(!string.IsNullOrEmpty(accessToken), ResourceServerStrings.MissingAccessToken);
 			var accessTokenFormatter = AccessToken.CreateFormatter(this.AuthorizationServerPublicSigningKey, this.ResourceServerPrivateEncryptionKey);
 			var token = new AccessToken();
 			accessTokenFormatter.Deserialize(token, message, accessToken, Protocol.access_token);
