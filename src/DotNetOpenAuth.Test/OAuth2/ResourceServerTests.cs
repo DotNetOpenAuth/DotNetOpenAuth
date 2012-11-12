@@ -73,7 +73,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 			var resourceServer = new ResourceServer(new StandardAccessTokenAnalyzer(AsymmetricKey, null));
 
 			var requestHeaders = new NameValueCollection {
-				{ "Authorization", "Bearer " +  accessToken },
+				{ "Authorization", "Bearer " + accessToken },
 			};
 			var request = new HttpRequestInfo("GET", new Uri("http://localhost/resource"), headers: requestHeaders);
 			var resourceServerDecodedToken = resourceServer.GetAccessToken(request);
