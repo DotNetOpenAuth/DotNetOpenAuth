@@ -24,8 +24,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="resourceServerPrivateEncryptionKey">The crypto service provider with the resource server private encryption key.</param>
 		public StandardAccessTokenAnalyzer(RSACryptoServiceProvider authorizationServerPublicSigningKey, RSACryptoServiceProvider resourceServerPrivateEncryptionKey) {
 			Requires.NotNull(authorizationServerPublicSigningKey, "authorizationServerPublicSigningKey");
-			Requires.NotNull(resourceServerPrivateEncryptionKey, "resourceServerPrivateEncryptionKey");
-			Requires.True(!resourceServerPrivateEncryptionKey.PublicOnly, "resourceServerPrivateEncryptionKey");
+			Requires.True(resourceServerPrivateEncryptionKey == null || !resourceServerPrivateEncryptionKey.PublicOnly, "resourceServerPrivateEncryptionKey");
 			this.AuthorizationServerPublicSigningKey = authorizationServerPublicSigningKey;
 			this.ResourceServerPrivateEncryptionKey = resourceServerPrivateEncryptionKey;
 		}
