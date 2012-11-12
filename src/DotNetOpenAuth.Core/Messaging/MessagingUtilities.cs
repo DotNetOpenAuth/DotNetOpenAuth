@@ -1685,10 +1685,17 @@ namespace DotNetOpenAuth.Messaging {
 		/// Reads a buffer that is prefixed with its own length.
 		/// </summary>
 		/// <param name="reader">The binary reader positioned at the buffer length.</param>
+		/// <param name="maxBufferSize">
+		/// The maximum size of the buffer that should be permitted. 
+		/// Although the stream will indicate the size of the buffer, this mitigates data corruption
+		/// or DoS attacks causing the web server to allocate too much memory for a small data packet.
+		/// </param>
 		/// <returns>The read buffer.</returns>
-		internal static byte[] ReadBuffer(this BinaryReader reader) {
+		internal static byte[] ReadBuffer(this BinaryReader reader, int maxBufferSize) {
 			Requires.NotNull(reader, "reader");
+			Requires.InRange(maxBufferSize > 0 && maxBufferSize < 1024 * 1024, "maxBufferSize");
 			int length = reader.ReadInt32();
+			ErrorUtilities.VerifyProtocol(length <= maxBufferSize, MessagingStrings.DataCorruptionDetected);
 			byte[] buffer = new byte[length];
 			ErrorUtilities.VerifyProtocol(reader.Read(buffer, 0, length) == length, MessagingStrings.UnexpectedBufferLength);
 			return buffer;

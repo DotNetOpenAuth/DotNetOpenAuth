@@ -21,7 +21,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 	public class ResourceServerTests : OAuth2TestBase {
 		[Test]
 		public void GetAccessTokenWithMissingAccessToken() {
-			var rsa = new RSACryptoServiceProvider();
+			var rsa = new RSACryptoServiceProvider(512);
 			var resourceServer = new ResourceServer(new StandardAccessTokenAnalyzer(rsa, rsa));
 
 			var requestHeaders = new NameValueCollection {
@@ -33,7 +33,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 
 		[Test]
 		public void GetPrincipalWithMissingAccessToken() {
-			var rsa = new RSACryptoServiceProvider();
+			var rsa = new RSACryptoServiceProvider(512);
 			var resourceServer = new ResourceServer(new StandardAccessTokenAnalyzer(rsa, rsa));
 
 			var requestHeaders = new NameValueCollection {
@@ -41,6 +41,18 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 			};
 			var request = new HttpRequestInfo("GET", new Uri("http://localhost/resource"), headers: requestHeaders);
 			Assert.That(() => resourceServer.GetPrincipal(request), Throws.InstanceOf<ProtocolException>());
+		}
+
+		[Test]
+		public void GetAccessTokenWithCorruptedToken() {
+			var rsa = new RSACryptoServiceProvider(512);
+			var resourceServer = new ResourceServer(new StandardAccessTokenAnalyzer(rsa, rsa));
+
+			var requestHeaders = new NameValueCollection {
+				{ "Authorization", "Bearer foobar" },
+			};
+			var request = new HttpRequestInfo("GET", new Uri("http://localhost/resource"), headers: requestHeaders);
+			Assert.That(() => resourceServer.GetAccessToken(request), Throws.InstanceOf<ProtocolException>());
 		}
 	}
 }
