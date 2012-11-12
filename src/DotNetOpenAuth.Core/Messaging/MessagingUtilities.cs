@@ -1015,7 +1015,7 @@ namespace DotNetOpenAuth.Messaging {
 					missingPaddingCharacters = 0;
 					break;
 				default:
-					throw ErrorUtilities.ThrowInternal("No more than two padding characters should be present for base64.");
+					throw new ProtocolException(MessagingStrings.DataCorruptionDetected, new ArgumentException("No more than two padding characters should be present for base64."));
 			}
 			var builder = new StringBuilder(base64WebSafe, base64WebSafe.Length + missingPaddingCharacters);
 			builder.Replace('-', '+').Replace('_', '/');
