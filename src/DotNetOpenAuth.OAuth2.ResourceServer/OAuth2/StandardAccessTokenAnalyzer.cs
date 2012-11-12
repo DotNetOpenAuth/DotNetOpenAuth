@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OAuth2 {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
+	using System.IO;
 	using System.Security.Cryptography;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2.ChannelElements;
@@ -52,7 +53,12 @@ namespace DotNetOpenAuth.OAuth2 {
 			ErrorUtilities.VerifyProtocol(!string.IsNullOrEmpty(accessToken), ResourceServerStrings.MissingAccessToken);
 			var accessTokenFormatter = AccessToken.CreateFormatter(this.AuthorizationServerPublicSigningKey, this.ResourceServerPrivateEncryptionKey);
 			var token = new AccessToken();
-			accessTokenFormatter.Deserialize(token, message, accessToken, Protocol.access_token);
+			try {
+				accessTokenFormatter.Deserialize(token, message, accessToken, Protocol.access_token);
+			} catch (IOException ex) {
+				throw new ProtocolException(ResourceServerStrings.InvalidAccessToken, ex);
+			}
+
 			return token;
 		}
 	}
