@@ -823,7 +823,7 @@ namespace DotNetOpenAuth.Messaging {
 			using (var encryptedStream = new MemoryStream(buffer)) {
 				var encryptedStreamReader = new BinaryReader(encryptedStream);
 
-				byte[] encryptedPrequel = encryptedStreamReader.ReadBytes(encryptedStreamReader.ReadInt32());
+				byte[] encryptedPrequel = encryptedStreamReader.ReadBuffer(4096);
 				byte[] prequel = crypto.Decrypt(encryptedPrequel, false);
 
 				using (var symmetricCrypto = new RijndaelManaged()) {
