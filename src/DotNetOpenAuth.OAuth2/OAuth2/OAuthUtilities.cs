@@ -136,7 +136,20 @@ namespace DotNetOpenAuth.OAuth2 {
 			Requires.NotNullOrEmpty(accessToken, "accessToken");
 			ErrorUtilities.VerifyProtocol(accessToken.All(ch => accessTokenAuthorizationHeaderAllowedCharacters.IndexOf(ch) >= 0), OAuthStrings.AccessTokenInvalidForHttpAuthorizationHeader);
 
-			request.Headers[HttpRequestHeader.Authorization] = string.Format(
+			AuthorizeWithBearerToken(request.Headers, accessToken);
+		}
+
+		/// <summary>
+		/// Authorizes an HTTP request using an OAuth 2.0 access token in an HTTP Authorization header.
+		/// </summary>
+		/// <param name="requestHeaders">The headers on the request for protected resources from the service provider.</param>
+		/// <param name="accessToken">The access token previously obtained from the Authorization Server.</param>
+		internal static void AuthorizeWithBearerToken(WebHeaderCollection requestHeaders, string accessToken) {
+			Requires.NotNull(requestHeaders, "requestHeaders");
+			Requires.NotNullOrEmpty(accessToken, "accessToken");
+			ErrorUtilities.VerifyProtocol(accessToken.All(ch => accessTokenAuthorizationHeaderAllowedCharacters.IndexOf(ch) >= 0), OAuthStrings.AccessTokenInvalidForHttpAuthorizationHeader);
+
+			requestHeaders[HttpRequestHeader.Authorization] = string.Format(
 				CultureInfo.InvariantCulture,
 				Protocol.BearerHttpAuthorizationHeaderFormat,
 				accessToken);

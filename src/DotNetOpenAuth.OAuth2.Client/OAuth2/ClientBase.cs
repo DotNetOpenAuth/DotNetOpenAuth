@@ -87,7 +87,20 @@ namespace DotNetOpenAuth.OAuth2 {
 			Requires.NotNull(request, "request");
 			Requires.NotNullOrEmpty(accessToken, "accessToken");
 
-			OAuthUtilities.AuthorizeWithBearerToken(request, accessToken);
+			AuthorizeRequest(request.Headers, accessToken);
+		}
+
+		/// <summary>
+		/// Adds the necessary HTTP Authorization header to an HTTP request for protected resources
+		/// so that the Service Provider will allow the request through.
+		/// </summary>
+		/// <param name="requestHeaders">The headers on the request for protected resources from the service provider.</param>
+		/// <param name="accessToken">The access token previously obtained from the Authorization Server.</param>
+		public static void AuthorizeRequest(WebHeaderCollection requestHeaders, string accessToken) {
+			Requires.NotNull(requestHeaders, "requestHeaders");
+			Requires.NotNullOrEmpty(accessToken, "accessToken");
+
+			OAuthUtilities.AuthorizeWithBearerToken(requestHeaders, accessToken);
 		}
 
 		/// <summary>
@@ -99,6 +112,19 @@ namespace DotNetOpenAuth.OAuth2 {
 		public void AuthorizeRequest(HttpWebRequest request, IAuthorizationState authorization) {
 			Requires.NotNull(request, "request");
 			Requires.NotNull(authorization, "authorization");
+
+			this.AuthorizeRequest(request.Headers, authorization);
+		}
+
+		/// <summary>
+		/// Adds the OAuth authorization token to an outgoing HTTP request, renewing a
+		/// (nearly) expired access token if necessary.
+		/// </summary>
+		/// <param name="requestHeaders">The headers on the request for protected resources from the service provider.</param>
+		/// <param name="authorization">The authorization for this request previously obtained via OAuth.</param>
+		public void AuthorizeRequest(WebHeaderCollection requestHeaders, IAuthorizationState authorization) {
+			Requires.NotNull(requestHeaders, "requestHeaders");
+			Requires.NotNull(authorization, "authorization");
 			Requires.True(!string.IsNullOrEmpty(authorization.AccessToken), "authorization");
 			ErrorUtilities.VerifyProtocol(!authorization.AccessTokenExpirationUtc.HasValue || authorization.AccessTokenExpirationUtc < DateTime.UtcNow || authorization.RefreshToken != null, ClientStrings.AuthorizationExpired);
 
@@ -107,7 +133,7 @@ namespace DotNetOpenAuth.OAuth2 {
 				this.RefreshAuthorization(authorization);
 			}
 
-			AuthorizeRequest(request, authorization.AccessToken);
+			AuthorizeRequest(requestHeaders, authorization.AccessToken);
 		}
 
 #if CLR4
