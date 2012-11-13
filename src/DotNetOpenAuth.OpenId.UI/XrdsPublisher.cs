@@ -198,6 +198,7 @@ namespace DotNetOpenAuth {
 						// client since it isn't interested anyway.
 						// We do NOT simply send a 301 redirect here because that would
 						// alter the Claimed Identifier.
+						Logger.Yadis.InfoFormat("Transferring request from {0} to {1} to respond to XRDS discovery request.", this.Page.Request.Url.AbsoluteUri, this.XrdsUrl);
 						this.Page.Server.Transfer(this.XrdsUrl);
 					}
 				}
