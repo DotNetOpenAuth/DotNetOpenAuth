@@ -17,7 +17,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <summary>
 		/// Key used for token cookie
 		/// </summary>
-		private const string TokenCookieKey = "OAuthTokenSecret";
+		protected const string TokenCookieKey = "OAuthTokenSecret";
 
 		/// <summary>
 		/// Primary request context.
@@ -41,7 +41,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <summary>
 		/// Gets the effective HttpContext object to use.
 		/// </summary>
-		private HttpContextBase Context {
+		protected HttpContextBase Context {
 			get {
 				return this.primaryContext ?? new HttpContextWrapper(HttpContext.Current);
 			}
@@ -54,15 +54,13 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <returns>
 		/// The token's secret
 		/// </returns>
-		public string GetTokenSecret(string token) {
+		public virtual string GetTokenSecret(string token) {
 			HttpCookie cookie = this.Context.Request.Cookies[TokenCookieKey];
 			if (cookie == null || string.IsNullOrEmpty(cookie.Values[token])) {
 				return null;
 			}
-			byte[] cookieBytes = HttpServerUtility.UrlTokenDecode(cookie.Values[token]);
-			byte[] clearBytes = MachineKeyUtil.Unprotect(cookieBytes, TokenCookieKey, "Token:" + token);
 
-			string secret = Encoding.UTF8.GetString(clearBytes);
+			string secret = DecodeAndUnprotectToken(token, cookie.Values[token]);
 			return secret;
 		}
 
@@ -72,7 +70,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <param name="requestToken">The request token.</param>
 		/// <param name="accessToken">The access token.</param>
 		/// <param name="accessTokenSecret">The access token secret.</param>
-		public void ReplaceRequestTokenWithAccessToken(string requestToken, string accessToken, string accessTokenSecret) {
+		public virtual void ReplaceRequestTokenWithAccessToken(string requestToken, string accessToken, string accessTokenSecret) {
 			var cookie = new HttpCookie(TokenCookieKey) {
 				Value = string.Empty,
 				Expires = DateTime.UtcNow.AddDays(-5)
@@ -85,7 +83,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// </summary>
 		/// <param name="requestToken">The request token.</param>
 		/// <param name="requestTokenSecret">The request token secret.</param>
-		public void StoreRequestToken(string requestToken, string requestTokenSecret) {
+		public virtual void StoreRequestToken(string requestToken, string requestTokenSecret) {
 			var cookie = new HttpCookie(TokenCookieKey) {
 				HttpOnly = true
 			};
@@ -94,10 +92,36 @@ namespace DotNetOpenAuth.AspNet.Clients {
 				cookie.Secure = true;
 			}
 
-			byte[] cookieBytes = Encoding.UTF8.GetBytes(requestTokenSecret);
-			var secretBytes = MachineKeyUtil.Protect(cookieBytes, TokenCookieKey, "Token:" + requestToken);
-			cookie.Values[requestToken] = HttpServerUtility.UrlTokenEncode(secretBytes);
+			var encryptedToken = ProtectAndEncodeToken(requestToken, requestTokenSecret);
+			cookie.Values[requestToken] = encryptedToken;
+
 			this.Context.Response.Cookies.Set(cookie);
+		}
+
+		/// <summary>
+		/// Protect and url-encode the specified token secret.
+		/// </summary>
+		/// <param name="token">The token to be used as a key.</param>
+		/// <param name="tokenSecret">The token secret to be protected</param>
+		/// <returns>The encrypted and protected string.</returns>
+		protected static string ProtectAndEncodeToken(string token, string tokenSecret)
+		{
+			byte[] cookieBytes = Encoding.UTF8.GetBytes(tokenSecret);
+			var secretBytes = MachineKeyUtil.Protect(cookieBytes, TokenCookieKey, "Token:" + token);
+			return HttpServerUtility.UrlTokenEncode(secretBytes);
+		}
+
+		/// <summary>
+		/// Url-decode and unprotect the specified encrypted token string.
+		/// </summary>
+		/// <param name="token">The token to be used as a key.</param>
+		/// <param name="encryptedToken">The encrypted token to be decrypted</param>
+		/// <returns>The original token secret</returns>
+		protected static string DecodeAndUnprotectToken(string token, string encryptedToken)
+		{
+			byte[] cookieBytes = HttpServerUtility.UrlTokenDecode(encryptedToken);
+			byte[] clearBytes = MachineKeyUtil.Unprotect(cookieBytes, TokenCookieKey, "Token:" + token);
+			return Encoding.UTF8.GetString(clearBytes);
 		}
 	}
 }
