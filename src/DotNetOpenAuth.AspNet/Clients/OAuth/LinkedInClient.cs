@@ -60,7 +60,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope",
 			Justification = "We can't dispose the object because we still need it through the app lifetime.")]
 		public LinkedInClient(string consumerKey, string consumerSecret)
-			: this(consumerKey, consumerSecret, new AuthenticationOnlyCookieOAuthTokenManager()) { }
+			: this(consumerKey, consumerSecret, new CookieOAuthTokenManager()) { }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="LinkedInClient"/> class.
