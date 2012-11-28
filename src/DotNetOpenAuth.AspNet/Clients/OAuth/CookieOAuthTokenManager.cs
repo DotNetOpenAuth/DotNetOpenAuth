@@ -1,7 +1,12 @@
-﻿using System.Web;
-using System.Web.Security;
+﻿//-----------------------------------------------------------------------
+// <copyright file="CookieOAuthTokenManager.cs" company="Microsoft">
+//     Copyright (c) Microsoft. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.AspNet.Clients {
+	using System.Web;
+	using System.Web.Security;
 
 	/// <summary>
 	/// Stores OAuth tokens in the current request's cookie.
