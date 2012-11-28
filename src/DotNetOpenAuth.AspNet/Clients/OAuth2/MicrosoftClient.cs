@@ -20,12 +20,12 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <summary>
 		/// The authorization endpoint.
 		/// </summary>
-		private const string AuthorizationEndpoint = "https://oauth.live.com/authorize";
+		private const string AuthorizationEndpoint = "https://login.live.com/oauth20_authorize.srf";
 
 		/// <summary>
 		/// The token endpoint.
 		/// </summary>
-		private const string TokenEndpoint = "https://oauth.live.com/token";
+		private const string TokenEndpoint = "https://login.live.com/oauth20_token.srf";
 
 		/// <summary>
 		/// The _app id.
