@@ -77,7 +77,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// The callback.
 		/// </param>
 		public void RequestAuthentication(Uri callback) {
-			var redirectParameters = new Dictionary<string, string> { { "force_login", "false" } };
+			var redirectParameters = new Dictionary<string, string>();
 			UserAuthorizationRequest request = this.webConsumer.PrepareRequestUserAuthorization(
 				callback, null, redirectParameters);
 			this.webConsumer.Channel.PrepareResponse(request).Send();

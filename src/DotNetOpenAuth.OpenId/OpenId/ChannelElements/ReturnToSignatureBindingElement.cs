@@ -195,6 +195,11 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			try {
 				if (cryptoKey == null) {
 					cryptoKey = this.cryptoKeyStore.GetKey(SecretUri.AbsoluteUri, returnToParameters[ReturnToSignatureHandleParameterName]);
+					ErrorUtilities.VerifyProtocol(
+						cryptoKey != null,
+						MessagingStrings.MissingDecryptionKeyForHandle,
+						SecretUri.AbsoluteUri,
+						returnToParameters[ReturnToSignatureHandleParameterName]);
 				}
 
 				using (var signer = HmacAlgorithms.Create(HmacAlgorithms.HmacSha256, cryptoKey.Key)) {

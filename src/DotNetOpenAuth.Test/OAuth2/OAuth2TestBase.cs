@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Security.Cryptography;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
@@ -28,6 +29,8 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 		protected static readonly string[] TestScopes = new[] { "Scope1", "Scope2" };
 
 		protected static readonly Uri ClientCallback = new Uri("http://client/callback");
+
+		protected static readonly RSACryptoServiceProvider AsymmetricKey = new RSACryptoServiceProvider(512);
 
 		protected static readonly AuthorizationServerDescription AuthorizationServerDescription = new AuthorizationServerDescription {
 			AuthorizationEndpoint = new Uri("https://authserver/authorize"),
@@ -56,7 +59,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 			authHostMock
 				.Setup(m => m.CheckAuthorizeResourceOwnerCredentialGrant(ResourceOwnerUsername, ResourceOwnerPassword, It.IsAny<IAccessTokenRequest>()))
 				.Returns<string, string, IAccessTokenRequest>((p1, p2, p3) => new AutomatedUserAuthorizationCheckResponse(p3, true, ResourceOwnerUsername));
-			authHostMock.Setup(m => m.CreateAccessToken(It.IsAny<IAccessTokenRequest>())).Returns(new AccessTokenResult(new AuthorizationServerAccessToken()));
+			authHostMock.Setup(m => m.CreateAccessToken(It.IsAny<IAccessTokenRequest>())).Returns(new AccessTokenResult(new AuthorizationServerAccessToken() { AccessTokenSigningKey = AsymmetricKey }));
 			return authHostMock;
 		}
 	}

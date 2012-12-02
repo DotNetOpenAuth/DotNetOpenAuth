@@ -112,10 +112,10 @@
     <value>2.0</value>
   </resheader>
   <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="ArgumentPropertyMissing" xml:space="preserve">
     <value>Argument's {0}.{1} property is required but is empty or null.</value>
@@ -332,5 +332,8 @@
   </data>
   <data name="UnexpectedBufferLength" xml:space="preserve">
     <value>Unexpected buffer length.</value>
+  </data>
+  <data name="DataCorruptionDetected" xml:space="preserve">
+    <value>Decoding failed due to data corruption.</value>
   </data>
 </root>

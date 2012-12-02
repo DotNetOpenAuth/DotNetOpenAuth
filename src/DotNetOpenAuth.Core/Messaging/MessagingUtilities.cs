@@ -171,9 +171,10 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="outgoingResponse">The response to send to the user agent.</param>
 		/// <returns>The <see cref="HttpResponseMessage"/> instance to be returned by the Web API method.</returns>
 		public static HttpResponseMessage AsHttpResponseMessage(this OutgoingWebResponse outgoingResponse) {
-			HttpResponseMessage response = new HttpResponseMessage(outgoingResponse.Status) {
-				Content = new StreamContent(outgoingResponse.ResponseStream)
-			};
+			HttpResponseMessage response = new HttpResponseMessage(outgoingResponse.Status);
+			if (outgoingResponse.ResponseStream != null) {
+				response.Content = new StreamContent(outgoingResponse.ResponseStream);
+			}
 
 			var responseHeaders = outgoingResponse.Headers;
 			foreach (var header in responseHeaders.AllKeys) {
@@ -876,7 +877,7 @@ namespace DotNetOpenAuth.Messaging {
 			using (var encryptedStream = new MemoryStream(buffer)) {
 				var encryptedStreamReader = new BinaryReader(encryptedStream);
 
-				byte[] encryptedPrequel = encryptedStreamReader.ReadBytes(encryptedStreamReader.ReadInt32());
+				byte[] encryptedPrequel = encryptedStreamReader.ReadBuffer(4096);
 				byte[] prequel = crypto.Decrypt(encryptedPrequel, false);
 
 				using (var symmetricCrypto = new RijndaelManaged()) {
@@ -1068,7 +1069,7 @@ namespace DotNetOpenAuth.Messaging {
 					missingPaddingCharacters = 0;
 					break;
 				default:
-					throw ErrorUtilities.ThrowInternal("No more than two padding characters should be present for base64.");
+					throw new ProtocolException(MessagingStrings.DataCorruptionDetected, new ArgumentException("No more than two padding characters should be present for base64."));
 			}
 			var builder = new StringBuilder(base64WebSafe, base64WebSafe.Length + missingPaddingCharacters);
 			builder.Replace('-', '+').Replace('_', '/');
@@ -1746,10 +1747,17 @@ namespace DotNetOpenAuth.Messaging {
 		/// Reads a buffer that is prefixed with its own length.
 		/// </summary>
 		/// <param name="reader">The binary reader positioned at the buffer length.</param>
+		/// <param name="maxBufferSize">
+		/// The maximum size of the buffer that should be permitted. 
+		/// Although the stream will indicate the size of the buffer, this mitigates data corruption
+		/// or DoS attacks causing the web server to allocate too much memory for a small data packet.
+		/// </param>
 		/// <returns>The read buffer.</returns>
-		internal static byte[] ReadBuffer(this BinaryReader reader) {
+		internal static byte[] ReadBuffer(this BinaryReader reader, int maxBufferSize) {
 			Requires.NotNull(reader, "reader");
+			Requires.InRange(maxBufferSize > 0 && maxBufferSize < 1024 * 1024, "maxBufferSize");
 			int length = reader.ReadInt32();
+			ErrorUtilities.VerifyProtocol(length <= maxBufferSize, MessagingStrings.DataCorruptionDetected);
 			byte[] buffer = new byte[length];
 			ErrorUtilities.VerifyProtocol(reader.Read(buffer, 0, length) == length, MessagingStrings.UnexpectedBufferLength);
 			return buffer;
