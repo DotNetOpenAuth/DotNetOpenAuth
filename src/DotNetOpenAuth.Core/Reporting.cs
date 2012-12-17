@@ -518,16 +518,9 @@ namespace DotNetOpenAuth {
 				try {
 					SendStats();
 				} catch (Exception ex) {
-                    broken = true;
 					// Something bad and unexpected happened.  Just deactivate to avoid more trouble.
-                    try
-                    {
-                        Logger.Library.Error("Error while trying to submit statistical report.", ex);
-                    }
-                    catch (Exception)
-                    {
-                        //swallow loggiung exception as we've already disabled reporting.
-                    }
+					Logger.Library.Error("Error while trying to submit statistical report.", ex);
+					broken = true;
 				}
 			});
 		}
