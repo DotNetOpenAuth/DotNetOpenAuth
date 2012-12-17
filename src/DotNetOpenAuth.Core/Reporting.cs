@@ -523,7 +523,7 @@ namespace DotNetOpenAuth {
 					try {
 						Logger.Library.Error("Error while trying to submit statistical report.", ex);
 					} catch (Exception) {
-						//swallow exceptions to prevent a crash
+						// swallow exceptions to prevent a crash.
 					}
 				}
 			});
