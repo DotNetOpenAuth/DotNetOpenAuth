@@ -519,8 +519,8 @@ namespace DotNetOpenAuth {
 					SendStats();
 				} catch (Exception ex) {
 					// Something bad and unexpected happened.  Just deactivate to avoid more trouble.
-					broken = true;
 					try {
+						broken = true;
 						Logger.Library.Error("Error while trying to submit statistical report.", ex);
 					} catch (Exception) {
 						// swallow exceptions to prevent a crash.
