@@ -48,6 +48,23 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		IAccessTokenResult IAccessTokenRequestInternal.AccessTokenResult { get; set; }
 
 		/// <summary>
+		/// Gets the username of the authorizing user, when applicable.
+		/// </summary>
+		/// <value>
+		/// A non-empty string; or <c>null</c> when no user has authorized this access token.
+		/// </value>
+		public virtual string UserName {
+			get {
+				IAccessTokenRequestInternal request = this;
+				if (request.AccessTokenResult != null && request.AccessTokenResult.AccessToken != null) {
+					return request.AccessTokenResult.AccessToken.User;
+				}
+
+				return null;
+			}
+		}
+
+		/// <summary>
 		/// Gets the type of the grant.
 		/// </summary>
 		/// <value>The type of the grant.</value>

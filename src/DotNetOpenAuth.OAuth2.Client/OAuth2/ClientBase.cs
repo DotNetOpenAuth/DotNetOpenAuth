@@ -251,7 +251,7 @@ namespace DotNetOpenAuth.OAuth2 {
 			Requires.NotNull(password, "password");
 
 			var request = new AccessTokenResourceOwnerPasswordCredentialsRequest(this.AuthorizationServer.TokenEndpoint, this.AuthorizationServer.Version) {
-				UserName = userName,
+				RequestingUserName = userName,
 				Password = password,
 			};
 

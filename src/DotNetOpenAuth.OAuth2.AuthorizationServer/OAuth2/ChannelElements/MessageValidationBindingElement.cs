@@ -122,15 +122,15 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 				try {
 					var authorizeResult =
 						this.AuthorizationServer.CheckAuthorizeResourceOwnerCredentialGrant(
-							resourceOwnerPasswordCarrier.UserName, resourceOwnerPasswordCarrier.Password, resourceOwnerPasswordCarrier);
+							resourceOwnerPasswordCarrier.RequestingUserName, resourceOwnerPasswordCarrier.Password, resourceOwnerPasswordCarrier);
 					if (authorizeResult.IsApproved) {
 						resourceOwnerPasswordCarrier.CredentialsValidated = true;
-						resourceOwnerPasswordCarrier.UserName = authorizeResult.CanonicalUserName;
+						resourceOwnerPasswordCarrier.RequestingUserName = authorizeResult.CanonicalUserName;
 						resourceOwnerPasswordCarrier.Scope.ResetContents(authorizeResult.ApprovedScope);
 					} else {
 						Logger.OAuth.ErrorFormat(
 							"Resource owner password credential for user \"{0}\" rejected by authorization server host.",
-							resourceOwnerPasswordCarrier.UserName);
+							resourceOwnerPasswordCarrier.RequestingUserName);
 						throw new TokenEndpointProtocolException(accessTokenRequest, Protocol.AccessTokenRequestErrorCodes.InvalidGrant, AuthServerStrings.InvalidResourceOwnerPasswordCredential);
 					}
 				} catch (NotSupportedException) {
