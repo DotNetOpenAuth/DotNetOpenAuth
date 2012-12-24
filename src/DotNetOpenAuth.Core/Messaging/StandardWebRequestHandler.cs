@@ -151,14 +151,25 @@ namespace DotNetOpenAuth.Messaging {
 					return new NetworkDirectWebResponse(request.RequestUri, response);
 				}
 
-				if (Logger.Http.IsErrorEnabled) {
-					if (response != null) {
+				if (response != null) {
+					Logger.Http.ErrorFormat(
+						"{0} returned {1} {2}: {3}",
+						response.ResponseUri,
+						(int)response.StatusCode,
+						response.StatusCode,
+						response.StatusDescription);
+
+					if (Logger.Http.IsDebugEnabled) {
 						using (var reader = new StreamReader(ex.Response.GetResponseStream())) {
-							Logger.Http.ErrorFormat("WebException from {0}: {1}{2}", ex.Response.ResponseUri, Environment.NewLine, reader.ReadToEnd());
+							Logger.Http.DebugFormat(
+								"WebException from {0}: {1}{2}", ex.Response.ResponseUri, Environment.NewLine, reader.ReadToEnd());
 						}
-					} else {
-						Logger.Http.ErrorFormat("WebException {1} from {0}, no response available.", request.RequestUri, ex.Status);
 					}
+				} else {
+					Logger.Http.ErrorFormat(
+						"{0} connecting to {0}",
+						ex.Status,
+						request.RequestUri);
 				}
 
 				// Be sure to close the response stream to conserve resources and avoid
