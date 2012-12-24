@@ -16,6 +16,8 @@ namespace DotNetOpenAuth.OAuth2 {
 #endif
 	using System.Security;
 	using System.Text;
+	using System.Xml;
+
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2.ChannelElements;
 	using DotNetOpenAuth.OAuth2.Messages;
@@ -68,6 +70,13 @@ namespace DotNetOpenAuth.OAuth2 {
 		public ClientCredentialApplicator ClientCredentialApplicator {
 			get { return this.OAuthChannel.ClientCredentialApplicator; }
 			set { this.OAuthChannel.ClientCredentialApplicator = value; }
+		}
+
+		/// <summary>
+		/// Gets quotas used when deserializing JSON.
+		/// </summary>
+		public XmlDictionaryReaderQuotas JsonReaderQuotas {
+			get { return this.OAuthChannel.JsonReaderQuotas; }
 		}
 
 		/// <summary>

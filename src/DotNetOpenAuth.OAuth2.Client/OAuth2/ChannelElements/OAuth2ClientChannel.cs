@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	using System.Diagnostics.Contracts;
 	using System.Net;
 	using System.Web;
+	using System.Xml;
 
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2.Messages;
@@ -48,6 +49,13 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// </summary>
 		/// <value>May be <c>null</c> if this client has no client secret.</value>
 		public ClientCredentialApplicator ClientCredentialApplicator { get; set; }
+
+		/// <summary>
+		/// Gets quotas used when deserializing JSON.
+		/// </summary>
+		public XmlDictionaryReaderQuotas JsonReaderQuotas {
+			get { return this.XmlDictionaryReaderQuotas; }
+		}
 
 		/// <summary>
 		/// Prepares an HTTP request that carries a given message.

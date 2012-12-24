@@ -29,5 +29,9 @@ namespace DotNetOpenAuth.Test.Mocks {
 			get { return this.wrappedChannel.ClientCredentialApplicator; }
 			set { this.wrappedChannel.ClientCredentialApplicator = value; }
 		}
+
+		public System.Xml.XmlDictionaryReaderQuotas JsonReaderQuotas {
+			get { return this.XmlDictionaryReaderQuotas; }
+		}
 	}
 }
