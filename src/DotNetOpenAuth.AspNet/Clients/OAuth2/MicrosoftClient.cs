@@ -71,6 +71,13 @@ namespace DotNetOpenAuth.AspNet.Clients {
 
 		#endregion
 
+		/// <summary>
+		/// Gets the identifier for this client as it is registered with Microsoft.
+		/// </summary>
+		protected string AppId {
+			get { return this.appId; }
+		}
+
 		#region Methods
 
 		/// <summary>
