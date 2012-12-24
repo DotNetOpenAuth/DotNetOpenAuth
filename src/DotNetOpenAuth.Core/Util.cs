@@ -16,6 +16,7 @@ namespace DotNetOpenAuth {
 
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.Messaging.Reflection;
 
 	/// <summary>
 	/// A grab-bag utility class.
@@ -105,9 +106,16 @@ namespace DotNetOpenAuth {
 					////Contract.Requires(pairs != null); // CC: anonymous method can't handle it
 					ErrorUtilities.VerifyArgumentNotNull(pairs, "pairs");
 					var dictionary = pairs as IDictionary<K, V>;
+					var messageDictionary = pairs as MessageDictionary;
 					StringBuilder sb = new StringBuilder(dictionary != null ? dictionary.Count * 40 : 200);
 					foreach (var pair in pairs) {
-						sb.AppendFormat("\t{0}: {1}{2}", pair.Key, pair.Value, Environment.NewLine);
+						var key = pair.Key.ToString();
+						string value = pair.Value.ToString();
+						if (messageDictionary != null && messageDictionary.Description.Mapping[key].IsSecuritySensitive) {
+							value = "********";
+						}
+
+						sb.AppendFormat("\t{0}: {1}{2}", key, value, Environment.NewLine);
 					}
 					return sb.ToString();
 				});
