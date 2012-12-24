@@ -103,7 +103,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 
 		[Test]
 		public void GetClientAccessTokenReturnsApprovedScope() {
-			string[] ApprovedScopes = new[] { "Scope2", "Scope3" };
+			string[] approvedScopes = new[] { "Scope2", "Scope3" };
 			var authServer = CreateAuthorizationServerMock();
 			authServer.Setup(
 				a => a.IsAuthorizationValid(It.Is<IAuthorizationDescription>(d => d.User == null && d.ClientIdentifier == ClientId && MessagingUtilities.AreEquivalent(d.Scope, TestScopes))))
@@ -111,17 +111,17 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 			authServer.Setup(
 				a => a.CheckAuthorizeClientCredentialsGrant(It.Is<IAccessTokenRequest>(d => d.ClientIdentifier == ClientId && MessagingUtilities.AreEquivalent(d.Scope, TestScopes))))
 					  .Returns<IAccessTokenRequest>(req => {
-						  var response = new AutomatedAuthorizationCheckResponse(req, true);
-						  response.ApprovedScope.ResetContents(ApprovedScopes);
-						  return response;
-					  });
+						var response = new AutomatedAuthorizationCheckResponse(req, true);
+						response.ApprovedScope.ResetContents(approvedScopes);
+						return response;
+					});
 			var coordinator = new OAuth2Coordinator<WebServerClient>(
 				AuthorizationServerDescription,
 				authServer.Object,
 				new WebServerClient(AuthorizationServerDescription),
 				client => {
 					var authState = client.GetClientAccessToken(TestScopes);
-					Assert.That(authState.Scope, Is.EquivalentTo(ApprovedScopes));
+					Assert.That(authState.Scope, Is.EquivalentTo(approvedScopes));
 				},
 				server => {
 					server.HandleTokenRequest().Respond();
