@@ -206,6 +206,20 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		}
 
 		/// <summary>
+		/// Gets the type of the encoded values produced by this encoder, as they would appear in their preferred form.
+		/// </summary>
+		internal Type PreferredFormattingType {
+			get {
+				var formattingEncoder = this.converter.Encoder as IMessagePartFormattingEncoder;
+				if (formattingEncoder != null) {
+					return formattingEncoder.FormattingType;
+				}
+
+				return this.MemberDeclaredType;
+			}
+		}
+
+		/// <summary>
 		/// Sets the member of a given message to some given value.
 		/// Used in deserialization.
 		/// </summary>

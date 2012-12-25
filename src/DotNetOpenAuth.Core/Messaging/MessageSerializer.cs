@@ -97,9 +97,10 @@ namespace DotNetOpenAuth.Messaging {
 					Contract.Assume(partDescription != null);
 					if (partDescription.IsRequired || partDescription.IsNondefaultValueSet(messageDictionary.Message)) {
 						include = true;
-						if (IsNumeric(partDescription.MemberDeclaredType)) {
+						Type formattingType = partDescription.PreferredFormattingType;
+						if (IsNumeric(formattingType)) {
 							type = "number";
-						} else if (partDescription.MemberDeclaredType.IsAssignableFrom(typeof(bool))) {
+						} else if (formattingType.IsAssignableFrom(typeof(bool))) {
 							type = "boolean";
 						}
 					}

@@ -12,13 +12,24 @@ namespace DotNetOpenAuth.Messaging {
 	/// <summary>
 	/// Encodes and decodes the <see cref="TimeSpan"/> as an integer of total seconds.
 	/// </summary>
-	internal class TimespanSecondsEncoder : IMessagePartEncoder {
+	internal class TimespanSecondsEncoder : IMessagePartEncoder, IMessagePartFormattingEncoder {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="TimespanSecondsEncoder"/> class.
 		/// </summary>
 		public TimespanSecondsEncoder() {
 			// Note that this constructor is public so it can be instantiated via Activator.
 		}
+
+		#region IMessagePartFormattingEncoder members
+
+		/// <summary>
+		/// Gets the type of the encoded values produced by this encoder, as they would appear in their preferred form.
+		/// </summary>
+		public Type FormattingType {
+			get { return typeof(int); }
+		}
+
+		#endregion
 
 		#region IMessagePartEncoder Members
 

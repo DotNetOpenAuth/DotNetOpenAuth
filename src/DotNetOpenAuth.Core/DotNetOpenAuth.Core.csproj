@@ -59,6 +59,7 @@
     <Compile Include="Messaging\OutgoingWebResponseActionResult.cs" />
     <Compile Include="Messaging\ProtocolFaultResponseException.cs" />
     <Compile Include="Messaging\Reflection\IMessagePartEncoder.cs" />
+    <Compile Include="Messaging\Reflection\IMessagePartFormattingEncoder.cs" />
     <Compile Include="Messaging\Reflection\IMessagePartNullEncoder.cs" />
     <Compile Include="Messaging\Reflection\IMessagePartOriginalEncoder.cs" />
     <Compile Include="Messaging\Reflection\MessageDescriptionCollection.cs" />
