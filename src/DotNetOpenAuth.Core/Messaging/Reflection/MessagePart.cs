@@ -115,6 +115,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			this.RequiredProtection = attribute.RequiredProtection;
 			this.IsRequired = attribute.IsRequired;
 			this.AllowEmpty = attribute.AllowEmpty;
+			this.IsSecuritySensitive = attribute.IsSecuritySensitive;
 			this.memberDeclaredType = (this.field != null) ? this.field.FieldType : this.property.PropertyType;
 			this.defaultMemberValue = DeriveDefaultValue(this.memberDeclaredType);
 
@@ -187,6 +188,15 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// Gets or sets a value indicating whether this part is defined as a constant field and can be read without a message instance.
 		/// </summary>
 		internal bool IsConstantValueAvailableStatically { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the value contained by this property contains
+		/// sensitive information that should generally not be logged.
+		/// </summary>
+		/// <value>
+		/// <c>true</c> if this instance is security sensitive; otherwise, <c>false</c>.
+		/// </value>
+		internal bool IsSecuritySensitive { get; set; }
 
 		/// <summary>
 		/// Gets the static constant value for this message part without a message instance.
