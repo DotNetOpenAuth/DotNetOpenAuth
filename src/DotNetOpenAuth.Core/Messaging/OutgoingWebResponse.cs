@@ -43,6 +43,7 @@ namespace DotNetOpenAuth.Messaging {
 		internal OutgoingWebResponse() {
 			this.Status = HttpStatusCode.OK;
 			this.Headers = new WebHeaderCollection();
+			this.Cookies = new HttpCookieCollection();
 		}
 
 		/// <summary>
@@ -56,6 +57,7 @@ namespace DotNetOpenAuth.Messaging {
 
 			this.Status = response.StatusCode;
 			this.Headers = response.Headers;
+			this.Cookies = new HttpCookieCollection();
 			this.ResponseStream = new MemoryStream(response.ContentLength < 0 ? 4 * 1024 : (int)response.ContentLength);
 			using (Stream responseStream = response.GetResponseStream()) {
 				// BUGBUG: strictly speaking, is the response were exactly the limit, we'd report it as truncated here.
@@ -84,6 +86,11 @@ namespace DotNetOpenAuth.Messaging {
 		/// to a length limitation imposed by the HttpWebRequest or calling method.
 		/// </summary>
 		public bool IsResponseTruncated { get; internal set; }
+
+		/// <summary>
+		/// Gets the cookies collection to add as headers to the HTTP response.
+		/// </summary>
+		public HttpCookieCollection Cookies { get; internal set; }
 
 		/// <summary>
 		/// Gets or sets the body of the response as a string.
@@ -239,6 +246,17 @@ namespace DotNetOpenAuth.Messaging {
 
 			response.StatusCode = (int)this.Status;
 			MessagingUtilities.ApplyHeadersToResponse(this.Headers, response);
+			foreach (HttpCookie httpCookie in this.Cookies) {
+				var cookie = new Cookie(httpCookie.Name, httpCookie.Value) {
+					Expires = httpCookie.Expires,
+					Path = httpCookie.Path,
+					HttpOnly = httpCookie.HttpOnly,
+					Secure = httpCookie.Secure,
+					Domain = httpCookie.Domain,
+				};
+				response.AppendCookie(cookie);
+			}
+
 			if (this.ResponseStream != null) {
 				response.ContentLength64 = this.ResponseStream.Length;
 				this.ResponseStream.CopyTo(response.OutputStream);
@@ -344,6 +362,11 @@ namespace DotNetOpenAuth.Messaging {
 						throw;
 					}
 				}
+			}
+
+			foreach (string cookieName in this.Cookies) {
+				var cookie = this.Cookies[cookieName];
+				context.Response.AppendCookie(cookie);
 			}
 
 			if (endRequest) {

@@ -5,6 +5,7 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.Configuration {
+	using System;
 	using System.Configuration;
 	using System.Diagnostics.Contracts;
 
@@ -16,6 +17,11 @@ namespace DotNetOpenAuth.Configuration {
 		/// The name of the oauth2/client section.
 		/// </summary>
 		private const string SectionName = OAuth2SectionGroup.SectionName + "/client";
+
+		/// <summary>
+		/// The name of the @maxAuthorizationTime attribute.
+		/// </summary>
+		private const string MaxAuthorizationTimePropertyName = "maxAuthorizationTime";
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OAuth2ClientSection"/> class.
@@ -30,6 +36,25 @@ namespace DotNetOpenAuth.Configuration {
 			get {
 				Contract.Ensures(Contract.Result<OAuth2ClientSection>() != null);
 				return (OAuth2ClientSection)ConfigurationManager.GetSection(SectionName) ?? new OAuth2ClientSection();
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets the maximum time a user can take to complete authentication.
+		/// </summary>
+		[ConfigurationProperty(MaxAuthorizationTimePropertyName, DefaultValue = "0:15")] // 15 minutes
+		[PositiveTimeSpanValidator]
+		internal TimeSpan MaxAuthorizationTime {
+			get {
+				Contract.Ensures(Contract.Result<TimeSpan>() > TimeSpan.Zero);
+				TimeSpan result = (TimeSpan)this[MaxAuthorizationTimePropertyName];
+				Contract.Assume(result > TimeSpan.Zero); // our PositiveTimeSpanValidator should take care of this
+				return result;
+			}
+
+			set {
+				Requires.InRange(value > TimeSpan.Zero, "value");
+				this[MaxAuthorizationTimePropertyName] = value;
 			}
 		}
 	}

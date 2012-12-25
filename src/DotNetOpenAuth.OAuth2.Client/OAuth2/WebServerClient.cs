@@ -8,10 +8,14 @@ namespace DotNetOpenAuth.OAuth2 {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
+	using System.Globalization;
 	using System.Linq;
 	using System.Net;
 	using System.Text;
 	using System.Web;
+	using System.Web.Security;
+
+	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2.Messages;
 
@@ -19,6 +23,11 @@ namespace DotNetOpenAuth.OAuth2 {
 	/// An OAuth 2.0 consumer designed for web applications.
 	/// </summary>
 	public class WebServerClient : ClientBase {
+		/// <summary>
+		/// The cookie name for XSRF mitigation during authorization code grant flows.
+		/// </summary>
+		private const string XsrfCookieName = "DotNetOpenAuth.WebServerClient.XSRF-Session";
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="WebServerClient"/> class.
 		/// </summary>
@@ -100,16 +109,25 @@ namespace DotNetOpenAuth.OAuth2 {
 			// Mitigate XSRF attacks by including a state value that would be unpredictable between users, but
 			// verifiable for the same user/session.
 			// If the host is implementing the authorization tracker though, they're handling this protection themselves.
+			HttpCookie cookie = null;
 			if (this.AuthorizationTracker == null) {
 				var context = this.Channel.GetHttpContext();
-				if (context.Session != null) {
-					request.ClientState = context.Session.SessionID;
-				} else {
-					Logger.OAuth.WarnFormat("No request context discovered, so no client state parameter could be set to mitigate XSRF attacks.");
-				}
+
+				string xsrfKey = (new Random()).Next().ToString(CultureInfo.InvariantCulture);
+				cookie = new HttpCookie(XsrfCookieName, xsrfKey) {
+					HttpOnly = true,
+					Secure = FormsAuthentication.RequireSSL,
+					Expires = DateTime.Now.Add(OAuth2ClientSection.Configuration.MaxAuthorizationTime),
+				};
+				request.ClientState = xsrfKey;
 			}
 
-			return this.Channel.PrepareResponse(request);
+			var response = this.Channel.PrepareResponse(request);
+			if (cookie != null) {
+				response.Cookies.Add(cookie);
+			}
+
+			return response;
 		}
 
 		/// <summary>
@@ -134,12 +152,9 @@ namespace DotNetOpenAuth.OAuth2 {
 					ErrorUtilities.VerifyProtocol(authorizationState != null, ClientStrings.AuthorizationResponseUnexpectedMismatch);
 				} else {
 					var context = this.Channel.GetHttpContext();
-					if (context.Session != null) {
-						ErrorUtilities.VerifyProtocol(string.Equals(response.ClientState, context.Session.SessionID, StringComparison.Ordinal), ClientStrings.AuthorizationResponseUnexpectedMismatch);
-					} else {
-						Logger.OAuth.WarnFormat("No request context discovered, so no client state parameter could be checked to mitigate XSRF attacks.");
-					}
 
+					HttpCookie cookie = request.Cookies[XsrfCookieName];
+					ErrorUtilities.VerifyProtocol(cookie != null && string.Equals(response.ClientState, cookie.Value, StringComparison.Ordinal), ClientStrings.AuthorizationResponseUnexpectedMismatch);
 					authorizationState = new AuthorizationState { Callback = callback };
 				}
 				var success = response as EndUserAuthorizationSuccessAuthCodeResponse;
