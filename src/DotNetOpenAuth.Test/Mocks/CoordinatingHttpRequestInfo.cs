@@ -32,6 +32,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		/// <param name="messageFactory">The message factory.</param>
 		/// <param name="messageData">The message data.</param>
 		/// <param name="recipient">The recipient.</param>
+		/// <param name="cookies">Cookies included in the incoming request.</param>
 		internal CoordinatingHttpRequestInfo(
 			Channel channel,
 			IMessageFactory messageFactory,
@@ -52,6 +53,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		/// that will not generate any message.
 		/// </summary>
 		/// <param name="recipient">The recipient.</param>
+		/// <param name="cookies">Cookies included in the incoming request.</param>
 		internal CoordinatingHttpRequestInfo(MessageReceivingEndpoint recipient, HttpCookieCollection cookies)
 			: base(GetHttpVerb(recipient), recipient != null ? recipient.Location : new Uri("http://host/path"), cookies: cookies) {
 			this.recipient = recipient;

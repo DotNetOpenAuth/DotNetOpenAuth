@@ -80,7 +80,7 @@ namespace DotNetOpenAuth.Messaging {
 			this.form = new NameValueCollection();
 			this.queryString = HttpUtility.ParseQueryString(requestUri.Query);
 			this.serverVariables = new NameValueCollection();
-			this.cookies =  new HttpCookieCollection();
+			this.cookies = new HttpCookieCollection();
 
 			Reporting.RecordRequestStatistics(this);
 		}

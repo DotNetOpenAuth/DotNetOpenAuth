@@ -22,8 +22,8 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Runtime.Serialization.Json;
 	using System.Security;
 	using System.Security.Cryptography;
-	using System.Threading;
 	using System.Text;
+	using System.Threading;
 	using System.Web;
 	using System.Web.Mvc;
 	using System.Xml;
@@ -40,13 +40,6 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <remarks>The random number generator is thread-safe.</remarks>
 		internal static readonly RandomNumberGenerator CryptoRandomDataGenerator = new RNGCryptoServiceProvider();
-
-		/// <summary>
-		/// Gets a random number generator for use on the current thread only.
-		/// </summary>
-		internal static Random NonCryptoRandomDataGenerator {
-			get { return ThreadSafeRandom.RandomNumberGenerator; }
-		}
 
 		/// <summary>
 		/// The uppercase alphabet.
@@ -155,6 +148,13 @@ namespace DotNetOpenAuth.Messaging {
 			/// The GZip algorithm.
 			/// </summary>
 			Gzip,
+		}
+
+		/// <summary>
+		/// Gets a random number generator for use on the current thread only.
+		/// </summary>
+		internal static Random NonCryptoRandomDataGenerator {
+			get { return ThreadSafeRandom.RandomNumberGenerator; }
 		}
 
 		/// <summary>
@@ -2015,6 +2015,32 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// A thread-safe, non-crypto random number generator.
+		/// </summary>
+		private static class ThreadSafeRandom {
+			/// <summary>
+			/// The initializer of all new <see cref="Random"/> instances.
+			/// </summary>
+			private static readonly Random threadRandomInitializer = new Random();
+
+			/// <summary>
+			/// A thread-local instance of <see cref="Random"/>
+			/// </summary>
+			private static readonly ThreadLocal<Random> threadRandom = new ThreadLocal<Random>(delegate {
+				lock (threadRandomInitializer) {
+					return new Random(threadRandomInitializer.Next());
+				}
+			});
+
+			/// <summary>
+			/// Gets a random number generator for use on the current thread only.
+			/// </summary>
+			public static Random RandomNumberGenerator {
+				get { return threadRandom.Value; }
+			}
+		}
+
+		/// <summary>
 		/// A class to convert a <see cref="Comparison&lt;T&gt;"/> into an <see cref="IComparer&lt;T&gt;"/>.
 		/// </summary>
 		/// <typeparam name="T">The type of objects being compared.</typeparam>
@@ -2047,32 +2073,6 @@ namespace DotNetOpenAuth.Messaging {
 			}
 
 			#endregion
-		}
-
-		/// <summary>
-		/// A thread-safe, non-crypto random number generator.
-		/// </summary>
-		private static class ThreadSafeRandom {
-			/// <summary>
-			/// The initializer of all new <see cref="Random"/> instances.
-			/// </summary>
-			private static readonly Random threadRandomInitializer = new Random();
-
-			/// <summary>
-			/// A thread-local instance of <see cref="Random"/>
-			/// </summary>
-			private static readonly ThreadLocal<Random> threadRandom = new ThreadLocal<Random>(delegate {
-				lock (threadRandomInitializer) {
-					return new Random(threadRandomInitializer.Next());
-				}
-			});
-
-			/// <summary>
-			/// Gets a random number generator for use on the current thread only.
-			/// </summary>
-			public static Random RandomNumberGenerator {
-				get { return threadRandom.Value; }
-			}
 		}
 	}
 }
