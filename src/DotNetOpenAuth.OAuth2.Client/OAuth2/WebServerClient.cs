@@ -117,7 +117,7 @@ namespace DotNetOpenAuth.OAuth2 {
 				cookie = new HttpCookie(XsrfCookieName, xsrfKey) {
 					HttpOnly = true,
 					Secure = FormsAuthentication.RequireSSL,
-					Expires = DateTime.Now.Add(OAuth2ClientSection.Configuration.MaxAuthorizationTime),
+					////Expires = DateTime.Now.Add(OAuth2ClientSection.Configuration.MaxAuthorizationTime), // we prefer session cookies to persistent ones
 				};
 				request.ClientState = xsrfKey;
 			}
