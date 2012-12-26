@@ -168,33 +168,24 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 					Assert.That(req.User, Is.EqualTo(ResourceOwnerUsername));
 					return true;
 				});
-			var refreshTokenSource = new TaskCompletionSource<string>();
 			var coordinator = new OAuth2Coordinator<WebServerClient>(
 				AuthorizationServerDescription,
 				authServerMock.Object,
 				new WebServerClient(AuthorizationServerDescription),
 				client => {
-					try {
-						var authState = new AuthorizationState(TestScopes) {
-							Callback = ClientCallback,
-						};
-						client.PrepareRequestUserAuthorization(authState).Respond();
-						var result = client.ProcessUserAuthorization();
-						Assert.That(result.AccessToken, Is.Not.Null.And.Not.Empty);
-						Assert.That(result.RefreshToken, Is.Not.Null.And.Not.Empty);
-						refreshTokenSource.SetResult(result.RefreshToken);
-					} catch {
-						refreshTokenSource.TrySetCanceled();
-					}
+					var authState = new AuthorizationState(TestScopes) {
+						Callback = ClientCallback,
+					};
+					client.PrepareRequestUserAuthorization(authState).Respond();
+					var result = client.ProcessUserAuthorization();
+					Assert.That(result.AccessToken, Is.Not.Null.And.Not.Empty);
+					Assert.That(result.RefreshToken, Is.Not.Null.And.Not.Empty);
 				},
 				server => {
 					var request = server.ReadAuthorizationRequest();
 					Assert.That(request, Is.Not.Null);
 					server.ApproveAuthorizationRequest(request, ResourceOwnerUsername);
 					server.HandleTokenRequest().Respond();
-					var authorization = server.DecodeRefreshToken(refreshTokenSource.Task.Result);
-					Assert.That(authorization, Is.Not.Null);
-					Assert.That(authorization.User, Is.EqualTo(ResourceOwnerUsername));
 				});
 			coordinator.Run();
 		}

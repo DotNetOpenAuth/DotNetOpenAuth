@@ -6,10 +6,12 @@
 
 namespace DotNetOpenAuth.Test.Mocks {
 	using System;
-using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-using System.Net;
-using DotNetOpenAuth.Messaging;
+	using System.Collections.Generic;
+	using System.Diagnostics.Contracts;
+	using System.Net;
+	using System.Web;
+
+	using DotNetOpenAuth.Messaging;
 
 	internal class CoordinatingHttpRequestInfo : HttpRequestInfo {
 		private readonly Channel channel;
@@ -34,8 +36,9 @@ using DotNetOpenAuth.Messaging;
 			Channel channel,
 			IMessageFactory messageFactory,
 			IDictionary<string, string> messageData,
-			MessageReceivingEndpoint recipient)
-			: this(recipient) {
+			MessageReceivingEndpoint recipient,
+			HttpCookieCollection cookies)
+			: this(recipient, cookies) {
 			Contract.Requires(channel != null);
 			Contract.Requires(messageFactory != null);
 			Contract.Requires(messageData != null);
@@ -49,8 +52,8 @@ using DotNetOpenAuth.Messaging;
 		/// that will not generate any message.
 		/// </summary>
 		/// <param name="recipient">The recipient.</param>
-		internal CoordinatingHttpRequestInfo(MessageReceivingEndpoint recipient)
-			: base(GetHttpVerb(recipient), recipient != null ? recipient.Location : new Uri("http://host/path")) {
+		internal CoordinatingHttpRequestInfo(MessageReceivingEndpoint recipient, HttpCookieCollection cookies)
+			: base(GetHttpVerb(recipient), recipient != null ? recipient.Location : new Uri("http://host/path"), cookies: cookies) {
 			this.recipient = recipient;
 		}
 

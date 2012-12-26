@@ -16,16 +16,20 @@ namespace DotNetOpenAuth.Test.Mocks {
 	internal class CoordinatingOutgoingWebResponse : OutgoingWebResponse {
 		private CoordinatingChannel receivingChannel;
 
+		private CoordinatingChannel sendingChannel;
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="CoordinatingOutgoingWebResponse"/> class.
 		/// </summary>
 		/// <param name="message">The direct response message to send to the remote channel.  This message will be cloned.</param>
 		/// <param name="receivingChannel">The receiving channel.</param>
-		internal CoordinatingOutgoingWebResponse(IProtocolMessage message, CoordinatingChannel receivingChannel) {
+		internal CoordinatingOutgoingWebResponse(IProtocolMessage message, CoordinatingChannel receivingChannel, CoordinatingChannel sendingChannel) {
 			Requires.NotNull(message, "message");
 			Requires.NotNull(receivingChannel, "receivingChannel");
+			Requires.NotNull(sendingChannel, "sendingChannel");
 
 			this.receivingChannel = receivingChannel;
+			this.sendingChannel = sendingChannel;
 			this.OriginalMessage = message;
 		}
 
@@ -35,6 +39,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		}
 
 		public override void Respond() {
+			this.sendingChannel.SaveCookies(this.Cookies);
 			this.receivingChannel.PostMessage(this.OriginalMessage);
 		}
 	}

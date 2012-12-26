@@ -61,6 +61,11 @@ namespace DotNetOpenAuth.Messaging {
 		private readonly NameValueCollection serverVariables;
 
 		/// <summary>
+		/// The backing field for the <see cref="Cookies"/> property.
+		/// </summary>
+		private readonly HttpCookieCollection cookies;
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="HttpRequestInfo"/> class.
 		/// </summary>
 		/// <param name="request">The request.</param>
@@ -75,6 +80,7 @@ namespace DotNetOpenAuth.Messaging {
 			this.form = new NameValueCollection();
 			this.queryString = HttpUtility.ParseQueryString(requestUri.Query);
 			this.serverVariables = new NameValueCollection();
+			this.cookies =  new HttpCookieCollection();
 
 			Reporting.RecordRequestStatistics(this);
 		}
@@ -86,7 +92,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="requestUri">The request URI.</param>
 		/// <param name="form">The form variables.</param>
 		/// <param name="headers">The HTTP headers.</param>
-		internal HttpRequestInfo(string httpMethod, Uri requestUri, NameValueCollection form = null, NameValueCollection headers = null) {
+		/// <param name="cookies">The cookies in the request.</param>
+		internal HttpRequestInfo(string httpMethod, Uri requestUri, NameValueCollection form = null, NameValueCollection headers = null, HttpCookieCollection cookies = null) {
 			Requires.NotNullOrEmpty(httpMethod, "httpMethod");
 			Requires.NotNull(requestUri, "requestUri");
 
@@ -96,6 +103,7 @@ namespace DotNetOpenAuth.Messaging {
 			this.queryString = HttpUtility.ParseQueryString(requestUri.Query);
 			this.headers = headers ?? new WebHeaderCollection();
 			this.serverVariables = new NameValueCollection();
+			this.cookies = cookies ?? new HttpCookieCollection();
 		}
 
 		/// <summary>
@@ -111,6 +119,7 @@ namespace DotNetOpenAuth.Messaging {
 			this.headers = listenerRequest.Headers;
 			this.form = ParseFormData(listenerRequest.HttpMethod, listenerRequest.Headers, () => listenerRequest.InputStream);
 			this.serverVariables = new NameValueCollection();
+			this.cookies = new HttpCookieCollection();
 
 			Reporting.RecordRequestStatistics(this);
 		}
@@ -131,6 +140,7 @@ namespace DotNetOpenAuth.Messaging {
 			AddHeaders(this.headers, request.Content.Headers);
 			this.form = ParseFormData(this.httpMethod, this.headers, () => request.Content.ReadAsStreamAsync().Result);
 			this.serverVariables = new NameValueCollection();
+			this.cookies = new HttpCookieCollection();
 
 			Reporting.RecordRequestStatistics(this);
 		}
@@ -153,6 +163,7 @@ namespace DotNetOpenAuth.Messaging {
 			this.queryString = HttpUtility.ParseQueryString(requestUri.Query);
 			this.form = ParseFormData(httpMethod, headers, () => inputStream);
 			this.serverVariables = new NameValueCollection();
+			this.cookies = new HttpCookieCollection();
 
 			Reporting.RecordRequestStatistics(this);
 		}
@@ -204,6 +215,14 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		public override NameValueCollection ServerVariables {
 			get { return this.serverVariables; }
+		}
+
+		/// <summary>
+		/// Gets the collection of cookies that were sent by the client.
+		/// </summary>
+		/// <returns>The client's cookies.</returns>
+		public override HttpCookieCollection Cookies {
+			get { return this.cookies; }
 		}
 
 		/// <summary>
