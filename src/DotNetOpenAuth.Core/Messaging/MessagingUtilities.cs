@@ -43,6 +43,13 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// A pseudo-random data generator (NOT cryptographically strong random data)
 		/// </summary>
+		/// <remarks>
+		/// The random number generator is NOT thread-safe, and any calls to it should be within a lock on this very object.
+		/// This is NOT using thread-local techniques to avoid locking because it's important that we use the same <see cref="Random"/>
+		/// instance even across threads. The reason for this is so that if two clients (an attacker and a victim) call in
+		/// simultaneously, we don't want to generate the same random values to each of them, which might occur if they used
+		/// different instances of Random.
+		/// </remarks>
 		internal static readonly Random NonCryptoRandomDataGenerator = new Random();
 
 		/// <summary>
@@ -646,7 +653,10 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>The generated values, which may contain zeros.</returns>
 		internal static byte[] GetNonCryptoRandomData(int length) {
 			byte[] buffer = new byte[length];
-			NonCryptoRandomDataGenerator.NextBytes(buffer);
+			lock (NonCryptoRandomDataGenerator) {
+				NonCryptoRandomDataGenerator.NextBytes(buffer);
+			}
+
 			return buffer;
 		}
 
@@ -662,13 +672,25 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
-		/// Gets a cryptographically strong random sequence of values.
+		/// Gets a cryptographically strong random string of base64 characters.
 		/// </summary>
 		/// <param name="binaryLength">The length of the byte sequence to generate.</param>
 		/// <returns>A base64 encoding of the generated random data, 
 		/// whose length in characters will likely be greater than <paramref name="binaryLength"/>.</returns>
 		internal static string GetCryptoRandomDataAsBase64(int binaryLength) {
 			byte[] uniq_bytes = GetCryptoRandomData(binaryLength);
+			string uniq = Convert.ToBase64String(uniq_bytes);
+			return uniq;
+		}
+
+		/// <summary>
+		/// Gets a NON-cryptographically strong random string of base64 characters.
+		/// </summary>
+		/// <param name="binaryLength">The length of the byte sequence to generate.</param>
+		/// <returns>A base64 encoding of the generated random data,
+		/// whose length in characters will likely be greater than <paramref name="binaryLength"/>.</returns>
+		internal static string GetNonCryptoRandomDataAsBase64(int binaryLength) {
+			byte[] uniq_bytes = GetNonCryptoRandomData(binaryLength);
 			string uniq = Convert.ToBase64String(uniq_bytes);
 			return uniq;
 		}
@@ -684,8 +706,10 @@ namespace DotNetOpenAuth.Messaging {
 			Requires.True(allowableCharacters != null && allowableCharacters.Length >= 2, "allowableCharacters");
 
 			char[] randomString = new char[length];
-			for (int i = 0; i < length; i++) {
-				randomString[i] = allowableCharacters[NonCryptoRandomDataGenerator.Next(allowableCharacters.Length)];
+			lock (NonCryptoRandomDataGenerator) {
+				for (int i = 0; i < length; i++) {
+					randomString[i] = allowableCharacters[NonCryptoRandomDataGenerator.Next(allowableCharacters.Length)];
+				}
 			}
 
 			return new string(randomString);
