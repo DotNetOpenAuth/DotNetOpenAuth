@@ -22,6 +22,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Runtime.Serialization.Json;
 	using System.Security;
 	using System.Security.Cryptography;
+	using System.Threading;
 	using System.Text;
 	using System.Web;
 	using System.Web.Mvc;
@@ -41,9 +42,11 @@ namespace DotNetOpenAuth.Messaging {
 		internal static readonly RandomNumberGenerator CryptoRandomDataGenerator = new RNGCryptoServiceProvider();
 
 		/// <summary>
-		/// A pseudo-random data generator (NOT cryptographically strong random data)
+		/// Gets a random number generator for use on the current thread only.
 		/// </summary>
-		internal static readonly Random NonCryptoRandomDataGenerator = new Random();
+		internal static Random NonCryptoRandomDataGenerator {
+			get { return ThreadSafeRandom.RandomNumberGenerator; }
+		}
 
 		/// <summary>
 		/// The uppercase alphabet.
@@ -662,13 +665,25 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
-		/// Gets a cryptographically strong random sequence of values.
+		/// Gets a cryptographically strong random string of base64 characters.
 		/// </summary>
 		/// <param name="binaryLength">The length of the byte sequence to generate.</param>
 		/// <returns>A base64 encoding of the generated random data, 
 		/// whose length in characters will likely be greater than <paramref name="binaryLength"/>.</returns>
 		internal static string GetCryptoRandomDataAsBase64(int binaryLength) {
 			byte[] uniq_bytes = GetCryptoRandomData(binaryLength);
+			string uniq = Convert.ToBase64String(uniq_bytes);
+			return uniq;
+		}
+
+		/// <summary>
+		/// Gets a NON-cryptographically strong random string of base64 characters.
+		/// </summary>
+		/// <param name="binaryLength">The length of the byte sequence to generate.</param>
+		/// <returns>A base64 encoding of the generated random data,
+		/// whose length in characters will likely be greater than <paramref name="binaryLength"/>.</returns>
+		internal static string GetNonCryptoRandomDataAsBase64(int binaryLength) {
+			byte[] uniq_bytes = GetNonCryptoRandomData(binaryLength);
 			string uniq = Convert.ToBase64String(uniq_bytes);
 			return uniq;
 		}
@@ -684,8 +699,9 @@ namespace DotNetOpenAuth.Messaging {
 			Requires.True(allowableCharacters != null && allowableCharacters.Length >= 2, "allowableCharacters");
 
 			char[] randomString = new char[length];
+			var random = NonCryptoRandomDataGenerator;
 			for (int i = 0; i < length; i++) {
-				randomString[i] = allowableCharacters[NonCryptoRandomDataGenerator.Next(allowableCharacters.Length)];
+				randomString[i] = allowableCharacters[random.Next(allowableCharacters.Length)];
 			}
 
 			return new string(randomString);
@@ -2031,6 +2047,32 @@ namespace DotNetOpenAuth.Messaging {
 			}
 
 			#endregion
+		}
+
+		/// <summary>
+		/// A thread-safe, non-crypto random number generator.
+		/// </summary>
+		private static class ThreadSafeRandom {
+			/// <summary>
+			/// The initializer of all new <see cref="Random"/> instances.
+			/// </summary>
+			private static readonly Random threadRandomInitializer = new Random();
+
+			/// <summary>
+			/// A thread-local instance of <see cref="Random"/>
+			/// </summary>
+			private static readonly ThreadLocal<Random> threadRandom = new ThreadLocal<Random>(delegate {
+				lock (threadRandomInitializer) {
+					return new Random(threadRandomInitializer.Next());
+				}
+			});
+
+			/// <summary>
+			/// Gets a random number generator for use on the current thread only.
+			/// </summary>
+			public static Random RandomNumberGenerator {
+				get { return threadRandom.Value; }
+			}
 		}
 	}
 }

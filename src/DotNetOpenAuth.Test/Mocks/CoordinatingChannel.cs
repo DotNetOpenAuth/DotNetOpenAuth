@@ -88,6 +88,11 @@ namespace DotNetOpenAuth.Test.Mocks {
 		private Action<IProtocolMessage> outgoingMessageFilter;
 
 		/// <summary>
+		/// The simulated clients cookies.
+		/// </summary>
+		private HttpCookieCollection cookies = new HttpCookieCollection();
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="CoordinatingChannel"/> class.
 		/// </summary>
 		/// <param name="wrappedChannel">The wrapped channel.  Must not be null.</param>
@@ -158,15 +163,23 @@ namespace DotNetOpenAuth.Test.Mocks {
 			this.incomingMessageSignal.Set();
 		}
 
+		internal void SaveCookies(HttpCookieCollection cookies) {
+			Requires.NotNull(cookies, "cookies");
+			foreach (string cookieName in cookies) {
+				var cookie = cookies[cookieName];
+				this.cookies.Set(cookie);
+			}
+		}
+
 		protected internal override HttpRequestBase GetRequestFromContext() {
 			MessageReceivingEndpoint recipient;
 			WebHeaderCollection headers;
 			var messageData = this.AwaitIncomingMessage(out recipient, out headers);
 			CoordinatingHttpRequestInfo result;
 			if (messageData != null) {
-				result = new CoordinatingHttpRequestInfo(this, this.MessageFactory, messageData, recipient);
+				result = new CoordinatingHttpRequestInfo(this, this.MessageFactory, messageData, recipient, this.cookies);
 			} else {
-				result = new CoordinatingHttpRequestInfo(recipient);
+				result = new CoordinatingHttpRequestInfo(recipient, this.cookies);
 			}
 
 			if (headers != null) {
@@ -207,7 +220,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 
 		protected override OutgoingWebResponse PrepareDirectResponse(IProtocolMessage response) {
 			this.ProcessMessageFilter(response, true);
-			return new CoordinatingOutgoingWebResponse(response, this.RemoteChannel);
+			return new CoordinatingOutgoingWebResponse(response, this.RemoteChannel, this);
 		}
 
 		protected override OutgoingWebResponse PrepareIndirectResponse(IDirectedProtocolMessage message) {
