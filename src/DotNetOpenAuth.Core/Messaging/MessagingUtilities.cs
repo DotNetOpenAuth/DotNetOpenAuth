@@ -2026,17 +2026,22 @@ namespace DotNetOpenAuth.Messaging {
 			/// <summary>
 			/// A thread-local instance of <see cref="Random"/>
 			/// </summary>
-			private static readonly ThreadLocal<Random> threadRandom = new ThreadLocal<Random>(delegate {
-				lock (threadRandomInitializer) {
-					return new Random(threadRandomInitializer.Next());
-				}
-			});
+			[ThreadStatic]
+			private static Random threadRandom;
 
 			/// <summary>
 			/// Gets a random number generator for use on the current thread only.
 			/// </summary>
 			public static Random RandomNumberGenerator {
-				get { return threadRandom.Value; }
+				get {
+					if (threadRandom == null) {
+						lock (threadRandomInitializer) {
+							threadRandom = new Random(threadRandomInitializer.Next());
+						}
+					}
+
+					return threadRandom;
+				}
 			}
 		}
 
