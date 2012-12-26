@@ -22,6 +22,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Runtime.Serialization.Json;
 	using System.Security;
 	using System.Security.Cryptography;
+	using System.Threading;
 	using System.Text;
 	using System.Web;
 	using System.Web.Mvc;
@@ -41,16 +42,11 @@ namespace DotNetOpenAuth.Messaging {
 		internal static readonly RandomNumberGenerator CryptoRandomDataGenerator = new RNGCryptoServiceProvider();
 
 		/// <summary>
-		/// A pseudo-random data generator (NOT cryptographically strong random data)
+		/// Gets a random number generator for use on the current thread only.
 		/// </summary>
-		/// <remarks>
-		/// The random number generator is NOT thread-safe, and any calls to it should be within a lock on this very object.
-		/// This is NOT using thread-local techniques to avoid locking because it's important that we use the same <see cref="Random"/>
-		/// instance even across threads. The reason for this is so that if two clients (an attacker and a victim) call in
-		/// simultaneously, we don't want to generate the same random values to each of them, which might occur if they used
-		/// different instances of Random.
-		/// </remarks>
-		internal static readonly Random NonCryptoRandomDataGenerator = new Random();
+		internal static Random NonCryptoRandomDataGenerator {
+			get { return ThreadSafeRandom.RandomNumberGenerator; }
+		}
 
 		/// <summary>
 		/// The uppercase alphabet.
@@ -653,10 +649,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>The generated values, which may contain zeros.</returns>
 		internal static byte[] GetNonCryptoRandomData(int length) {
 			byte[] buffer = new byte[length];
-			lock (NonCryptoRandomDataGenerator) {
-				NonCryptoRandomDataGenerator.NextBytes(buffer);
-			}
-
+			NonCryptoRandomDataGenerator.NextBytes(buffer);
 			return buffer;
 		}
 
@@ -706,10 +699,9 @@ namespace DotNetOpenAuth.Messaging {
 			Requires.True(allowableCharacters != null && allowableCharacters.Length >= 2, "allowableCharacters");
 
 			char[] randomString = new char[length];
-			lock (NonCryptoRandomDataGenerator) {
-				for (int i = 0; i < length; i++) {
-					randomString[i] = allowableCharacters[NonCryptoRandomDataGenerator.Next(allowableCharacters.Length)];
-				}
+			var random = NonCryptoRandomDataGenerator;
+			for (int i = 0; i < length; i++) {
+				randomString[i] = allowableCharacters[random.Next(allowableCharacters.Length)];
 			}
 
 			return new string(randomString);
@@ -2055,6 +2047,32 @@ namespace DotNetOpenAuth.Messaging {
 			}
 
 			#endregion
+		}
+
+		/// <summary>
+		/// A thread-safe, non-crypto random number generator.
+		/// </summary>
+		private static class ThreadSafeRandom {
+			/// <summary>
+			/// The initializer of all new <see cref="Random"/> instances.
+			/// </summary>
+			private static readonly Random threadRandomInitializer = new Random();
+
+			/// <summary>
+			/// A thread-local instance of <see cref="Random"/>
+			/// </summary>
+			private static readonly ThreadLocal<Random> threadRandom = new ThreadLocal<Random>(delegate {
+				lock (threadRandomInitializer) {
+					return new Random(threadRandomInitializer.Next());
+				}
+			});
+
+			/// <summary>
+			/// Gets a random number generator for use on the current thread only.
+			/// </summary>
+			public static Random RandomNumberGenerator {
+				get { return threadRandom.Value; }
+			}
 		}
 	}
 }
