@@ -15,6 +15,7 @@ namespace DotNetOpenAuth.OpenId.Provider.Extensions {
 	using DotNetOpenAuth.OpenId.Extensions.AttributeExchange;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.Messages;
+	using Validation;
 
 	/// <summary>
 	/// A set of methods designed to assist in improving interop across different

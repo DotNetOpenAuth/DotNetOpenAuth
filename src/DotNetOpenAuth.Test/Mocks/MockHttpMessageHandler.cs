@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 	using System.Text;
 	using System.Threading;
 	using System.Threading.Tasks;
+	using Validation;
 
 	/// <summary>
 	/// An <see cref="HttpMessageHandler"/> that sends each request to the specified delegate.

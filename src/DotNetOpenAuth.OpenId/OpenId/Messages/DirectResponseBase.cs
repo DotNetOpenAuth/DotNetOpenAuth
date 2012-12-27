@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// A common base class for OpenID direct message responses.

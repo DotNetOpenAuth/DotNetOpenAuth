@@ -18,6 +18,7 @@ namespace DotNetOpenAuth.OpenId {
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using DotNetOpenAuth.Xrds;
 	using DotNetOpenAuth.Yadis;
+	using Validation;
 
 	/// <summary>
 	/// The discovery service for XRI identifiers that uses an XRI proxy resolver for discovery.

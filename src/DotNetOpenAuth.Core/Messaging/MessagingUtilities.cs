@@ -29,6 +29,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Xml;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.Messaging.Reflection;
+	using Validation;
 
 	/// <summary>
 	/// A grab-bag of utility methods useful for the channel stack of the protocol.
@@ -198,7 +199,7 @@ namespace DotNetOpenAuth.Messaging {
 		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "The Uri merging requires use of a string value.")]
 		[SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "Expensive call should not be a property.")]
 		public static Uri GetRequestUrlFromContext() {
-			Requires.ValidState(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
+			RequiresEx.ValidState(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
 			return new HttpRequestWrapper(HttpContext.Current.Request).GetPublicFacingUrl();
 		}
 
@@ -695,8 +696,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="allowableCharacters">The allowable characters.</param>
 		/// <returns>A random string.</returns>
 		internal static string GetRandomString(int length, string allowableCharacters) {
-			Requires.InRange(length >= 0, "length");
-			Requires.True(allowableCharacters != null && allowableCharacters.Length >= 2, "allowableCharacters");
+			Requires.Range(length >= 0, "length");
+			Requires.That(allowableCharacters != null && allowableCharacters.Length >= 2, "allowableCharacters", "At least two allowable characters required.");
 
 			char[] randomString = new char[length];
 			var random = NonCryptoRandomDataGenerator;
@@ -936,7 +937,7 @@ namespace DotNetOpenAuth.Messaging {
 		internal static KeyValuePair<string, CryptoKey> GetCurrentKey(this ICryptoKeyStore cryptoKeyStore, string bucket, TimeSpan minimumRemainingLife, int keySize = 256) {
 			Requires.NotNull(cryptoKeyStore, "cryptoKeyStore");
 			Requires.NotNullOrEmpty(bucket, "bucket");
-			Requires.True(keySize % 8 == 0, "keySize");
+			Requires.That(keySize % 8 == 0, "keySize", "Key size must be a multiple of 8.");
 
 			var cryptoKeyPair = cryptoKeyStore.GetKeys(bucket).FirstOrDefault(pair => pair.Value.Key.Length == keySize / 8);
 			if (cryptoKeyPair.Value == null || cryptoKeyPair.Value.ExpiresUtc < DateTime.UtcNow + minimumRemainingLife) {
@@ -992,7 +993,7 @@ namespace DotNetOpenAuth.Messaging {
 							compressingStream = new GZipStream(ms, CompressionMode.Compress, true);
 							break;
 						default:
-							Requires.InRange(false, "method");
+							Requires.Range(false, "method");
 							break;
 					}
 
@@ -1030,7 +1031,7 @@ namespace DotNetOpenAuth.Messaging {
 								decompressingStream = new GZipStream(compressedDataStream, CompressionMode.Decompress, true);
 								break;
 							default:
-								Requires.InRange(false, "method");
+								Requires.Range(false, "method");
 								break;
 						}
 
@@ -1158,8 +1159,8 @@ namespace DotNetOpenAuth.Messaging {
 		internal static int CopyTo(this Stream copyFrom, Stream copyTo) {
 			Requires.NotNull(copyFrom, "copyFrom");
 			Requires.NotNull(copyTo, "copyTo");
-			Requires.True(copyFrom.CanRead, "copyFrom", MessagingStrings.StreamUnreadable);
-			Requires.True(copyTo.CanWrite, "copyTo", MessagingStrings.StreamUnwritable);
+			Requires.That(copyFrom.CanRead, "copyFrom", MessagingStrings.StreamUnreadable);
+			Requires.That(copyTo.CanWrite, "copyTo", MessagingStrings.StreamUnwritable);
 			return CopyUpTo(copyFrom, copyTo, int.MaxValue);
 		}
 #endif
@@ -1178,8 +1179,8 @@ namespace DotNetOpenAuth.Messaging {
 		internal static int CopyUpTo(this Stream copyFrom, Stream copyTo, int maximumBytesToCopy) {
 			Requires.NotNull(copyFrom, "copyFrom");
 			Requires.NotNull(copyTo, "copyTo");
-			Requires.True(copyFrom.CanRead, "copyFrom", MessagingStrings.StreamUnreadable);
-			Requires.True(copyTo.CanWrite, "copyTo", MessagingStrings.StreamUnwritable);
+			Requires.That(copyFrom.CanRead, "copyFrom", MessagingStrings.StreamUnreadable);
+			Requires.That(copyTo.CanWrite, "copyTo", MessagingStrings.StreamUnwritable);
 
 			byte[] buffer = new byte[1024];
 			int readBytes;
@@ -1201,7 +1202,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>A seekable stream with the same contents as the original.</returns>
 		internal static Stream CreateSnapshot(this Stream copyFrom) {
 			Requires.NotNull(copyFrom, "copyFrom");
-			Requires.True(copyFrom.CanRead, "copyFrom", MessagingStrings.StreamUnreadable);
+			Requires.That(copyFrom.CanRead, "copyFrom", MessagingStrings.StreamUnreadable);
 
 			MemoryStream copyTo = new MemoryStream(copyFrom.CanSeek ? (int)copyFrom.Length : 4 * 1024);
 			try {
@@ -1221,7 +1222,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>The newly created instance.</returns>
 		internal static HttpWebRequest Clone(this HttpWebRequest request) {
 			Requires.NotNull(request, "request");
-			Requires.True(request.RequestUri != null, "request");
+			Requires.That(request.RequestUri != null, "request", "request.RequestUri cannot be null.");
 			return Clone(request, request.RequestUri);
 		}
 
@@ -1771,7 +1772,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>The read buffer.</returns>
 		internal static byte[] ReadBuffer(this BinaryReader reader, int maxBufferSize) {
 			Requires.NotNull(reader, "reader");
-			Requires.InRange(maxBufferSize > 0 && maxBufferSize < 1024 * 1024, "maxBufferSize");
+			Requires.Range(maxBufferSize > 0 && maxBufferSize < 1024 * 1024, "maxBufferSize");
 			int length = reader.ReadInt32();
 			ErrorUtilities.VerifyProtocol(length <= maxBufferSize, MessagingStrings.DataCorruptionDetected);
 			byte[] buffer = new byte[length];

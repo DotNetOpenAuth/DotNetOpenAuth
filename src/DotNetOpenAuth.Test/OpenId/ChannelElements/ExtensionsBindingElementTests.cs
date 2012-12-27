@@ -19,6 +19,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 	using DotNetOpenAuth.Test.Mocks;
 	using DotNetOpenAuth.Test.OpenId.Extensions;
 	using NUnit.Framework;
+	using Validation;
 
 	[TestFixture]
 	public class ExtensionsBindingElementTests : OpenIdTestBase {

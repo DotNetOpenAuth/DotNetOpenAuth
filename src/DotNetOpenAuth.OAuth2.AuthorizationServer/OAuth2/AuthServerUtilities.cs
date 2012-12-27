@@ -14,6 +14,7 @@ namespace DotNetOpenAuth.OAuth2 {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2.ChannelElements;
 	using DotNetOpenAuth.OAuth2.Messages;
+	using Validation;
 
 	/// <summary>
 	/// Utility methods for authorization servers.

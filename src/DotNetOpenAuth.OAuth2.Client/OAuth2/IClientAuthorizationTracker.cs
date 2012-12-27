@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OAuth2 {
 	using System;
 	using System.Diagnostics.Contracts;
+	using Validation;
 
 	/// <summary>
 	/// A token manager implemented by some clients to assist in tracking authorization state.

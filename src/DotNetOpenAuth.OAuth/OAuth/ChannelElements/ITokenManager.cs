@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.OAuth.Messages;
+	using Validation;
 
 	/// <summary>
 	/// An interface OAuth hosts must implement for persistent storage

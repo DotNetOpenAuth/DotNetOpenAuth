@@ -13,6 +13,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Net;
 	using System.Net.Mime;
 	using System.Text;
+	using Validation;
 
 	/// <summary>
 	/// Details on the incoming response from a direct web request to a remote party.

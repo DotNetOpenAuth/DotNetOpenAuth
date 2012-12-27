@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.Messaging.Reflection {
 	using System;
 	using System.Diagnostics.Contracts;
+	using Validation;
 
 	/// <summary>
 	/// A pair of conversion functions to map some type to a string and back again.

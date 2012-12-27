@@ -16,6 +16,7 @@ namespace DotNetOpenAuth.OAuth {
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.OAuth.Messages;
+	using Validation;
 
 	/// <summary>
 	/// Base class for <see cref="WebConsumer"/> and <see cref="DesktopConsumer"/> types.

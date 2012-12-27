@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.RelyingParty;
+	using Validation;
 
 	/// <summary>
 	/// Base classes for OpenID clients.

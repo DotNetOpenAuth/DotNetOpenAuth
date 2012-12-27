@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
 	using System.Diagnostics.Contracts;
 	using System.Web.UI;
+	using Validation;
 
 	/// <summary>
 	/// The contract class for the <see cref="SelectorButton"/> class.

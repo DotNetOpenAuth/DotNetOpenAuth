@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	using System.Security.Cryptography;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// Represents the authorization code created when a user approves authorization that

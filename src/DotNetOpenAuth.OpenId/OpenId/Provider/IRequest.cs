@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
+	using Validation;
 
 	/// <summary>
 	/// Represents an incoming OpenId authentication request.

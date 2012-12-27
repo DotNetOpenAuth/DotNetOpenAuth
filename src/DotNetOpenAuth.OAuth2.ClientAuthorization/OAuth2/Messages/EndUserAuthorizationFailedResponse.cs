@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	using System.Runtime.Remoting.Messaging;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// The message that an Authorization Server responds to a Client with when the user denies a user authorization request.

@@ -17,6 +17,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.Test.OpenId;
 	using NUnit.Framework;
+	using Validation;
 
 	internal class CoordinatingChannel : Channel {
 		/// <summary>

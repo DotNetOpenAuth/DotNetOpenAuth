@@ -10,6 +10,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
+	using Validation;
 
 	/// <summary>
 	/// An interface describing how various objects can be serialized and deserialized between their object and string forms.

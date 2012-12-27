@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Reflection;
+	using Validation;
 
 	/// <summary>
 	/// An Identifier is either a "http" or "https" URI, or an XRI.
@@ -92,7 +93,7 @@ namespace DotNetOpenAuth.OpenId {
 		[SuppressMessage("Microsoft.Usage", "CA2225:OperatorOverloadsHaveNamedAlternates", Justification = "Our named alternate is Parse.")]
 		[DebuggerStepThrough]
 		public static implicit operator Identifier(string identifier) {
-			Requires.True(identifier == null || identifier.Length > 0, "identifier");
+			Requires.That(identifier == null || identifier.Length > 0, "identifier", "Empty string cannot be translated to an identifier.");
 			Contract.Ensures((identifier == null) == (Contract.Result<Identifier>() == null));
 
 			if (identifier == null) {

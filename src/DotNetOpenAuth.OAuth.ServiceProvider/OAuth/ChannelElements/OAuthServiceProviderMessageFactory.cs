@@ -10,6 +10,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth.Messages;
+	using Validation;
 
 	/// <summary>
 	/// An OAuth-protocol specific implementation of the <see cref="IMessageFactory"/>

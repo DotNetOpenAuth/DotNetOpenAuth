@@ -16,6 +16,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 	using System.Xml.Serialization;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
+	using Validation;
 
 	/// <summary>
 	/// A struct storing Simple Registration field values describing an

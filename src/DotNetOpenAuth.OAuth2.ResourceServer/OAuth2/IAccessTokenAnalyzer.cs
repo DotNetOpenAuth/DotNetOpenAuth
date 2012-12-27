@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.OAuth2 {
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// An interface that resource server hosts should implement if they accept access tokens

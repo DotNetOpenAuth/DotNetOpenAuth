@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 	using System.Globalization;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// Manages the processing and construction of OpenID extensions parts.
@@ -134,7 +135,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// <param name="extensionTypeUri">The extension type URI.</param>
 		/// <param name="arguments">The arguments for this extension to add to the message.</param>
 		public void AddExtensionArguments(string extensionTypeUri, IDictionary<string, string> arguments) {
-			Requires.ValidState(!this.ReadMode);
+			RequiresEx.ValidState(!this.ReadMode);
 			Requires.NotNullOrEmpty(extensionTypeUri, "extensionTypeUri");
 			Requires.NotNull(arguments, "arguments");
 			if (arguments.Count == 0) {
@@ -162,7 +163,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// </param>
 		/// <returns>A dictionary of key=value pairs to add to the message to carry the extension.</returns>
 		internal IDictionary<string, string> GetArgumentsToSend(bool includeOpenIdPrefix) {
-			Requires.ValidState(!this.ReadMode);
+			RequiresEx.ValidState(!this.ReadMode);
 			Dictionary<string, string> args = new Dictionary<string, string>();
 			foreach (var typeUriAndExtension in this.extensions) {
 				string typeUri = typeUriAndExtension.Key;
@@ -196,7 +197,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// </returns>
 		internal IDictionary<string, string> GetExtensionArguments(string extensionTypeUri) {
 			Requires.NotNullOrEmpty(extensionTypeUri, "extensionTypeUri");
-			Requires.ValidState(this.ReadMode);
+			RequiresEx.ValidState(this.ReadMode);
 
 			IDictionary<string, string> extensionArgs;
 			this.extensions.TryGetValue(extensionTypeUri, out extensionArgs);

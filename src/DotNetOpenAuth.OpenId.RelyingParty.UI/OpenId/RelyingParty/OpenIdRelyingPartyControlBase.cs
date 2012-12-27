@@ -27,6 +27,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using DotNetOpenAuth.OpenId.Extensions;
 	using DotNetOpenAuth.OpenId.Extensions.UI;
 	using DotNetOpenAuth.OpenId.Messages;
+	using Validation;
 
 	/// <summary>
 	/// Methods of indicating to the rest of the web site that the user has logged in.
@@ -604,7 +605,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// used to determine the user's control of the <see cref="IAuthenticationRequest.ClaimedIdentifier"/>.
 		/// </returns>
 		protected IEnumerable<IAuthenticationRequest> CreateRequests() {
-			Requires.ValidState(this.Identifier != null, OpenIdStrings.NoIdentifierSet);
+			RequiresEx.ValidState(this.Identifier != null, OpenIdStrings.NoIdentifierSet);
 			return this.CreateRequests(this.Identifier);
 		}
 
@@ -715,7 +716,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="response">The response.</param>
 		protected virtual void OnLoggedIn(IAuthenticationResponse response) {
 			Requires.NotNull(response, "response");
-			Requires.True(response.Status == AuthenticationStatus.Authenticated, "response");
+			Requires.That(response.Status == AuthenticationStatus.Authenticated, "response", "response not authenticatedl");
 
 			var loggedIn = this.LoggedIn;
 			OpenIdEventArgs args = new OpenIdEventArgs(response);
@@ -765,7 +766,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="response">The response.</param>
 		protected virtual void OnCanceled(IAuthenticationResponse response) {
 			Requires.NotNull(response, "response");
-			Requires.True(response.Status == AuthenticationStatus.Canceled, "response");
+			Requires.That(response.Status == AuthenticationStatus.Canceled, "response", "response not canceled");
 
 			var canceled = this.Canceled;
 			if (canceled != null) {
@@ -779,7 +780,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="response">The response.</param>
 		protected virtual void OnFailed(IAuthenticationResponse response) {
 			Requires.NotNull(response, "response");
-			Requires.True(response.Status == AuthenticationStatus.Failed, "response");
+			Requires.That(response.Status == AuthenticationStatus.Failed, "response", "response not failed");
 
 			var failed = this.Failed;
 			if (failed != null) {
@@ -1016,7 +1017,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="request">The request.</param>
 		private void ScriptPopupWindow(IAuthenticationRequest request) {
 			Requires.NotNull(request, "request");
-			Requires.ValidState(this.RelyingParty != null);
+			RequiresEx.ValidState(this.RelyingParty != null);
 
 			StringBuilder startupScript = new StringBuilder();
 

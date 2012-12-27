@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Drawing.Design;
 	using System.Web.UI;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// A button that appears in the <see cref="OpenIdSelector"/> control that

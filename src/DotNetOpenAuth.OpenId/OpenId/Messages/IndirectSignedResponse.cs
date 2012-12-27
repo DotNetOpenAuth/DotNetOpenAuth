@@ -19,6 +19,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.OpenId.ChannelElements;
+	using Validation;
 
 	/// <summary>
 	/// An indirect message from a Provider to a Relying Party where at least part of the

@@ -14,6 +14,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Reflection;
 	using System.Xml;
 	using DotNetOpenAuth.Messaging.Reflection;
+	using Validation;
 
 	/// <summary>
 	/// Serializes/deserializes OAuth messages for/from transit.
@@ -33,7 +34,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// that will be serialized and deserialized using this class.</param>
 		[ContractVerification(false)] // bugs/limitations in CC static analysis
 		private MessageSerializer(Type messageType) {
-			Requires.NotNullSubtype<IMessage>(messageType, "messageType");
+			RequiresEx.NotNullSubtype<IMessage>(messageType, "messageType");
 			Contract.Ensures(this.messageType != null);
 			this.messageType = messageType;
 		}
@@ -45,7 +46,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>A message serializer for the given message type.</returns>
 		[ContractVerification(false)] // bugs/limitations in CC static analysis
 		internal static MessageSerializer Get(Type messageType) {
-			Requires.NotNullSubtype<IMessage>(messageType, "messageType");
+			RequiresEx.NotNullSubtype<IMessage>(messageType, "messageType");
 
 			return new MessageSerializer(messageType);
 		}

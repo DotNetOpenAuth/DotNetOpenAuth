@@ -14,6 +14,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Web;
 	using DotNetOpenAuth.OpenId.Extensions;
 	using DotNetOpenAuth.OpenId.Messages;
+	using Validation;
 
 	/// <summary>
 	/// An instance of this interface represents an identity assertion 
@@ -432,7 +433,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// have not been tampered with since the Provider sent the message.</para>
 		/// </remarks>
 		IOpenIdMessageExtension IAuthenticationResponse.GetExtension(Type extensionType) {
-			Requires.NotNullSubtype<IOpenIdMessageExtension>(extensionType, "extensionType");
+			RequiresEx.NotNullSubtype<IOpenIdMessageExtension>(extensionType, "extensionType");
 			////ErrorUtilities.VerifyArgument(typeof(IOpenIdMessageExtension).IsAssignableFrom(extensionType), string.Format(CultureInfo.CurrentCulture, OpenIdStrings.TypeMustImplementX, typeof(IOpenIdMessageExtension).FullName));
 			throw new NotImplementedException();
 		}
@@ -484,7 +485,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// have not been tampered with since the Provider sent the message.</para>
 		/// </remarks>
 		IOpenIdMessageExtension IAuthenticationResponse.GetUntrustedExtension(Type extensionType) {
-			Requires.NotNullSubtype<IOpenIdMessageExtension>(extensionType, "extensionType");
+			RequiresEx.NotNullSubtype<IOpenIdMessageExtension>(extensionType, "extensionType");
 			////ErrorUtilities.VerifyArgument(typeof(IOpenIdMessageExtension).IsAssignableFrom(extensionType), string.Format(CultureInfo.CurrentCulture, OpenIdStrings.TypeMustImplementX, typeof(IOpenIdMessageExtension).FullName));
 			throw new NotImplementedException();
 		}

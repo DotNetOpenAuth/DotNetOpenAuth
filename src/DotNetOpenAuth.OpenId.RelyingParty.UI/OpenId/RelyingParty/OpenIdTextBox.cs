@@ -29,6 +29,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.Extensions.UI;
+	using Validation;
 
 	/// <summary>
 	/// An ASP.NET control that provides a minimal text box that is OpenID-aware.

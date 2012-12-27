@@ -13,6 +13,7 @@ namespace DotNetOpenAuth.OAuth.Messages {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.OAuth.ChannelElements;
+	using Validation;
 
 	/// <summary>
 	/// A base class for all OAuth messages.

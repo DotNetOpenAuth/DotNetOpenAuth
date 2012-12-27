@@ -20,6 +20,7 @@ namespace DotNetOpenAuth.OAuth2 {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2.ChannelElements;
 	using DotNetOpenAuth.OAuth2.Messages;
+	using Validation;
 
 	/// <summary>
 	/// Authorization Server supporting the web server flow.

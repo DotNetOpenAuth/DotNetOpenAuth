@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
+	using Validation;
 
 	/// <summary>
 	/// Wraps an extension-only response from the OP in an <see cref="IAuthenticationResponse"/> instance

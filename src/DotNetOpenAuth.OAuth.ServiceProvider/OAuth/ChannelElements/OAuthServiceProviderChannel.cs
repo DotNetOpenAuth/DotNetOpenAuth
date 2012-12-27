@@ -13,6 +13,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
+	using Validation;
 
 	/// <summary>
 	/// The messaging channel for OAuth 1.0(a) Service Providers.

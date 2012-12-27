@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Xrds;
+	using Validation;
 
 	/// <summary>
 	/// Utility methods for working with XRDS documents.

@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.OAuth2 {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OAuth2.ChannelElements;
+	using Validation;
 
 	/// <summary>
 	/// A short-lived token that accompanies HTTP requests to protected data to authorize the request.

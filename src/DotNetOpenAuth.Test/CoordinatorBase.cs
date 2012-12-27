@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.Test {
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using DotNetOpenAuth.Test.Mocks;
 	using NUnit.Framework;
+	using Validation;
 
 	internal abstract class CoordinatorBase<T1, T2> {
 		private Action<T1> party1Action;

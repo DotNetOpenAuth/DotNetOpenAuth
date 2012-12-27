@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 	using System.Globalization;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// Manages a fast, two-way mapping between type URIs and their aliases.

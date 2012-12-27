@@ -27,6 +27,7 @@ namespace DotNetOpenAuth.InfoCard {
 	using System.Text;
 	using System.Xml;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// Tools for reading InfoCard tokens.

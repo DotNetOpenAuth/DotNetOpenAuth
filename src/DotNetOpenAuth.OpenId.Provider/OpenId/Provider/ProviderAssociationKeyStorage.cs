@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
+	using Validation;
 
 	/// <summary>
 	/// An association storage mechanism that stores the association secrets in a private store,

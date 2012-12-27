@@ -19,6 +19,7 @@ namespace DotNetOpenAuth.OAuth {
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.OAuth.Messages;
+	using Validation;
 
 	/// <summary>
 	/// A web application that allows access via OAuth.
@@ -182,7 +183,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// length of the final string.</param>
 		/// <returns>The verification code.</returns>
 		public static string CreateVerificationCode(VerificationCodeFormat format, int length) {
-			Requires.InRange(length >= 0, "length");
+			Requires.Range(length >= 0, "length");
 
 			switch (format) {
 				case VerificationCodeFormat.IncludedInCallback:

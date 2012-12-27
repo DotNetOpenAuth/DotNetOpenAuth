@@ -13,6 +13,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 	using System.Security.Cryptography;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// Provides RSA encryption of symmetric keys to protect them from a theft of
@@ -42,7 +43,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		public AsymmetricCryptoKeyStoreWrapper(ICryptoKeyStore dataStore, RSACryptoServiceProvider asymmetricCrypto) {
 			Requires.NotNull(dataStore, "dataStore");
 			Requires.NotNull(asymmetricCrypto, "asymmetricCrypto");
-			Requires.True(!asymmetricCrypto.PublicOnly, "asymmetricCrypto");
+			Requires.That(!asymmetricCrypto.PublicOnly, "asymmetricCrypto", "Private key required.");
 			this.dataStore = dataStore;
 			this.asymmetricCrypto = asymmetricCrypto;
 		}
@@ -140,7 +141,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 				: base(decrypted.Key, decrypted.ExpiresUtc) {
 				Requires.NotNull(encrypted, "encrypted");
 				Requires.NotNull(decrypted, "decrypted");
-				Requires.True(encrypted.ExpiresUtc == decrypted.ExpiresUtc);
+				Requires.That(encrypted.ExpiresUtc == decrypted.ExpiresUtc, "encrypted", "encrypted and decrypted expirations must equal.");
 
 				this.EncryptedKey = encrypted.Key;
 			}

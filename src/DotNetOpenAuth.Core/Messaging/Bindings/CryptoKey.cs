@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// A cryptographic key and metadata concerning it.
@@ -34,7 +35,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// <param name="expiresUtc">The expires UTC.</param>
 		public CryptoKey(byte[] key, DateTime expiresUtc) {
 			Requires.NotNull(key, "key");
-			Requires.True(expiresUtc.Kind == DateTimeKind.Utc, "expiresUtc");
+			Requires.That(expiresUtc.Kind == DateTimeKind.Utc, "expiresUtc", "Time must be expressed in UTC.");
 			this.key = key;
 			this.expiresUtc = expiresUtc;
 		}

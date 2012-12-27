@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// A persistent store for rotating symmetric cryptographic keys.

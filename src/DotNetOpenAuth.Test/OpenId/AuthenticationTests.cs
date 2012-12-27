@@ -15,6 +15,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using DotNetOpenAuth.Test.Mocks;
 	using NUnit.Framework;
+	using Validation;
 
 	[TestFixture]
 	public class AuthenticationTests : OpenIdTestBase {
@@ -136,8 +137,8 @@ namespace DotNetOpenAuth.Test.OpenId {
 		}
 
 		private void ParameterizedAuthenticationTest(Protocol protocol, bool statelessRP, bool sharedAssociation, bool positive, bool immediate, bool tamper) {
-			Requires.True(!statelessRP || !sharedAssociation, null, "The RP cannot be stateless while sharing an association with the OP.");
-			Requires.True(positive || !tamper, null, "Cannot tamper with a negative response.");
+			Requires.That(!statelessRP || !sharedAssociation, null, "The RP cannot be stateless while sharing an association with the OP.");
+			Requires.That(positive || !tamper, null, "Cannot tamper with a negative response.");
 			var securitySettings = new ProviderSecuritySettings();
 			var cryptoKeyStore = new MemoryCryptoKeyStore();
 			var associationStore = new ProviderAssociationHandleEncoder(cryptoKeyStore);

@@ -24,6 +24,7 @@ namespace DotNetOpenAuth.InfoCard {
 	using System.Web.UI.WebControls;
 	using System.Xml;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// The style to use for NOT displaying a hidden region.
@@ -724,7 +725,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <param name="optional">A space-delimited list of claim type URIs for claims that may optionally be included in a submitted Information Card.</param>
 		[Pure]
 		private void GetRequestedClaims(out string required, out string optional) {
-			Requires.ValidState(this.ClaimsRequested != null);
+			RequiresEx.ValidState(this.ClaimsRequested != null);
 			Contract.Ensures(Contract.ValueAtReturn<string>(out required) != null);
 			Contract.Ensures(Contract.ValueAtReturn<string>(out optional) != null);
 
@@ -750,7 +751,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// or to downgrade gracefully if the user agent lacks an Information Card selector.
 		/// </summary>
 		private void RenderSupportingScript() {
-			Requires.ValidState(this.infoCardSupportedPanel != null);
+			RequiresEx.ValidState(this.infoCardSupportedPanel != null);
 
 			this.Page.ClientScript.RegisterClientScriptResource(typeof(InfoCardSelector), ScriptResourceName);
 

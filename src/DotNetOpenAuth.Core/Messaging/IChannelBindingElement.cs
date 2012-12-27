@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.Diagnostics.Contracts;
+	using Validation;
 
 	/// <summary>
 	/// An interface that must be implemented by message transforms/validators in order
@@ -114,7 +115,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </remarks>
 		MessageProtections? IChannelBindingElement.ProcessOutgoingMessage(IProtocolMessage message) {
 			Requires.NotNull(message, "message");
-			Requires.ValidState(((IChannelBindingElement)this).Channel != null);
+			Assumes.True(((IChannelBindingElement)this).Channel != null);
 			throw new NotImplementedException();
 		}
 
@@ -137,7 +138,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </remarks>
 		MessageProtections? IChannelBindingElement.ProcessIncomingMessage(IProtocolMessage message) {
 			Requires.NotNull(message, "message");
-			Requires.ValidState(((IChannelBindingElement)this).Channel != null);
+			RequiresEx.ValidState(((IChannelBindingElement)this).Channel != null);
 			throw new NotImplementedException();
 		}
 

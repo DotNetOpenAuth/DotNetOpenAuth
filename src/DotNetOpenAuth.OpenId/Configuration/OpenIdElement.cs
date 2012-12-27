@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.Configuration {
 	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.Messages;
+	using Validation;
 
 	/// <summary>
 	/// Represents the &lt;openid&gt; element in the host's .config file.
@@ -87,7 +88,7 @@ namespace DotNetOpenAuth.Configuration {
 			}
 
 			set {
-				Requires.InRange(value > TimeSpan.Zero, "value");
+				Requires.Range(value > TimeSpan.Zero, "value");
 				this[MaxAuthenticationTimePropertyName] = value;
 			}
 		}

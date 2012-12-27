@@ -21,6 +21,7 @@ namespace DotNetOpenAuth.Mvc {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.RelyingParty;
+	using Validation;
 
 	/// <summary>
 	/// Methods that generate HTML or Javascript for hosting AJAX OpenID "controls" on

@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using System.Security.Cryptography.X509Certificates;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// A binding element that signs outgoing messages and verifies the signature on incoming messages.

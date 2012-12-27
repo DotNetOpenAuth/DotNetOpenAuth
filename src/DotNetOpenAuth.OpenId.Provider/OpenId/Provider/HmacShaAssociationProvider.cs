@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Provider;
+	using Validation;
 
 	/// <summary>
 	/// OpenID Provider utility methods for HMAC-SHA* associations.

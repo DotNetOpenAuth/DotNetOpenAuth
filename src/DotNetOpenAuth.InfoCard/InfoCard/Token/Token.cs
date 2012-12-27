@@ -18,6 +18,7 @@ namespace DotNetOpenAuth.InfoCard {
 	using System.Xml;
 	using System.Xml.XPath;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// The decrypted token that was submitted as an Information Card.
@@ -44,7 +45,7 @@ namespace DotNetOpenAuth.InfoCard {
 		[SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "Not a problem for this type."), SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "False positive")]
 		private Token(string tokenXml, Uri audience, TokenDecryptor decryptor) {
 			Requires.NotNullOrEmpty(tokenXml, "tokenXml");
-			Requires.True(decryptor != null || !IsEncrypted(tokenXml), null);
+			Requires.That(decryptor != null || !IsEncrypted(tokenXml), "decryptor", "Required when tokenXml is encrypted.");
 			Contract.Ensures(this.AuthorizationContext != null);
 
 			byte[] decryptedBytes;
@@ -118,7 +119,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// </summary>
 		public string SiteSpecificId {
 			get {
-				Requires.ValidState(this.Claims.ContainsKey(ClaimTypes.PPID) && !string.IsNullOrEmpty(this.Claims[ClaimTypes.PPID]));
+				RequiresEx.ValidState(this.Claims.ContainsKey(ClaimTypes.PPID) && !string.IsNullOrEmpty(this.Claims[ClaimTypes.PPID]));
 				string ppidValue;
 				ErrorUtilities.VerifyOperation(this.Claims.TryGetValue(ClaimTypes.PPID, out ppidValue) && ppidValue != null, InfoCardStrings.PpidClaimRequired);
 				return TokenUtility.CalculateSiteSpecificID(ppidValue);

@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
+	using Validation;
 
 	/// <summary>
 	/// A tool to analyze an incoming message to figure out what concrete class

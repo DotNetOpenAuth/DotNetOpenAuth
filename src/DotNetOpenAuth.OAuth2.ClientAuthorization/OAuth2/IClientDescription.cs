@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.OAuth2 {
 	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// A description of a client from an Authorization Server's point of view.
@@ -115,7 +116,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </returns>
 		bool IClientDescription.IsCallbackAllowed(Uri callback) {
 			Requires.NotNull(callback, "callback");
-			Requires.True(callback.IsAbsoluteUri, "callback");
+			Requires.That(callback.IsAbsoluteUri, "callback", "Absolute URI required.");
 			throw new NotImplementedException();
 		}
 

@@ -21,6 +21,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.OAuth.Messages;
+	using Validation;
 
 	/// <summary>
 	/// An OAuth-specific implementation of the <see cref="Channel"/> class.
@@ -42,7 +43,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			Requires.NotNull(tokenManager, "tokenManager");
 			Requires.NotNull(securitySettings, "securitySettings");
 			Requires.NotNull(signingBindingElement, "signingBindingElement");
-			Requires.True(signingBindingElement.SignatureCallback == null, "signingBindingElement", OAuthStrings.SigningElementAlreadyAssociatedWithChannel);
+			Requires.That(signingBindingElement.SignatureCallback == null, "signingBindingElement", OAuthStrings.SigningElementAlreadyAssociatedWithChannel);
 			Requires.NotNull(bindingElements, "bindingElements");
 
 			this.TokenManager = tokenManager;

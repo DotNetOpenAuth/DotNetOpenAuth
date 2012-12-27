@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.OAuth2 {
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2.Messages;
+	using Validation;
 
 	/// <summary>
 	/// A base class for extensions that apply client authentication to messages for the authorization server in specific ways.

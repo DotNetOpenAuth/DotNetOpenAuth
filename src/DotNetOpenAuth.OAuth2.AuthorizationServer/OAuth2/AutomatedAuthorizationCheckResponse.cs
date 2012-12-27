@@ -10,6 +10,7 @@ namespace DotNetOpenAuth.OAuth2 {
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.OAuth2.Messages;
+	using Validation;
 
 	/// <summary>
 	/// Describes the result of an automated authorization check, such as for client credential or resource owner password grants.

@@ -11,6 +11,7 @@ namespace DotNetOpenAuth {
 	using System.Globalization;
 	using System.Linq;
 	using System.Text;
+	using Validation;
 
 	/// <summary>
 	/// Error reporting methods specific to InfoCard validation.

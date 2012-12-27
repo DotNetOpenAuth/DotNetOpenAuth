@@ -13,6 +13,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
+	using Validation;
 
 	/// <summary>
 	/// A base class from which identity and non-identity RP requests can derive.

@@ -23,6 +23,7 @@ namespace DotNetOpenAuth.OAuth2 {
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using Messages;
 	using Messaging;
+	using Validation;
 
 	/// <summary>
 	/// Provides services for validating OAuth access tokens.
@@ -90,7 +91,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </exception>
 		public virtual AccessToken GetAccessToken(HttpRequestBase httpRequestInfo = null, params string[] requiredScopes) {
 			Requires.NotNull(requiredScopes, "requiredScopes");
-			Requires.ValidState(this.ScopeSatisfiedCheck != null, Strings.RequiredPropertyNotYetPreset);
+			RequiresEx.ValidState(this.ScopeSatisfiedCheck != null, Strings.RequiredPropertyNotYetPreset);
 			if (httpRequestInfo == null) {
 				httpRequestInfo = this.Channel.GetRequestFromContext();
 			}

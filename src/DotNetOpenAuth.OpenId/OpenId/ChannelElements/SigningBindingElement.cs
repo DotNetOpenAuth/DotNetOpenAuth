@@ -18,6 +18,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.OpenId.Messages;
+	using Validation;
 
 	/// <summary>
 	/// Signs and verifies authentication assertions.
@@ -121,7 +122,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <returns>The calculated signature of the method.</returns>
 		protected string GetSignature(ITamperResistantOpenIdMessage signedMessage, Association association) {
 			Requires.NotNull(signedMessage, "signedMessage");
-			Requires.True(!string.IsNullOrEmpty(signedMessage.SignedParameterOrder), "signedMessage");
+			Requires.That(!string.IsNullOrEmpty(signedMessage.SignedParameterOrder), "signedMessage", "SignedParameterOrder must not be null or empty.");
 			Requires.NotNull(association, "association");
 
 			// Prepare the parts to sign, taking care to replace an openid.mode value

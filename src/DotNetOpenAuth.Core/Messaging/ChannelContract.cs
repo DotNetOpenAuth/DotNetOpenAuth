@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.Contracts;
+	using Validation;
 
 	/// <summary>
 	/// Code contract for the <see cref="Channel"/> class.

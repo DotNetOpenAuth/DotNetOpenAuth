@@ -16,6 +16,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.Provider;
+	using Validation;
 
 	/// <summary>
 	/// The signing binding element for OpenID Providers.
@@ -217,7 +218,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// the inclusion and order of message parts that will be signed.
 		/// </returns>
 		private string GetSignedParameterOrder(ITamperResistantOpenIdMessage signedMessage) {
-			Requires.ValidState(this.Channel != null);
+			RequiresEx.ValidState(this.Channel != null);
 			Requires.NotNull(signedMessage, "signedMessage");
 
 			Protocol protocol = Protocol.Lookup(signedMessage.Version);

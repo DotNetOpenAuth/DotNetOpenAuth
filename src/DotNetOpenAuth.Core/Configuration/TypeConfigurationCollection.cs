@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.Configuration {
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// A collection of <see cref="TypeConfigurationElement&lt;T&gt;"/>.

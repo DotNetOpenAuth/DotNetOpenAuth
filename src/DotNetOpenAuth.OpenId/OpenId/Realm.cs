@@ -19,6 +19,7 @@ namespace DotNetOpenAuth.OpenId {
 	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.Xrds;
 	using DotNetOpenAuth.Yadis;
+	using Validation;
 
 	/// <summary>
 	/// A trust root to validate requests and match return URLs against.
@@ -113,7 +114,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// </remarks>
 		public static Realm AutoDetect {
 			get {
-				Requires.ValidState(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
+				RequiresEx.ValidState(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
 				Contract.Ensures(Contract.Result<Realm>() != null);
 
 				var realmUrl = new UriBuilder(MessagingUtilities.GetWebRoot());

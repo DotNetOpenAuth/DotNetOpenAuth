@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.ComponentModel {
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Reflection;
+	using Validation;
 
 	/// <summary>
 	/// A type that generates suggested strings for Intellisense,

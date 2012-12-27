@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Web;
+	using Validation;
 
 	/// <summary>
 	/// A collection of error checking and reporting methods.

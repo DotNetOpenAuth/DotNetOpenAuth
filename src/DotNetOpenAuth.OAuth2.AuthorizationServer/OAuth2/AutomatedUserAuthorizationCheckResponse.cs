@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.OAuth2 {
 	using System.Text;
 
 	using DotNetOpenAuth.OAuth2.Messages;
+	using Validation;
 
 	/// <summary>
 	/// Describes the result of an automated authorization check for resource owner grants.

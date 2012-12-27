@@ -13,6 +13,7 @@ namespace DotNetOpenAuth.OpenId.Interop {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.RelyingParty;
+	using Validation;
 
 	/// <summary>
 	/// The COM type used to provide details of an authentication result to a relying party COM client.

@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
+	using Validation;
 
 	/// <summary>
 	/// Implements the <see cref="IRequest"/> interface for all incoming
@@ -99,7 +100,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <exception cref="InvalidOperationException">Thrown if <see cref="IsResponseReady"/> is <c>false</c>.</exception>
 		internal IProtocolMessage Response {
 			get {
-				Requires.ValidState(this.IsResponseReady, OpenIdStrings.ResponseNotReady);
+				RequiresEx.ValidState(this.IsResponseReady, OpenIdStrings.ResponseNotReady);
 				Contract.Ensures(Contract.Result<IProtocolMessage>() != null);
 
 				if (this.responseExtensions.Count > 0) {

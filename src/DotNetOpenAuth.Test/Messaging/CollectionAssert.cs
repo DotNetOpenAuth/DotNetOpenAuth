@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 	using System.Linq;
 	using DotNetOpenAuth.Messaging;
 	using NUnit.Framework;
+	using Validation;
 
 	internal class CollectionAssert<T> {
 		internal static void AreEquivalent(ICollection<T> expected, ICollection<T> actual) {

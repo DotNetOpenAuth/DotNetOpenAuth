@@ -14,6 +14,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId.Extensions;
 	using DotNetOpenAuth.OpenId.RelyingParty;
+	using Validation;
 
 	/// <summary>
 	/// The messaging channel for OpenID relying parties.
@@ -42,7 +43,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			base(messageTypeProvider, InitializeBindingElements(cryptoKeyStore, nonceStore, securitySettings, nonVerifying)) {
 			Requires.NotNull(messageTypeProvider, "messageTypeProvider");
 			Requires.NotNull(securitySettings, "securitySettings");
-			Requires.True(!nonVerifying || securitySettings is RelyingPartySecuritySettings);
+			Assumes.True(!nonVerifying || securitySettings is RelyingPartySecuritySettings);
 		}
 
 		/// <summary>

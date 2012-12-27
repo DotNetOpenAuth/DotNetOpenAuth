@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.IO;
 	using System.Net;
 	using System.Text;
+	using Validation;
 
 	/// <summary>
 	/// Cached details on the response from a direct web request to a remote party.

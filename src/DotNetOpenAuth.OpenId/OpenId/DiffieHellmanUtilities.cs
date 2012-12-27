@@ -14,6 +14,7 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using Org.Mentalis.Security.Cryptography;
+	using Validation;
 
 	/// <summary>
 	/// Diffie-Hellman encryption methods used by both the relying party and provider.

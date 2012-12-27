@@ -20,6 +20,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.Messages;
+	using Validation;
 	using RP = DotNetOpenAuth.OpenId.RelyingParty;
 
 	/// <summary>
@@ -102,7 +103,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		[EditorBrowsable(EditorBrowsableState.Advanced)]
 		public static IOpenIdApplicationStore HttpApplicationStore {
 			get {
-				Requires.ValidState(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
+				RequiresEx.ValidState(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
 				Contract.Ensures(Contract.Result<IOpenIdApplicationStore>() != null);
 				HttpContext context = HttpContext.Current;
 				var store = (IOpenIdApplicationStore)context.Application[ApplicationStoreKey];
@@ -325,9 +326,9 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		[SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily", Justification = "Code Contract requires that we cast early.")]
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SendResponse(IRequest request) {
-			Requires.ValidState(HttpContext.Current != null, MessagingStrings.CurrentHttpContextRequired);
+			RequiresEx.ValidState(HttpContext.Current != null, MessagingStrings.CurrentHttpContextRequired);
 			Requires.NotNull(request, "request");
-			Requires.True(request.IsResponseReady, "request");
+			Requires.That(request.IsResponseReady, "request", OpenIdStrings.ResponseNotReady);
 
 			this.ApplyBehaviorsToResponse(request);
 			Request requestInternal = (Request)request;
@@ -346,9 +347,9 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <exception cref="InvalidOperationException">Thrown if <see cref="IRequest.IsResponseReady"/> is <c>false</c>.</exception>
 		[SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily", Justification = "Code Contract requires that we cast early.")]
 		public void Respond(IRequest request) {
-			Requires.ValidState(HttpContext.Current != null, MessagingStrings.CurrentHttpContextRequired);
+			RequiresEx.ValidState(HttpContext.Current != null, MessagingStrings.CurrentHttpContextRequired);
 			Requires.NotNull(request, "request");
-			Requires.True(request.IsResponseReady, "request");
+			Requires.That(request.IsResponseReady, "request", OpenIdStrings.ResponseNotReady);
 
 			this.ApplyBehaviorsToResponse(request);
 			Request requestInternal = (Request)request;
@@ -364,7 +365,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		[SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily", Justification = "Code Contract requires that we cast early.")]
 		public OutgoingWebResponse PrepareResponse(IRequest request) {
 			Requires.NotNull(request, "request");
-			Requires.True(request.IsResponseReady, "request");
+			Requires.That(request.IsResponseReady, "request", OpenIdStrings.ResponseNotReady);
 
 			this.ApplyBehaviorsToResponse(request);
 			Request requestInternal = (Request)request;
@@ -387,9 +388,9 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// be the same as <paramref name="claimedIdentifier"/>.</param>
 		/// <param name="extensions">The extensions.</param>
 		public void SendUnsolicitedAssertion(Uri providerEndpoint, Realm relyingPartyRealm, Identifier claimedIdentifier, Identifier localIdentifier, params IExtensionMessage[] extensions) {
-			Requires.ValidState(HttpContext.Current != null, MessagingStrings.HttpContextRequired);
+			RequiresEx.ValidState(HttpContext.Current != null, MessagingStrings.HttpContextRequired);
 			Requires.NotNull(providerEndpoint, "providerEndpoint");
-			Requires.True(providerEndpoint.IsAbsoluteUri, "providerEndpoint");
+			Requires.That(providerEndpoint.IsAbsoluteUri, "providerEndpoint", OpenIdStrings.AbsoluteUriRequired);
 			Requires.NotNull(relyingPartyRealm, "relyingPartyRealm");
 			Requires.NotNull(claimedIdentifier, "claimedIdentifier");
 			Requires.NotNull(localIdentifier, "localIdentifier");
@@ -418,11 +419,11 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </returns>
 		public OutgoingWebResponse PrepareUnsolicitedAssertion(Uri providerEndpoint, Realm relyingPartyRealm, Identifier claimedIdentifier, Identifier localIdentifier, params IExtensionMessage[] extensions) {
 			Requires.NotNull(providerEndpoint, "providerEndpoint");
-			Requires.True(providerEndpoint.IsAbsoluteUri, "providerEndpoint");
+			Requires.That(providerEndpoint.IsAbsoluteUri, "providerEndpoint", OpenIdStrings.AbsoluteUriRequired);
 			Requires.NotNull(relyingPartyRealm, "relyingPartyRealm");
 			Requires.NotNull(claimedIdentifier, "claimedIdentifier");
 			Requires.NotNull(localIdentifier, "localIdentifier");
-			Requires.ValidState(this.Channel.WebRequestHandler != null);
+			RequiresEx.ValidState(this.Channel.WebRequestHandler != null);
 
 			// Although the RP should do their due diligence to make sure that this OP
 			// is authorized to send an assertion for the given claimed identifier,

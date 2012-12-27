@@ -21,6 +21,7 @@ namespace DotNetOpenAuth.OAuth2 {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2.ChannelElements;
 	using DotNetOpenAuth.OAuth2.Messages;
+	using Validation;
 
 	/// <summary>
 	/// A base class for common OAuth Client behaviors.
@@ -134,7 +135,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		public void AuthorizeRequest(WebHeaderCollection requestHeaders, IAuthorizationState authorization) {
 			Requires.NotNull(requestHeaders, "requestHeaders");
 			Requires.NotNull(authorization, "authorization");
-			Requires.True(!string.IsNullOrEmpty(authorization.AccessToken), "authorization");
+			Requires.That(!string.IsNullOrEmpty(authorization.AccessToken), "authorization", "AccessToken required.");
 			ErrorUtilities.VerifyProtocol(!authorization.AccessTokenExpirationUtc.HasValue || authorization.AccessTokenExpirationUtc >= DateTime.UtcNow || authorization.RefreshToken != null, ClientStrings.AuthorizationExpired);
 
 			if (authorization.AccessTokenExpirationUtc.HasValue && authorization.AccessTokenExpirationUtc.Value < DateTime.UtcNow) {
@@ -186,7 +187,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </remarks>
 		public bool RefreshAuthorization(IAuthorizationState authorization, TimeSpan? skipIfUsefulLifeExceeds = null) {
 			Requires.NotNull(authorization, "authorization");
-			Requires.True(!string.IsNullOrEmpty(authorization.RefreshToken), "authorization");
+			Requires.That(!string.IsNullOrEmpty(authorization.RefreshToken), "authorization", "RefreshToken required.");
 
 			if (skipIfUsefulLifeExceeds.HasValue && authorization.AccessTokenExpirationUtc.HasValue) {
 				TimeSpan usefulLifeRemaining = authorization.AccessTokenExpirationUtc.Value - DateTime.UtcNow;
@@ -377,8 +378,8 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <returns>A fractional number no greater than 1.  Could be negative if the access token has already expired.</returns>
 		private static double ProportionalLifeRemaining(IAuthorizationState authorization) {
 			Requires.NotNull(authorization, "authorization");
-			Requires.True(authorization.AccessTokenIssueDateUtc.HasValue, "authorization");
-			Requires.True(authorization.AccessTokenExpirationUtc.HasValue, "authorization");
+			Requires.That(authorization.AccessTokenIssueDateUtc.HasValue, "authorization", "AccessTokenIssueDateUtc required");
+			Requires.That(authorization.AccessTokenExpirationUtc.HasValue, "authorization", "AccessTokenExpirationUtc required");
 
 			// Calculate what % of the total life this access token has left.
 			TimeSpan totalLifetime = authorization.AccessTokenExpirationUtc.Value - authorization.AccessTokenIssueDateUtc.Value;

@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
+	using Validation;
 
 	/// <summary>
 	/// The refresh token issued to a client by an authorization server that allows the client

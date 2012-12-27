@@ -13,6 +13,7 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Diagnostics;
+	using Validation;
 
 	/// <summary>
 	/// An enumeration of the OpenID protocol versions supported by this library.

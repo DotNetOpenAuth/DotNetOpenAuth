@@ -16,6 +16,7 @@ namespace DotNetOpenAuth.Yadis {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.Xrds;
+	using Validation;
 
 	/// <summary>
 	/// YADIS discovery manager.

@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2.ChannelElements;
+	using Validation;
 
 	/// <summary>
 	/// A message sent by a web application Client to the AuthorizationServer

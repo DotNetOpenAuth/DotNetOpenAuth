@@ -13,6 +13,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2.ChannelElements;
+	using Validation;
 
 	/// <summary>
 	/// A direct response sent in response to a rejected Bearer access token.

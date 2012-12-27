@@ -17,6 +17,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Text.RegularExpressions;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// A paranoid HTTP get/post request engine.  It helps to protect against attacks from remote
@@ -112,7 +113,7 @@ namespace DotNetOpenAuth.Messaging {
 			}
 
 			set {
-				Requires.InRange(value >= 2048, "value");
+				Requires.Range(value >= 2048, "value");
 				this.maximumBytesToRead = value;
 			}
 		}
@@ -127,7 +128,7 @@ namespace DotNetOpenAuth.Messaging {
 			}
 
 			set {
-				Requires.InRange(value >= 0, "value");
+				Requires.Range(value >= 0, "value");
 				this.maximumRedirections = value;
 			}
 		}

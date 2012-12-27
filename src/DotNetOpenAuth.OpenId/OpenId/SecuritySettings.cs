@@ -10,6 +10,7 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Collections.Specialized;
 	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// Security settings that may be applicable to both relying parties and providers.

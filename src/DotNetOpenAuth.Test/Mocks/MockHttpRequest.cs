@@ -18,6 +18,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using DotNetOpenAuth.Test.OpenId;
 	using DotNetOpenAuth.Yadis;
+	using Validation;
 
 	internal class MockHttpRequest {
 		private readonly Dictionary<Uri, IncomingWebResponse> registeredMockResponses = new Dictionary<Uri, IncomingWebResponse>();

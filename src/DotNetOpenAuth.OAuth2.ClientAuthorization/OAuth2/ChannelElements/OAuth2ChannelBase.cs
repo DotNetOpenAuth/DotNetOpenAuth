@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2.Messages;
+	using Validation;
 
 	/// <summary>
 	/// The base messaging channel used by OAuth 2.0 parties.

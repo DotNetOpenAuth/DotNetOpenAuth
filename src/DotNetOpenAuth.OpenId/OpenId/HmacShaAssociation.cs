@@ -15,6 +15,7 @@ namespace DotNetOpenAuth.OpenId {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Messages;
+	using Validation;
 
 	/// <summary>
 	/// An association that uses the HMAC-SHA family of algorithms for message signing.
@@ -43,7 +44,7 @@ namespace DotNetOpenAuth.OpenId {
 			Requires.NotNull(typeIdentity, "typeIdentity");
 			Requires.NotNullOrEmpty(handle, "handle");
 			Requires.NotNull(secret, "secret");
-			Requires.InRange(totalLifeLength > TimeSpan.Zero, "totalLifeLength");
+			Requires.Range(totalLifeLength > TimeSpan.Zero, "totalLifeLength");
 			Contract.Ensures(this.TotalLifeLength == totalLifeLength);
 			ErrorUtilities.VerifyProtocol(secret.Length == typeIdentity.SecretLength, OpenIdStrings.AssociationSecretAndTypeLengthMismatch, secret.Length, typeIdentity.GetAssociationType(Protocol.Default));
 

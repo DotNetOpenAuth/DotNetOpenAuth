@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.Diagnostics.Contracts;
 	using System.IO;
+	using Validation;
 
 	/// <summary>
 	/// Code contract for the <see cref="IncomingWebResponse"/> class.
@@ -45,8 +46,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// be the self same instance.
 		/// </remarks>
 		internal override CachedDirectWebResponse GetSnapshot(int maximumBytesToCache) {
-			Requires.InRange(maximumBytesToCache >= 0, "maximumBytesToCache");
-			Requires.ValidState(this.RequestUri != null);
+			Requires.Range(maximumBytesToCache >= 0, "maximumBytesToCache");
+			RequiresEx.ValidState(this.RequestUri != null);
 			Contract.Ensures(Contract.Result<CachedDirectWebResponse>() != null);
 			throw new NotImplementedException();
 		}

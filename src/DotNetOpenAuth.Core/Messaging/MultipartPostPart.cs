@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.IO;
 	using System.Net;
 	using System.Text;
+	using Validation;
 
 	/// <summary>
 	/// Represents a single part in a HTTP multipart POST request.

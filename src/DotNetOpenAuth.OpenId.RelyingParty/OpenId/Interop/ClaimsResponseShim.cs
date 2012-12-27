@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.OpenId.Interop {
 	using System.Runtime.InteropServices;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
+	using Validation;
 
 	/// <summary>
 	/// A struct storing Simple Registration field values describing an

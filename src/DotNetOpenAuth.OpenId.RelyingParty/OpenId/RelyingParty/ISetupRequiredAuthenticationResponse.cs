@@ -41,7 +41,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		Identifier ISetupRequiredAuthenticationResponse.UserSuppliedIdentifier {
 			get {
-				Requires.ValidState(((IAuthenticationResponse)this).Status == AuthenticationStatus.SetupRequired, OpenIdStrings.OperationOnlyValidForSetupRequiredState);
+				RequiresEx.ValidState(((IAuthenticationResponse)this).Status == AuthenticationStatus.SetupRequired, OpenIdStrings.OperationOnlyValidForSetupRequiredState);
 				throw new System.NotImplementedException();
 			}
 		}

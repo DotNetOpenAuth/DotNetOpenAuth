@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using System;
 	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// Code Contract for the <see cref="SigningBindingElementBase"/> class.
@@ -40,7 +41,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <returns>The signature for the message.</returns>
 		protected override string GetSignature(ITamperResistantOAuthMessage message) {
 			Requires.NotNull(message, "message");
-			Requires.ValidState(this.Channel != null);
+			RequiresEx.ValidState(this.Channel != null);
 			throw new NotImplementedException();
 		}
 	}

@@ -20,6 +20,7 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.Test.Mocks;
 	using NUnit.Framework;
+	using Validation;
 
 	[TestFixture]
 	public class OAuthChannelTests : TestBase {

@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
 	using System.Diagnostics.Contracts;
+	using Validation;
 
 	/// <summary>
 	/// An interface to provide custom identifiers for users logging into specific relying parties.
@@ -61,7 +62,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		Uri IDirectedIdentityIdentifierProvider.GetIdentifier(Identifier localIdentifier, Realm relyingPartyRealm) {
 			Requires.NotNull(localIdentifier, "localIdentifier");
 			Requires.NotNull(relyingPartyRealm, "relyingPartyRealm");
-			Requires.True(((IDirectedIdentityIdentifierProvider)this).IsUserLocalIdentifier(localIdentifier), "localIdentifier", OpenIdStrings.ArgumentIsPpidIdentifier);
+			Requires.That(((IDirectedIdentityIdentifierProvider)this).IsUserLocalIdentifier(localIdentifier), "localIdentifier", OpenIdStrings.ArgumentIsPpidIdentifier);
 			throw new NotImplementedException();
 		}
 

@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.OAuth2 {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
+	using Validation;
 
 	/// <summary>
 	/// Describes the results of a completed authorization flow.

@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// Provides association serialization and deserialization.
@@ -66,7 +67,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </returns>
 		string IProviderAssociationStore.Serialize(byte[] secret, DateTime expiresUtc, bool privateAssociation) {
 			Requires.NotNull(secret, "secret");
-			Requires.True(expiresUtc.Kind == DateTimeKind.Utc, "expiresUtc");
+			Requires.That(expiresUtc.Kind == DateTimeKind.Utc, "expiresUtc", "UTC required");
 			Contract.Ensures(!string.IsNullOrEmpty(Contract.Result<string>()));
 			throw new NotImplementedException();
 		}

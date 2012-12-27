@@ -13,6 +13,7 @@ namespace DotNetOpenAuth.OAuth2 {
 	using System.Net;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// Some common utility methods for OAuth 2.0.

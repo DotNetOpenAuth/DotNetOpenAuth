@@ -14,6 +14,7 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Text;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// Stores a secret used in signing and verifying messages.
@@ -37,9 +38,9 @@ namespace DotNetOpenAuth.OpenId {
 		protected Association(string handle, byte[] secret, TimeSpan totalLifeLength, DateTime issued) {
 			Requires.NotNullOrEmpty(handle, "handle");
 			Requires.NotNull(secret, "secret");
-			Requires.InRange(totalLifeLength > TimeSpan.Zero, "totalLifeLength");
-			Requires.True(issued.Kind == DateTimeKind.Utc, "issued");
-			Requires.InRange(issued <= DateTime.UtcNow, "issued");
+			Requires.Range(totalLifeLength > TimeSpan.Zero, "totalLifeLength");
+			Requires.That(issued.Kind == DateTimeKind.Utc, "issued", "UTC time required.");
+			Requires.Range(issued <= DateTime.UtcNow, "issued");
 			Contract.Ensures(this.TotalLifeLength == totalLifeLength);
 
 			this.Handle = handle;

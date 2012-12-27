@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.OpenId.RelyingParty;
+	using Validation;
 
 	/// <summary>
 	/// The OpenID binding element responsible for reading/writing OpenID extensions

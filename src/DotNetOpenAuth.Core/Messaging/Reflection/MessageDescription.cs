@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 	using System.Globalization;
 	using System.Linq;
 	using System.Reflection;
+	using Validation;
 
 	/// <summary>
 	/// A mapping between serialized key names and <see cref="MessagePart"/> instances describing
@@ -30,7 +31,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <param name="messageType">Type of the message.</param>
 		/// <param name="messageVersion">The message version.</param>
 		internal MessageDescription(Type messageType, Version messageVersion) {
-			Requires.NotNullSubtype<IMessage>(messageType, "messageType");
+			RequiresEx.NotNullSubtype<IMessage>(messageType, "messageType");
 			Requires.NotNull(messageVersion, "messageVersion");
 
 			this.MessageType = messageType;

@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Linq;
 	using System.Text;
 	using Reflection;
+	using Validation;
 
 	/// <summary>
 	/// A channel that uses the standard message factory.

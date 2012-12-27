@@ -19,6 +19,7 @@ namespace DotNetOpenAuth.OpenId {
 	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.Extensions;
 	using Org.Mentalis.Security.Cryptography;
+	using Validation;
 
 	/// <summary>
 	/// A set of utilities especially useful to OpenID.

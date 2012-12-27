@@ -15,6 +15,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.OAuth.Messages;
 	using NUnit.Framework;
+	using Validation;
 
 	/// <summary>
 	/// A special channel used in test simulations to pass messages directly between two parties.

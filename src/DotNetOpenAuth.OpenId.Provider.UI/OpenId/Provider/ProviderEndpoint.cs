@@ -16,6 +16,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
+	using Validation;
 
 	/// <summary>
 	/// An OpenID Provider control that automatically responds to certain
@@ -98,15 +99,15 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </remarks>
 		public static IAuthenticationRequest PendingAuthenticationRequest {
 			get {
-				Requires.ValidState(HttpContext.Current != null, MessagingStrings.HttpContextRequired);
-				Requires.ValidState(HttpContext.Current.Session != null, MessagingStrings.SessionRequired);
+				RequiresEx.ValidState(HttpContext.Current != null, MessagingStrings.HttpContextRequired);
+				RequiresEx.ValidState(HttpContext.Current.Session != null, MessagingStrings.SessionRequired);
 				Contract.Ensures(Contract.Result<IAuthenticationRequest>() == null || PendingRequest != null);
 				return HttpContext.Current.Session[PendingRequestKey] as IAuthenticationRequest;
 			}
 
 			set {
-				Requires.ValidState(HttpContext.Current != null, MessagingStrings.HttpContextRequired);
-				Requires.ValidState(HttpContext.Current.Session != null, MessagingStrings.SessionRequired);
+				RequiresEx.ValidState(HttpContext.Current != null, MessagingStrings.HttpContextRequired);
+				RequiresEx.ValidState(HttpContext.Current.Session != null, MessagingStrings.SessionRequired);
 				HttpContext.Current.Session[PendingRequestKey] = value;
 			}
 		}
@@ -122,15 +123,15 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </remarks>
 		public static IAnonymousRequest PendingAnonymousRequest {
 			get {
-				Requires.ValidState(HttpContext.Current != null, MessagingStrings.HttpContextRequired);
-				Requires.ValidState(HttpContext.Current.Session != null, MessagingStrings.SessionRequired);
+				RequiresEx.ValidState(HttpContext.Current != null, MessagingStrings.HttpContextRequired);
+				RequiresEx.ValidState(HttpContext.Current.Session != null, MessagingStrings.SessionRequired);
 				Contract.Ensures(Contract.Result<IAnonymousRequest>() == null || PendingRequest != null);
 				return HttpContext.Current.Session[PendingRequestKey] as IAnonymousRequest;
 			}
 
 			set {
-				Requires.ValidState(HttpContext.Current != null, MessagingStrings.HttpContextRequired);
-				Requires.ValidState(HttpContext.Current.Session != null, MessagingStrings.SessionRequired);
+				RequiresEx.ValidState(HttpContext.Current != null, MessagingStrings.HttpContextRequired);
+				RequiresEx.ValidState(HttpContext.Current.Session != null, MessagingStrings.SessionRequired);
 				HttpContext.Current.Session[PendingRequestKey] = value;
 			}
 		}
@@ -146,14 +147,14 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </remarks>
 		public static IHostProcessedRequest PendingRequest {
 			get {
-				Requires.ValidState(HttpContext.Current != null, MessagingStrings.HttpContextRequired);
-				Requires.ValidState(HttpContext.Current.Session != null, MessagingStrings.SessionRequired);
+				RequiresEx.ValidState(HttpContext.Current != null, MessagingStrings.HttpContextRequired);
+				RequiresEx.ValidState(HttpContext.Current.Session != null, MessagingStrings.SessionRequired);
 				return HttpContext.Current.Session[PendingRequestKey] as IHostProcessedRequest;
 			}
 
 			set {
-				Requires.ValidState(HttpContext.Current != null, MessagingStrings.HttpContextRequired);
-				Requires.ValidState(HttpContext.Current.Session != null, MessagingStrings.SessionRequired);
+				RequiresEx.ValidState(HttpContext.Current != null, MessagingStrings.HttpContextRequired);
+				RequiresEx.ValidState(HttpContext.Current.Session != null, MessagingStrings.SessionRequired);
 				HttpContext.Current.Session[PendingRequestKey] = value;
 			}
 		}

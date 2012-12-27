@@ -23,6 +23,7 @@ namespace DotNetOpenAuth {
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
+	using Validation;
 
 	/// <summary>
 	/// The statistical reporting mechanism used so this library's project authors
@@ -567,7 +568,7 @@ namespace DotNetOpenAuth {
 		/// </remarks>
 		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "No apparent problem.  False positive?")]
 		private static Guid GetOrCreateOriginIdentity() {
-			Requires.ValidState(file != null);
+			RequiresEx.ValidState(file != null, "file not set.");
 			Contract.Ensures(Contract.Result<Guid>() != Guid.Empty);
 
 			Guid identityGuid = Guid.Empty;

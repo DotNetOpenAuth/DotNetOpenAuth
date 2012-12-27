@@ -10,6 +10,7 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Linq;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// A service that can perform discovery on OpenID identifiers.

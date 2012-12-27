@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.Configuration {
 	using System.Configuration;
 	using System.Diagnostics.Contracts;
 	using System.Text.RegularExpressions;
+	using Validation;
 
 	/// <summary>
 	/// Represents a collection of child elements that describe host names either as literal host names or regex patterns.

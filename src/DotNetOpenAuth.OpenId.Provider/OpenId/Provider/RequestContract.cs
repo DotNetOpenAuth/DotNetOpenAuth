@@ -39,7 +39,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		protected override IProtocolMessage ResponseMessage {
 			get {
-				Requires.ValidState(this.IsResponseReady);
+				RequiresEx.ValidState(this.IsResponseReady);
 				Contract.Ensures(Contract.Result<IProtocolMessage>() != null);
 				throw new NotImplementedException();
 			}

@@ -13,6 +13,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
+	using Validation;
 
 	/// <summary>
 	/// A signed and encrypted serialization of an association.
@@ -59,7 +60,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <param name="stream">The stream.</param>
 		public void Serialize(Stream stream) {
 			Requires.NotNull(stream, "stream");
-			Requires.True(stream.CanWrite, "stream");
+			Requires.That(stream.CanWrite, "stream", "requires stream.CanWrite");
 
 			var writer = new BinaryWriter(stream);
 			writer.Write(this.IsPrivateAssociation);
@@ -74,7 +75,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <param name="stream">The stream.</param>
 		public void Deserialize(Stream stream) {
 			Requires.NotNull(stream, "stream");
-			Requires.True(stream.CanRead, "stream");
+			Requires.That(stream.CanRead, "stream", "requires stream.CanRead");
 
 			var reader = new BinaryReader(stream);
 			this.IsPrivateAssociation = reader.ReadBoolean();

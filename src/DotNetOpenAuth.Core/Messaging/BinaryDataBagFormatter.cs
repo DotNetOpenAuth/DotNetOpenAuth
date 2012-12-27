@@ -14,6 +14,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Security.Cryptography;
 	using System.Text;
 	using DotNetOpenAuth.Messaging.Bindings;
+	using Validation;
 
 	/// <summary>
 	/// A compact binary <see cref="DataBag"/> serialization class.
@@ -45,7 +46,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="decodeOnceOnly">The nonce store to use to ensure that this instance is only decoded once.</param>
 		protected internal BinaryDataBagFormatter(ICryptoKeyStore cryptoKeyStore = null, string bucket = null, bool signed = false, bool encrypted = false, bool compressed = false, TimeSpan? minimumAge = null, TimeSpan? maximumAge = null, INonceStore decodeOnceOnly = null)
 			: base(cryptoKeyStore, bucket, signed, encrypted, compressed, minimumAge, maximumAge, decodeOnceOnly) {
-			Requires.True((cryptoKeyStore != null && bucket != null) || (!signed && !encrypted), null);
+			Requires.That((cryptoKeyStore != null && bucket != null) || (!signed && !encrypted), null, "Signing or encryption requires a crypto key store and bucket.");
 		}
 
 		/// <summary>

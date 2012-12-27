@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using System.Runtime.InteropServices;
 	using System.Security.Principal;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// Represents an OAuth consumer that is impersonating a known user on the system.

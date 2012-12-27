@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
+	using Validation;
 
 	/// <summary>
 	/// Wraps an <see cref="IMessage"/> instance in a dictionary that

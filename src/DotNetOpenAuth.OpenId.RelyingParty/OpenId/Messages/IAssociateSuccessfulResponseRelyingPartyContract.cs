@@ -13,6 +13,7 @@ namespace DotNetOpenAuth {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Messages;
+	using Validation;
 
 	/// <summary>
 	/// Code contract for the <see cref="IAssociateSuccessfulResponseRelyingParty"/> interface.

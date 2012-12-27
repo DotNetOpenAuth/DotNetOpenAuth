@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
 	using System.Diagnostics.Contracts;
+	using Validation;
 
 	/// <summary>
 	/// Stores <see cref="Association"/>s for lookup by their handle, keeping

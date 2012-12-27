@@ -22,6 +22,7 @@ namespace DotNetOpenAuth.InfoCard {
 	using System.ServiceModel.Security;
 	using System.Xml;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// A utility class for decrypting InfoCard tokens.

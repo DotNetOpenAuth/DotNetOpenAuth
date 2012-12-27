@@ -583,8 +583,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </remarks>
 		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "Uri(Uri, string) accepts second arguments that Uri(Uri, new Uri(string)) does not that we must support.")]
 		public IAuthenticationRequest CreateRequest() {
-			Requires.ValidState(this.Request == null, OpenIdStrings.CreateRequestAlreadyCalled);
-			Requires.ValidState(!string.IsNullOrEmpty(this.Text), OpenIdStrings.OpenIdTextBoxEmpty);
+			RequiresEx.ValidState(this.Request == null, OpenIdStrings.CreateRequestAlreadyCalled);
+			RequiresEx.ValidState(!string.IsNullOrEmpty(this.Text), OpenIdStrings.OpenIdTextBoxEmpty);
 
 			try {
 				// Resolve the trust root, and swap out the scheme and port if necessary to match the

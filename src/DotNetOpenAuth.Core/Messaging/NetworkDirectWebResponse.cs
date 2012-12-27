@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.IO;
 	using System.Net;
 	using System.Text;
+	using Validation;
 
 	/// <summary>
 	/// A live network HTTP response

@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Provider;
+	using Validation;
 
 	/// <summary>
 	/// Code contract for the <see cref="IAssociateSuccessfulResponseProvider"/> interface.

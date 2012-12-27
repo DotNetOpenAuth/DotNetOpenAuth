@@ -15,6 +15,7 @@ namespace DotNetOpenAuth.OpenId {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Xrds;
 	using DotNetOpenAuth.Yadis;
+	using Validation;
 
 	/// <summary>
 	/// An XRI style of OpenID Identifier.
@@ -45,7 +46,7 @@ namespace DotNetOpenAuth.OpenId {
 		internal XriIdentifier(string xri)
 			: this(xri, false) {
 			Requires.NotNullOrEmpty(xri, "xri");
-			Requires.Format(IsValidXri(xri), OpenIdStrings.InvalidXri);
+			RequiresEx.Format(IsValidXri(xri), OpenIdStrings.InvalidXri);
 		}
 
 		/// <summary>
@@ -59,7 +60,7 @@ namespace DotNetOpenAuth.OpenId {
 		internal XriIdentifier(string xri, bool requireSsl)
 			: base(xri, requireSsl) {
 			Requires.NotNullOrEmpty(xri, "xri");
-			Requires.Format(IsValidXri(xri), OpenIdStrings.InvalidXri);
+			RequiresEx.Format(IsValidXri(xri), OpenIdStrings.InvalidXri);
 			Contract.Assume(xri != null); // Proven by IsValidXri
 			this.OriginalXri = xri;
 			this.canonicalXri = CanonicalizeXri(xri);

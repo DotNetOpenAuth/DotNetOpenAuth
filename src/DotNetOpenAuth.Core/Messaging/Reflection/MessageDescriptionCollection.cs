@@ -10,6 +10,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Linq;
+	using Validation;
 
 	/// <summary>
 	/// A cache of <see cref="MessageDescription"/> instances.
@@ -68,7 +69,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Diagnostics.Contracts.__ContractsRuntime.Assume(System.Boolean,System.String,System.String)", Justification = "No localization required.")]
 		[Pure]
 		internal MessageDescription Get(Type messageType, Version messageVersion) {
-			Requires.NotNullSubtype<IMessage>(messageType, "messageType");
+			RequiresEx.NotNullSubtype<IMessage>(messageType, "messageType");
 			Requires.NotNull(messageVersion, "messageVersion");
 			Contract.Ensures(Contract.Result<MessageDescription>() != null);
 

@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
+	using Validation;
 
 	/// <summary>
 	/// Provides association storage in the association handle itself, but embedding signed and encrypted association

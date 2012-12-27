@@ -13,6 +13,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System.IO;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// Indicates the level of strictness to require when decoding a

@@ -21,6 +21,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Extensions;
+	using Validation;
 
 	/// <summary>
 	/// A common base class for OpenID Relying Party controls.

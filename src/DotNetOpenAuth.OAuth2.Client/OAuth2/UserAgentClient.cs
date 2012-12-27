@@ -14,6 +14,7 @@ namespace DotNetOpenAuth.OAuth2 {
 
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2.Messages;
+	using Validation;
 
 	/// <summary>
 	/// The OAuth client for the user-agent flow, providing services for installed apps
@@ -103,7 +104,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </returns>
 		public Uri RequestUserAuthorization(IAuthorizationState authorization, bool implicitResponseType = false, string state = null) {
 			Requires.NotNull(authorization, "authorization");
-			Requires.ValidState(!string.IsNullOrEmpty(this.ClientIdentifier));
+			RequiresEx.ValidState(!string.IsNullOrEmpty(this.ClientIdentifier));
 
 			var request = this.PrepareRequestUserAuthorization(authorization, implicitResponseType, state);
 			return this.Channel.PrepareResponse(request).GetDirectUriRequest(this.Channel);
@@ -172,7 +173,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </returns>
 		internal EndUserAuthorizationRequest PrepareRequestUserAuthorization(IAuthorizationState authorization, bool implicitResponseType = false, string state = null) {
 			Requires.NotNull(authorization, "authorization");
-			Requires.ValidState(!string.IsNullOrEmpty(this.ClientIdentifier));
+			RequiresEx.ValidState(!string.IsNullOrEmpty(this.ClientIdentifier));
 
 			if (authorization.Callback == null) {
 				authorization.Callback = new Uri("http://localhost/");

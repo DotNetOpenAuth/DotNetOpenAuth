@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Reflection;
 	using System.Text;
 	using DotNetOpenAuth.Messaging.Reflection;
+	using Validation;
 
 	/// <summary>
 	/// A message factory that automatically selects the message type based on the incoming data.
@@ -42,7 +43,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="messageTypes">The message types that this factory may instantiate.</param>
 		public virtual void AddMessageTypes(IEnumerable<MessageDescription> messageTypes) {
 			Requires.NotNull(messageTypes, "messageTypes");
-			Requires.True(messageTypes.All(msg => msg != null), "messageTypes");
+			Requires.NullOrNotNullElements(messageTypes, "messageTypes");
 
 			var unsupportedMessageTypes = new List<MessageDescription>(0);
 			foreach (MessageDescription messageDescription in messageTypes) {
@@ -249,7 +250,7 @@ namespace DotNetOpenAuth.Messaging {
 		private static int GetDerivationDistance(Type assignableType, Type derivedType) {
 			Requires.NotNull(assignableType, "assignableType");
 			Requires.NotNull(derivedType, "derivedType");
-			Requires.True(assignableType.IsAssignableFrom(derivedType), "assignableType");
+			Requires.That(assignableType.IsAssignableFrom(derivedType), "assignableType", "Types are not related as required.");
 
 			// If this is the two types are equivalent...
 			if (derivedType.IsAssignableFrom(assignableType))

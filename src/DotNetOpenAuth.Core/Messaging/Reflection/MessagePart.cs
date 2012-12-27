@@ -16,6 +16,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 	using System.Reflection;
 	using System.Xml;
 	using DotNetOpenAuth.Configuration;
+	using Validation;
 
 	/// <summary>
 	/// Describes an individual member of a message and assists in its serialization.
@@ -106,7 +107,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		[SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity", Justification = "Unavoidable"), SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily", Justification = "Code contracts requires it.")]
 		internal MessagePart(MemberInfo member, MessagePartAttribute attribute) {
 			Requires.NotNull(member, "member");
-			Requires.True(member is FieldInfo || member is PropertyInfo, "member");
+			Requires.That(member is FieldInfo || member is PropertyInfo, "member", "Member must be a property or field.");
 			Requires.NotNull(attribute, "attribute");
 
 			this.field = member as FieldInfo;
@@ -203,7 +204,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// </summary>
 		internal string StaticConstantValue {
 			get {
-				Requires.ValidState(this.IsConstantValueAvailableStatically);
+				RequiresEx.ValidState(this.IsConstantValueAvailableStatically);
 				return this.ToString(this.field.GetValue(null), false);
 			}
 		}

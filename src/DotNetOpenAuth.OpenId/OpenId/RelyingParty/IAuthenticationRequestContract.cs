@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
+	using Validation;
 
 	[ContractClassFor(typeof(IAuthenticationRequest))]
 	internal abstract class IAuthenticationRequestContract : IAuthenticationRequest {
@@ -74,8 +75,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 		void IAuthenticationRequest.AddCallbackArguments(IDictionary<string, string> arguments) {
 			Requires.NotNull(arguments, "arguments");
-			Requires.True(arguments.Keys.All(k => !string.IsNullOrEmpty(k)), "arguments");
-			Requires.True(arguments.Values.All(v => v != null), "arguments");
+			Requires.That(arguments.Keys.All(k => !string.IsNullOrEmpty(k)), "arguments", "Empty string as key in arguments not allowed.");
+			Requires.NullOrNotNullElements(arguments.Values, "arguments");
 			throw new NotImplementedException();
 		}
 

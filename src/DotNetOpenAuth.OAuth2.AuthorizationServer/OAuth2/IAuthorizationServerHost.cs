@@ -15,6 +15,7 @@ namespace DotNetOpenAuth.OAuth2 {
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OAuth2.ChannelElements;
 	using DotNetOpenAuth.OAuth2.Messages;
+	using Validation;
 
 	/// <summary>
 	/// Provides host-specific authorization server services needed by this library.

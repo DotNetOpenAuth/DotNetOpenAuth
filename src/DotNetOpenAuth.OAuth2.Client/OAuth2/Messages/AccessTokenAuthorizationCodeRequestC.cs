@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
+	using Validation;
 
 	/// <summary>
 	/// A request from a Client to an Authorization Server to exchange an authorization code for an access token,

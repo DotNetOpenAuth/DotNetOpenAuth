@@ -14,6 +14,7 @@ namespace DotNetOpenAuth {
 	using System.Web;
 	using System.Web.UI;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// Utility methods for working with URIs.
