@@ -52,7 +52,6 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <returns>An access token serializer.</returns>
 		internal static IDataBagFormatter<AccessToken> CreateFormatter(RSACryptoServiceProvider signingKey, RSACryptoServiceProvider encryptingKey) {
 			Requires.That(signingKey == null || !signingKey.PublicOnly, "signingKey", "requires private key");
-			Requires.NotNull(encryptingKey, "encryptingKey");
 
 			return new UriStyleMessageFormatter<AccessToken>(signingKey, encryptingKey);
 		}
