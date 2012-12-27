@@ -40,7 +40,6 @@
     </Compile>
     <Compile Include="OpenId\Behaviors\GsaIcamProfileBase.cs" />
     <Compile Include="OpenId\ChannelElements\BackwardCompatibilityBindingElement.cs" />
-    <Compile Include="OpenId\ChannelElements\SigningBindingElementContract.cs" />
     <Compile Include="OpenId\ChannelElements\ExtensionsBindingElement.cs" />
     <Compile Include="OpenId\ChannelElements\IOpenIdExtensionFactory.cs" />
     <Compile Include="OpenId\ChannelElements\ITamperResistantOpenIdMessage.cs" />
@@ -50,7 +49,6 @@
     <Compile Include="OpenId\ChannelElements\OpenIdChannel.cs" />
     <Compile Include="OpenId\ChannelElements\ReturnToSignatureBindingElement.cs" />
     <Compile Include="OpenId\ChannelElements\SkipSecurityBindingElement.cs" />
-    <Compile Include="OpenId\AssociationContract.cs" />
     <Compile Include="OpenId\Extensions\AliasManager.cs" />
     <Compile Include="OpenId\Extensions\AttributeExchange\AttributeRequest.cs" />
     <Compile Include="OpenId\Extensions\AttributeExchange\AttributeValues.cs" />
@@ -89,7 +87,6 @@
     <Compile Include="OpenId\Extensions\UI\UIRequest.cs" />
     <Compile Include="OpenId\Extensions\UI\UIUtilities.cs" />
     <Compile Include="OpenId\Identifier.cs" />
-    <Compile Include="OpenId\IdentifierContract.cs" />
     <Compile Include="OpenId\Extensions\OpenIdExtensionsInteropHelper.cs" />
     <Compile Include="OpenId\IdentifierDiscoveryResult.cs" />
     <Compile Include="OpenId\IIdentifierDiscoveryService.cs" />
@@ -104,13 +101,11 @@
     <Compile Include="OpenId\Provider\RelyingPartyDiscoveryResult.cs" />
     <Compile Include="OpenId\RelyingParty\AuthenticationStatus.cs" />
     <Compile Include="OpenId\RelyingParty\IAuthenticationRequest.cs" />
-    <Compile Include="OpenId\RelyingParty\IAuthenticationRequestContract.cs" />
     <Compile Include="OpenId\RelyingParty\IAuthenticationResponse.cs" />
     <Compile Include="OpenId\RelyingParty\IRelyingPartyBehavior.cs" />
     <Compile Include="OpenId\Messages\CheckAuthenticationRequest.cs" />
     <Compile Include="OpenId\Messages\CheckAuthenticationResponse.cs" />
     <Compile Include="OpenId\Messages\CheckIdRequest.cs" />
-    <Compile Include="OpenId\Messages\AssociateSuccessfulResponseContract.cs" />
     <Compile Include="OpenId\Messages\IErrorMessage.cs" />
     <Compile Include="OpenId\Messages\IndirectResponseBase.cs" />
     <Compile Include="OpenId\Messages\IndirectSignedResponse.cs" />
@@ -185,6 +180,15 @@
       <Project>{26DC877F-5987-48DD-9DDB-E62F2DE0E150}</Project>
       <Name>Org.Mentalis.Security.Cryptography</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Validation, Version=2.0.0.0, Culture=neutral, PublicKeyToken=2fc06f0d701809a7, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Validation.2.0.0.12319\lib\portable-windows8+net40+sl5+windowsphone8\Validation.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.targets" />

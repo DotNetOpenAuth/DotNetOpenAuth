@@ -9,7 +9,6 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Collections.Specialized;
 	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.IO;
 	using System.Net;
@@ -20,6 +19,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Net.Mime;
 	using System.ServiceModel.Channels;
 	using System.Web;
+	using Validation;
 
 	/// <summary>
 	/// A property store of details of an incoming HTTP request.

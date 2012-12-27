@@ -8,13 +8,13 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.Specialized;
-	using System.Diagnostics.Contracts;
 	using System.Security.Cryptography;
 	using System.Web;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId.Messages;
+	using Validation;
 
 	/// <summary>
 	/// This binding element signs a Relying Party's openid.return_to parameter

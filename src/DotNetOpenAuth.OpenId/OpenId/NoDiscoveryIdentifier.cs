@@ -10,11 +10,11 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// Wraps an existing Identifier and prevents it from performing discovery.
 	/// </summary>
-	[ContractVerification(true)]
 	[Pure]
 	internal class NoDiscoveryIdentifier : Identifier {
 		/// <summary>

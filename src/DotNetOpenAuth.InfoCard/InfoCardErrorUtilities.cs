@@ -11,6 +11,7 @@ namespace DotNetOpenAuth {
 	using System.Globalization;
 	using System.Linq;
 	using System.Text;
+	using Validation;
 
 	/// <summary>
 	/// Error reporting methods specific to InfoCard validation.
@@ -27,9 +28,7 @@ namespace DotNetOpenAuth {
 		[Pure]
 		internal static void VerifyInfoCard(bool condition, string errorMessage, params object[] args) {
 			Requires.NotNull(args, "args");
-			Contract.Ensures(condition);
-			Contract.EnsuresOnThrow<InfoCard.InformationCardException>(!condition);
-			Contract.Assume(errorMessage != null);
+			Assumes.True(errorMessage != null);
 			if (!condition) {
 				errorMessage = string.Format(CultureInfo.CurrentCulture, errorMessage, args);
 				throw new InfoCard.InformationCardException(errorMessage);

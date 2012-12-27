@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
+	using Validation;
 
 	/// <summary>
 	/// An exception to represent errors in the local or remote implementation of the protocol

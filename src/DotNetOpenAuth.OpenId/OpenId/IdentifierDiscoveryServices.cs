@@ -6,10 +6,10 @@
 
 namespace DotNetOpenAuth.OpenId {
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// A service that can perform discovery on OpenID identifiers.
@@ -50,7 +50,6 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>A non-null sequence of services discovered for the identifier.</returns>
 		public IEnumerable<IdentifierDiscoveryResult> Discover(Identifier identifier) {
 			Requires.NotNull(identifier, "identifier");
-			Contract.Ensures(Contract.Result<IEnumerable<IdentifierDiscoveryResult>>() != null);
 
 			IEnumerable<IdentifierDiscoveryResult> results = Enumerable.Empty<IdentifierDiscoveryResult>();
 			foreach (var discoverer in this.DiscoveryServices) {

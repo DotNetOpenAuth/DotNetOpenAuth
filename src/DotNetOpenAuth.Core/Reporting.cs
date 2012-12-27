@@ -9,7 +9,6 @@ namespace DotNetOpenAuth {
 	using System.Collections.Generic;
 	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.IO;
 	using System.IO.IsolatedStorage;
@@ -23,6 +22,7 @@ namespace DotNetOpenAuth {
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
+	using Validation;
 
 	/// <summary>
 	/// The statistical reporting mechanism used so this library's project authors
@@ -170,7 +170,7 @@ namespace DotNetOpenAuth {
 		/// <param name="category">The category within the event.  Null and empty strings are allowed, but considered the same.</param>
 		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "PersistentCounter instances are stored in a table for later use.")]
 		internal static void RecordEventOccurrence(string eventName, string category) {
-			Contract.Requires(!string.IsNullOrEmpty(eventName));
+			Requires.NotNullOrEmpty(eventName, "eventName");
 
 			// In release builds, just quietly return.
 			if (string.IsNullOrEmpty(eventName)) {
@@ -196,7 +196,7 @@ namespace DotNetOpenAuth {
 		/// <param name="eventNameByObjectType">The object whose type name is the event name to record.</param>
 		/// <param name="category">The category within the event.  Null and empty strings are allowed, but considered the same.</param>
 		internal static void RecordEventOccurrence(object eventNameByObjectType, string category) {
-			Contract.Requires(eventNameByObjectType != null);
+			Requires.NotNull(eventNameByObjectType, "eventNameByObjectType");
 
 			// In release builds, just quietly return.
 			if (eventNameByObjectType == null) {
@@ -213,7 +213,7 @@ namespace DotNetOpenAuth {
 		/// </summary>
 		/// <param name="feature">The feature.</param>
 		internal static void RecordFeatureUse(string feature) {
-			Contract.Requires(!string.IsNullOrEmpty(feature));
+			Requires.NotNullOrEmpty(feature, "feature");
 
 			// In release builds, just quietly return.
 			if (string.IsNullOrEmpty(feature)) {
@@ -231,7 +231,7 @@ namespace DotNetOpenAuth {
 		/// </summary>
 		/// <param name="value">The object whose type is the feature to set as used.</param>
 		internal static void RecordFeatureUse(object value) {
-			Contract.Requires(value != null);
+			Requires.NotNull(value, "value");
 
 			// In release builds, just quietly return.
 			if (value == null) {
@@ -250,7 +250,7 @@ namespace DotNetOpenAuth {
 		/// <param name="value">The object whose type is the feature to set as used.</param>
 		/// <param name="dependency1">Some dependency used by <paramref name="value"/>.</param>
 		internal static void RecordFeatureAndDependencyUse(object value, object dependency1) {
-			Contract.Requires(value != null);
+			Requires.NotNull(value, "value");
 
 			// In release builds, just quietly return.
 			if (value == null) {
@@ -274,7 +274,7 @@ namespace DotNetOpenAuth {
 		/// <param name="dependency1">Some dependency used by <paramref name="value"/>.</param>
 		/// <param name="dependency2">Some dependency used by <paramref name="value"/>.</param>
 		internal static void RecordFeatureAndDependencyUse(object value, object dependency1, object dependency2) {
-			Contract.Requires(value != null);
+			Requires.NotNull(value, "value");
 
 			// In release builds, just quietly return.
 			if (value == null) {
@@ -298,7 +298,7 @@ namespace DotNetOpenAuth {
 		/// </summary>
 		/// <param name="request">The request.</param>
 		internal static void RecordRequestStatistics(HttpRequestBase request) {
-			Contract.Requires(request != null);
+			Requires.NotNull(request, "request");
 
 			// In release builds, just quietly return.
 			if (request == null) {
@@ -534,8 +534,6 @@ namespace DotNetOpenAuth {
 		/// </summary>
 		/// <returns>An isolated storage location appropriate for our host.</returns>
 		private static IsolatedStorageFile GetIsolatedStorage() {
-			Contract.Ensures(Contract.Result<IsolatedStorageFile>() != null);
-
 			IsolatedStorageFile result = null;
 
 			// We'll try for whatever storage location we can get,
@@ -567,8 +565,7 @@ namespace DotNetOpenAuth {
 		/// </remarks>
 		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "No apparent problem.  False positive?")]
 		private static Guid GetOrCreateOriginIdentity() {
-			Requires.ValidState(file != null);
-			Contract.Ensures(Contract.Result<Guid>() != Guid.Empty);
+			RequiresEx.ValidState(file != null, "file not set.");
 
 			Guid identityGuid = Guid.Empty;
 			const int GuidLength = 16;

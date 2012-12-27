@@ -6,8 +6,8 @@
 
 namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
-	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// The event arguments that include details of the incoming request.

@@ -6,7 +6,6 @@
 
 namespace DotNetOpenAuth.Yadis {
 	using System;
-	using System.Diagnostics.Contracts;
 	using System.IO;
 	using System.Net;
 	using System.Net.Cache;
@@ -16,6 +15,7 @@ namespace DotNetOpenAuth.Yadis {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.Xrds;
+	using Validation;
 
 	/// <summary>
 	/// YADIS discovery manager.
@@ -137,8 +137,6 @@ namespace DotNetOpenAuth.Yadis {
 		internal static IncomingWebResponse Request(IDirectWebRequestHandler requestHandler, Uri uri, bool requireSsl, params string[] acceptTypes) {
 			Requires.NotNull(requestHandler, "requestHandler");
 			Requires.NotNull(uri, "uri");
-			Contract.Ensures(Contract.Result<IncomingWebResponse>() != null);
-			Contract.Ensures(Contract.Result<IncomingWebResponse>().ResponseStream != null);
 
 			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
 			request.CachePolicy = IdentifierDiscoveryCachePolicy;

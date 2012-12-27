@@ -7,7 +7,6 @@
 namespace DotNetOpenAuth.Configuration {
 	using System;
 	using System.Configuration;
-	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OAuth2.ChannelElements;
 
@@ -42,7 +41,6 @@ namespace DotNetOpenAuth.Configuration {
 		/// </summary>
 		internal static OAuth2AuthorizationServerSection Configuration {
 			get {
-				Contract.Ensures(Contract.Result<OAuth2AuthorizationServerSection>() != null);
 				return (OAuth2AuthorizationServerSection)ConfigurationManager.GetSection(SectionName) ?? new OAuth2AuthorizationServerSection();
 			}
 		}

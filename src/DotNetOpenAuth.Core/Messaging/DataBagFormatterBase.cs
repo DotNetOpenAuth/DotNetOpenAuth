@@ -8,7 +8,6 @@ namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.IO;
 	using System.Linq;
 	using System.Security.Cryptography;
@@ -17,6 +16,7 @@ namespace DotNetOpenAuth.Messaging {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.Messaging.Reflection;
+	using Validation;
 
 	/// <summary>
 	/// A serializer for <see cref="DataBag"/>-derived types
@@ -110,8 +110,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="decodeOnceOnly">The nonce store to use to ensure that this instance is only decoded once.</param>
 		protected DataBagFormatterBase(ICryptoKeyStore cryptoKeyStore = null, string bucket = null, bool signed = false, bool encrypted = false, bool compressed = false, TimeSpan? minimumAge = null, TimeSpan? maximumAge = null, INonceStore decodeOnceOnly = null)
 			: this(signed, encrypted, compressed, maximumAge, decodeOnceOnly) {
-			Requires.True(!string.IsNullOrEmpty(bucket) || cryptoKeyStore == null, null);
-			Requires.True(cryptoKeyStore != null || (!signed && !encrypted), null);
+			Requires.That(!string.IsNullOrEmpty(bucket) || cryptoKeyStore == null, "bucket", "Bucket name required when cryptoKeyStore is non-null.");
+			Requires.That(cryptoKeyStore != null || (!signed && !encrypted), "cryptoKeyStore", "cryptoKeyStore required if signing or encrypting.");
 
 			this.cryptoKeyStore = cryptoKeyStore;
 			this.cryptoKeyBucket = bucket;
@@ -129,8 +129,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="maximumAge">The maximum age of a token that can be decoded; useful only when <paramref name="decodeOnceOnly"/> is <c>true</c>.</param>
 		/// <param name="decodeOnceOnly">The nonce store to use to ensure that this instance is only decoded once.</param>
 		private DataBagFormatterBase(bool signed = false, bool encrypted = false, bool compressed = false, TimeSpan? maximumAge = null, INonceStore decodeOnceOnly = null) {
-			Requires.True(signed || decodeOnceOnly == null, null);
-			Requires.True(maximumAge.HasValue || decodeOnceOnly == null, null);
+			Requires.That(signed || decodeOnceOnly == null, "decodeOnceOnly", "Nonce only valid with signing.");
+			Requires.That(maximumAge.HasValue || decodeOnceOnly == null, "decodeOnceOnly", "Nonce requires a maximum message age.");
 
 			this.signed = signed;
 			this.maximumAge = maximumAge;
@@ -303,8 +303,7 @@ namespace DotNetOpenAuth.Messaging {
 		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "No apparent problem.  False positive?")]
 		private byte[] CalculateSignature(byte[] bytesToSign, string symmetricSecretHandle) {
 			Requires.NotNull(bytesToSign, "bytesToSign");
-			Requires.ValidState(this.asymmetricSigning != null || this.cryptoKeyStore != null);
-			Contract.Ensures(Contract.Result<byte[]>() != null);
+			RequiresEx.ValidState(this.asymmetricSigning != null || this.cryptoKeyStore != null);
 
 			if (this.asymmetricSigning != null) {
 				using (var hasher = SHA1.Create()) {
@@ -328,7 +327,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// The encrypted value.
 		/// </returns>
 		private byte[] Encrypt(byte[] value, out string symmetricSecretHandle) {
-			Requires.ValidState(this.asymmetricEncrypting != null || this.cryptoKeyStore != null);
+			Assumes.True(this.asymmetricEncrypting != null || this.cryptoKeyStore != null);
 
 			if (this.asymmetricEncrypting != null) {
 				symmetricSecretHandle = null;
@@ -349,7 +348,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// The decrypted value.
 		/// </returns>
 		private byte[] Decrypt(byte[] value, string symmetricSecretHandle) {
-			Requires.ValidState(this.asymmetricEncrypting != null || symmetricSecretHandle != null);
+			RequiresEx.ValidState(this.asymmetricEncrypting != null || symmetricSecretHandle != null);
 
 			if (this.asymmetricEncrypting != null) {
 				return this.asymmetricEncrypting.DecryptWithRandomSymmetricKey(value);

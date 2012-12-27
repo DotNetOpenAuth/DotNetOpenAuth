@@ -7,12 +7,12 @@
 namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.OAuth2.Messages;
 	using Messaging;
+	using Validation;
 
 	/// <summary>
 	/// A guard for all messages to or from an Authorization Server to ensure that they are well formed,

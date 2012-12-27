@@ -8,7 +8,6 @@ namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.ComponentModel;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.IO;
 	using System.Net;
 	using System.Net.Mime;
@@ -16,6 +15,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Text;
 	using System.Threading;
 	using System.Web;
+	using Validation;
 
 	/// <summary>
 	/// A protocol message (request or response) that passes from this
@@ -136,7 +136,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </remarks>
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public virtual void Send() {
-			Requires.ValidState(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
+			RequiresEx.ValidState(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
 
 			this.Send(HttpContext.Current);
 		}
@@ -178,7 +178,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// Use the <see cref="Send()"/> method instead for web forms.
 		/// </remarks>
 		public virtual void Respond() {
-			Requires.ValidState(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
+			RequiresEx.ValidState(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
 
 			this.Respond(HttpContext.Current);
 		}

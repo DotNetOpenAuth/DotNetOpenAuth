@@ -6,13 +6,11 @@
 
 namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
-	using System.Diagnostics.Contracts;
 	using System.Web.UI;
 
 	/// <summary>
 	/// A button that would appear in the <see cref="OpenIdSelector"/> control via its <see cref="OpenIdSelector.Buttons"/> collection.
 	/// </summary>
-	[ContractClass(typeof(SelectorButtonContract))]
 	[Serializable]
 	public abstract class SelectorButton {
 		/// <summary>

@@ -10,6 +10,7 @@ namespace DotNetOpenAuth.OAuth2 {
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// A default implementation of the <see cref="IClientDescription"/> interface.

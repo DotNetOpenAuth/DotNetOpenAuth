@@ -7,11 +7,11 @@
 namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Provider;
+	using Validation;
 
 	/// <summary>
 	/// OpenID Provider utility methods for HMAC-SHA* associations.
@@ -43,7 +43,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			Requires.NotNullOrEmpty(associationType, "associationType");
 			Requires.NotNull(associationStore, "associationStore");
 			Requires.NotNull(securitySettings, "securitySettings");
-			Contract.Ensures(Contract.Result<HmacShaAssociation>() != null);
 
 			int secretLength = HmacShaAssociation.GetSecretLength(protocol, associationType);
 
@@ -61,9 +60,9 @@ namespace DotNetOpenAuth.OpenId.Provider {
 
 			string handle = associationStore.Serialize(secret, DateTime.UtcNow + lifetime, associationUse == AssociationRelyingPartyType.Dumb);
 
-			Contract.Assert(protocol != null); // All the way up to the method call, the condition holds, yet we get a Requires failure next
-			Contract.Assert(secret != null);
-			Contract.Assert(!string.IsNullOrEmpty(associationType));
+			Assumes.True(protocol != null); // All the way up to the method call, the condition holds, yet we get a Requires failure next
+			Assumes.True(secret != null);
+			Assumes.True(!string.IsNullOrEmpty(associationType));
 			var result = HmacShaAssociation.Create(protocol, associationType, handle, secret, lifetime);
 			return result;
 		}

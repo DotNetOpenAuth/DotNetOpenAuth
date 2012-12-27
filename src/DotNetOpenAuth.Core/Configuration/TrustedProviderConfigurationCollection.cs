@@ -9,7 +9,7 @@ namespace DotNetOpenAuth.Configuration {
 	using System.Collections.Generic;
 	using System.Configuration;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
+	using Validation;
 
 	/// <summary>
 	/// A configuration collection of trusted OP Endpoints.

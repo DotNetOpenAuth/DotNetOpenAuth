@@ -7,9 +7,9 @@
 namespace DotNetOpenAuth.Test.Mocks {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
+	using Validation;
 
 	internal class MockRealm : Realm {
 		private RelyingPartyEndpointDescription[] relyingPartyDescriptions;

@@ -7,10 +7,10 @@
 namespace DotNetOpenAuth.OpenId.Messages {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// The message OpenID Providers send back to Relying Parties to refuse

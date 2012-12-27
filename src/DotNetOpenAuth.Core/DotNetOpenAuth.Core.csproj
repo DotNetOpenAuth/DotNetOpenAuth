@@ -27,12 +27,10 @@
     <Compile Include="Messaging\Bindings\MemoryCryptoKeyStore.cs" />
     <Compile Include="Messaging\BinaryDataBagFormatter.cs" />
     <Compile Include="Messaging\CachedDirectWebResponse.cs" />
-    <Compile Include="Messaging\ChannelContract.cs" />
     <Compile Include="Messaging\DataBagFormatterBase.cs" />
     <Compile Include="Messaging\HmacAlgorithms.cs" />
     <Compile Include="Messaging\HttpRequestHeaders.cs" />
     <Compile Include="Messaging\IHttpDirectRequest.cs" />
-    <Compile Include="Messaging\IHttpDirectRequestContract.cs" />
     <Compile Include="Messaging\IHttpIndirectResponse.cs" />
     <Compile Include="Messaging\IMessageOriginalPayload.cs" />
     <Compile Include="Messaging\DirectWebRequestOptions.cs" />
@@ -40,7 +38,6 @@
     <Compile Include="Messaging\HostErrorException.cs" />
     <Compile Include="Messaging\IHttpDirectResponse.cs" />
     <Compile Include="Messaging\IExtensionMessage.cs" />
-    <Compile Include="Messaging\IHttpDirectResponseContract.cs" />
     <Compile Include="Messaging\IMessage.cs" />
     <Compile Include="Messaging\IncomingWebResponse.cs" />
     <Compile Include="Messaging\IDirectResponseProtocolMessage.cs" />
@@ -49,7 +46,6 @@
     <Compile Include="Messaging\EmptyList.cs" />
     <Compile Include="Messaging\ErrorUtilities.cs" />
     <Compile Include="Messaging\IMessageWithEvents.cs" />
-    <Compile Include="Messaging\IncomingWebResponseContract.cs" />
     <Compile Include="Messaging\IProtocolMessageWithExtensions.cs" />
     <Compile Include="Messaging\InternalErrorException.cs" />
     <Compile Include="Messaging\IStreamSerializingDataBag.cs" />
@@ -116,6 +112,7 @@
     <None Include="Messaging\Bindings\Bindings.cd" />
     <None Include="Messaging\Exceptions.cd" />
     <None Include="Messaging\Messaging.cd" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\DotNetOpenAuthSection.cs" />
@@ -136,8 +133,9 @@
     <Compile Include="Loggers\TraceLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Messaging\ReadOnlyDictionary.cs" />
+    <Compile Include="PureAttribute.cs" />
     <Compile Include="Reporting.cs" />
-    <Compile Include="Requires.cs" />
+    <Compile Include="RequiresEx.cs" />
     <Compile Include="Strings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -172,6 +170,9 @@
   <ItemGroup>
     <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Validation">
+      <HintPath>..\packages\Validation.2.0.0.12319\lib\portable-windows8+net40+sl5+windowsphone8\Validation.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -7,11 +7,11 @@
 namespace DotNetOpenAuth.OpenId.Messages {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.Provider;
+	using Validation;
 
 	/// <summary>
 	/// The check_auth response message, as it is seen by the OpenID Provider.

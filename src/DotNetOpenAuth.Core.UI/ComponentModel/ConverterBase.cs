@@ -145,7 +145,7 @@ namespace DotNetOpenAuth.ComponentModel {
 		/// </exception>
 		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Diagnostics.Contracts.__ContractsRuntime.Assume(System.Boolean,System.String,System.String)", Justification = "No localization required.")]
 		public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType) {
-			Contract.Assume(destinationType != null, "Missing contract.");
+			Assumes.True(destinationType != null, "Missing contract.");
 			if (destinationType.IsInstanceOfType(value)) {
 				return value;
 			}
@@ -181,7 +181,6 @@ namespace DotNetOpenAuth.ComponentModel {
 		[Pure]
 		[SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "Potentially expensive call.")]
 		protected virtual ICollection GetStandardValuesForCache() {
-			Contract.Ensures(Contract.Result<ICollection>() != null);
 			return new T[0];
 		}
 

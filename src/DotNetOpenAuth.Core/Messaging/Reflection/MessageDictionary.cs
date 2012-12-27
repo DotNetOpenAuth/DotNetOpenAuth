@@ -11,13 +11,13 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
+	using Validation;
 
 	/// <summary>
 	/// Wraps an <see cref="IMessage"/> instance in a dictionary that
 	/// provides access to both well-defined message properties and "extra" 
 	/// name/value pairs that have no properties associated with them.
 	/// </summary>
-	[ContractVerification(false)]
 	internal class MessageDictionary : IDictionary<string, string> {
 		/// <summary>
 		/// The <see cref="IMessage"/> instance manipulated by this dictionary.
@@ -55,7 +55,6 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// </summary>
 		public IMessage Message {
 			get {
-				Contract.Ensures(Contract.Result<IMessage>() != null);
 				return this.message;
 			}
 		}
@@ -65,7 +64,6 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// </summary>
 		public MessageDescription Description {
 			get {
-				Contract.Ensures(Contract.Result<MessageDescription>() != null);
 				return this.description;
 			}
 		}
@@ -380,7 +378,6 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <returns>The generated dictionary.</returns>
 		[Pure]
 		public IDictionary<string, string> Serialize() {
-			Contract.Ensures(Contract.Result<IDictionary<string, string>>() != null);
 			return this.Serializer.Serialize(this);
 		}
 

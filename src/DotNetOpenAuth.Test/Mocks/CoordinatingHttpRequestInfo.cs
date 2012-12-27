@@ -7,11 +7,11 @@
 namespace DotNetOpenAuth.Test.Mocks {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.Net;
 	using System.Web;
 
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	internal class CoordinatingHttpRequestInfo : HttpRequestInfo {
 		private readonly Channel channel;
@@ -40,9 +40,9 @@ namespace DotNetOpenAuth.Test.Mocks {
 			MessageReceivingEndpoint recipient,
 			HttpCookieCollection cookies)
 			: this(recipient, cookies) {
-			Contract.Requires(channel != null);
-			Contract.Requires(messageFactory != null);
-			Contract.Requires(messageData != null);
+			Requires.NotNull(channel, "channel");
+			Requires.NotNull(messageFactory, "messageFactory");
+			Requires.NotNull(messageData, "messageData");
 			this.channel = channel;
 			this.messageData = messageData;
 			this.messageFactory = messageFactory;

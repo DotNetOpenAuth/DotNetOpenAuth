@@ -7,7 +7,7 @@
 namespace DotNetOpenAuth.Configuration {
 	using System;
 	using System.Configuration;
-	using System.Diagnostics.Contracts;
+	using Validation;
 
 	/// <summary>
 	/// Represents the &lt;oauth2/client&gt; section in the host's .config file.
@@ -34,7 +34,6 @@ namespace DotNetOpenAuth.Configuration {
 		/// </summary>
 		internal static OAuth2ClientSection Configuration {
 			get {
-				Contract.Ensures(Contract.Result<OAuth2ClientSection>() != null);
 				return (OAuth2ClientSection)ConfigurationManager.GetSection(SectionName) ?? new OAuth2ClientSection();
 			}
 		}
@@ -46,14 +45,13 @@ namespace DotNetOpenAuth.Configuration {
 		[PositiveTimeSpanValidator]
 		internal TimeSpan MaxAuthorizationTime {
 			get {
-				Contract.Ensures(Contract.Result<TimeSpan>() > TimeSpan.Zero);
 				TimeSpan result = (TimeSpan)this[MaxAuthorizationTimePropertyName];
-				Contract.Assume(result > TimeSpan.Zero); // our PositiveTimeSpanValidator should take care of this
+				Assumes.True(result > TimeSpan.Zero); // our PositiveTimeSpanValidator should take care of this
 				return result;
 			}
 
 			set {
-				Requires.InRange(value > TimeSpan.Zero, "value");
+				Requires.Range(value > TimeSpan.Zero, "value");
 				this[MaxAuthorizationTimePropertyName] = value;
 			}
 		}

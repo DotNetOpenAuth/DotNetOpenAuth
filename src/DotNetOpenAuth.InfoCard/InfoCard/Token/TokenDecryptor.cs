@@ -13,7 +13,6 @@ namespace DotNetOpenAuth.InfoCard {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.IdentityModel.Selectors;
 	using System.IdentityModel.Tokens;
 	using System.Linq;
@@ -22,6 +21,7 @@ namespace DotNetOpenAuth.InfoCard {
 	using System.ServiceModel.Security;
 	using System.Xml;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// A utility class for decrypting InfoCard tokens.
@@ -90,7 +90,6 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <returns>A byte array of the contents of the encrypted token</returns>
 		internal byte[] DecryptToken(XmlReader reader) {
 			Requires.NotNull(reader, "reader");
-			Contract.Ensures(Contract.Result<byte[]>() != null);
 
 			byte[] securityTokenData;
 			string encryptionAlgorithm;

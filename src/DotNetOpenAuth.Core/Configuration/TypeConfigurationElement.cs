@@ -8,7 +8,6 @@ namespace DotNetOpenAuth.Configuration {
 	using System;
 	using System.Configuration;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.IO;
 	using System.Reflection;
 	using System.Web;
@@ -82,8 +81,6 @@ namespace DotNetOpenAuth.Configuration {
 		/// <param name="defaultValue">The value to return if no type is given in the .config file.</param>
 		/// <returns>The newly instantiated type.</returns>
 		public T CreateInstance(T defaultValue) {
-			Contract.Ensures(Contract.Result<T>() != null || Contract.Result<T>() == defaultValue);
-
 			return this.CreateInstance(defaultValue, false);
 		}
 
@@ -95,8 +92,6 @@ namespace DotNetOpenAuth.Configuration {
 		/// <returns>The newly instantiated type.</returns>
 		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "No apparent problem.  False positive?")]
 		public T CreateInstance(T defaultValue, bool allowInternals) {
-			Contract.Ensures(Contract.Result<T>() != null || Contract.Result<T>() == defaultValue);
-
 			if (this.CustomType != null) {
 				if (!allowInternals) {
 					// Although .NET will usually prevent our instantiating non-public types,
@@ -132,7 +127,6 @@ namespace DotNetOpenAuth.Configuration {
 		/// be present.
 		/// </remarks>
 		private static T CreateInstanceFromXaml(Stream xaml) {
-			Contract.Ensures(Contract.Result<T>() != null);
 #if CLR4
 			return (T)XamlServices.Load(xaml);
 #else

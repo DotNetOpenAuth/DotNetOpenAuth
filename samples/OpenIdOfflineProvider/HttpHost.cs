@@ -6,13 +6,13 @@
 
 namespace DotNetOpenAuth.OpenIdOfflineProvider {
 	using System;
-	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.IO;
 	using System.Net;
 	using System.Threading;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Provider;
+	using Validation;
 
 	/// <summary>
 	/// An HTTP Listener that dispatches incoming requests for handling.
@@ -39,7 +39,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// </summary>
 		/// <param name="handler">The handler for incoming HTTP requests.</param>
 		private HttpHost(RequestHandler handler) {
-			Contract.Requires(handler != null);
+			Requires.NotNull(handler, "handler");
 
 			this.Port = 45235;
 			this.handler = handler;
@@ -85,8 +85,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// <param name="handler">The handler for incoming HTTP requests.</param>
 		/// <returns>The instantiated host.</returns>
 		public static HttpHost CreateHost(RequestHandler handler) {
-			Contract.Requires(handler != null);
-			Contract.Ensures(Contract.Result<HttpHost>() != null);
+			Requires.NotNull(handler, "handler");
 
 			return new HttpHost(handler);
 		}
@@ -119,7 +118,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// The HTTP listener thread body.
 		/// </summary>
 		private void ProcessRequests() {
-			Contract.Requires(this.listener != null);
+			Assumes.True(this.listener != null);
 
 			while (true) {
 				try {

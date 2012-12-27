@@ -8,9 +8,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
 	using System.Collections.ObjectModel;
 	using System.ComponentModel;
-	using System.Diagnostics.Contracts;
 	using System.Web.UI;
 	using DotNetOpenAuth.InfoCard;
+	using Validation;
 
 	/// <summary>
 	/// A button that appears in the <see cref="OpenIdSelector"/> control that

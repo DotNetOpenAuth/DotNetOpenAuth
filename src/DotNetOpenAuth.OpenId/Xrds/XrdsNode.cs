@@ -6,10 +6,10 @@
 
 namespace DotNetOpenAuth.Xrds {
 	using System;
-	using System.Diagnostics.Contracts;
 	using System.Xml;
 	using System.Xml.XPath;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// A node in an XRDS document.
@@ -45,7 +45,7 @@ namespace DotNetOpenAuth.Xrds {
 		/// <param name="document">The document's root node, which this instance represents.</param>
 		protected XrdsNode(XPathNavigator document) {
 			Requires.NotNull(document, "document");
-			Requires.True(document.NameTable != null, null);
+			Requires.That(document.NameTable != null, "document", "requires document.NameTable != null");
 
 			this.Node = document;
 			this.XmlNamespaceResolver = new XmlNamespaceManager(document.NameTable);

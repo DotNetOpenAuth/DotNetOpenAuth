@@ -7,7 +7,6 @@
 namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Net;
 	using System.Net.Mime;
@@ -16,6 +15,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.OAuth2.Messages;
+	using Validation;
 
 	/// <summary>
 	/// The channel for the OAuth protocol.

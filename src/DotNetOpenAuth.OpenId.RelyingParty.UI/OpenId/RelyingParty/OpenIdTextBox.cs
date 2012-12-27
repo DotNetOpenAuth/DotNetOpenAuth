@@ -15,7 +15,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.ComponentModel;
 	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Drawing.Design;
 	using System.Globalization;
 	using System.Net;
@@ -29,6 +28,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.Extensions.UI;
+	using Validation;
 
 	/// <summary>
 	/// An ASP.NET control that provides a minimal text box that is OpenID-aware.
@@ -584,7 +584,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="writer">The <see cref="T:System.Web.UI.HtmlTextWriter"/> object that receives the server control content.</param>
 		protected override void Render(HtmlTextWriter writer) {
-			Contract.Assume(writer != null, "Missing contract.");
+			Assumes.True(writer != null, "Missing contract.");
 
 			if (this.ShowLogo) {
 				string logoUrl = Page.ClientScript.GetWebResourceUrl(
@@ -627,7 +627,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// true if the server control's state changes as a result of the postback; otherwise, false.
 		/// </returns>
 		protected virtual bool LoadPostData(string postDataKey, NameValueCollection postCollection) {
-			Contract.Assume(postCollection != null, "Missing contract");
+			Assumes.True(postCollection != null, "Missing contract");
 
 			// If the control was temporarily hidden, it won't be in the Form data,
 			// and we'll just implicitly keep the last Text setting.
@@ -666,7 +666,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// used to determine the user's control of the <see cref="IAuthenticationRequest.ClaimedIdentifier"/>.
 		/// </returns>
 		private IEnumerable<IAuthenticationRequest> CreateRequestsCore(IEnumerable<IAuthenticationRequest> requests) {
-			Contract.Requires(requests != null);
+			Requires.NotNull(requests, "requests");
 
 			foreach (var request in requests) {
 				if (this.EnableRequestProfile) {

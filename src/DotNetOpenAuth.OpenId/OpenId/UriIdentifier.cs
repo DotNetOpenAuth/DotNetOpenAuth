@@ -19,6 +19,7 @@ namespace DotNetOpenAuth.OpenId {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Xrds;
 	using DotNetOpenAuth.Yadis;
+	using Validation;
 
 	/// <summary>
 	/// A URI style of OpenID Identifier.
@@ -480,7 +481,6 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>The non-compressing equivalent scheme or URL for the given value.</returns>
 		private static string NormalSchemeToSpecialRoundTrippingScheme(string normal) {
 			Requires.NotNullOrEmpty(normal, "normal");
-			Contract.Ensures(!string.IsNullOrEmpty(Contract.Result<string>()));
 			ErrorUtilities.VerifyInternal(schemeSubstitution, "Wrong schemeSubstitution value.");
 
 			int delimiterIndex = normal.IndexOf(Uri.SchemeDelimiter, StringComparison.Ordinal);
@@ -564,14 +564,14 @@ namespace DotNetOpenAuth.OpenId {
 
 				// Get the Path out ourselves, since the default Uri parser compresses it too much for OpenID.
 				int schemeLength = value.IndexOf(Uri.SchemeDelimiter, StringComparison.Ordinal);
-				Contract.Assume(schemeLength > 0);
+				Assumes.True(schemeLength > 0);
 				int hostStart = schemeLength + Uri.SchemeDelimiter.Length;
 				int hostFinish = value.IndexOf('/', hostStart);
 				if (hostFinish < 0) {
 					this.Path = "/";
 				} else {
 					int pathFinish = value.IndexOfAny(PathEndingCharacters, hostFinish);
-					Contract.Assume(pathFinish >= hostFinish || pathFinish < 0);
+					Assumes.True(pathFinish >= hostFinish || pathFinish < 0);
 					if (pathFinish < 0) {
 						this.Path = value.Substring(hostFinish);
 					} else {

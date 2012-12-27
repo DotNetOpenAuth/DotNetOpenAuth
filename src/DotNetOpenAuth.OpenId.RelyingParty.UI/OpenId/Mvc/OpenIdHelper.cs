@@ -8,7 +8,6 @@ namespace DotNetOpenAuth.Mvc {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.IO;
 	using System.Linq;
@@ -21,6 +20,7 @@ namespace DotNetOpenAuth.Mvc {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.RelyingParty;
+	using Validation;
 
 	/// <summary>
 	/// Methods that generate HTML or Javascript for hosting AJAX OpenID "controls" on
@@ -35,7 +35,6 @@ namespace DotNetOpenAuth.Mvc {
 		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "False positive.")]
 		public static string OpenIdSelectorStyles(this HtmlHelper html) {
 			Requires.NotNull(html, "html");
-			Contract.Ensures(Contract.Result<string>() != null);
 
 			using (var result = new StringWriter(CultureInfo.CurrentCulture)) {
 				result.WriteStylesheetLink(OpenId.RelyingParty.OpenIdSelector.EmbeddedStylesheetResourceName);
@@ -65,7 +64,6 @@ namespace DotNetOpenAuth.Mvc {
 		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "False positive")]
 		public static string OpenIdSelectorScripts(this HtmlHelper html, OpenIdSelector selectorOptions, OpenIdAjaxOptions additionalOptions) {
 			Requires.NotNull(html, "html");
-			Contract.Ensures(Contract.Result<string>() != null);
 
 			bool selectorOptionsOwned = false;
 			if (selectorOptions == null) {
@@ -211,7 +209,6 @@ window.openid_trace = {1}; // causes lots of messages";
 			Requires.NotNull(html, "html");
 			Requires.NotNull(providerIdentifier, "providerIdentifier");
 			Requires.NotNullOrEmpty(imageUrl, "imageUrl");
-			Contract.Ensures(Contract.Result<string>() != null);
 
 			return OpenIdSelectorButton(html, providerIdentifier, "OPButton", imageUrl);
 		}
@@ -228,7 +225,6 @@ window.openid_trace = {1}; // causes lots of messages";
 		public static string OpenIdSelectorOpenIdButton(this HtmlHelper html, string imageUrl) {
 			Requires.NotNull(html, "html");
 			Requires.NotNullOrEmpty(imageUrl, "imageUrl");
-			Contract.Ensures(Contract.Result<string>() != null);
 
 			return OpenIdSelectorButton(html, "OpenIDButton", "OpenIDButton", imageUrl);
 		}
@@ -246,7 +242,6 @@ window.openid_trace = {1}; // causes lots of messages";
 		public static string OpenIdSelector(this HtmlHelper html, params SelectorButton[] buttons) {
 			Requires.NotNull(html, "html");
 			Requires.NotNull(buttons, "buttons");
-			Contract.Ensures(Contract.Result<string>() != null);
 
 			using (var writer = new StringWriter(CultureInfo.CurrentCulture)) {
 				using (var h = new HtmlTextWriter(writer)) {
@@ -313,7 +308,6 @@ window.openid_trace = {1}; // causes lots of messages";
 			Requires.NotNull(html, "html");
 			Requires.NotNull(id, "id");
 			Requires.NotNullOrEmpty(imageUrl, "imageUrl");
-			Contract.Ensures(Contract.Result<string>() != null);
 
 			using (var writer = new StringWriter(CultureInfo.CurrentCulture)) {
 				using (var h = new HtmlTextWriter(writer)) {

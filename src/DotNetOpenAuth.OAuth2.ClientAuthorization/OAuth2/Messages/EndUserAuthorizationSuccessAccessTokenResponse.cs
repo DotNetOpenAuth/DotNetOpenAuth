@@ -7,12 +7,12 @@
 namespace DotNetOpenAuth.OAuth2.Messages {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2.ChannelElements;
+	using Validation;
 
 	/// <summary>
 	/// The message sent by the Authorization Server to the Client via the user agent

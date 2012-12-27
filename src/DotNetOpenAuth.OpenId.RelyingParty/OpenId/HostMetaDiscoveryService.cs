@@ -9,7 +9,6 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.IO;
 	using System.Linq;
@@ -27,6 +26,7 @@ namespace DotNetOpenAuth.OpenId {
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using DotNetOpenAuth.Xrds;
 	using DotNetOpenAuth.Yadis;
+	using Validation;
 
 	/// <summary>
 	/// The discovery service to support host-meta based discovery, such as Google Apps for Domains.
@@ -167,7 +167,6 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>A sequence of services.</returns>
 		private static IEnumerable<ServiceElement> GetDescribedByServices(IEnumerable<XrdElement> xrds) {
 			Requires.NotNull(xrds, "xrds");
-			Contract.Ensures(Contract.Result<IEnumerable<ServiceElement>>() != null);
 
 			var describedBy = from xrd in xrds
 							  from service in xrd.SearchForServiceTypeUris(p => "http://www.iana.org/assignments/relation/describedby")
@@ -186,7 +185,6 @@ namespace DotNetOpenAuth.OpenId {
 			Requires.NotNull(xrds, "xrds");
 			Requires.NotNull(identifier, "identifier");
 			Requires.NotNull(requestHandler, "requestHandler");
-			Contract.Ensures(Contract.Result<IEnumerable<IdentifierDiscoveryResult>>() != null);
 
 			var results = new List<IdentifierDiscoveryResult>();
 			foreach (var serviceElement in GetDescribedByServices(xrds)) {
@@ -298,7 +296,6 @@ namespace DotNetOpenAuth.OpenId {
 			Requires.NotNull(identifier, "identifier");
 			Requires.NotNull(requestHandler, "requestHandler");
 			Requires.NotNull(xrdsLocation, "xrdsLocation");
-			Contract.Ensures(Contract.Result<IncomingWebResponse>() != null);
 
 			var request = (HttpWebRequest)WebRequest.Create(xrdsLocation);
 			request.CachePolicy = Yadis.IdentifierDiscoveryCachePolicy;
@@ -317,8 +314,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// </summary>
 		/// <param name="certificates">The chain of certificates to verify.</param>
 		private static void VerifyCertificateChain(IList<X509Certificate2> certificates) {
-			Contract.Requires(certificates.Count > 0);
-			Contract.Requires(certificates.All(c => c != null));
+			Requires.NotNullEmptyOrNullElements(certificates, "certificates");
 
 			// Before calling into the OS to validate the certificate, since that can for some bizzare reason hang for 5 seconds
 			// on some systems, check a cache of previously verified certificates first.

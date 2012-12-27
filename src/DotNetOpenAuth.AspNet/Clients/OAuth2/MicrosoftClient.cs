@@ -10,6 +10,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 	using System.IO;
 	using System.Net;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// The Microsoft account client.

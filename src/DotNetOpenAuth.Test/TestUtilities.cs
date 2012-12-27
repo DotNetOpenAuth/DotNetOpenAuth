@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.Test {
 	using System.Linq;
 	using System.Net;
 	using log4net;
+	using Validation;
 
 	/// <summary>
 	/// An assortment of methods useful for testing.

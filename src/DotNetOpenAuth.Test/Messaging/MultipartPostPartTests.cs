@@ -7,11 +7,11 @@
 namespace DotNetOpenAuth.Test.Messaging {
 	using System.CodeDom.Compiler;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.IO;
 	using System.Net;
 	using DotNetOpenAuth.Messaging;
 	using NUnit.Framework;
+	using Validation;
 
 	[TestFixture]
 	public class MultipartPostPartTests : TestBase {
@@ -77,7 +77,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 		}
 
 		private static void VerifyLength(MultipartPostPart part) {
-			Contract.Requires(part != null);
+			Requires.NotNull(part, "part");
 
 			var expectedLength = part.Length;
 			var ms = new MemoryStream();

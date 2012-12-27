@@ -8,13 +8,13 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.OpenId.Extensions;
 	using DotNetOpenAuth.OpenId.Messages;
+	using Validation;
 
 	/// <summary>
 	/// The binding element that serializes/deserializes OpenID extensions to/from
@@ -238,7 +238,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// A dictionary of message parts, including only signed parts when appropriate.
 		/// </returns>
 		private IDictionary<string, string> GetExtensionsDictionary(IProtocolMessage message, bool ignoreUnsigned) {
-			Requires.ValidState(this.Channel != null);
+			RequiresEx.ValidState(this.Channel != null);
 
 			IndirectSignedResponse signedResponse = message as IndirectSignedResponse;
 			if (signedResponse != null && ignoreUnsigned) {

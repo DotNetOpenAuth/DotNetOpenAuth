@@ -6,10 +6,10 @@
 
 namespace DotNetOpenAuth.OAuth2.Messages {
 	using System;
-	using System.Diagnostics.Contracts;
 
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2.ChannelElements;
+	using Validation;
 
 	/// <summary>
 	/// The message sent by the Authorization Server to the Client via the user agent

@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.AspNet {
 	using System.Web.Security;
 	using DotNetOpenAuth.AspNet.Clients;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// Manage authenticating with an external OAuth or OpenID provider

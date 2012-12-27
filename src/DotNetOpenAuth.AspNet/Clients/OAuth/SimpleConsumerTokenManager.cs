@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.AspNet.Clients {
 	using System;
 	using DotNetOpenAuth.OAuth.ChannelElements;
+	using Validation;
 
 	/// <summary>
 	/// Simple wrapper around IConsumerTokenManager

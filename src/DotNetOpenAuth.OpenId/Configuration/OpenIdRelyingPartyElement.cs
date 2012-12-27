@@ -7,14 +7,12 @@
 namespace DotNetOpenAuth.Configuration {
 	using System;
 	using System.Configuration;
-	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 
 	/// <summary>
 	/// The section in the .config file that allows customization of OpenID Relying Party behaviors.
 	/// </summary>
-	[ContractVerification(true)]
 	internal class OpenIdRelyingPartyElement : ConfigurationElement {
 		/// <summary>
 		/// The name of the custom store sub-element.

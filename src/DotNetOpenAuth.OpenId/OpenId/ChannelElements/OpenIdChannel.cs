@@ -8,7 +8,6 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.IO;
 	using System.Linq;
@@ -18,11 +17,11 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId.Extensions;
 	using DotNetOpenAuth.OpenId.Messages;
+	using Validation;
 
 	/// <summary>
 	/// A channel that knows how to send and receive OpenID messages.
 	/// </summary>
-	[ContractVerification(true)]
 	internal class OpenIdChannel : Channel {
 		/// <summary>
 		/// The HTTP Content-Type to use in Key-Value Form responses.

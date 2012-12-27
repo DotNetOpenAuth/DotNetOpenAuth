@@ -8,8 +8,8 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
-	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// An individual attribute's value(s) as supplied by an OpenID Provider

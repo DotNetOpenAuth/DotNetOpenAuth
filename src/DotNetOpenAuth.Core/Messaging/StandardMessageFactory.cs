@@ -7,11 +7,11 @@
 namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Reflection;
 	using System.Text;
 	using DotNetOpenAuth.Messaging.Reflection;
+	using Validation;
 
 	/// <summary>
 	/// A message factory that automatically selects the message type based on the incoming data.
@@ -42,7 +42,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="messageTypes">The message types that this factory may instantiate.</param>
 		public virtual void AddMessageTypes(IEnumerable<MessageDescription> messageTypes) {
 			Requires.NotNull(messageTypes, "messageTypes");
-			Requires.True(messageTypes.All(msg => msg != null), "messageTypes");
+			Requires.NullOrNotNullElements(messageTypes, "messageTypes");
 
 			var unsupportedMessageTypes = new List<MessageDescription>(0);
 			foreach (MessageDescription messageDescription in messageTypes) {
@@ -208,7 +208,6 @@ namespace DotNetOpenAuth.Messaging {
 		protected virtual IDirectedProtocolMessage InstantiateAsRequest(MessageDescription messageDescription, MessageReceivingEndpoint recipient) {
 			Requires.NotNull(messageDescription, "messageDescription");
 			Requires.NotNull(recipient, "recipient");
-			Contract.Ensures(Contract.Result<IDirectedProtocolMessage>() != null);
 
 			ConstructorInfo ctor = this.requestMessageTypes[messageDescription];
 			return (IDirectedProtocolMessage)ctor.Invoke(new object[] { recipient.Location, messageDescription.MessageVersion });
@@ -223,7 +222,6 @@ namespace DotNetOpenAuth.Messaging {
 		protected virtual IDirectResponseProtocolMessage InstantiateAsResponse(MessageDescription messageDescription, IDirectedProtocolMessage request) {
 			Requires.NotNull(messageDescription, "messageDescription");
 			Requires.NotNull(request, "request");
-			Contract.Ensures(Contract.Result<IDirectResponseProtocolMessage>() != null);
 
 			Type requestType = request.GetType();
 			var ctors = this.FindMatchingResponseConstructors(messageDescription, requestType);
@@ -249,7 +247,7 @@ namespace DotNetOpenAuth.Messaging {
 		private static int GetDerivationDistance(Type assignableType, Type derivedType) {
 			Requires.NotNull(assignableType, "assignableType");
 			Requires.NotNull(derivedType, "derivedType");
-			Requires.True(assignableType.IsAssignableFrom(derivedType), "assignableType");
+			Requires.That(assignableType.IsAssignableFrom(derivedType), "assignableType", "Types are not related as required.");
 
 			// If this is the two types are equivalent...
 			if (derivedType.IsAssignableFrom(assignableType))
@@ -277,7 +275,6 @@ namespace DotNetOpenAuth.Messaging {
 		private static int CountInCommon(ICollection<string> collection1, ICollection<string> collection2, StringComparison comparison = StringComparison.Ordinal) {
 			Requires.NotNull(collection1, "collection1");
 			Requires.NotNull(collection2, "collection2");
-			Contract.Ensures(Contract.Result<int>() >= 0 && Contract.Result<int>() <= Math.Min(collection1.Count, collection2.Count));
 
 			return collection1.Count(value1 => collection2.Any(value2 => string.Equals(value1, value2, comparison)));
 		}

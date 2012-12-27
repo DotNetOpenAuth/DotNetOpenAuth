@@ -10,6 +10,7 @@ namespace DotNetOpenAuth.OAuth2 {
 	using System.Linq;
 	using System.Security.Cryptography;
 	using System.Text;
+	using Validation;
 
 	/// <summary>
 	/// Describes the parameters to be fed into creating a response to an access token request.

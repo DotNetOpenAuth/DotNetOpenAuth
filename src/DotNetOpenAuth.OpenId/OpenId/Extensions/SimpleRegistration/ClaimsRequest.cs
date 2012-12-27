@@ -9,11 +9,11 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 	using System.Collections.Generic;
 	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
+	using Validation;
 
 	/// <summary>
 	/// Carries the request/require/none demand state of the simple registration fields.

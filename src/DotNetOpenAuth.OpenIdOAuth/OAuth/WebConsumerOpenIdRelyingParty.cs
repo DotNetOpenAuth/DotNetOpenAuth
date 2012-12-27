@@ -14,6 +14,7 @@ namespace DotNetOpenAuth.OAuth {
 	using DotNetOpenAuth.OAuth.Messages;
 	using DotNetOpenAuth.OpenId.Extensions.OAuth;
 	using DotNetOpenAuth.OpenId.RelyingParty;
+	using Validation;
 
 	/// <summary>
 	/// A website or application that uses OAuth to access the Service Provider on behalf of the User
@@ -62,7 +63,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// </remarks>
 		public AuthorizedTokenResponse ProcessUserAuthorization(IAuthenticationResponse openIdAuthenticationResponse) {
 			Requires.NotNull(openIdAuthenticationResponse, "openIdAuthenticationResponse");
-			Requires.ValidState(this.TokenManager is IOpenIdOAuthTokenManager);
+			RequiresEx.ValidState(this.TokenManager is IOpenIdOAuthTokenManager);
 			var openidTokenManager = this.TokenManager as IOpenIdOAuthTokenManager;
 			ErrorUtilities.VerifyOperation(openidTokenManager != null, OAuthStrings.OpenIdOAuthExtensionRequiresSpecialTokenManagerInterface, typeof(IOpenIdOAuthTokenManager).FullName);
 

@@ -7,11 +7,11 @@
 namespace DotNetOpenAuth.OAuth {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.OAuth.Messages;
+	using Validation;
 
 	/// <summary>
 	/// A website or application that uses OAuth to access the Service Provider on behalf of the User.

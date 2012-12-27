@@ -9,10 +9,10 @@ namespace DotNetOpenAuth.OAuth {
 	using System.Collections.Generic;
 	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// An enumeration of the OAuth protocol versions supported by this library.
@@ -141,7 +141,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// <returns>A matching <see cref="Protocol"/> instance.</returns>
 		internal static Protocol Lookup(Version version) {
 			Requires.NotNull(version, "version");
-			Requires.InRange(AllVersions.Any(p => p.Version == version), "version");
+			Requires.Range(AllVersions.Any(p => p.Version == version), "version");
 			return AllVersions.First(p => p.Version == version);
 		}
 	}

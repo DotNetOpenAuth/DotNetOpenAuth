@@ -7,7 +7,6 @@
 namespace DotNetOpenAuth.OpenId.Behaviors {
 	using System;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;

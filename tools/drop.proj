@@ -91,7 +91,6 @@
 																$(ILMergeOutputAssembly35Directory)$(SignedSubPath)$(ProductName).dll;
 																$(ILMergeOutputAssembly35Directory)$(ProductName).pdb;
 																$(ILMergeOutputAssembly35Directory)$(ProductName).xml;
-																$(OutputPath35)CodeContracts\$(SignedSubPath)$(ProductName).Contracts.???;
 																$(ProjectRoot)Doc\README.Bin.html;
 																$(ProjectRoot)src\$(ProductName).Core\Configuration\$(ProductName).xsd;
 													" />
@@ -99,7 +98,6 @@
 																$(ILMergeOutputAssembly40Directory)$(SignedSubPath)$(ProductName).dll;
 																$(ILMergeOutputAssembly40Directory)$(ProductName).pdb;
 																$(ILMergeOutputAssembly40Directory)$(ProductName).xml;
-																$(OutputPath40)CodeContracts\$(SignedSubPath)$(ProductName).Contracts.???;
 																$(ProjectRoot)Doc\README.Bin.html;
 																$(ProjectRoot)src\$(ProductName).Core\Configuration\$(ProductName).xsd;
 													" />
@@ -107,7 +105,6 @@
 																$(ILMergeOutputAssembly45Directory)$(SignedSubPath)$(ProductName).dll;
 																$(ILMergeOutputAssembly45Directory)$(ProductName).pdb;
 																$(ILMergeOutputAssembly45Directory)$(ProductName).xml;
-																$(OutputPath45)CodeContracts\$(SignedSubPath)$(ProductName).Contracts.???;
 																$(ProjectRoot)Doc\README.Bin.html;
 																$(ProjectRoot)src\$(ProductName).Core\Configuration\$(ProductName).xsd;
 													" />

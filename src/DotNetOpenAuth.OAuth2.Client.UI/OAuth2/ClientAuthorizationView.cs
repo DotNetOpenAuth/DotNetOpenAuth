@@ -10,7 +10,6 @@ namespace DotNetOpenAuth.OAuth2 {
 	using System.ComponentModel;
 	using System.Data;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Drawing;
 	using System.Linq;
 	using System.Text;

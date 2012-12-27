@@ -6,7 +6,6 @@
 namespace DotNetOpenAuth {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Net;
 	using System.Reflection;
@@ -17,11 +16,11 @@ namespace DotNetOpenAuth {
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Reflection;
+	using Validation;
 
 	/// <summary>
 	/// A grab-bag utility class.
 	/// </summary>
-	[ContractVerification(true)]
 	internal static class Util {
 		/// <summary>
 		/// The base namespace for this library from which all other namespaces derive.
@@ -103,8 +102,7 @@ namespace DotNetOpenAuth {
 			return new DelayedToString<IEnumerable<KeyValuePair<K, V>>>(
 				pairs,
 				p => {
-					////Contract.Requires(pairs != null); // CC: anonymous method can't handle it
-					ErrorUtilities.VerifyArgumentNotNull(pairs, "pairs");
+					Requires.NotNull(pairs, "pairs");
 					var dictionary = pairs as IDictionary<K, V>;
 					var messageDictionary = pairs as MessageDictionary;
 					StringBuilder sb = new StringBuilder(dictionary != null ? dictionary.Count * 40 : 200);
@@ -139,7 +137,6 @@ namespace DotNetOpenAuth {
 		/// <param name="list">The list of elements.</param>
 		/// <param name="multiLineElements">if set to <c>true</c>, special formatting will be applied to the output to make it clear where one element ends and the next begins.</param>
 		/// <returns>An object whose ToString method will perform the actual work of generating the string.</returns>
-		[ContractVerification(false)]
 		internal static object ToStringDeferred<T>(this IEnumerable<T> list, bool multiLineElements) {
 			return new DelayedToString<IEnumerable<T>>(
 				list,
@@ -148,7 +145,7 @@ namespace DotNetOpenAuth {
 					ErrorUtilities.VerifyArgumentNotNull(l, "l");
 
 					string newLine = Environment.NewLine;
-					////Contract.Assume(newLine != null && newLine.Length > 0);
+					////Assumes.True(newLine != null && newLine.Length > 0);
 					StringBuilder sb = new StringBuilder();
 					if (multiLineElements) {
 						sb.AppendLine("[{");

@@ -7,10 +7,10 @@
 namespace DotNetOpenAuth.OpenId {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Xrds;
+	using Validation;
 
 	/// <summary>
 	/// Utility methods for working with XRDS documents.
@@ -27,7 +27,6 @@ namespace DotNetOpenAuth.OpenId {
 		/// </remarks>
 		internal static IEnumerable<RelyingPartyEndpointDescription> FindRelyingPartyReceivingEndpoints(this XrdsDocument xrds) {
 			Requires.NotNull(xrds, "xrds");
-			Contract.Ensures(Contract.Result<IEnumerable<RelyingPartyEndpointDescription>>() != null);
 
 			return from service in xrds.FindReturnToServices()
 				   from uri in service.UriElements
@@ -42,7 +41,6 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>A sequence of the icon URLs in preferred order.</returns>
 		internal static IEnumerable<Uri> FindRelyingPartyIcons(this XrdsDocument xrds) {
 			Requires.NotNull(xrds, "xrds");
-			Contract.Ensures(Contract.Result<IEnumerable<Uri>>() != null);
 
 			return from xrd in xrds.XrdElements
 				   from service in xrd.OpenIdRelyingPartyIcons
@@ -58,7 +56,6 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>A sequence of service elements.</returns>
 		private static IEnumerable<ServiceElement> FindReturnToServices(this XrdsDocument xrds) {
 			Requires.NotNull(xrds, "xrds");
-			Contract.Ensures(Contract.Result<IEnumerable<ServiceElement>>() != null);
 
 			return from xrd in xrds.XrdElements
 				   from service in xrd.OpenIdRelyingPartyReturnToServices

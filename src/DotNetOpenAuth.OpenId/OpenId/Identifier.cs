@@ -12,14 +12,13 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Reflection;
+	using Validation;
 
 	/// <summary>
 	/// An Identifier is either a "http" or "https" URI, or an XRI.
 	/// </summary>
 	[Serializable]
-	[ContractVerification(true)]
 	[Pure]
-	[ContractClass(typeof(IdentifierContract))]
 	[DefaultEncoder(typeof(IdentifierEncoder))]
 	public abstract class Identifier {
 		/// <summary>
@@ -92,8 +91,7 @@ namespace DotNetOpenAuth.OpenId {
 		[SuppressMessage("Microsoft.Usage", "CA2225:OperatorOverloadsHaveNamedAlternates", Justification = "Our named alternate is Parse.")]
 		[DebuggerStepThrough]
 		public static implicit operator Identifier(string identifier) {
-			Requires.True(identifier == null || identifier.Length > 0, "identifier");
-			Contract.Ensures((identifier == null) == (Contract.Result<Identifier>() == null));
+			Requires.That(identifier == null || identifier.Length > 0, "identifier", "Empty string cannot be translated to an identifier.");
 
 			if (identifier == null) {
 				return null;
@@ -109,7 +107,6 @@ namespace DotNetOpenAuth.OpenId {
 		[SuppressMessage("Microsoft.Usage", "CA2225:OperatorOverloadsHaveNamedAlternates", Justification = "We have a Parse function.")]
 		[DebuggerStepThrough]
 		public static implicit operator Identifier(Uri identifier) {
-			Contract.Ensures((identifier == null) == (Contract.Result<Identifier>() == null));
 			if (identifier == null) {
 				return null;
 			}
@@ -125,7 +122,6 @@ namespace DotNetOpenAuth.OpenId {
 		[SuppressMessage("Microsoft.Usage", "CA2225:OperatorOverloadsHaveNamedAlternates", Justification = "We have a Parse function.")]
 		[DebuggerStepThrough]
 		public static implicit operator string(Identifier identifier) {
-			Contract.Ensures((identifier == null) == (Contract.Result<string>() == null));
 			if (identifier == null) {
 				return null;
 			}
@@ -141,7 +137,6 @@ namespace DotNetOpenAuth.OpenId {
 		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "Some of these identifiers are not properly formatted to be Uris at this stage.")]
 		public static Identifier Parse(string identifier) {
 			Requires.NotNullOrEmpty(identifier, "identifier");
-			Contract.Ensures(Contract.Result<Identifier>() != null);
 
 			return Parse(identifier, false);
 		}
@@ -158,7 +153,6 @@ namespace DotNetOpenAuth.OpenId {
 		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "Some of these identifiers are not properly formatted to be Uris at this stage.")]
 		public static Identifier Parse(string identifier, bool serializeExactValue) {
 			Requires.NotNullOrEmpty(identifier, "identifier");
-			Contract.Ensures(Contract.Result<Identifier>() != null);
 
 			Identifier id;
 			if (XriIdentifier.IsValidXri(identifier)) {
@@ -265,7 +259,6 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>Either <see cref="XriIdentifier"/> or <see cref="UriIdentifier"/>.</returns>
 		internal static Identifier Reparse(Identifier identifier) {
 			Requires.NotNull(identifier, "identifier");
-			Contract.Ensures(Contract.Result<Identifier>() != null);
 
 			return Parse(identifier, identifier.IsDeserializedInstance);
 		}

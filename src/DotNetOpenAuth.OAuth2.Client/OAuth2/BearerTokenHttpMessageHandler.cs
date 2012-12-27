@@ -15,6 +15,7 @@ namespace DotNetOpenAuth.OAuth2 {
 	using System.Threading;
 	using System.Threading.Tasks;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// An <see cref="HttpMessageHandler"/> that applies a bearer token to each outbound HTTP request.
@@ -41,7 +42,7 @@ namespace DotNetOpenAuth.OAuth2 {
 			: base(innerHandler) {
 			Requires.NotNull(client, "client");
 			Requires.NotNull(authorization, "authorization");
-			Requires.True(!string.IsNullOrEmpty(authorization.AccessToken), "authorization.AccessToken");
+			Requires.That(!string.IsNullOrEmpty(authorization.AccessToken), "authorization.AccessToken", "AccessToken must be non-empty");
 			this.Client = client;
 			this.Authorization = authorization;
 		}

@@ -7,18 +7,16 @@
 namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.IO;
 	using System.Net;
 	using System.Net.Mime;
 	using System.Text;
+	using Validation;
 
 	/// <summary>
 	/// Details on the incoming response from a direct web request to a remote party.
 	/// </summary>
-	[ContractVerification(true)]
-	[ContractClass(typeof(IncomingWebResponseContract))]
 	public abstract class IncomingWebResponse : IDisposable {
 		/// <summary>
 		/// The encoding to use in reading a response that does not declare its own content encoding.

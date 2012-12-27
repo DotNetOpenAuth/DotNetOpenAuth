@@ -19,13 +19,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.ComponentModel;
 	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Drawing.Design;
 	using System.Globalization;
 	using System.Text;
 	using System.Web.UI;
 	using System.Web.UI.HtmlControls;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// An ASP.NET control that provides a minimal text box that is OpenID-aware and uses AJAX for
@@ -382,7 +382,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			set {
-				Requires.InRange(value >= 0, "value");
+				Requires.Range(value >= 0, "value");
 				this.ViewState[ColumnsViewStateKey] = value;
 			}
 		}
@@ -446,7 +446,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			set {
-				Requires.InRange(value.TotalMilliseconds > 0, "value");
+				Requires.Range(value.TotalMilliseconds > 0, "value");
 				this.ViewState[TimeoutViewStateKey] = value;
 			}
 		}
@@ -462,7 +462,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			set {
-				Requires.InRange(value > 0, "value");
+				Requires.Range(value > 0, "value");
 				this.ViewState[ThrottleViewStateKey] = value;
 			}
 		}

@@ -7,11 +7,11 @@
 namespace DotNetOpenAuth.OAuth2 {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.IO;
 	using System.Security.Cryptography;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2.ChannelElements;
+	using Validation;
 
 	/// <summary>
 	/// An access token reader that understands DotNetOpenAuth authorization server issued tokens.
@@ -24,7 +24,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="resourceServerPrivateEncryptionKey">The crypto service provider with the resource server private encryption key.</param>
 		public StandardAccessTokenAnalyzer(RSACryptoServiceProvider authorizationServerPublicSigningKey, RSACryptoServiceProvider resourceServerPrivateEncryptionKey) {
 			Requires.NotNull(authorizationServerPublicSigningKey, "authorizationServerPublicSigningKey");
-			Requires.True(resourceServerPrivateEncryptionKey == null || !resourceServerPrivateEncryptionKey.PublicOnly, "resourceServerPrivateEncryptionKey");
+			Requires.That(resourceServerPrivateEncryptionKey == null || !resourceServerPrivateEncryptionKey.PublicOnly, "resourceServerPrivateEncryptionKey", "Private key required when encrypting.");
 			this.AuthorizationServerPublicSigningKey = authorizationServerPublicSigningKey;
 			this.ResourceServerPrivateEncryptionKey = resourceServerPrivateEncryptionKey;
 		}

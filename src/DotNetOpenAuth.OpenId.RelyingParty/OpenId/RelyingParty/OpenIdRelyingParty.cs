@@ -11,7 +11,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Collections.Specialized;
 	using System.ComponentModel;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Linq;
 	using System.Net;
@@ -24,6 +23,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.Extensions;
 	using DotNetOpenAuth.OpenId.Messages;
+	using Validation;
 
 	/// <summary>
 	/// A delegate that decides whether a given OpenID Provider endpoint may be
@@ -40,7 +40,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// Provides the programmatic facilities to act as an OpenID relying party.
 	/// </summary>
 	[SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = "Unavoidable")]
-	[ContractVerification(true)]
 	public class OpenIdRelyingParty : IDisposable, IOpenIdHost {
 		/// <summary>
 		/// The name of the key to use in the HttpApplication cache to store the
@@ -114,7 +113,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			// If we are a smart-mode RP (supporting associations), then we MUST also be 
 			// capable of storing nonces to prevent replay attacks.
 			// If we're a dumb-mode RP, then 2.0 OPs are responsible for preventing replays.
-			Requires.True(cryptoKeyStore == null || nonceStore != null, null, OpenIdStrings.AssociationStoreRequiresNonceStore);
+			Requires.That(cryptoKeyStore == null || nonceStore != null, null, OpenIdStrings.AssociationStoreRequiresNonceStore);
 
 			this.securitySettings = OpenIdElement.Configuration.RelyingParty.SecuritySettings.CreateSecuritySettings();
 
@@ -160,8 +159,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		[EditorBrowsable(EditorBrowsableState.Advanced)]
 		public static IOpenIdApplicationStore HttpApplicationStore {
 			get {
-				Contract.Ensures(Contract.Result<IOpenIdApplicationStore>() != null);
-
 				HttpContext context = HttpContext.Current;
 				ErrorUtilities.VerifyOperation(context != null, Strings.StoreRequiredWhenNoHttpContextAvailable, typeof(IOpenIdApplicationStore).Name);
 				var store = (IOpenIdApplicationStore)context.Application[ApplicationStoreKey];
@@ -200,7 +197,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		public RelyingPartySecuritySettings SecuritySettings {
 			get {
-				Contract.Ensures(Contract.Result<RelyingPartySecuritySettings>() != null);
 				return this.securitySettings;
 			}
 
@@ -347,7 +343,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			Requires.NotNull(userSuppliedIdentifier, "userSuppliedIdentifier");
 			Requires.NotNull(realm, "realm");
 			Requires.NotNull(returnToUrl, "returnToUrl");
-			Contract.Ensures(Contract.Result<IAuthenticationRequest>() != null);
 			try {
 				return this.CreateRequests(userSuppliedIdentifier, realm, returnToUrl).First();
 			} catch (InvalidOperationException ex) {
@@ -379,10 +374,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		public IAuthenticationRequest CreateRequest(Identifier userSuppliedIdentifier, Realm realm) {
 			Requires.NotNull(userSuppliedIdentifier, "userSuppliedIdentifier");
 			Requires.NotNull(realm, "realm");
-			Contract.Ensures(Contract.Result<IAuthenticationRequest>() != null);
 			try {
 				var result = this.CreateRequests(userSuppliedIdentifier, realm).First();
-				Contract.Assume(result != null);
+				Assumes.True(result != null);
 				return result;
 			} catch (InvalidOperationException ex) {
 				throw ErrorUtilities.Wrap(ex, OpenIdStrings.OpenIdEndpointNotFound);
@@ -407,7 +401,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <exception cref="InvalidOperationException">Thrown if <see cref="HttpContext.Current">HttpContext.Current</see> == <c>null</c>.</exception>
 		public IAuthenticationRequest CreateRequest(Identifier userSuppliedIdentifier) {
 			Requires.NotNull(userSuppliedIdentifier, "userSuppliedIdentifier");
-			Contract.Ensures(Contract.Result<IAuthenticationRequest>() != null);
 			try {
 				return this.CreateRequests(userSuppliedIdentifier).First();
 			} catch (InvalidOperationException ex) {
@@ -446,7 +439,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			Requires.NotNull(userSuppliedIdentifier, "userSuppliedIdentifier");
 			Requires.NotNull(realm, "realm");
 			Requires.NotNull(returnToUrl, "returnToUrl");
-			Contract.Ensures(Contract.Result<IEnumerable<IAuthenticationRequest>>() != null);
 
 			return AuthenticationRequest.Create(userSuppliedIdentifier, this, realm, returnToUrl, true).Cast<IAuthenticationRequest>().CacheGeneratedResults();
 		}
@@ -477,15 +469,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </remarks>
 		/// <exception cref="InvalidOperationException">Thrown if <see cref="HttpContext.Current">HttpContext.Current</see> == <c>null</c>.</exception>
 		public IEnumerable<IAuthenticationRequest> CreateRequests(Identifier userSuppliedIdentifier, Realm realm) {
-			Requires.ValidState(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
+			RequiresEx.ValidState(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
 			Requires.NotNull(userSuppliedIdentifier, "userSuppliedIdentifier");
 			Requires.NotNull(realm, "realm");
-			Contract.Ensures(Contract.Result<IEnumerable<IAuthenticationRequest>>() != null);
 
 			// This next code contract is a BAD idea, because it causes each authentication request to be generated
 			// at least an extra time.
-			////Contract.Ensures(Contract.ForAll(Contract.Result<IEnumerable<IAuthenticationRequest>>(), el => el != null));
-
+			////
 			// Build the return_to URL
 			UriBuilder returnTo = new UriBuilder(this.Channel.GetRequestFromContext().GetPublicFacingUrl());
 
@@ -526,8 +516,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <exception cref="InvalidOperationException">Thrown if <see cref="HttpContext.Current">HttpContext.Current</see> == <c>null</c>.</exception>
 		public IEnumerable<IAuthenticationRequest> CreateRequests(Identifier userSuppliedIdentifier) {
 			Requires.NotNull(userSuppliedIdentifier, "userSuppliedIdentifier");
-			Requires.ValidState(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
-			Contract.Ensures(Contract.Result<IEnumerable<IAuthenticationRequest>>() != null);
+			RequiresEx.ValidState(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
 
 			return this.CreateRequests(userSuppliedIdentifier, Realm.AutoDetect);
 		}
@@ -540,7 +529,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <para>Requires an <see cref="HttpContext.Current">HttpContext.Current</see> context.</para>
 		/// </remarks>
 		public IAuthenticationResponse GetResponse() {
-			Requires.ValidState(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
+			RequiresEx.ValidState(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
 			return this.GetResponse(this.Channel.GetRequestFromContext());
 		}
 
@@ -593,8 +582,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <para>Requires an <see cref="HttpContext.Current">HttpContext.Current</see> context.</para>
 		/// </remarks>
 		public OutgoingWebResponse ProcessResponseFromPopup() {
-			Requires.ValidState(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
-			Contract.Ensures(Contract.Result<OutgoingWebResponse>() != null);
+			RequiresEx.ValidState(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
 
 			return this.ProcessResponseFromPopup(this.Channel.GetRequestFromContext());
 		}
@@ -606,7 +594,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <returns>The HTTP response to send to this HTTP request.</returns>
 		public OutgoingWebResponse ProcessResponseFromPopup(HttpRequestBase request) {
 			Requires.NotNull(request, "request");
-			Contract.Ensures(Contract.Result<OutgoingWebResponse>() != null);
 
 			return this.ProcessResponseFromPopup(request, null);
 		}
@@ -693,7 +680,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		[SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "OpenID", Justification = "real word"), SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "iframe", Justification = "Code contracts")]
 		internal OutgoingWebResponse ProcessResponseFromPopup(HttpRequestBase request, Action<AuthenticationStatus> callback) {
 			Requires.NotNull(request, "request");
-			Contract.Ensures(Contract.Result<OutgoingWebResponse>() != null);
 
 			string extensionsJson = null;
 			var authResponse = this.NonVerifyingRelyingParty.GetResponse();

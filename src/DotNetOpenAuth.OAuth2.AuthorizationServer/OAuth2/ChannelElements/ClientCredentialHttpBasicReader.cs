@@ -13,6 +13,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2.Messages;
+	using Validation;
 
 	/// <summary>
 	/// Reads client authentication information from the HTTP Authorization header via Basic authentication.

@@ -11,7 +11,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.ComponentModel;
 	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Text.RegularExpressions;
 	using System.Web.Security;
@@ -20,6 +19,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
+	using Validation;
 
 	/// <summary>
 	/// An ASP.NET control for mobile devices that provides a minimal text box that is OpenID-aware.
@@ -583,8 +583,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </remarks>
 		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "Uri(Uri, string) accepts second arguments that Uri(Uri, new Uri(string)) does not that we must support.")]
 		public IAuthenticationRequest CreateRequest() {
-			Requires.ValidState(this.Request == null, OpenIdStrings.CreateRequestAlreadyCalled);
-			Requires.ValidState(!string.IsNullOrEmpty(this.Text), OpenIdStrings.OpenIdTextBoxEmpty);
+			RequiresEx.ValidState(this.Request == null, OpenIdStrings.CreateRequestAlreadyCalled);
+			RequiresEx.ValidState(!string.IsNullOrEmpty(this.Text), OpenIdStrings.OpenIdTextBoxEmpty);
 
 			try {
 				// Resolve the trust root, and swap out the scheme and port if necessary to match the

@@ -8,7 +8,6 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.Specialized;
-	using System.Diagnostics.Contracts;
 	using System.IO;
 	using System.Net;
 	using System.Text;
@@ -20,6 +19,7 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.Test.Mocks;
 	using NUnit.Framework;
+	using Validation;
 
 	[TestFixture]
 	public class OAuthChannelTests : TestBase {

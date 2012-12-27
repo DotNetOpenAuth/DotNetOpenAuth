@@ -5,14 +5,12 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.Messaging {
-	using System.Diagnostics.Contracts;
 	using System.Net;
 
 	/// <summary>
 	/// An interface that allows direct response messages to specify
 	/// HTTP transport specific properties.
 	/// </summary>
-	[ContractClass(typeof(IHttpDirectResponseContract))]
 	public interface IHttpDirectResponse {
 		/// <summary>
 		/// Gets the HTTP status code that the direct response should be sent with.

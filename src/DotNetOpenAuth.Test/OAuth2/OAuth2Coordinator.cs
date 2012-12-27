@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 	using System.Text;
 	using DotNetOpenAuth.OAuth2;
 	using DotNetOpenAuth.Test.Mocks;
+	using Validation;
 
 	internal class OAuth2Coordinator<TClient> : CoordinatorBase<TClient, AuthorizationServer>
 		where TClient : ClientBase {

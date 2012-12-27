@@ -8,7 +8,6 @@ namespace DotNetOpenAuth.OpenId {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Linq;
 	using System.Text;
@@ -18,6 +17,7 @@ namespace DotNetOpenAuth.OpenId {
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using DotNetOpenAuth.Xrds;
 	using DotNetOpenAuth.Yadis;
+	using Validation;
 
 	/// <summary>
 	/// The discovery service for XRI identifiers that uses an XRI proxy resolver for discovery.
@@ -74,7 +74,6 @@ namespace DotNetOpenAuth.OpenId {
 		private static XrdsDocument DownloadXrds(XriIdentifier identifier, IDirectWebRequestHandler requestHandler) {
 			Requires.NotNull(identifier, "identifier");
 			Requires.NotNull(requestHandler, "requestHandler");
-			Contract.Ensures(Contract.Result<XrdsDocument>() != null);
 			XrdsDocument doc;
 			using (var xrdsResponse = Yadis.Request(requestHandler, GetXrdsUrl(identifier), identifier.IsDiscoverySecureEndToEnd)) {
 				var readerSettings = MessagingUtilities.CreateUntrustedXmlReaderSettings();

@@ -9,7 +9,6 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Collections.Generic;
 	using System.Collections.Specialized;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.IO;
 	using System.IO.Compression;
@@ -29,6 +28,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Xml;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.Messaging.Reflection;
+	using Validation;
 
 	/// <summary>
 	/// A grab-bag of utility methods useful for the channel stack of the protocol.
@@ -198,7 +198,7 @@ namespace DotNetOpenAuth.Messaging {
 		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "The Uri merging requires use of a string value.")]
 		[SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "Expensive call should not be a property.")]
 		public static Uri GetRequestUrlFromContext() {
-			Requires.ValidState(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
+			RequiresEx.ValidState(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
 			return new HttpRequestWrapper(HttpContext.Current.Request).GetPublicFacingUrl();
 		}
 
@@ -589,7 +589,6 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>A sequence of key=value pairs discovered in the header.  Never null, but may be empty.</returns>
 		internal static IEnumerable<KeyValuePair<string, string>> ParseAuthorizationHeader(string scheme, string authorizationHeader) {
 			Requires.NotNullOrEmpty(scheme, "scheme");
-			Contract.Ensures(Contract.Result<IEnumerable<KeyValuePair<string, string>>>() != null);
 
 			string prefix = scheme + " ";
 			if (authorizationHeader != null) {
@@ -621,7 +620,6 @@ namespace DotNetOpenAuth.Messaging {
 		internal static string CombineKeyHandleAndPayload(string handle, string payload) {
 			Requires.NotNullOrEmpty(handle, "handle");
 			Requires.NotNullOrEmpty(payload, "payload");
-			Contract.Ensures(!string.IsNullOrEmpty(Contract.Result<string>()));
 
 			return handle + "!" + payload;
 		}
@@ -695,8 +693,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="allowableCharacters">The allowable characters.</param>
 		/// <returns>A random string.</returns>
 		internal static string GetRandomString(int length, string allowableCharacters) {
-			Requires.InRange(length >= 0, "length");
-			Requires.True(allowableCharacters != null && allowableCharacters.Length >= 2, "allowableCharacters");
+			Requires.Range(length >= 0, "length");
+			Requires.That(allowableCharacters != null && allowableCharacters.Length >= 2, "allowableCharacters", "At least two allowable characters required.");
 
 			char[] randomString = new char[length];
 			var random = NonCryptoRandomDataGenerator;
@@ -717,7 +715,6 @@ namespace DotNetOpenAuth.Messaging {
 		internal static string ComputeHash(this HashAlgorithm algorithm, string value, Encoding encoding = null) {
 			Requires.NotNull(algorithm, "algorithm");
 			Requires.NotNull(value, "value");
-			Contract.Ensures(Contract.Result<string>() != null);
 
 			encoding = encoding ?? Encoding.UTF8;
 			byte[] bytesToHash = encoding.GetBytes(value);
@@ -736,7 +733,6 @@ namespace DotNetOpenAuth.Messaging {
 		internal static string ComputeHash(this HashAlgorithm algorithm, IDictionary<string, string> data, Encoding encoding = null) {
 			Requires.NotNull(algorithm, "algorithm");
 			Requires.NotNull(data, "data");
-			Contract.Ensures(Contract.Result<string>() != null);
 
 			// Assemble the dictionary to sign, taking care to remove the signature itself
 			// in order to accurately reproduce the original signature (which of course didn't include
@@ -757,7 +753,6 @@ namespace DotNetOpenAuth.Messaging {
 		internal static string ComputeHash(this HashAlgorithm algorithm, IEnumerable<KeyValuePair<string, string>> sortedData, Encoding encoding = null) {
 			Requires.NotNull(algorithm, "algorithm");
 			Requires.NotNull(sortedData, "sortedData");
-			Contract.Ensures(Contract.Result<string>() != null);
 
 			return ComputeHash(algorithm, CreateQueryString(sortedData), encoding);
 		}
@@ -936,7 +931,7 @@ namespace DotNetOpenAuth.Messaging {
 		internal static KeyValuePair<string, CryptoKey> GetCurrentKey(this ICryptoKeyStore cryptoKeyStore, string bucket, TimeSpan minimumRemainingLife, int keySize = 256) {
 			Requires.NotNull(cryptoKeyStore, "cryptoKeyStore");
 			Requires.NotNullOrEmpty(bucket, "bucket");
-			Requires.True(keySize % 8 == 0, "keySize");
+			Requires.That(keySize % 8 == 0, "keySize", "Key size must be a multiple of 8.");
 
 			var cryptoKeyPair = cryptoKeyStore.GetKeys(bucket).FirstOrDefault(pair => pair.Value.Key.Length == keySize / 8);
 			if (cryptoKeyPair.Value == null || cryptoKeyPair.Value.ExpiresUtc < DateTime.UtcNow + minimumRemainingLife) {
@@ -979,7 +974,6 @@ namespace DotNetOpenAuth.Messaging {
 		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "No apparent problem.  False positive?")]
 		internal static byte[] Compress(byte[] buffer, CompressionMethod method = CompressionMethod.Deflate) {
 			Requires.NotNull(buffer, "buffer");
-			Contract.Ensures(Contract.Result<byte[]>() != null);
 
 			using (var ms = new MemoryStream()) {
 				Stream compressingStream = null;
@@ -992,7 +986,7 @@ namespace DotNetOpenAuth.Messaging {
 							compressingStream = new GZipStream(ms, CompressionMode.Compress, true);
 							break;
 						default:
-							Requires.InRange(false, "method");
+							Requires.Range(false, "method");
 							break;
 					}
 
@@ -1016,7 +1010,6 @@ namespace DotNetOpenAuth.Messaging {
 		[SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "This Dispose is safe.")]
 		internal static byte[] Decompress(byte[] buffer, CompressionMethod method = CompressionMethod.Deflate) {
 			Requires.NotNull(buffer, "buffer");
-			Contract.Ensures(Contract.Result<byte[]>() != null);
 
 			using (var compressedDataStream = new MemoryStream(buffer)) {
 				using (var decompressedDataStream = new MemoryStream()) {
@@ -1030,7 +1023,7 @@ namespace DotNetOpenAuth.Messaging {
 								decompressingStream = new GZipStream(compressedDataStream, CompressionMode.Decompress, true);
 								break;
 							default:
-								Requires.InRange(false, "method");
+								Requires.Range(false, "method");
 								break;
 						}
 
@@ -1070,7 +1063,6 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>A data buffer.</returns>
 		internal static byte[] FromBase64WebSafeString(string base64WebSafe) {
 			Requires.NotNullOrEmpty(base64WebSafe, "base64WebSafe");
-			Contract.Ensures(Contract.Result<byte[]>() != null);
 
 			// Restore the padding characters and original URL-unsafe characters.
 			int missingPaddingCharacters;
@@ -1158,8 +1150,8 @@ namespace DotNetOpenAuth.Messaging {
 		internal static int CopyTo(this Stream copyFrom, Stream copyTo) {
 			Requires.NotNull(copyFrom, "copyFrom");
 			Requires.NotNull(copyTo, "copyTo");
-			Requires.True(copyFrom.CanRead, "copyFrom", MessagingStrings.StreamUnreadable);
-			Requires.True(copyTo.CanWrite, "copyTo", MessagingStrings.StreamUnwritable);
+			Requires.That(copyFrom.CanRead, "copyFrom", MessagingStrings.StreamUnreadable);
+			Requires.That(copyTo.CanWrite, "copyTo", MessagingStrings.StreamUnwritable);
 			return CopyUpTo(copyFrom, copyTo, int.MaxValue);
 		}
 #endif
@@ -1178,8 +1170,8 @@ namespace DotNetOpenAuth.Messaging {
 		internal static int CopyUpTo(this Stream copyFrom, Stream copyTo, int maximumBytesToCopy) {
 			Requires.NotNull(copyFrom, "copyFrom");
 			Requires.NotNull(copyTo, "copyTo");
-			Requires.True(copyFrom.CanRead, "copyFrom", MessagingStrings.StreamUnreadable);
-			Requires.True(copyTo.CanWrite, "copyTo", MessagingStrings.StreamUnwritable);
+			Requires.That(copyFrom.CanRead, "copyFrom", MessagingStrings.StreamUnreadable);
+			Requires.That(copyTo.CanWrite, "copyTo", MessagingStrings.StreamUnwritable);
 
 			byte[] buffer = new byte[1024];
 			int readBytes;
@@ -1201,7 +1193,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>A seekable stream with the same contents as the original.</returns>
 		internal static Stream CreateSnapshot(this Stream copyFrom) {
 			Requires.NotNull(copyFrom, "copyFrom");
-			Requires.True(copyFrom.CanRead, "copyFrom", MessagingStrings.StreamUnreadable);
+			Requires.That(copyFrom.CanRead, "copyFrom", MessagingStrings.StreamUnreadable);
 
 			MemoryStream copyTo = new MemoryStream(copyFrom.CanSeek ? (int)copyFrom.Length : 4 * 1024);
 			try {
@@ -1221,7 +1213,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>The newly created instance.</returns>
 		internal static HttpWebRequest Clone(this HttpWebRequest request) {
 			Requires.NotNull(request, "request");
-			Requires.True(request.RequestUri != null, "request");
+			Requires.That(request.RequestUri != null, "request", "request.RequestUri cannot be null.");
 			return Clone(request, request.RequestUri);
 		}
 
@@ -1434,7 +1426,6 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>The formulated querystring style string.</returns>
 		internal static string CreateQueryString(IEnumerable<KeyValuePair<string, string>> args) {
 			Requires.NotNull(args, "args");
-			Contract.Ensures(Contract.Result<string>() != null);
 
 			if (!args.Any()) {
 				return string.Empty;
@@ -1638,7 +1629,6 @@ namespace DotNetOpenAuth.Messaging {
 		/// <c>Dictionary&lt;string, string&gt;</c> does not allow null keys.
 		/// </remarks>
 		internal static Dictionary<string, string> ToDictionary(this NameValueCollection nvc) {
-			Contract.Ensures((nvc != null && Contract.Result<Dictionary<string, string>>() != null) || (nvc == null && Contract.Result<Dictionary<string, string>>() == null));
 			return ToDictionary(nvc, false);
 		}
 
@@ -1654,7 +1644,6 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>The generated dictionary, or null if <paramref name="nvc"/> is null.</returns>
 		/// <exception cref="ArgumentException">Thrown if <paramref name="throwOnNullKey"/> is <c>true</c> and a null key is encountered.</exception>
 		internal static Dictionary<string, string> ToDictionary(this NameValueCollection nvc, bool throwOnNullKey) {
-			Contract.Ensures((nvc != null && Contract.Result<Dictionary<string, string>>() != null) || (nvc == null && Contract.Result<Dictionary<string, string>>() == null));
 			if (nvc == null) {
 				return null;
 			}
@@ -1708,7 +1697,6 @@ namespace DotNetOpenAuth.Messaging {
 			Requires.NotNull(source, "source");
 			Requires.NotNull(comparer, "comparer");
 			Requires.NotNull(keySelector, "keySelector");
-			Contract.Ensures(Contract.Result<IOrderedEnumerable<TSource>>() != null);
 			return System.Linq.Enumerable.OrderBy<TSource, TKey>(source, keySelector, new ComparisonHelper<TKey>(comparer));
 		}
 
@@ -1771,7 +1759,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>The read buffer.</returns>
 		internal static byte[] ReadBuffer(this BinaryReader reader, int maxBufferSize) {
 			Requires.NotNull(reader, "reader");
-			Requires.InRange(maxBufferSize > 0 && maxBufferSize < 1024 * 1024, "maxBufferSize");
+			Requires.Range(maxBufferSize > 0 && maxBufferSize < 1024 * 1024, "maxBufferSize");
 			int length = reader.ReadInt32();
 			ErrorUtilities.VerifyProtocol(length <= maxBufferSize, MessagingStrings.DataCorruptionDetected);
 			byte[] buffer = new byte[length];

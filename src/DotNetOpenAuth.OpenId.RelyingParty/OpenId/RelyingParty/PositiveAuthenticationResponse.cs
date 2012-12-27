@@ -7,11 +7,11 @@
 namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
 	using System.Diagnostics;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
+	using Validation;
 
 	/// <summary>
 	/// Wraps a positive assertion response in an <see cref="IAuthenticationResponse"/> instance

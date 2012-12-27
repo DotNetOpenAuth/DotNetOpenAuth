@@ -8,17 +8,16 @@ namespace DotNetOpenAuth {
 	using System;
 	using System.Collections.Specialized;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text.RegularExpressions;
 	using System.Web;
 	using System.Web.UI;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// Utility methods for working with URIs.
 	/// </summary>
-	[ContractVerification(true)]
 	internal static class UriUtil {
 		/// <summary>
 		/// Tests a URI for the presence of an OAuth payload.
@@ -28,15 +27,14 @@ namespace DotNetOpenAuth {
 		/// <returns>
 		/// True if the URI contains an OAuth message.
 		/// </returns>
-		[ContractVerification(false)] // bugs/limitations in CC static analysis
-		internal static bool QueryStringContainPrefixedParameters(this Uri uri, string prefix) {
+			internal static bool QueryStringContainPrefixedParameters(this Uri uri, string prefix) {
 			Requires.NotNullOrEmpty(prefix, "prefix");
 			if (uri == null) {
 				return false;
 			}
 
 			NameValueCollection nvc = HttpUtility.ParseQueryString(uri.Query);
-			Contract.Assume(nvc != null); // BCL
+			Assumes.True(nvc != null); // BCL
 			return nvc.Keys.OfType<string>().Any(key => key.StartsWith(prefix, StringComparison.Ordinal));
 		}
 
@@ -60,7 +58,6 @@ namespace DotNetOpenAuth {
 		/// <returns>The string version of the Uri.</returns>
 		internal static string ToStringWithImpliedPorts(this UriBuilder builder) {
 			Requires.NotNull(builder, "builder");
-			Contract.Ensures(Contract.Result<string>() != null);
 
 			// We only check for implied ports on HTTP and HTTPS schemes since those
 			// are the only ones supported by OpenID anyway.
@@ -73,7 +70,7 @@ namespace DotNetOpenAuth {
 				// we're removing only the port (and not something in the query string that 
 				// looks like a port.
 				string result = Regex.Replace(url, @"^(https?://[^:]+):\d+", m => m.Groups[1].Value, RegexOptions.IgnoreCase);
-				Contract.Assume(result != null); // Regex.Replace never returns null
+				Assumes.True(result != null); // Regex.Replace never returns null
 				return result;
 			} else {
 				// The port must be explicitly given anyway.
@@ -95,12 +92,12 @@ namespace DotNetOpenAuth {
 			}
 
 			if (page != null && !designMode) {
-				Contract.Assume(page.Request != null);
+				Assumes.True(page.Request != null);
 
 				// Validate new value by trying to construct a Realm object based on it.
 				string relativeUrl = page.ResolveUrl(value);
-				Contract.Assume(page.Request.Url != null);
-				Contract.Assume(relativeUrl != null);
+				Assumes.True(page.Request.Url != null);
+				Assumes.True(relativeUrl != null);
 				new Uri(page.Request.Url, relativeUrl); // throws an exception on failure.
 			} else {
 				// We can't fully test it, but it should start with either ~/ or a protocol.

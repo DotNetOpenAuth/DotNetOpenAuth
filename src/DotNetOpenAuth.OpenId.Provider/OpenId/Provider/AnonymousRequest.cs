@@ -7,9 +7,9 @@
 namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
+	using Validation;
 
 	/// <summary>
 	/// Provides access to a host Provider to read an incoming extension-only checkid request message,
@@ -31,7 +31,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		internal AnonymousRequest(OpenIdProvider provider, SignedResponseRequest request)
 			: base(provider, request) {
 			Requires.NotNull(provider, "provider");
-			Requires.True(!(request is CheckIdRequest), "request");
+			Requires.That(!(request is CheckIdRequest), "request", "request cannot be CheckIdRequest");
 
 			this.positiveResponse = new IndirectSignedResponse(request);
 		}

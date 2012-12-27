@@ -12,7 +12,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.ComponentModel;
-	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.IdentityModel.Claims;
 	using System.Linq;
@@ -327,7 +326,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="writer">The <see cref="T:System.Web.UI.HtmlTextWriter"/> object that receives the server control content.</param>
 		protected override void Render(HtmlTextWriter writer) {
-			Contract.Assume(writer != null, "Missing contract");
+			Assumes.True(writer != null, "Missing contract");
 			writer.AddAttribute(HtmlTextWriterAttribute.Class, "OpenIdProviders");
 			writer.RenderBeginTag(HtmlTextWriterTag.Ul);
 

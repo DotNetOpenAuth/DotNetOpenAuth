@@ -6,7 +6,6 @@
 
 namespace DotNetOpenAuth.Configuration {
 	using System.Configuration;
-	using System.Diagnostics.Contracts;
 
 	/// <summary>
 	/// Represents the &lt;oauth&gt; element in the host's .config file.

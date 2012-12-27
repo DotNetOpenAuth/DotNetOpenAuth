@@ -7,7 +7,6 @@
 namespace DotNetOpenAuth.OpenId.Provider.Behaviors {
 	using System;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
@@ -17,6 +16,7 @@ namespace DotNetOpenAuth.OpenId.Provider.Behaviors {
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.Provider;
 	using DotNetOpenAuth.OpenId.RelyingParty;
+	using Validation;
 
 	/// <summary>
 	/// Implements the Identity, Credential, &amp; Access Management (ICAM) OpenID 2.0 Profile
@@ -182,8 +182,8 @@ namespace DotNetOpenAuth.OpenId.Provider.Behaviors {
 		/// <param name="maximumLifetime">The maximum lifetime.</param>
 		/// <param name="securitySettings">The security settings to adjust.</param>
 		private static void SetMaximumAssociationLifetimeToNotExceed(string associationType, TimeSpan maximumLifetime, ProviderSecuritySettings securitySettings) {
-			Contract.Requires(!string.IsNullOrEmpty(associationType));
-			Contract.Requires(maximumLifetime.TotalSeconds > 0);
+			Requires.NotNullOrEmpty(associationType, "associationType");
+			Requires.That(maximumLifetime.TotalSeconds > 0, "maximumLifetime", "requires positive timespan");
 			if (!securitySettings.AssociationLifetimes.ContainsKey(associationType) ||
 				securitySettings.AssociationLifetimes[associationType] > maximumLifetime) {
 				securitySettings.AssociationLifetimes[associationType] = maximumLifetime;

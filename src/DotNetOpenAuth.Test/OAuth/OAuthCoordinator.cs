@@ -6,12 +6,12 @@
 
 namespace DotNetOpenAuth.Test.OAuth {
 	using System;
-	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.Test.Mocks;
+	using Validation;
 
 	/// <summary>
 	/// Runs a Consumer and Service Provider simultaneously so they can interact in a full simulation.

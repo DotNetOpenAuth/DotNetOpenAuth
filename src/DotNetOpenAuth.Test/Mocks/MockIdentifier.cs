@@ -7,10 +7,10 @@
 namespace DotNetOpenAuth.Test.Mocks {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.RelyingParty;
+	using Validation;
 
 	/// <summary>
 	/// Performs similar to an ordinary <see cref="Identifier"/>, but when called upon

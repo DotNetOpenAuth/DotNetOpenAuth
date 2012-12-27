@@ -7,8 +7,8 @@
 namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 	using System;
 	using System.Diagnostics;
-	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// An individual attribute to be requested of the OpenID Provider using
@@ -84,7 +84,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 			}
 
 			set {
-				Requires.InRange(value > 0, "value");
+				Requires.Range(value > 0, "value");
 				this.count = value;
 			}
 		}
@@ -100,7 +100,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		/// </returns>
 		public AttributeValues Respond(params string[] values) {
 			Requires.NotNull(values, "values");
-			Requires.True(values.Length <= this.Count, "values");
+			Requires.That(values.Length <= this.Count, "values", "requires values.Length <= this.Count");
 			return new AttributeValues(this.TypeUri, values);
 		}
 

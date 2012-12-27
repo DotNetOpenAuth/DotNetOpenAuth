@@ -8,7 +8,6 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
-	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Linq;
 	using DotNetOpenAuth.Messaging;
@@ -69,7 +68,6 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 		/// is all the attribute request details.</value>
 		public KeyedCollection<string, AttributeRequest> Attributes {
 			get {
-				Contract.Ensures(Contract.Result<KeyedCollection<string, AttributeRequest>>() != null);
 				return this.attributes;
 			}
 		}

@@ -7,13 +7,12 @@
 namespace DotNetOpenAuth.OAuth2 {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// A description of a client from an Authorization Server's point of view.
 	/// </summary>
-	[ContractClass(typeof(IClientDescriptionContract))]
 	public interface IClientDescription {
 		/// <summary>
 		/// Gets the callback to use when an individual authorization request
@@ -68,71 +67,5 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// should be done using <see cref="MessagingUtilities.EqualsConstantTime"/> to mitigate timing attacks.
 		/// </remarks>
 		bool IsValidClientSecret(string secret);
-	}
-
-	/// <summary>
-	/// Contract class for the <see cref="IClientDescription"/> interface.
-	/// </summary>
-	[ContractClassFor(typeof(IClientDescription))]
-	internal abstract class IClientDescriptionContract : IClientDescription {
-		#region IClientDescription Members
-
-		/// <summary>
-		/// Gets the type of the client.
-		/// </summary>
-		ClientType IClientDescription.ClientType {
-			get { throw new NotImplementedException(); }
-		}
-
-		/// <summary>
-		/// Gets the callback to use when an individual authorization request
-		/// does not include an explicit callback URI.
-		/// </summary>
-		/// <value>
-		/// An absolute URL; or <c>null</c> if none is registered.
-		/// </value>
-		Uri IClientDescription.DefaultCallback {
-			get {
-				Contract.Ensures(Contract.Result<Uri>() == null || Contract.Result<Uri>().IsAbsoluteUri);
-				throw new NotImplementedException();
-			}
-		}
-
-		/// <summary>
-		/// Gets a value indicating whether a non-empty secret is registered for this client.
-		/// </summary>
-		bool IClientDescription.HasNonEmptySecret {
-			get { throw new NotImplementedException(); }
-		}
-
-		/// <summary>
-		/// Determines whether a callback URI included in a client's authorization request
-		/// is among those allowed callbacks for the registered client.
-		/// </summary>
-		/// <param name="callback">The requested callback URI.</param>
-		/// <returns>
-		///   <c>true</c> if the callback is allowed; otherwise, <c>false</c>.
-		/// </returns>
-		bool IClientDescription.IsCallbackAllowed(Uri callback) {
-			Requires.NotNull(callback, "callback");
-			Requires.True(callback.IsAbsoluteUri, "callback");
-			throw new NotImplementedException();
-		}
-
-		/// <summary>
-		/// Checks whether the specified client secret is correct.
-		/// </summary>
-		/// <param name="secret">The secret obtained from the client.</param>
-		/// <returns><c>true</c> if the secret matches the one in the authorization server's record for the client; <c>false</c> otherwise.</returns>
-		/// <remarks>
-		/// All string equality checks, whether checking secrets or their hashes,
-		/// should be done using <see cref="MessagingUtilities.EqualsConstantTime"/> to mitigate timing attacks.
-		/// </remarks>
-		bool IClientDescription.IsValidClientSecret(string secret) {
-			Requires.NotNullOrEmpty(secret, "secret");
-			throw new NotImplementedException();
-		}
-
-		#endregion
 	}
 }

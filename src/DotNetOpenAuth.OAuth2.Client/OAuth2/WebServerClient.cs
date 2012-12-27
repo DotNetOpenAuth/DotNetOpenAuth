@@ -7,7 +7,6 @@
 namespace DotNetOpenAuth.OAuth2 {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Linq;
 	using System.Net;
@@ -18,6 +17,7 @@ namespace DotNetOpenAuth.OAuth2 {
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2.Messages;
+	using Validation;
 
 	/// <summary>
 	/// An OAuth 2.0 consumer designed for web applications.
@@ -89,9 +89,8 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <returns>The authorization request.</returns>
 		public OutgoingWebResponse PrepareRequestUserAuthorization(IAuthorizationState authorization) {
 			Requires.NotNull(authorization, "authorization");
-			Requires.ValidState(authorization.Callback != null || (HttpContext.Current != null && HttpContext.Current.Request != null), MessagingStrings.HttpContextRequired);
-			Requires.ValidState(!string.IsNullOrEmpty(this.ClientIdentifier), Strings.RequiredPropertyNotYetPreset, "ClientIdentifier");
-			Contract.Ensures(Contract.Result<OutgoingWebResponse>() != null);
+			RequiresEx.ValidState(authorization.Callback != null || (HttpContext.Current != null && HttpContext.Current.Request != null), MessagingStrings.HttpContextRequired);
+			RequiresEx.ValidState(!string.IsNullOrEmpty(this.ClientIdentifier), Strings.RequiredPropertyNotYetPreset, "ClientIdentifier");
 
 			if (authorization.Callback == null) {
 				authorization.Callback = this.Channel.GetRequestFromContext().GetPublicFacingUrl()
@@ -136,8 +135,8 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="request">The incoming HTTP request that may carry an authorization response.</param>
 		/// <returns>The authorization state that contains the details of the authorization.</returns>
 		public IAuthorizationState ProcessUserAuthorization(HttpRequestBase request = null) {
-			Requires.ValidState(!string.IsNullOrEmpty(this.ClientIdentifier), Strings.RequiredPropertyNotYetPreset, "ClientIdentifier");
-			Requires.ValidState(this.ClientCredentialApplicator != null, Strings.RequiredPropertyNotYetPreset, "ClientCredentialApplicator");
+			RequiresEx.ValidState(!string.IsNullOrEmpty(this.ClientIdentifier), Strings.RequiredPropertyNotYetPreset, "ClientIdentifier");
+			RequiresEx.ValidState(this.ClientCredentialApplicator != null, Strings.RequiredPropertyNotYetPreset, "ClientCredentialApplicator");
 
 			if (request == null) {
 				request = this.Channel.GetRequestFromContext();

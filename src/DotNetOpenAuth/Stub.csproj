@@ -4,7 +4,6 @@
 
 	<PropertyGroup>
 		<SuppressBuildTarget>true</SuppressBuildTarget>
-		<AddContractsAssemblyForDelaySigning>false</AddContractsAssemblyForDelaySigning>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -18,7 +17,6 @@
 		<AppDesignerFolder>Properties</AppDesignerFolder>
 		<AssemblyName>DotNetOpenAuth</AssemblyName>
 		<OutputPath>$(IntermediatePath)\stub\</OutputPath>
-		<NoCodeContracts>true</NoCodeContracts>
 	</PropertyGroup>
 	<Import Project="$(ProjectRoot)tools\DotNetOpenAuth.Product.props" />
 	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">

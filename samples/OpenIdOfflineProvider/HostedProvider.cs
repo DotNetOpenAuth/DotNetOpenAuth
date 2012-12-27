@@ -7,7 +7,6 @@
 namespace DotNetOpenAuth.OpenIdOfflineProvider {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.IO;
 	using System.Linq;
 	using System.Net;
@@ -16,6 +15,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Provider;
 	using log4net;
+	using Validation;
 
 	/// <summary>
 	/// The OpenID Provider host.
@@ -79,7 +79,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// </summary>
 		internal Uri ProviderEndpoint {
 			get {
-				Contract.Requires(this.IsRunning);
+				Assumes.True(this.IsRunning);
 				return new Uri(this.httpHost.BaseUri, ProviderPath);
 			}
 		}
@@ -89,7 +89,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// </summary>
 		internal Uri UserIdentityPageBase {
 			get {
-				Contract.Requires(this.IsRunning);
+				Assumes.True(this.IsRunning);
 				return new Uri(this.httpHost.BaseUri, UserIdentifierPath);
 			}
 		}
@@ -99,7 +99,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// </summary>
 		internal Uri OPIdentifier {
 			get {
-				Contract.Requires(this.IsRunning);
+				Assumes.True(this.IsRunning);
 				return new Uri(this.httpHost.BaseUri, OPIdentifierPath);
 			}
 		}
@@ -115,7 +115,6 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// Starts the provider.
 		/// </summary>
 		internal void StartProvider() {
-			Contract.Ensures(this.IsRunning);
 			this.httpHost = HttpHost.CreateHost(this.RequestHandler);
 		}
 
@@ -123,7 +122,6 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// Stops the provider.
 		/// </summary>
 		internal void StopProvider() {
-			Contract.Ensures(!this.IsRunning);
 			if (this.httpHost != null) {
 				this.httpHost.Dispose();
 				this.httpHost = null;
@@ -156,7 +154,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// <param name="localId">The local id.</param>
 		/// <returns>The HTML document to return to the RP.</returns>
 		private static string GenerateHtmlDiscoveryDocument(Uri providerEndpoint, string localId) {
-			Contract.Requires(providerEndpoint != null);
+			Requires.NotNull(providerEndpoint, "providerEndpoint");
 
 			const string DelegatedHtmlDiscoveryFormat = @"<html><head>
 				<link rel=""openid.server"" href=""{0}"" />
@@ -183,8 +181,8 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// <param name="supportedExtensions">The supported extensions.</param>
 		/// <returns>The content of the XRDS document.</returns>
 		private static string GenerateXrdsOPIdentifierDocument(Uri providerEndpoint, IEnumerable<string> supportedExtensions) {
-			Contract.Requires(providerEndpoint != null);
-			Contract.Requires(supportedExtensions != null);
+			Requires.NotNull(providerEndpoint, "providerEndpoint");
+			Requires.NotNull(supportedExtensions, "supportedExtensions");
 
 			const string OPIdentifierDiscoveryFormat = @"<xrds:XRDS
 	xmlns:xrds='xri://$xrds'
@@ -213,11 +211,12 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// </summary>
 		/// <param name="context">The HttpListener context.</param>
 		private void RequestHandler(HttpListenerContext context) {
-			Contract.Requires(context != null);
-			Contract.Requires(context.Response.OutputStream != null);
-			Contract.Requires(this.ProcessRequest != null);
+			Requires.NotNull(context, "context");
+			Requires.NotNull(context.Response.OutputStream, "context.Response.OutputStream");
+			Requires.NotNull(this.ProcessRequest, "this.ProcessRequest");
+
 			Stream outputStream = context.Response.OutputStream;
-			Contract.Assume(outputStream != null); // CC static verification shortcoming.
+			Assumes.True(outputStream != null); // CC static verification shortcoming.
 
 			UriBuilder providerEndpointBuilder = new UriBuilder();
 			providerEndpointBuilder.Scheme = Uri.UriSchemeHttp;

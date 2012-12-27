@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 	using System.Net;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// The facebook client.

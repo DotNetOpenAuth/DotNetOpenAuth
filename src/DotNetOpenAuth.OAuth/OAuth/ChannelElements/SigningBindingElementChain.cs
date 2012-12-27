@@ -7,10 +7,10 @@
 namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// A tamper protection applying binding element that can use any of several given
@@ -31,8 +31,8 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// </param>
 		internal SigningBindingElementChain(ITamperProtectionChannelBindingElement[] signers) {
 			Requires.NotNullOrEmpty(signers, "signers");
-			Requires.NullOrWithNoNullElements(signers, "signers");
-			Requires.True(signers.Select(s => s.Protection).Distinct().Count() == 1, "signers", OAuthStrings.SigningElementsMustShareSameProtection);
+			Requires.NullOrNotNullElements(signers, "signers");
+			Requires.That(signers.Select(s => s.Protection).Distinct().Count() == 1, "signers", OAuthStrings.SigningElementsMustShareSameProtection);
 
 			this.signers = signers;
 		}

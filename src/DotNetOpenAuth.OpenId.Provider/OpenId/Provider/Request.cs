@@ -7,19 +7,17 @@
 namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
+	using Validation;
 
 	/// <summary>
 	/// Implements the <see cref="IRequest"/> interface for all incoming
 	/// request messages to an OpenID Provider.
 	/// </summary>
 	[Serializable]
-	[ContractClass(typeof(RequestContract))]
-	[ContractVerification(true)]
 	internal abstract class Request : IRequest {
 		/// <summary>
 		/// The incoming request message.
@@ -99,8 +97,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <exception cref="InvalidOperationException">Thrown if <see cref="IsResponseReady"/> is <c>false</c>.</exception>
 		internal IProtocolMessage Response {
 			get {
-				Requires.ValidState(this.IsResponseReady, OpenIdStrings.ResponseNotReady);
-				Contract.Ensures(Contract.Result<IProtocolMessage>() != null);
+				RequiresEx.ValidState(this.IsResponseReady, OpenIdStrings.ResponseNotReady);
 
 				if (this.responseExtensions.Count > 0) {
 					var extensibleResponse = this.ResponseMessage as IProtocolMessageWithExtensions;

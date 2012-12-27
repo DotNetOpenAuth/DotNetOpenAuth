@@ -7,13 +7,13 @@
 namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.RelyingParty;
+	using Validation;
 
 	/// <summary>
 	/// This binding element adds a nonce to a Relying Party's outgoing 
@@ -261,7 +261,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 				Requires.NotNullOrEmpty(value, "value");
 
 				byte[] nonce = MessagingUtilities.FromBase64WebSafeString(value);
-				Contract.Assume(nonce != null);
+				Assumes.True(nonce != null);
 				DateTime creationDateUtc = new DateTime(BitConverter.ToInt64(nonce, 0), DateTimeKind.Utc);
 				byte[] randomPart = new byte[NonceByteLength];
 				Array.Copy(nonce, sizeof(long), randomPart, 0, NonceByteLength);

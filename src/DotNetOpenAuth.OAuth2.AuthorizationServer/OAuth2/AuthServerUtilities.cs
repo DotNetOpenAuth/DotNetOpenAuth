@@ -7,13 +7,13 @@
 namespace DotNetOpenAuth.OAuth2 {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2.ChannelElements;
 	using DotNetOpenAuth.OAuth2.Messages;
+	using Validation;
 
 	/// <summary>
 	/// Utility methods for authorization servers.
@@ -27,7 +27,6 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <returns>The client information.  Never null.</returns>
 		internal static IClientDescription GetClientOrThrow(this IAuthorizationServerHost authorizationServer, string clientIdentifier) {
 			Requires.NotNullOrEmpty(clientIdentifier, "clientIdentifier");
-			Contract.Ensures(Contract.Result<IClientDescription>() != null);
 
 			try {
 				var result = authorizationServer.GetClient(clientIdentifier);

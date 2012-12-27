@@ -6,11 +6,11 @@
 
 namespace DotNetOpenAuth {
 	using System;
-	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using DotNetOpenAuth.Loggers;
 	using DotNetOpenAuth.Messaging;
 	using log4net.Core;
+	using Validation;
 
 	/// <summary>
 	/// A general logger for the entire DotNetOpenAuth library.

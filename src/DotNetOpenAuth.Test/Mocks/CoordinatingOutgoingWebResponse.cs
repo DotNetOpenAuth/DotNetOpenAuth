@@ -8,10 +8,10 @@ namespace DotNetOpenAuth.Test.Mocks {
 	using System;
 	using System.Collections.Generic;
 	using System.ComponentModel;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	internal class CoordinatingOutgoingWebResponse : OutgoingWebResponse {
 		private CoordinatingChannel receivingChannel;

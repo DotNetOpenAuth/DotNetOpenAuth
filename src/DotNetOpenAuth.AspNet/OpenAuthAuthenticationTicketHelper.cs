@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.AspNet {
 	using System.Diagnostics;
 	using System.Web;
 	using System.Web.Security;
+	using Validation;
 
 	/// <summary>
 	/// Helper methods for setting and retrieving a custom forms authentication ticket for delegation protocols.

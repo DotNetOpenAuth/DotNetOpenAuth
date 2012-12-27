@@ -6,9 +6,9 @@
 
 namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
-	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
+	using Validation;
 
 	/// <summary>
 	/// Implements the <see cref="IAuthenticationRequest"/> interface

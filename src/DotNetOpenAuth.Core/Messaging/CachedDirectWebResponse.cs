@@ -8,15 +8,14 @@ namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.IO;
 	using System.Net;
 	using System.Text;
+	using Validation;
 
 	/// <summary>
 	/// Cached details on the response from a direct web request to a remote party.
 	/// </summary>
-	[ContractVerification(true)]
 	[DebuggerDisplay("{Status} {ContentType.MediaType}, length: {ResponseStream.Length}")]
 	internal class CachedDirectWebResponse : IncomingWebResponse {
 		/// <summary>
@@ -160,14 +159,13 @@ namespace DotNetOpenAuth.Messaging {
 		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Diagnostics.Contracts.__ContractsRuntime.Assume(System.Boolean,System.String,System.String)", Justification = "No localization required.")]
 		private static MemoryStream CacheNetworkStreamAndClose(HttpWebResponse response, int maximumBytesToRead) {
 			Requires.NotNull(response, "response");
-			Contract.Ensures(Contract.Result<MemoryStream>() != null);
 
 			// Now read and cache the network stream
 			Stream networkStream = response.GetResponseStream();
 			MemoryStream cachedStream = new MemoryStream(response.ContentLength < 0 ? 4 * 1024 : Math.Min((int)response.ContentLength, maximumBytesToRead));
 			try {
-				Contract.Assume(networkStream.CanRead, "HttpWebResponse.GetResponseStream() always returns a readable stream."); // CC missing
-				Contract.Assume(cachedStream.CanWrite, "This is a MemoryStream -- it's always writable."); // CC missing
+				Assumes.True(networkStream.CanRead, "HttpWebResponse.GetResponseStream() always returns a readable stream."); // CC missing
+				Assumes.True(cachedStream.CanWrite, "This is a MemoryStream -- it's always writable."); // CC missing
 				networkStream.CopyTo(cachedStream);
 				cachedStream.Seek(0, SeekOrigin.Begin);
 

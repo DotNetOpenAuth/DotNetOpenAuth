@@ -6,11 +6,11 @@
 
 namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
-	using System.Diagnostics.Contracts;
 	using System.Threading;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
+	using Validation;
 
 	/// <summary>
 	/// Provides association storage in the association handle itself, but embedding signed and encrypted association

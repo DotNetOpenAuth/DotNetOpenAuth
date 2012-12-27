@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
+	using Validation;
 
 	/// <summary>
 	/// Allows a custom class or struct to be serializable between itself and a string representation.
@@ -21,7 +22,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <param name="converterType">The <see cref="IMessagePartEncoder"/> implementing type to use for serializing this type.</param>
 		public DefaultEncoderAttribute(Type converterType) {
 			Requires.NotNull(converterType, "converterType");
-			Requires.True(typeof(IMessagePartEncoder).IsAssignableFrom(converterType), "Argument must be a type that implements {0}.", typeof(IMessagePartEncoder).Name);
+			Requires.That(typeof(IMessagePartEncoder).IsAssignableFrom(converterType), "Argument must be a type that implements {0}.", typeof(IMessagePartEncoder).Name);
 			this.Encoder = (IMessagePartEncoder)Activator.CreateInstance(converterType);
 		}
 

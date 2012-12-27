@@ -9,7 +9,6 @@ namespace DotNetOpenAuth.OAuth {
 	using System.Collections.Generic;
 	using System.ComponentModel;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Security.Principal;
 	using System.ServiceModel.Channels;
@@ -19,6 +18,7 @@ namespace DotNetOpenAuth.OAuth {
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.OAuth.Messages;
+	using Validation;
 
 	/// <summary>
 	/// A web application that allows access via OAuth.
@@ -109,8 +109,6 @@ namespace DotNetOpenAuth.OAuth {
 		[EditorBrowsable(EditorBrowsableState.Advanced)]
 		public static INonceStore HttpApplicationStore {
 			get {
-				Contract.Ensures(Contract.Result<INonceStore>() != null);
-
 				HttpContext context = HttpContext.Current;
 				ErrorUtilities.VerifyOperation(context != null, Strings.StoreRequiredWhenNoHttpContextAvailable, typeof(INonceStore).Name);
 				var store = (INonceStore)context.Application[ApplicationStoreKey];
@@ -182,7 +180,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// length of the final string.</param>
 		/// <returns>The verification code.</returns>
 		public static string CreateVerificationCode(VerificationCodeFormat format, int length) {
-			Requires.InRange(length >= 0, "length");
+			Requires.Range(length >= 0, "length");
 
 			switch (format) {
 				case VerificationCodeFormat.IncludedInCallback:

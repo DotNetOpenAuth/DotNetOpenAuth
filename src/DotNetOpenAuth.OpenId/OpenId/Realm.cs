@@ -19,6 +19,7 @@ namespace DotNetOpenAuth.OpenId {
 	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.Xrds;
 	using DotNetOpenAuth.Yadis;
+	using Validation;
 
 	/// <summary>
 	/// A trust root to validate requests and match return URLs against.
@@ -113,8 +114,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// </remarks>
 		public static Realm AutoDetect {
 			get {
-				Requires.ValidState(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
-				Contract.Ensures(Contract.Result<Realm>() != null);
+				RequiresEx.ValidState(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
 
 				var realmUrl = new UriBuilder(MessagingUtilities.GetWebRoot());
 
@@ -260,7 +260,6 @@ namespace DotNetOpenAuth.OpenId {
 		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "Not all Realms are valid URLs.")]
 		[DebuggerStepThrough]
 		public static implicit operator Realm(string uri) {
-			Contract.Ensures((Contract.Result<Realm>() != null) == (uri != null));
 			return uri != null ? new Realm(uri) : null;
 		}
 
@@ -271,7 +270,6 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>The result of the conversion.</returns>
 		[DebuggerStepThrough]
 		public static implicit operator Realm(Uri uri) {
-			Contract.Ensures((Contract.Result<Realm>() != null) == (uri != null));
 			return uri != null ? new Realm(uri) : null;
 		}
 
@@ -282,7 +280,6 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>The result of the conversion.</returns>
 		[DebuggerStepThrough]
 		public static implicit operator string(Realm realm) {
-			Contract.Ensures((Contract.Result<string>() != null) == (realm != null));
 			return realm != null ? realm.ToString() : null;
 		}
 
