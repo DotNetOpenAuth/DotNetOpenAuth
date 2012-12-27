@@ -8,7 +8,6 @@ namespace DotNetOpenAuth.OAuth {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Net;
 	using DotNetOpenAuth.Configuration;
@@ -279,7 +278,6 @@ namespace DotNetOpenAuth.OAuth {
 		/// </returns>
 		protected AuthorizedTokenResponse ProcessUserAuthorization(string requestToken, string verifier) {
 			Requires.NotNullOrEmpty(requestToken, "requestToken");
-			Contract.Ensures(Contract.Result<AuthorizedTokenResponse>() != null);
 
 			var requestAccess = new AuthorizedTokenRequest(this.ServiceProvider.AccessTokenEndpoint, this.ServiceProvider.Version) {
 				RequestToken = requestToken,

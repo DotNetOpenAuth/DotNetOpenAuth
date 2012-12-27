@@ -7,7 +7,6 @@
 namespace DotNetOpenAuth.Test.OpenId.Extensions {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;

@@ -6,14 +6,12 @@
 
 namespace DotNetOpenAuth.Configuration {
 	using System.Configuration;
-	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Provider;
 
 	/// <summary>
 	/// The section in the .config file that allows customization of OpenID Provider behaviors.
 	/// </summary>
-	[ContractVerification(true)]
 	internal class OpenIdProviderElement : ConfigurationElement {
 		/// <summary>
 		/// The name of the &lt;provider&gt; sub-element.

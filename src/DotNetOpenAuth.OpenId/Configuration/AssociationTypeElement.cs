@@ -8,7 +8,6 @@ namespace DotNetOpenAuth.Configuration {
 	using System;
 	using System.Collections.Generic;
 	using System.Configuration;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 
@@ -16,7 +15,6 @@ namespace DotNetOpenAuth.Configuration {
 	/// Describes an association type and its maximum lifetime as an element
 	/// in a .config file.
 	/// </summary>
-	[ContractVerification(true)]
 	internal class AssociationTypeElement : ConfigurationElement {
 		/// <summary>
 		/// The name of the attribute that stores the association type.

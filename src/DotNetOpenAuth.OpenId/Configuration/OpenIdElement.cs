@@ -8,7 +8,6 @@ namespace DotNetOpenAuth.Configuration {
 	using System;
 	using System.Collections.Generic;
 	using System.Configuration;
-	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.Messages;
 	using Validation;
@@ -16,7 +15,6 @@ namespace DotNetOpenAuth.Configuration {
 	/// <summary>
 	/// Represents the &lt;openid&gt; element in the host's .config file.
 	/// </summary>
-	[ContractVerification(true)]
 	internal class OpenIdElement : ConfigurationSection {
 		/// <summary>
 		/// The name of the section under which this library's settings must be found.
@@ -64,7 +62,6 @@ namespace DotNetOpenAuth.Configuration {
 		/// </summary>
 		public static OpenIdElement Configuration {
 			get {
-				Contract.Ensures(Contract.Result<OpenIdElement>() != null);
 				return (OpenIdElement)ConfigurationManager.GetSection(SectionName) ?? new OpenIdElement();
 			}
 		}
@@ -81,9 +78,8 @@ namespace DotNetOpenAuth.Configuration {
 		[PositiveTimeSpanValidator]
 		internal TimeSpan MaxAuthenticationTime {
 			get {
-				Contract.Ensures(Contract.Result<TimeSpan>() > TimeSpan.Zero);
 				TimeSpan result = (TimeSpan)this[MaxAuthenticationTimePropertyName];
-				Contract.Assume(result > TimeSpan.Zero); // our PositiveTimeSpanValidator should take care of this
+				Assumes.True(result > TimeSpan.Zero); // our PositiveTimeSpanValidator should take care of this
 				return result;
 			}
 

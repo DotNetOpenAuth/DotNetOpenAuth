@@ -7,7 +7,6 @@
 namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using DotNetOpenAuth.Messaging;
 	using Validation;

@@ -9,7 +9,6 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Collections.Generic;
 	using System.Collections.Specialized;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.IO;
 	using System.IO.Compression;
@@ -590,7 +589,6 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>A sequence of key=value pairs discovered in the header.  Never null, but may be empty.</returns>
 		internal static IEnumerable<KeyValuePair<string, string>> ParseAuthorizationHeader(string scheme, string authorizationHeader) {
 			Requires.NotNullOrEmpty(scheme, "scheme");
-			Contract.Ensures(Contract.Result<IEnumerable<KeyValuePair<string, string>>>() != null);
 
 			string prefix = scheme + " ";
 			if (authorizationHeader != null) {
@@ -622,7 +620,6 @@ namespace DotNetOpenAuth.Messaging {
 		internal static string CombineKeyHandleAndPayload(string handle, string payload) {
 			Requires.NotNullOrEmpty(handle, "handle");
 			Requires.NotNullOrEmpty(payload, "payload");
-			Contract.Ensures(!string.IsNullOrEmpty(Contract.Result<string>()));
 
 			return handle + "!" + payload;
 		}
@@ -718,7 +715,6 @@ namespace DotNetOpenAuth.Messaging {
 		internal static string ComputeHash(this HashAlgorithm algorithm, string value, Encoding encoding = null) {
 			Requires.NotNull(algorithm, "algorithm");
 			Requires.NotNull(value, "value");
-			Contract.Ensures(Contract.Result<string>() != null);
 
 			encoding = encoding ?? Encoding.UTF8;
 			byte[] bytesToHash = encoding.GetBytes(value);
@@ -737,7 +733,6 @@ namespace DotNetOpenAuth.Messaging {
 		internal static string ComputeHash(this HashAlgorithm algorithm, IDictionary<string, string> data, Encoding encoding = null) {
 			Requires.NotNull(algorithm, "algorithm");
 			Requires.NotNull(data, "data");
-			Contract.Ensures(Contract.Result<string>() != null);
 
 			// Assemble the dictionary to sign, taking care to remove the signature itself
 			// in order to accurately reproduce the original signature (which of course didn't include
@@ -758,7 +753,6 @@ namespace DotNetOpenAuth.Messaging {
 		internal static string ComputeHash(this HashAlgorithm algorithm, IEnumerable<KeyValuePair<string, string>> sortedData, Encoding encoding = null) {
 			Requires.NotNull(algorithm, "algorithm");
 			Requires.NotNull(sortedData, "sortedData");
-			Contract.Ensures(Contract.Result<string>() != null);
 
 			return ComputeHash(algorithm, CreateQueryString(sortedData), encoding);
 		}
@@ -980,7 +974,6 @@ namespace DotNetOpenAuth.Messaging {
 		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "No apparent problem.  False positive?")]
 		internal static byte[] Compress(byte[] buffer, CompressionMethod method = CompressionMethod.Deflate) {
 			Requires.NotNull(buffer, "buffer");
-			Contract.Ensures(Contract.Result<byte[]>() != null);
 
 			using (var ms = new MemoryStream()) {
 				Stream compressingStream = null;
@@ -1017,7 +1010,6 @@ namespace DotNetOpenAuth.Messaging {
 		[SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "This Dispose is safe.")]
 		internal static byte[] Decompress(byte[] buffer, CompressionMethod method = CompressionMethod.Deflate) {
 			Requires.NotNull(buffer, "buffer");
-			Contract.Ensures(Contract.Result<byte[]>() != null);
 
 			using (var compressedDataStream = new MemoryStream(buffer)) {
 				using (var decompressedDataStream = new MemoryStream()) {
@@ -1071,7 +1063,6 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>A data buffer.</returns>
 		internal static byte[] FromBase64WebSafeString(string base64WebSafe) {
 			Requires.NotNullOrEmpty(base64WebSafe, "base64WebSafe");
-			Contract.Ensures(Contract.Result<byte[]>() != null);
 
 			// Restore the padding characters and original URL-unsafe characters.
 			int missingPaddingCharacters;
@@ -1435,7 +1426,6 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>The formulated querystring style string.</returns>
 		internal static string CreateQueryString(IEnumerable<KeyValuePair<string, string>> args) {
 			Requires.NotNull(args, "args");
-			Contract.Ensures(Contract.Result<string>() != null);
 
 			if (!args.Any()) {
 				return string.Empty;
@@ -1639,7 +1629,6 @@ namespace DotNetOpenAuth.Messaging {
 		/// <c>Dictionary&lt;string, string&gt;</c> does not allow null keys.
 		/// </remarks>
 		internal static Dictionary<string, string> ToDictionary(this NameValueCollection nvc) {
-			Contract.Ensures((nvc != null && Contract.Result<Dictionary<string, string>>() != null) || (nvc == null && Contract.Result<Dictionary<string, string>>() == null));
 			return ToDictionary(nvc, false);
 		}
 
@@ -1655,7 +1644,6 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>The generated dictionary, or null if <paramref name="nvc"/> is null.</returns>
 		/// <exception cref="ArgumentException">Thrown if <paramref name="throwOnNullKey"/> is <c>true</c> and a null key is encountered.</exception>
 		internal static Dictionary<string, string> ToDictionary(this NameValueCollection nvc, bool throwOnNullKey) {
-			Contract.Ensures((nvc != null && Contract.Result<Dictionary<string, string>>() != null) || (nvc == null && Contract.Result<Dictionary<string, string>>() == null));
 			if (nvc == null) {
 				return null;
 			}
@@ -1709,7 +1697,6 @@ namespace DotNetOpenAuth.Messaging {
 			Requires.NotNull(source, "source");
 			Requires.NotNull(comparer, "comparer");
 			Requires.NotNull(keySelector, "keySelector");
-			Contract.Ensures(Contract.Result<IOrderedEnumerable<TSource>>() != null);
 			return System.Linq.Enumerable.OrderBy<TSource, TKey>(source, keySelector, new ComparisonHelper<TKey>(comparer));
 		}
 

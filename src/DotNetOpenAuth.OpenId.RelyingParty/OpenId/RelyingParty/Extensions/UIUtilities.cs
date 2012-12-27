@@ -6,7 +6,6 @@
 
 namespace DotNetOpenAuth.OpenId.RelyingParty.Extensions.UI {
 	using System;
-	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.RelyingParty;

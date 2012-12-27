@@ -8,7 +8,6 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
@@ -60,7 +59,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// An array of binding elements used to initialize the channel.
 		/// </returns>
 		private static IChannelBindingElement[] InitializeBindingElements(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, ITokenManager tokenManager, SecuritySettings securitySettings) {
-			Contract.Requires(securitySettings != null);
+			Requires.NotNull(securitySettings, "securitySettings");
 
 			var bindingElements = OAuthChannel.InitializeBindingElements(signingBindingElement, store);
 

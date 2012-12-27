@@ -20,7 +20,6 @@ namespace DotNetOpenAuth.OpenId {
 	/// <summary>
 	/// An association that uses the HMAC-SHA family of algorithms for message signing.
 	/// </summary>
-	[ContractVerification(true)]
 	internal class HmacShaAssociation : Association {
 		/// <summary>
 		/// A list of HMAC-SHA algorithms in order of decreasing bit lengths.
@@ -45,7 +44,6 @@ namespace DotNetOpenAuth.OpenId {
 			Requires.NotNullOrEmpty(handle, "handle");
 			Requires.NotNull(secret, "secret");
 			Requires.Range(totalLifeLength > TimeSpan.Zero, "totalLifeLength");
-			Contract.Ensures(this.TotalLifeLength == totalLifeLength);
 			ErrorUtilities.VerifyProtocol(secret.Length == typeIdentity.SecretLength, OpenIdStrings.AssociationSecretAndTypeLengthMismatch, secret.Length, typeIdentity.GetAssociationType(Protocol.Default));
 
 			this.typeIdentity = typeIdentity;
@@ -74,7 +72,6 @@ namespace DotNetOpenAuth.OpenId {
 			Requires.NotNull(protocol, "protocol");
 			Requires.NotNullOrEmpty(associationType, "associationType");
 			Requires.NotNull(secret, "secret");
-			Contract.Ensures(Contract.Result<HmacShaAssociation>() != null);
 			HmacSha match = hmacShaAssociationTypes.FirstOrDefault(sha => string.Equals(sha.GetAssociationType(protocol), associationType, StringComparison.Ordinal));
 			ErrorUtilities.VerifyProtocol(match != null, OpenIdStrings.NoAssociationTypeFoundByName, associationType);
 			return new HmacShaAssociation(match, handle, secret, totalLifeLength);
@@ -90,7 +87,6 @@ namespace DotNetOpenAuth.OpenId {
 		public static HmacShaAssociation Create(string handle, byte[] secret, TimeSpan totalLifeLength) {
 			Requires.NotNullOrEmpty(handle, "handle");
 			Requires.NotNull(secret, "secret");
-			Contract.Ensures(Contract.Result<HmacShaAssociation>() != null);
 
 			HmacSha shaType = hmacShaAssociationTypes.FirstOrDefault(sha => sha.SecretLength == secret.Length);
 			ErrorUtilities.VerifyProtocol(shaType != null, OpenIdStrings.NoAssociationTypeFoundByLength, secret.Length);
@@ -212,7 +208,7 @@ namespace DotNetOpenAuth.OpenId {
 		[Pure]
 		protected override HashAlgorithm CreateHasher() {
 			var result = this.typeIdentity.CreateHasher(SecretKey);
-			Contract.Assume(result != null);
+			Assumes.True(result != null);
 			return result;
 		}
 

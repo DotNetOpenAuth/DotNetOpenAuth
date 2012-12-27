@@ -11,7 +11,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	using System.Collections.Specialized;
 	using System.ComponentModel;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Threading;
 	using System.Web;
@@ -27,7 +26,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	/// Offers services for a web page that is acting as an OpenID identity server.
 	/// </summary>
 	[SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = "By design")]
-	[ContractVerification(true)]
 	public sealed class OpenIdProvider : IDisposable, IOpenIdHost {
 		/// <summary>
 		/// The name of the key to use in the HttpApplication cache to store the
@@ -56,8 +54,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		public OpenIdProvider()
 			: this(OpenIdElement.Configuration.Provider.ApplicationStore.CreateInstance(HttpApplicationStore)) {
-			Contract.Ensures(this.SecuritySettings != null);
-			Contract.Ensures(this.Channel != null);
 		}
 
 		/// <summary>
@@ -67,8 +63,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		public OpenIdProvider(IOpenIdApplicationStore applicationStore)
 			: this((INonceStore)applicationStore, (ICryptoKeyStore)applicationStore) {
 			Requires.NotNull(applicationStore, "applicationStore");
-			Contract.Ensures(this.SecuritySettings != null);
-			Contract.Ensures(this.Channel != null);
 		}
 
 		/// <summary>
@@ -79,8 +73,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		private OpenIdProvider(INonceStore nonceStore, ICryptoKeyStore cryptoKeyStore) {
 			Requires.NotNull(nonceStore, "nonceStore");
 			Requires.NotNull(cryptoKeyStore, "cryptoKeyStore");
-			Contract.Ensures(this.SecuritySettings != null);
-			Contract.Ensures(this.Channel != null);
 
 			this.SecuritySettings = OpenIdElement.Configuration.Provider.SecuritySettings.CreateSecuritySettings();
 			this.behaviors.CollectionChanged += this.OnBehaviorsChanged;
@@ -104,7 +96,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		public static IOpenIdApplicationStore HttpApplicationStore {
 			get {
 				RequiresEx.ValidState(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
-				Contract.Ensures(Contract.Result<IOpenIdApplicationStore>() != null);
 				HttpContext context = HttpContext.Current;
 				var store = (IOpenIdApplicationStore)context.Application[ApplicationStoreKey];
 				if (store == null) {
@@ -132,8 +123,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		public ProviderSecuritySettings SecuritySettings {
 			get {
-				Contract.Ensures(Contract.Result<ProviderSecuritySettings>() != null);
-				Contract.Assume(this.securitySettings != null);
+				Assumes.True(this.securitySettings != null);
 				return this.securitySettings;
 			}
 

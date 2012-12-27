@@ -97,7 +97,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssemblyTesting.cs" />
     <Compile Include="Configuration\SectionTests.cs" />
     <Compile Include="CoordinatorBase.cs" />
     <Compile Include="Hosting\AspNetHost.cs" />

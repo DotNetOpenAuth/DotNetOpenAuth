@@ -8,7 +8,6 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Security.Cryptography;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
@@ -68,7 +67,6 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <returns>A DataBag formatter.</returns>
 		internal static IDataBagFormatter<AuthorizationCode> CreateFormatter(IAuthorizationServerHost authorizationServer) {
 			Requires.NotNull(authorizationServer, "authorizationServer");
-			Contract.Ensures(Contract.Result<IDataBagFormatter<AuthorizationCode>>() != null);
 
 			var cryptoStore = authorizationServer.CryptoKeyStore;
 			ErrorUtilities.VerifyHost(cryptoStore != null, OAuthStrings.ResultShouldNotBeNull, authorizationServer.GetType(), "CryptoKeyStore");

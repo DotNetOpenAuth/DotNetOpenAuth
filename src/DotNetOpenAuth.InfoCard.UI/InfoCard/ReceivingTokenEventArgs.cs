@@ -8,7 +8,6 @@ namespace DotNetOpenAuth.InfoCard {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.IdentityModel.Tokens;
 	using System.Security.Cryptography.X509Certificates;
 	using Validation;

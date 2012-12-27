@@ -7,7 +7,6 @@
 namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Reflection;
 	using System.Text;
@@ -209,7 +208,6 @@ namespace DotNetOpenAuth.Messaging {
 		protected virtual IDirectedProtocolMessage InstantiateAsRequest(MessageDescription messageDescription, MessageReceivingEndpoint recipient) {
 			Requires.NotNull(messageDescription, "messageDescription");
 			Requires.NotNull(recipient, "recipient");
-			Contract.Ensures(Contract.Result<IDirectedProtocolMessage>() != null);
 
 			ConstructorInfo ctor = this.requestMessageTypes[messageDescription];
 			return (IDirectedProtocolMessage)ctor.Invoke(new object[] { recipient.Location, messageDescription.MessageVersion });
@@ -224,7 +222,6 @@ namespace DotNetOpenAuth.Messaging {
 		protected virtual IDirectResponseProtocolMessage InstantiateAsResponse(MessageDescription messageDescription, IDirectedProtocolMessage request) {
 			Requires.NotNull(messageDescription, "messageDescription");
 			Requires.NotNull(request, "request");
-			Contract.Ensures(Contract.Result<IDirectResponseProtocolMessage>() != null);
 
 			Type requestType = request.GetType();
 			var ctors = this.FindMatchingResponseConstructors(messageDescription, requestType);
@@ -278,7 +275,6 @@ namespace DotNetOpenAuth.Messaging {
 		private static int CountInCommon(ICollection<string> collection1, ICollection<string> collection2, StringComparison comparison = StringComparison.Ordinal) {
 			Requires.NotNull(collection1, "collection1");
 			Requires.NotNull(collection2, "collection2");
-			Contract.Ensures(Contract.Result<int>() >= 0 && Contract.Result<int>() <= Math.Min(collection1.Count, collection2.Count));
 
 			return collection1.Count(value1 => collection2.Any(value2 => string.Equals(value1, value2, comparison)));
 		}

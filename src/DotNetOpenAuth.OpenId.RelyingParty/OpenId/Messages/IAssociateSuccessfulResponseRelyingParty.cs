@@ -7,7 +7,6 @@
 namespace DotNetOpenAuth.OpenId.Messages {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
@@ -15,7 +14,6 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	/// <summary>
 	/// A successful association response as it is received by the relying party.
 	/// </summary>
-	[ContractClass(typeof(IAssociateSuccessfulResponseRelyingPartyContract))]
 	internal interface IAssociateSuccessfulResponseRelyingParty : IProtocolMessage {
 		/// <summary>
 		/// Called to create the Association based on a request previously given by the Relying Party.

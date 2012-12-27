@@ -6,13 +6,13 @@
 
 namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.OAuth.Messages;
 	using NUnit.Framework;
+	using Validation;
 
 	[TestFixture]
 	public class SigningBindingElementBaseTests : MessagingTestBase {
@@ -125,7 +125,8 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 		}
 
 		internal AccessProtectedResourceRequest CreateResourceRequest(MessageReceivingEndpoint endpoint) {
-			Contract.Requires(endpoint != null);
+			Requires.NotNull(endpoint, "endpoint");
+
 			var message = new AccessProtectedResourceRequest(endpoint, Protocol.V10.Version);
 			return message;
 		}

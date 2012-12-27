@@ -27,12 +27,10 @@
     <Compile Include="Messaging\Bindings\MemoryCryptoKeyStore.cs" />
     <Compile Include="Messaging\BinaryDataBagFormatter.cs" />
     <Compile Include="Messaging\CachedDirectWebResponse.cs" />
-    <Compile Include="Messaging\ChannelContract.cs" />
     <Compile Include="Messaging\DataBagFormatterBase.cs" />
     <Compile Include="Messaging\HmacAlgorithms.cs" />
     <Compile Include="Messaging\HttpRequestHeaders.cs" />
     <Compile Include="Messaging\IHttpDirectRequest.cs" />
-    <Compile Include="Messaging\IHttpDirectRequestContract.cs" />
     <Compile Include="Messaging\IHttpIndirectResponse.cs" />
     <Compile Include="Messaging\IMessageOriginalPayload.cs" />
     <Compile Include="Messaging\DirectWebRequestOptions.cs" />
@@ -40,7 +38,6 @@
     <Compile Include="Messaging\HostErrorException.cs" />
     <Compile Include="Messaging\IHttpDirectResponse.cs" />
     <Compile Include="Messaging\IExtensionMessage.cs" />
-    <Compile Include="Messaging\IHttpDirectResponseContract.cs" />
     <Compile Include="Messaging\IMessage.cs" />
     <Compile Include="Messaging\IncomingWebResponse.cs" />
     <Compile Include="Messaging\IDirectResponseProtocolMessage.cs" />
@@ -49,7 +46,6 @@
     <Compile Include="Messaging\EmptyList.cs" />
     <Compile Include="Messaging\ErrorUtilities.cs" />
     <Compile Include="Messaging\IMessageWithEvents.cs" />
-    <Compile Include="Messaging\IncomingWebResponseContract.cs" />
     <Compile Include="Messaging\IProtocolMessageWithExtensions.cs" />
     <Compile Include="Messaging\InternalErrorException.cs" />
     <Compile Include="Messaging\IStreamSerializingDataBag.cs" />
@@ -137,6 +133,7 @@
     <Compile Include="Loggers\TraceLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Messaging\ReadOnlyDictionary.cs" />
+    <Compile Include="PureAttribute.cs" />
     <Compile Include="Reporting.cs" />
     <Compile Include="RequiresEx.cs" />
     <Compile Include="Strings.Designer.cs">

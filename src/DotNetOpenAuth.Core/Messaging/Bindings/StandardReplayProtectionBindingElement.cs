@@ -7,7 +7,6 @@
 namespace DotNetOpenAuth.Messaging.Bindings {
 	using System;
 	using System.Diagnostics;
-	using System.Diagnostics.Contracts;
 	using Validation;
 
 	/// <summary>

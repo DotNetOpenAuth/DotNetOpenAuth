@@ -6,7 +6,6 @@
 
 namespace DotNetOpenAuth.Test.Mocks {
 	using System;
-	using System.Diagnostics.Contracts;
 	using System.Threading;
 	using System.Web;
 

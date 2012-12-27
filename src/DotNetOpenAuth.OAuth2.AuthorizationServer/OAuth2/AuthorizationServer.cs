@@ -8,7 +8,6 @@ namespace DotNetOpenAuth.OAuth2 {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 #if CLR4
 	using System.Net.Http;
@@ -195,7 +194,6 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <returns>The authorization response message to send to the Client.</returns>
 		public EndUserAuthorizationFailedResponse PrepareRejectAuthorizationRequest(EndUserAuthorizationRequest authorizationRequest, Uri callback = null) {
 			Requires.NotNull(authorizationRequest, "authorizationRequest");
-			Contract.Ensures(Contract.Result<EndUserAuthorizationFailedResponse>() != null);
 
 			if (callback == null) {
 				callback = this.GetCallback(authorizationRequest);
@@ -216,7 +214,6 @@ namespace DotNetOpenAuth.OAuth2 {
 		public EndUserAuthorizationSuccessResponseBase PrepareApproveAuthorizationRequest(EndUserAuthorizationRequest authorizationRequest, string userName, IEnumerable<string> scopes = null, Uri callback = null) {
 			Requires.NotNull(authorizationRequest, "authorizationRequest");
 			Requires.NotNullOrEmpty(userName, "userName");
-			Contract.Ensures(Contract.Result<EndUserAuthorizationSuccessResponseBase>() != null);
 
 			if (callback == null) {
 				callback = this.GetCallback(authorizationRequest);
@@ -292,7 +289,6 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <exception cref="ProtocolException">Thrown if no callback URL could be determined.</exception>
 		protected Uri GetCallback(EndUserAuthorizationRequest authorizationRequest) {
 			Requires.NotNull(authorizationRequest, "authorizationRequest");
-			Contract.Ensures(Contract.Result<Uri>() != null);
 
 			var client = this.AuthorizationServerServices.GetClientOrThrow(authorizationRequest.ClientIdentifier);
 

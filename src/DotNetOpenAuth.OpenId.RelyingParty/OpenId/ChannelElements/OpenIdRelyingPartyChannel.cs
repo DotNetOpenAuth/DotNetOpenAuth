@@ -7,7 +7,6 @@
 namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
@@ -59,8 +58,6 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// messages, and will validate them later.</para>
 		/// </remarks>
 		internal static OpenIdChannel CreateNonVerifyingChannel() {
-			Contract.Ensures(Contract.Result<OpenIdChannel>() != null);
-
 			return new OpenIdRelyingPartyChannel(null, null, new OpenIdRelyingPartyMessageFactory(), new RelyingPartySecuritySettings(), true);
 		}
 

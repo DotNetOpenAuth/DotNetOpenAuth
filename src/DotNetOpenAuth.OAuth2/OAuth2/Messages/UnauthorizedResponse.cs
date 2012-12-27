@@ -7,7 +7,6 @@
 namespace DotNetOpenAuth.OAuth2.Messages {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Net;
 	using System.Text;

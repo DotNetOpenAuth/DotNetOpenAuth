@@ -29,7 +29,6 @@
     <Compile Include="OAuth\ChannelElements\OAuthHttpMethodBindingElement.cs" />
     <Compile Include="OAuth\ChannelElements\PlaintextSigningBindingElement.cs" />
     <Compile Include="OAuth\ChannelElements\HmacSha1SigningBindingElement.cs" />
-    <Compile Include="OAuth\ChannelElements\SigningBindingElementBaseContract.cs" />
     <Compile Include="OAuth\ChannelElements\SigningBindingElementChain.cs" />
     <Compile Include="OAuth\ChannelElements\TokenType.cs" />
     <Compile Include="OAuth\ChannelElements\UriOrOobEncoding.cs" />

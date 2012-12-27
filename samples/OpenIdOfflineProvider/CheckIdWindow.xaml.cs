@@ -7,7 +7,6 @@
 namespace DotNetOpenAuth.OpenIdOfflineProvider {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 	using System.Windows;
@@ -20,6 +19,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 	using System.Windows.Shapes;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Provider;
+	using Validation;
 
 	/// <summary>
 	/// Interaction logic for CheckIdWindow.xaml
@@ -31,7 +31,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// <param name="provider">The OpenID Provider host.</param>
 		/// <param name="request">The incoming authentication request.</param>
 		private CheckIdWindow(HostedProvider provider, IAuthenticationRequest request) {
-			Contract.Requires(request != null);
+			Requires.NotNull(request, "request");
 
 			this.InitializeComponent();
 
@@ -59,8 +59,8 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// <param name="provider">The OpenID Provider host.</param>
 		/// <param name="request">The incoming authentication request.</param>
 		internal static void ProcessAuthentication(HostedProvider provider, IAuthenticationRequest request) {
-			Contract.Requires(provider != null);
-			Contract.Requires(request != null);
+			Requires.NotNull(provider, "provider");
+			Requires.NotNull(request, "request");
 
 			var window = new CheckIdWindow(provider, request);
 			bool? result = window.ShowDialog();

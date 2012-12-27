@@ -9,7 +9,6 @@ namespace DotNetOpenAuth.OAuth {
 	using System.Collections.Generic;
 	using System.ComponentModel;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Security.Principal;
 	using System.ServiceModel.Channels;

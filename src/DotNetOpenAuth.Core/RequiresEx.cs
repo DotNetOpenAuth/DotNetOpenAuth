@@ -23,16 +23,11 @@ namespace DotNetOpenAuth {
 		/// Validates some expression describing the acceptable condition for an argument evaluates to true.
 		/// </summary>
 		/// <param name="condition">The expression that must evaluate to true to avoid an <see cref="InvalidOperationException"/>.</param>
-#if !CLR4
-		[ContractArgumentValidator]
-#endif
 		[Pure, DebuggerStepThrough]
 		internal static void ValidState(bool condition) {
 			if (!condition) {
 				throw new InvalidOperationException();
 			}
-
-			Contract.EndContractBlock();
 		}
 
 		/// <summary>
@@ -40,16 +35,11 @@ namespace DotNetOpenAuth {
 		/// </summary>
 		/// <param name="condition">The expression that must evaluate to true to avoid an <see cref="InvalidOperationException"/>.</param>
 		/// <param name="message">The message to include with the exception.</param>
-#if !CLR4
-		[ContractArgumentValidator]
-#endif
 		[Pure, DebuggerStepThrough]
 		internal static void ValidState(bool condition, string message) {
 			if (!condition) {
 				throw new InvalidOperationException(message);
 			}
-
-			Contract.EndContractBlock();
 		}
 
 		/// <summary>
@@ -58,16 +48,11 @@ namespace DotNetOpenAuth {
 		/// <param name="condition">The expression that must evaluate to true to avoid an <see cref="InvalidOperationException"/>.</param>
 		/// <param name="unformattedMessage">The unformatted message.</param>
 		/// <param name="args">Formatting arguments.</param>
-#if !CLR4
-		[ContractArgumentValidator]
-#endif
 		[Pure, DebuggerStepThrough]
 		internal static void ValidState(bool condition, string unformattedMessage, params object[] args) {
 			if (!condition) {
 				throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, unformattedMessage, args));
 			}
-
-			Contract.EndContractBlock();
 		}
 
 		/// <summary>
@@ -76,15 +61,10 @@ namespace DotNetOpenAuth {
 		/// <typeparam name="T">The type that the argument must be or derive from.</typeparam>
 		/// <param name="type">The type given in the argument.</param>
 		/// <param name="parameterName">Name of the parameter.</param>
-#if !CLR4
-		[ContractArgumentValidator]
-#endif
 		[Pure, DebuggerStepThrough]
 		internal static void NotNullSubtype<T>(Type type, string parameterName) {
 			Requires.NotNull(type, parameterName);
 			Requires.That(typeof(T).IsAssignableFrom(type), parameterName, MessagingStrings.UnexpectedType, typeof(T).FullName, type.FullName);
-
-			Contract.EndContractBlock();
 		}
 
 		/// <summary>
@@ -92,16 +72,11 @@ namespace DotNetOpenAuth {
 		/// </summary>
 		/// <param name="condition">The expression that must evaluate to true to avoid an <see cref="FormatException"/>.</param>
 		/// <param name="message">The message.</param>
-#if !CLR4
-		[ContractArgumentValidator]
-#endif
 		[Pure, DebuggerStepThrough]
 		internal static void Format(bool condition, string message) {
 			if (!condition) {
 				throw new FormatException(message);
 			}
-
-			Contract.EndContractBlock();
 		}
 
 		/// <summary>

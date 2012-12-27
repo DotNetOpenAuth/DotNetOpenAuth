@@ -9,7 +9,6 @@ namespace DotNetOpenAuth.OAuth {
 	using System.Collections.Generic;
 	using System.ComponentModel;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Security.Principal;
 	using System.ServiceModel.Channels;
@@ -110,8 +109,6 @@ namespace DotNetOpenAuth.OAuth {
 		[EditorBrowsable(EditorBrowsableState.Advanced)]
 		public static INonceStore HttpApplicationStore {
 			get {
-				Contract.Ensures(Contract.Result<INonceStore>() != null);
-
 				HttpContext context = HttpContext.Current;
 				ErrorUtilities.VerifyOperation(context != null, Strings.StoreRequiredWhenNoHttpContextAvailable, typeof(INonceStore).Name);
 				var store = (INonceStore)context.Application[ApplicationStoreKey];

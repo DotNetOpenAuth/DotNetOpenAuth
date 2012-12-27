@@ -7,12 +7,10 @@
 namespace DotNetOpenAuth.Configuration {
 	using System.Collections.Generic;
 	using System.Configuration;
-	using System.Diagnostics.Contracts;
 
 	/// <summary>
 	/// Describes a collection of association type sub-elements in a .config file.
 	/// </summary>
-	[ContractVerification(true)]
 	internal class AssociationTypeCollection : ConfigurationElementCollection, IEnumerable<AssociationTypeElement> {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AssociationTypeCollection"/> class.

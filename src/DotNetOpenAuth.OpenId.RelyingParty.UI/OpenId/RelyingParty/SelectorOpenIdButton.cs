@@ -7,7 +7,6 @@
 namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
 	using System.ComponentModel;
-	using System.Diagnostics.Contracts;
 	using System.Drawing.Design;
 	using System.Web.UI;
 	using DotNetOpenAuth.Messaging;
@@ -48,8 +47,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Ensures that this button has been initialized to a valid state.
 		/// </summary>
 		internal override void EnsureValid() {
-			Contract.Ensures(!string.IsNullOrEmpty(this.Image));
-
 			// Every button must have an image.
 			ErrorUtilities.VerifyOperation(!string.IsNullOrEmpty(this.Image), OpenIdStrings.PropertyNotSet, "SelectorButton.Image");
 		}

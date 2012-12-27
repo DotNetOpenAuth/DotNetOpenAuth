@@ -7,7 +7,6 @@
 namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
@@ -19,8 +18,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	/// request messages to an OpenID Provider.
 	/// </summary>
 	[Serializable]
-	[ContractClass(typeof(RequestContract))]
-	[ContractVerification(true)]
 	internal abstract class Request : IRequest {
 		/// <summary>
 		/// The incoming request message.
@@ -101,7 +98,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		internal IProtocolMessage Response {
 			get {
 				RequiresEx.ValidState(this.IsResponseReady, OpenIdStrings.ResponseNotReady);
-				Contract.Ensures(Contract.Result<IProtocolMessage>() != null);
 
 				if (this.responseExtensions.Count > 0) {
 					var extensibleResponse = this.ResponseMessage as IProtocolMessageWithExtensions;

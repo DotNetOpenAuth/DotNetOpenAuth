@@ -8,7 +8,6 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.Specialized;
-	using System.Diagnostics.Contracts;
 	using System.Net;
 	using System.Web;
 	using System.Xml;

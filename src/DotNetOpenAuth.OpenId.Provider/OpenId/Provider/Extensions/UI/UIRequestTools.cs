@@ -8,7 +8,6 @@ namespace DotNetOpenAuth.OpenId.Provider.Extensions.UI {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Linq;
 	using DotNetOpenAuth.Messaging;
@@ -16,6 +15,7 @@ namespace DotNetOpenAuth.OpenId.Provider.Extensions.UI {
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.Provider;
 	using DotNetOpenAuth.Xrds;
+	using Validation;
 
 	/// <summary>
 	/// OpenID User Interface extension 1.0 request message.
@@ -52,8 +52,8 @@ namespace DotNetOpenAuth.OpenId.Provider.Extensions.UI {
 		/// </example>
 		/// </remarks>
 		public static IEnumerable<Uri> GetRelyingPartyIconUrls(Realm realm, IDirectWebRequestHandler webRequestHandler) {
-			Contract.Requires(realm != null);
-			Contract.Requires(webRequestHandler != null);
+			Requires.NotNull(realm, "realm");
+			Requires.NotNull(webRequestHandler, "webRequestHandler");
 			ErrorUtilities.VerifyArgumentNotNull(realm, "realm");
 			ErrorUtilities.VerifyArgumentNotNull(webRequestHandler, "webRequestHandler");
 

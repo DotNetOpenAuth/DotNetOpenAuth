@@ -8,7 +8,6 @@ namespace DotNetOpenAuth.OpenId {
 	using System;
 	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.IO;
 	using System.Security.Cryptography;
 	using System.Text;
@@ -25,8 +24,6 @@ namespace DotNetOpenAuth.OpenId {
 	/// (dumb associations).
 	/// </remarks>
 	[DebuggerDisplay("Handle = {Handle}, Expires = {Expires}")]
-	[ContractVerification(true)]
-	[ContractClass(typeof(AssociationContract))]
 	public abstract class Association {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Association"/> class.
@@ -41,7 +38,6 @@ namespace DotNetOpenAuth.OpenId {
 			Requires.Range(totalLifeLength > TimeSpan.Zero, "totalLifeLength");
 			Requires.That(issued.Kind == DateTimeKind.Utc, "issued", "UTC time required.");
 			Requires.Range(issued <= DateTime.UtcNow, "issued");
-			Contract.Ensures(this.TotalLifeLength == totalLifeLength);
 
 			this.Handle = handle;
 			this.SecretKey = secret;
@@ -94,7 +90,6 @@ namespace DotNetOpenAuth.OpenId {
 		/// </summary>
 		protected internal static TimeSpan DumbSecretLifetime {
 			get {
-				Contract.Ensures(Contract.Result<TimeSpan>() > TimeSpan.Zero);
 				return OpenIdElement.Configuration.MaxAuthenticationTime;
 			}
 		}
@@ -105,7 +100,6 @@ namespace DotNetOpenAuth.OpenId {
 		/// </summary>
 		protected internal long SecondsTillExpiration {
 			get {
-				Contract.Ensures(Contract.Result<long>() >= 0);
 				return Math.Max(0, (long)this.TimeTillExpiration.TotalSeconds);
 			}
 		}
@@ -131,7 +125,6 @@ namespace DotNetOpenAuth.OpenId {
 		/// </remarks>
 		private static TimeSpan MinimumUsefulAssociationLifetime {
 			get {
-				Contract.Ensures(Contract.Result<TimeSpan>() > TimeSpan.Zero);
 				return OpenIdElement.Configuration.MaxAuthenticationTime;
 			}
 		}
@@ -165,7 +158,6 @@ namespace DotNetOpenAuth.OpenId {
 		public static Association Deserialize(string handle, DateTime expiresUtc, byte[] privateData) {
 			Requires.NotNullOrEmpty(handle, "handle");
 			Requires.NotNull(privateData, "privateData");
-			Contract.Ensures(Contract.Result<Association>() != null);
 
 			expiresUtc = expiresUtc.ToUniversalTimeSafe();
 			TimeSpan remainingLifeLength = expiresUtc - DateTime.UtcNow;
@@ -192,8 +184,6 @@ namespace DotNetOpenAuth.OpenId {
 		/// in this byte array, as they are useful for fast database lookup and are persisted separately.
 		/// </remarks>
 		public byte[] SerializePrivateData() {
-			Contract.Ensures(Contract.Result<byte[]>() != null);
-
 			// We may want to encrypt this secret using the machine.config private key,
 			// and add data regarding which Association derivative will need to be
 			// re-instantiated on deserialization.

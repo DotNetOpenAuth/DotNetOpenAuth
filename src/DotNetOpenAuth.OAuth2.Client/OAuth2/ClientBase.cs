@@ -7,7 +7,6 @@
 namespace DotNetOpenAuth.OAuth2 {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Linq;
 	using System.Net;
@@ -224,7 +223,6 @@ namespace DotNetOpenAuth.OAuth2 {
 		public IAuthorizationState GetScopedAccessToken(string refreshToken, HashSet<string> scope) {
 			Requires.NotNullOrEmpty(refreshToken, "refreshToken");
 			Requires.NotNull(scope, "scope");
-			Contract.Ensures(Contract.Result<IAuthorizationState>() != null);
 
 			var request = new AccessTokenRefreshRequestC(this.AuthorizationServer) {
 				ClientIdentifier = this.ClientIdentifier,

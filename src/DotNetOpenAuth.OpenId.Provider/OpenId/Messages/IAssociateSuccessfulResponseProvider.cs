@@ -7,7 +7,6 @@
 namespace DotNetOpenAuth.OpenId.Messages {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
@@ -16,7 +15,6 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	/// <summary>
 	/// An outgoing successful association response from the OpenID Provider.
 	/// </summary>
-	[ContractClass(typeof(IAssociateSuccessfulResponseProviderContract))]
 	internal interface IAssociateSuccessfulResponseProvider : IProtocolMessage {
 		/// <summary>
 		/// Gets or sets the expires in.

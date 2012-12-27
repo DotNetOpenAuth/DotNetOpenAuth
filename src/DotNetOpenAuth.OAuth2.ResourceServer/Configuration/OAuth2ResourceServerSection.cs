@@ -6,7 +6,6 @@
 
 namespace DotNetOpenAuth.Configuration {
 	using System.Configuration;
-	using System.Diagnostics.Contracts;
 
 	/// <summary>
 	/// Represents the &lt;oauth2/resourceServer&gt; section in the host's .config file.
@@ -28,7 +27,6 @@ namespace DotNetOpenAuth.Configuration {
 		/// </summary>
 		internal static OAuth2ResourceServerSection Configuration {
 			get {
-				Contract.Ensures(Contract.Result<OAuth2ResourceServerSection>() != null);
 				return (OAuth2ResourceServerSection)ConfigurationManager.GetSection(SectionName) ?? new OAuth2ResourceServerSection();
 			}
 		}

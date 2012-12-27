@@ -8,7 +8,6 @@ namespace DotNetOpenAuth.Configuration {
 	using System;
 	using System.Collections.Generic;
 	using System.Configuration;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
@@ -18,7 +17,6 @@ namespace DotNetOpenAuth.Configuration {
 	/// A collection of <see cref="TypeConfigurationElement&lt;T&gt;"/>.
 	/// </summary>
 	/// <typeparam name="T">The type that all types specified in the elements must derive from.</typeparam>
-	[ContractVerification(true)]
 	internal class TypeConfigurationCollection<T> : ConfigurationElementCollection
 		where T : class {
 		/// <summary>
@@ -45,7 +43,6 @@ namespace DotNetOpenAuth.Configuration {
 		/// <param name="allowInternals">if set to <c>true</c> then internal types may be instantiated.</param>
 		/// <returns>A sequence of instances generated from types in this collection.  May be empty, but never null.</returns>
 		internal IEnumerable<T> CreateInstances(bool allowInternals) {
-			Contract.Ensures(Contract.Result<IEnumerable<T>>() != null);
 			return from element in this.Cast<TypeConfigurationElement<T>>()
 			       where !element.IsEmpty
 			       select element.CreateInstance(default(T), allowInternals);

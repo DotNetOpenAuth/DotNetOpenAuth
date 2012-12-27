@@ -15,7 +15,6 @@ namespace DotNetOpenAuth.OpenId {
 	/// <summary>
 	/// Wraps an existing Identifier and prevents it from performing discovery.
 	/// </summary>
-	[ContractVerification(true)]
 	[Pure]
 	internal class NoDiscoveryIdentifier : Identifier {
 		/// <summary>

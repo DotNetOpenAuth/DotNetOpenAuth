@@ -9,7 +9,6 @@ namespace DotNetOpenAuth {
 	using System.Collections.Generic;
 	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.IO;
 	using System.IO.IsolatedStorage;
@@ -535,8 +534,6 @@ namespace DotNetOpenAuth {
 		/// </summary>
 		/// <returns>An isolated storage location appropriate for our host.</returns>
 		private static IsolatedStorageFile GetIsolatedStorage() {
-			Contract.Ensures(Contract.Result<IsolatedStorageFile>() != null);
-
 			IsolatedStorageFile result = null;
 
 			// We'll try for whatever storage location we can get,
@@ -569,7 +566,6 @@ namespace DotNetOpenAuth {
 		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "No apparent problem.  False positive?")]
 		private static Guid GetOrCreateOriginIdentity() {
 			RequiresEx.ValidState(file != null, "file not set.");
-			Contract.Ensures(Contract.Result<Guid>() != Guid.Empty);
 
 			Guid identityGuid = Guid.Empty;
 			const int GuidLength = 16;

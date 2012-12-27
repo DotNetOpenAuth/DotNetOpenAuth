@@ -23,7 +23,6 @@ namespace DotNetOpenAuth.InfoCard {
 	/// <summary>
 	/// The decrypted token that was submitted as an Information Card.
 	/// </summary>
-	[ContractVerification(true)]
 	public class Token {
 		/// <summary>
 		/// Backing field for the <see cref="Claims"/> property.
@@ -46,7 +45,6 @@ namespace DotNetOpenAuth.InfoCard {
 		private Token(string tokenXml, Uri audience, TokenDecryptor decryptor) {
 			Requires.NotNullOrEmpty(tokenXml, "tokenXml");
 			Requires.That(decryptor != null || !IsEncrypted(tokenXml), "decryptor", "Required when tokenXml is encrypted.");
-			Contract.Ensures(this.AuthorizationContext != null);
 
 			byte[] decryptedBytes;
 			string decryptedString;
@@ -54,12 +52,12 @@ namespace DotNetOpenAuth.InfoCard {
 			using (StringReader xmlReader = new StringReader(tokenXml)) {
 				var readerSettings = MessagingUtilities.CreateUntrustedXmlReaderSettings();
 				using (XmlReader tokenReader = XmlReader.Create(xmlReader, readerSettings)) {
-					Contract.Assume(tokenReader != null); // BCL contract should say XmlReader.Create result != null
+					Assumes.True(tokenReader != null); // BCL contract should say XmlReader.Create result != null
 					if (IsEncrypted(tokenReader)) {
 						Logger.InfoCard.DebugFormat("Incoming SAML token, before decryption: {0}", tokenXml);
 						decryptedBytes = decryptor.DecryptToken(tokenReader);
 						decryptedString = Encoding.UTF8.GetString(decryptedBytes);
-						Contract.Assume(decryptedString != null); // BCL contracts should be enhanced here
+						Assumes.True(decryptedString != null); // BCL contracts should be enhanced here
 					} else {
 						decryptedBytes = Encoding.UTF8.GetBytes(tokenXml);
 						decryptedString = tokenXml;
@@ -182,7 +180,6 @@ namespace DotNetOpenAuth.InfoCard {
 		public static Token Read(string tokenXml, Uri audience, IEnumerable<SecurityToken> decryptionTokens) {
 			Requires.NotNullOrEmpty(tokenXml, "tokenXml");
 			Requires.NotNull(decryptionTokens, "decryptionTokens");
-			Contract.Ensures(Contract.Result<Token>() != null);
 
 			TokenDecryptor decryptor = null;
 
@@ -216,7 +213,7 @@ namespace DotNetOpenAuth.InfoCard {
 			}
 
 			try {
-				Contract.Assume(tokenReader != null); // CC missing for XmlReader.Create
+				Assumes.True(tokenReader != null); // CC missing for XmlReader.Create
 				return IsEncrypted(tokenReader);
 			} catch {
 				IDisposable disposableReader = tokenReader;

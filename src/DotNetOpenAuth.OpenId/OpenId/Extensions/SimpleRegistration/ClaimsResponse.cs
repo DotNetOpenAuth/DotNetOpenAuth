@@ -8,7 +8,6 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Net.Mail;
 	using System.Text;

@@ -8,7 +8,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
 	using System.Collections.Generic;
 	using System.ComponentModel;
-	using System.Diagnostics.Contracts;
 	using System.Text;
 	using System.Web;
 	using System.Web.UI;
@@ -70,7 +69,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <value>The default value is an <see cref="OpenIdProvider"/> instance initialized according to the web.config file.</value>
 		public static OpenIdProvider Provider {
 			get {
-				Contract.Ensures(Contract.Result<OpenIdProvider>() != null);
 				if (provider == null) {
 					lock (providerInitializerLock) {
 						if (provider == null) {
@@ -101,7 +99,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			get {
 				RequiresEx.ValidState(HttpContext.Current != null, MessagingStrings.HttpContextRequired);
 				RequiresEx.ValidState(HttpContext.Current.Session != null, MessagingStrings.SessionRequired);
-				Contract.Ensures(Contract.Result<IAuthenticationRequest>() == null || PendingRequest != null);
 				return HttpContext.Current.Session[PendingRequestKey] as IAuthenticationRequest;
 			}
 
@@ -125,7 +122,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			get {
 				RequiresEx.ValidState(HttpContext.Current != null, MessagingStrings.HttpContextRequired);
 				RequiresEx.ValidState(HttpContext.Current.Session != null, MessagingStrings.SessionRequired);
-				Contract.Ensures(Contract.Result<IAnonymousRequest>() == null || PendingRequest != null);
 				return HttpContext.Current.Session[PendingRequestKey] as IAnonymousRequest;
 			}
 
@@ -261,7 +257,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		/// <returns>The new instance of OpenIdProvider.</returns>
 		private static OpenIdProvider CreateProvider() {
-			Contract.Ensures(Contract.Result<OpenIdProvider>() != null);
 			return new OpenIdProvider(OpenIdElement.Configuration.Provider.ApplicationStore.CreateInstance(OpenIdProvider.HttpApplicationStore));
 		}
 	}

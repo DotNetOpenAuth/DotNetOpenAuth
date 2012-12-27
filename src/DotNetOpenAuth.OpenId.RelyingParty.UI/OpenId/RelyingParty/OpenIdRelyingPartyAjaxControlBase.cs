@@ -11,7 +11,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Collections.Generic;
 	using System.ComponentModel;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Linq;
 	using System.Text;
@@ -396,7 +395,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="writer">The <see cref="T:System.Web.UI.HtmlTextWriter"/> object that receives the server control content.</param>
 		protected override void Render(HtmlTextWriter writer) {
-			Contract.Assume(writer != null, "Missing contract.");
+			Assumes.True(writer != null, "Missing contract.");
 			base.Render(writer);
 
 			// Emit a hidden field to let the javascript on the user agent know if an

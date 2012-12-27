@@ -7,7 +7,6 @@
 namespace DotNetOpenAuth.OAuth2 {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.Security.Cryptography;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
@@ -52,9 +51,8 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="encryptingKey">The crypto service provider with the resource server's public key used to encrypt the access token.</param>
 		/// <returns>An access token serializer.</returns>
 		internal static IDataBagFormatter<AccessToken> CreateFormatter(RSACryptoServiceProvider signingKey, RSACryptoServiceProvider encryptingKey) {
-			Contract.Requires(signingKey != null || !signingKey.PublicOnly);
-			Contract.Requires(encryptingKey != null);
-			Contract.Ensures(Contract.Result<IDataBagFormatter<AccessToken>>() != null);
+			Requires.That(signingKey == null || !signingKey.PublicOnly, "signingKey", "requires private key");
+			Requires.NotNull(encryptingKey, "encryptingKey");
 
 			return new UriStyleMessageFormatter<AccessToken>(signingKey, encryptingKey);
 		}
@@ -95,7 +93,6 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <returns>A non-empty string.</returns>
 		protected internal virtual string Serialize() {
-			Contract.Ensures(!string.IsNullOrEmpty(Contract.Result<string>()));
 			throw new NotSupportedException();
 		}
 

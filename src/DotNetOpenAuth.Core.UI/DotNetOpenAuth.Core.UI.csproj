@@ -23,7 +23,6 @@
     <Compile Include="ComponentModel\ClaimTypeSuggestions.cs" />
     <Compile Include="ComponentModel\ConverterBase.cs" />
     <Compile Include="ComponentModel\SuggestedStringsConverter.cs" />
-    <Compile Include="ComponentModel\SuggestedStringsConverterContract.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

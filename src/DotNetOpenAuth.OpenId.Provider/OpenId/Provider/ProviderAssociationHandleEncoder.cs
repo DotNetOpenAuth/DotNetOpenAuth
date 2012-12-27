@@ -6,7 +6,6 @@
 
 namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
-	using System.Diagnostics.Contracts;
 	using System.Threading;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;

@@ -7,7 +7,6 @@
 namespace DotNetOpenAuth.OpenId.Interop {
 	using System;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Runtime.InteropServices;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
@@ -19,7 +18,6 @@ namespace DotNetOpenAuth.OpenId.Interop {
 	/// </summary>
 	[SuppressMessage("Microsoft.Interoperability", "CA1409:ComVisibleTypesShouldBeCreatable", Justification = "It's only creatable on the inside.  It must be ComVisible for ASP to see it.")]
 	[ComVisible(true), Obsolete("This class acts as a COM Server and should not be called directly from .NET code.")]
-	[ContractVerification(true)]
 	public sealed class ClaimsResponseShim {
 		/// <summary>
 		/// The Simple Registration claims response message that this shim wraps.

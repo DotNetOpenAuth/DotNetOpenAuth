@@ -35,7 +35,6 @@
     <Compile Include="OpenId\RelyingParty\OpenIdTextBox.cs" />
     <Compile Include="OpenId\RelyingParty\PopupBehavior.cs" />
     <Compile Include="OpenId\RelyingParty\SelectorButton.cs" />
-    <Compile Include="OpenId\RelyingParty\SelectorButtonContract.cs" />
     <Compile Include="OpenId\RelyingParty\SelectorOpenIdButton.cs" />
     <Compile Include="OpenId\RelyingParty\SelectorProviderButton.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

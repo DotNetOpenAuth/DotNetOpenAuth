@@ -7,7 +7,6 @@
 namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 	using Reflection;
@@ -99,7 +98,6 @@ namespace DotNetOpenAuth.Messaging {
 		{
 			Requires.NotNull(messageTypes, "messageTypes");
 			Requires.NotNull(descriptionsCache, "descriptionsCache");
-			Contract.Ensures(Contract.Result<IEnumerable<MessageDescription>>() != null);
 
 			// Get all the MessageDescription objects through the standard cache,
 			// so that perhaps it will be a quick lookup, or at least it will be

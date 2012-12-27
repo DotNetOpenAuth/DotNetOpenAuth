@@ -7,14 +7,12 @@
 namespace DotNetOpenAuth.Configuration {
 	using System.Collections.Generic;
 	using System.Configuration;
-	using System.Diagnostics.Contracts;
 	using System.Text.RegularExpressions;
 	using Validation;
 
 	/// <summary>
 	/// Represents a collection of child elements that describe host names either as literal host names or regex patterns.
 	/// </summary>
-	[ContractVerification(true)]
 	internal class HostNameOrRegexCollection : ConfigurationElementCollection {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="HostNameOrRegexCollection"/> class.

@@ -9,7 +9,6 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 	using System.Collections.Generic;
 	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Linq;
 	using System.Net.Security;
@@ -21,7 +20,6 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 	/// <summary>
 	/// Describes an individual member of a message and assists in its serialization.
 	/// </summary>
-	[ContractVerification(true)]
 	[DebuggerDisplay("MessagePart {Name}")]
 	internal class MessagePart {
 		/// <summary>
@@ -67,20 +65,20 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		[SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline", Justification = "Much more efficient initialization when we can call methods.")]
 		static MessagePart() {
 			Func<string, Uri> safeUri = str => {
-				Contract.Assume(str != null);
+				Assumes.True(str != null);
 				return new Uri(str);
 			};
 			Func<string, bool> safeBool = str => {
-				Contract.Assume(str != null);
+				Assumes.True(str != null);
 				return bool.Parse(str);
 			};
 
 			Func<byte[], string> safeFromByteArray = bytes => {
-				Contract.Assume(bytes != null);
+				Assumes.True(bytes != null);
 				return Convert.ToBase64String(bytes);
 			};
 			Func<string, byte[]> safeToByteArray = str => {
-				Contract.Assume(str != null);
+				Assumes.True(str != null);
 				return Convert.FromBase64String(str);
 			};
 			Map<Uri>(uri => uri.AbsoluteUri, uri => uri.OriginalString, safeUri);
@@ -120,7 +118,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			this.memberDeclaredType = (this.field != null) ? this.field.FieldType : this.property.PropertyType;
 			this.defaultMemberValue = DeriveDefaultValue(this.memberDeclaredType);
 
-			Contract.Assume(this.memberDeclaredType != null); // CC missing PropertyInfo.PropertyType ensures result != null
+			Assumes.True(this.memberDeclaredType != null); // CC missing PropertyInfo.PropertyType ensures result != null
 			if (attribute.Encoder == null) {
 				if (!converters.TryGetValue(this.memberDeclaredType, out this.converter)) {
 					if (this.memberDeclaredType.IsGenericType &&
@@ -395,7 +393,6 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <returns>An instance of the desired encoder.</returns>
 		private static IMessagePartEncoder GetEncoder(Type messagePartEncoder) {
 			Requires.NotNull(messagePartEncoder, "messagePartEncoder");
-			Contract.Ensures(Contract.Result<IMessagePartEncoder>() != null);
 
 			IMessagePartEncoder encoder;
 			lock (encoders) {

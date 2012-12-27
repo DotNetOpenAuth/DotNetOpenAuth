@@ -11,7 +11,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.ComponentModel;
 	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Text.RegularExpressions;
 	using System.Web.Security;
@@ -20,6 +19,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
+	using Validation;
 
 	/// <summary>
 	/// An ASP.NET control for mobile devices that provides a minimal text box that is OpenID-aware.

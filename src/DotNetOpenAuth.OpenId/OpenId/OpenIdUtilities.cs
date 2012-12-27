@@ -8,7 +8,6 @@ namespace DotNetOpenAuth.OpenId {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.IO;
 	using System.Linq;
@@ -70,8 +69,6 @@ namespace DotNetOpenAuth.OpenId {
 		/// </summary>
 		/// <returns>The association handle.</returns>
 		public static string GenerateRandomAssociationHandle() {
-			Contract.Ensures(!string.IsNullOrEmpty(Contract.Result<string>()));
-
 			// Generate the handle.  It must be unique, and preferably unpredictable,
 			// so we use a time element and a random data element to generate it.
 			string uniq = MessagingUtilities.GetCryptoRandomDataAsBase64(4);

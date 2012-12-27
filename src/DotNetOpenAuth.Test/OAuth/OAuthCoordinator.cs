@@ -6,7 +6,6 @@
 
 namespace DotNetOpenAuth.Test.OAuth {
 	using System;
-	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OAuth;

@@ -6,7 +6,6 @@
 
 namespace DotNetOpenAuth {
 	using System;
-	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using DotNetOpenAuth.Loggers;
 	using DotNetOpenAuth.Messaging;

@@ -8,7 +8,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.Specialized;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 	using System.Threading;
@@ -323,7 +322,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			Requires.NotNull(userSuppliedIdentifier, "userSuppliedIdentifier");
 			Requires.NotNull(relyingParty, "relyingParty");
 			Requires.NotNull(realm, "realm");
-			Contract.Ensures(Contract.Result<IEnumerable<AuthenticationRequest>>() != null);
 
 			// Normalize the portion of the return_to path that correlates to the realm for capitalization.
 			// (so that if a web app base path is /MyApp/, but the URL of this request happens to be
@@ -431,8 +429,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			ErrorUtilities.VerifyArgumentNotNull(relyingParty, "relyingParty");
 			ErrorUtilities.VerifyArgumentNotNull(realm, "realm");
 			ErrorUtilities.VerifyArgumentNotNull(serviceEndpoints, "serviceEndpoints");
-			////Contract.Ensures(Contract.Result<IEnumerable<AuthenticationRequest>>() != null);
-
+			////
 			// If shared associations are required, then we had better have an association store.
 			ErrorUtilities.VerifyOperation(!relyingParty.SecuritySettings.RequireAssociation || relyingParty.AssociationManager.HasAssociationStore, OpenIdStrings.AssociationStoreRequired);
 

@@ -7,12 +7,12 @@
 namespace DotNetOpenAuth {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.ChannelElements;
+	using Validation;
 
 	/// <summary>
 	/// Utility methods specific to OAuth feature reporting.
@@ -26,9 +26,9 @@ namespace DotNetOpenAuth {
 		/// <param name="tokenManager">The token manager.</param>
 		/// <param name="nonceStore">The nonce store.</param>
 		internal static void RecordFeatureAndDependencyUse(object value, ServiceProviderDescription service, ITokenManager tokenManager, INonceStore nonceStore) {
-			Contract.Requires(value != null);
-			Contract.Requires(service != null);
-			Contract.Requires(tokenManager != null);
+			Requires.NotNull(value, "value");
+			Requires.NotNull(service, "service");
+			Requires.NotNull(tokenManager, "tokenManager");
 
 			// In release builds, just quietly return.
 			if (value == null || service == null || tokenManager == null) {

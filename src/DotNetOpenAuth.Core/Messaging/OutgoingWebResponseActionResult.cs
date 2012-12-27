@@ -6,7 +6,6 @@
 
 namespace DotNetOpenAuth.Messaging {
 	using System;
-	using System.Diagnostics.Contracts;
 	using System.Web.Mvc;
 	using DotNetOpenAuth.Messaging;
 	using Validation;

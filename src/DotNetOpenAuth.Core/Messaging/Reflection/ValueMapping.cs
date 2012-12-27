@@ -6,13 +6,11 @@
 
 namespace DotNetOpenAuth.Messaging.Reflection {
 	using System;
-	using System.Diagnostics.Contracts;
 	using Validation;
 
 	/// <summary>
 	/// A pair of conversion functions to map some type to a string and back again.
 	/// </summary>
-	[ContractVerification(true)]
 	internal struct ValueMapping {
 		/// <summary>
 		/// The mapping function that converts some custom type to a string.

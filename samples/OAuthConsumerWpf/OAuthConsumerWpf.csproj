@@ -91,6 +91,10 @@
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="Validation, Version=2.0.0.0, Culture=neutral, PublicKeyToken=2fc06f0d701809a7, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\src\packages\Validation.2.0.0.12319\lib\portable-windows8+net40+sl5+windowsphone8\Validation.dll</HintPath>
+    </Reference>
     <Reference Include="WindowsFormsIntegration" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="UIAutomationProvider">
@@ -174,6 +178,7 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

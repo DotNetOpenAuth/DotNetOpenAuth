@@ -8,7 +8,6 @@ namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.IO;
 	using System.Linq;
 	using System.Security.Cryptography;
@@ -305,7 +304,6 @@ namespace DotNetOpenAuth.Messaging {
 		private byte[] CalculateSignature(byte[] bytesToSign, string symmetricSecretHandle) {
 			Requires.NotNull(bytesToSign, "bytesToSign");
 			RequiresEx.ValidState(this.asymmetricSigning != null || this.cryptoKeyStore != null);
-			Contract.Ensures(Contract.Result<byte[]>() != null);
 
 			if (this.asymmetricSigning != null) {
 				using (var hasher = SHA1.Create()) {

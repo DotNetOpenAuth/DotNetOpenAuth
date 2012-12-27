@@ -7,7 +7,6 @@
 namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.IO;
 	using System.Linq;
 	using System.Text;
@@ -95,7 +94,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		internal static IDataBagFormatter<AssociationDataBag> CreateFormatter(ICryptoKeyStore cryptoKeyStore, string bucket, TimeSpan? minimumAge = null) {
 			Requires.NotNull(cryptoKeyStore, "cryptoKeyStore");
 			Requires.NotNullOrEmpty(bucket, "bucket");
-			Contract.Ensures(Contract.Result<IDataBagFormatter<AssociationDataBag>>() != null);
 			return new BinaryDataBagFormatter<AssociationDataBag>(cryptoKeyStore, bucket, signed: true, encrypted: true, minimumAge: minimumAge);
 		}
 	}

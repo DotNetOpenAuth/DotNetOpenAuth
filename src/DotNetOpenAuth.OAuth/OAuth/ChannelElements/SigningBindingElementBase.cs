@@ -9,7 +9,6 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using System.Collections.Generic;
 	using System.Collections.Specialized;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Linq;
 	using System.Text;
@@ -22,7 +21,6 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	/// <summary>
 	/// A binding element that signs outgoing messages and verifies the signature on incoming messages.
 	/// </summary>
-	[ContractClass(typeof(SigningBindingElementBaseContract))]
 	public abstract class SigningBindingElementBase : ITamperProtectionChannelBindingElement {
 		/// <summary>
 		/// The signature method this binding element uses.

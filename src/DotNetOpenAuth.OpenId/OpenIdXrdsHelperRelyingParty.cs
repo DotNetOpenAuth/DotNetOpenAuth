@@ -7,7 +7,6 @@
 namespace DotNetOpenAuth.OpenId {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.RelyingParty;
@@ -32,7 +31,6 @@ namespace DotNetOpenAuth.OpenId {
 			Requires.NotNull(xrds, "xrds");
 			Requires.NotNull(claimedIdentifier, "claimedIdentifier");
 			Requires.NotNull(userSuppliedIdentifier, "userSuppliedIdentifier");
-			Contract.Ensures(Contract.Result<IEnumerable<IdentifierDiscoveryResult>>() != null);
 
 			var endpoints = new List<IdentifierDiscoveryResult>();
 			endpoints.AddRange(xrds.GenerateOPIdentifierServiceEndpoints(userSuppliedIdentifier));
@@ -53,7 +51,6 @@ namespace DotNetOpenAuth.OpenId {
 		internal static IEnumerable<IdentifierDiscoveryResult> CreateServiceEndpoints(this IEnumerable<XrdElement> xrds, XriIdentifier userSuppliedIdentifier) {
 			Requires.NotNull(xrds, "xrds");
 			Requires.NotNull(userSuppliedIdentifier, "userSuppliedIdentifier");
-			Contract.Ensures(Contract.Result<IEnumerable<IdentifierDiscoveryResult>>() != null);
 
 			var endpoints = new List<IdentifierDiscoveryResult>();
 			endpoints.AddRange(xrds.GenerateOPIdentifierServiceEndpoints(userSuppliedIdentifier));
@@ -72,7 +69,6 @@ namespace DotNetOpenAuth.OpenId {
 		private static IEnumerable<IdentifierDiscoveryResult> GenerateOPIdentifierServiceEndpoints(this IEnumerable<XrdElement> xrds, Identifier opIdentifier) {
 			Requires.NotNull(xrds, "xrds");
 			Requires.NotNull(opIdentifier, "opIdentifier");
-			Contract.Ensures(Contract.Result<IEnumerable<IdentifierDiscoveryResult>>() != null);
 			return from service in xrds.FindOPIdentifierServices()
 				   from uri in service.UriElements
 				   let protocol = Protocol.FindBestVersion(p => p.OPIdentifierServiceTypeURI, service.TypeElementUris)
@@ -93,7 +89,6 @@ namespace DotNetOpenAuth.OpenId {
 		private static IEnumerable<IdentifierDiscoveryResult> GenerateClaimedIdentifierServiceEndpoints(this IEnumerable<XrdElement> xrds, UriIdentifier claimedIdentifier, UriIdentifier userSuppliedIdentifier) {
 			Requires.NotNull(xrds, "xrds");
 			Requires.NotNull(claimedIdentifier, "claimedIdentifier");
-			Contract.Ensures(Contract.Result<IEnumerable<IdentifierDiscoveryResult>>() != null);
 
 			return from service in xrds.FindClaimedIdentifierServices()
 				   from uri in service.UriElements
@@ -112,8 +107,7 @@ namespace DotNetOpenAuth.OpenId {
 		private static IEnumerable<IdentifierDiscoveryResult> GenerateClaimedIdentifierServiceEndpoints(this IEnumerable<XrdElement> xrds, XriIdentifier userSuppliedIdentifier) {
 			// Cannot use code contracts because this method uses yield return.
 			////Requires.NotNull(xrds, "xrds");
-			////Contract.Ensures(Contract.Result<IEnumerable<IdentifierDiscoveryResult>>() != null);
-			ErrorUtilities.VerifyArgumentNotNull(xrds, "xrds");
+			////			ErrorUtilities.VerifyArgumentNotNull(xrds, "xrds");
 
 			foreach (var service in xrds.FindClaimedIdentifierServices()) {
 				foreach (var uri in service.UriElements) {
@@ -139,7 +133,6 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>A sequence of service elements.</returns>
 		private static IEnumerable<ServiceElement> FindOPIdentifierServices(this IEnumerable<XrdElement> xrds) {
 			Requires.NotNull(xrds, "xrds");
-			Contract.Ensures(Contract.Result<IEnumerable<ServiceElement>>() != null);
 
 			return from xrd in xrds
 				   from service in xrd.OpenIdProviderIdentifierServices
@@ -154,7 +147,6 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>A sequence of the services offered.</returns>
 		private static IEnumerable<ServiceElement> FindClaimedIdentifierServices(this IEnumerable<XrdElement> xrds) {
 			Requires.NotNull(xrds, "xrds");
-			Contract.Ensures(Contract.Result<IEnumerable<ServiceElement>>() != null);
 
 			return from xrd in xrds
 				   from service in xrd.OpenIdClaimedIdentifierServices

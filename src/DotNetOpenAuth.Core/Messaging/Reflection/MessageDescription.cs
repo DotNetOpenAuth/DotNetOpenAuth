@@ -81,7 +81,6 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		[Pure]
 		internal MessageDictionary GetDictionary(IMessage message) {
 			Requires.NotNull(message, "message");
-			Contract.Ensures(Contract.Result<MessageDictionary>() != null);
 			return this.GetDictionary(message, false);
 		}
 
@@ -94,7 +93,6 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		[Pure]
 		internal MessageDictionary GetDictionary(IMessage message, bool getOriginalValues) {
 			Requires.NotNull(message, "message");
-			Contract.Ensures(Contract.Result<MessageDictionary>() != null);
 			return new MessageDictionary(message, this, getOriginalValues);
 		}
 

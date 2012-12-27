@@ -8,7 +8,6 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
@@ -46,7 +45,6 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		[SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays", Justification = "It's a buffer")]
 		public byte[] Key {
 			get {
-				Contract.Ensures(Contract.Result<byte[]>() != null);
 				return this.key;
 			}
 		}
@@ -56,7 +54,6 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// </summary>
 		public DateTime ExpiresUtc {
 			get {
-				Contract.Ensures(Contract.Result<DateTime>().Kind == DateTimeKind.Utc);
 				return this.expiresUtc;
 			}
 		}

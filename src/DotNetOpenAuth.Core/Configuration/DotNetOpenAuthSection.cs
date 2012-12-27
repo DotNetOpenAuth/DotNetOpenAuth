@@ -7,7 +7,6 @@
 namespace DotNetOpenAuth.Configuration {
 	using System;
 	using System.Configuration;
-	using System.Diagnostics.Contracts;
 	using System.Web;
 	using System.Web.Configuration;
 
@@ -15,7 +14,6 @@ namespace DotNetOpenAuth.Configuration {
 	/// Represents the section in the host's .config file that configures
 	/// this library's settings.
 	/// </summary>
-	[ContractVerification(true)]
 	public class DotNetOpenAuthSection : ConfigurationSectionGroup {
 		/// <summary>
 		/// The name of the section under which this library's settings must be found.

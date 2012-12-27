@@ -7,7 +7,6 @@
 namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.Collections.ObjectModel;
-	using System.Diagnostics.Contracts;
 	using Validation;
 
 	/// <summary>

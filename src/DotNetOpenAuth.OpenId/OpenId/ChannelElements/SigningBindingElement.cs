@@ -8,7 +8,6 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
-	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Linq;
 	using System.Net.Security;
@@ -23,7 +22,6 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	/// <summary>
 	/// Signs and verifies authentication assertions.
 	/// </summary>
-	[ContractClass(typeof(SigningBindingElementContract))]
 	internal abstract class SigningBindingElement : IChannelBindingElement {
 		#region IChannelBindingElement Properties
 

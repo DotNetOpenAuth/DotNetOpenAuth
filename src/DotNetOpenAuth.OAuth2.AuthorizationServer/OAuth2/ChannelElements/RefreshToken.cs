@@ -6,7 +6,6 @@
 
 namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	using System;
-	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using Validation;
@@ -49,7 +48,6 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// </returns>
 		internal static IDataBagFormatter<RefreshToken> CreateFormatter(ICryptoKeyStore cryptoKeyStore) {
 			Requires.NotNull(cryptoKeyStore, "cryptoKeyStore");
-			Contract.Ensures(Contract.Result<IDataBagFormatter<RefreshToken>>() != null);
 
 			return new UriStyleMessageFormatter<RefreshToken>(cryptoKeyStore, RefreshTokenKeyBucket, signed: true, encrypted: true);
 		}

@@ -6,7 +6,6 @@
 
 namespace DotNetOpenAuth.Test.OpenId {
 	using System;
-	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId;

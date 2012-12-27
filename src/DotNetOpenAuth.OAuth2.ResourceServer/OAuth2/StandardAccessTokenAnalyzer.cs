@@ -7,7 +7,6 @@
 namespace DotNetOpenAuth.OAuth2 {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.IO;
 	using System.Security.Cryptography;
 	using DotNetOpenAuth.Messaging;

@@ -8,7 +8,6 @@ namespace DotNetOpenAuth.OAuth2 {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Net;
 #if CLR4

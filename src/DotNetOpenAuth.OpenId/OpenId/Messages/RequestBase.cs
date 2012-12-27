@@ -9,7 +9,6 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	using System.Collections.Generic;
 	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
 	using Validation;
 

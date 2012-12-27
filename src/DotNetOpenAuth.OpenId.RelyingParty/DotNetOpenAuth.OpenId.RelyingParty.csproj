@@ -36,7 +36,6 @@
     <Compile Include="OpenId\Interop\OpenIdRelyingPartyShim.cs" />
     <Compile Include="OpenId\Messages\AssociateDiffieHellmanRelyingPartyResponse.cs" />
     <Compile Include="OpenId\Messages\AssociateRequestRelyingParty.cs" />
-    <Compile Include="OpenId\Messages\IAssociateSuccessfulResponseRelyingPartyContract.cs" />
     <Compile Include="OpenId\Messages\IAssociateSuccessfulResponseRelyingParty.cs" />
     <Compile Include="OpenId\Messages\AssociateUnencryptedResponseRelyingParty.cs" />
     <Compile Include="OpenId\RelyingParty\CryptoKeyStoreAsRelyingPartyAssociationStore.cs" />

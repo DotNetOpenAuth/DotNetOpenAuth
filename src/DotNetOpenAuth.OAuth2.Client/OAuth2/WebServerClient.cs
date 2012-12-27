@@ -7,7 +7,6 @@
 namespace DotNetOpenAuth.OAuth2 {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Linq;
 	using System.Net;
@@ -92,7 +91,6 @@ namespace DotNetOpenAuth.OAuth2 {
 			Requires.NotNull(authorization, "authorization");
 			RequiresEx.ValidState(authorization.Callback != null || (HttpContext.Current != null && HttpContext.Current.Request != null), MessagingStrings.HttpContextRequired);
 			RequiresEx.ValidState(!string.IsNullOrEmpty(this.ClientIdentifier), Strings.RequiredPropertyNotYetPreset, "ClientIdentifier");
-			Contract.Ensures(Contract.Result<OutgoingWebResponse>() != null);
 
 			if (authorization.Callback == null) {
 				authorization.Callback = this.Channel.GetRequestFromContext().GetPublicFacingUrl()
