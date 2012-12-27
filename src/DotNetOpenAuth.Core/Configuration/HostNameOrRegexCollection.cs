@@ -63,7 +63,7 @@ namespace DotNetOpenAuth.Configuration {
 		/// An <see cref="T:System.Object"/> that acts as the key for the specified <see cref="T:System.Configuration.ConfigurationElement"/>.
 		/// </returns>
 		protected override object GetElementKey(ConfigurationElement element) {
-			Contract.Assume(element != null); // this should be Contract.Requires in base class.
+			Requires.NotNull(element, "element");
 			return ((HostNameElement)element).Name ?? string.Empty;
 		}
 	}

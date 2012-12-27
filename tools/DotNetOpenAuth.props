@@ -24,7 +24,6 @@
 		<ILMergeTargetPlatformVersion Condition=" '$(ClrVersion)' == '2' ">2.0</ILMergeTargetPlatformVersion>
 		<ILMergeTargetPlatformVersion Condition=" '$(TargetFrameworkVersion)' == 'v4.0' ">4.0</ILMergeTargetPlatformVersion>
 		<ILMergeTargetPlatformVersion Condition=" '$(TargetFrameworkVersion)' == 'v4.5' ">4.5</ILMergeTargetPlatformVersion>
-		<BuildCodeContractsReferenceAssemblies>false</BuildCodeContractsReferenceAssemblies>
 
 		<SignAssembly>true</SignAssembly>
 		<PublicKeyFile Condition="'$(PublicKeyFile)' == ''">$(ProjectRoot)src\official-build-key.pub</PublicKeyFile>
@@ -40,13 +39,6 @@
 		<ILMergeOutputAssembly45Directory>$(OutputPath45)unified\</ILMergeOutputAssembly45Directory>
 		<ILMergeOutputAssembly>$(ILMergeOutputAssemblyDirectory)$(ProductName).dll</ILMergeOutputAssembly>
 		<ILMergeOutputXmlDocs>$(ILMergeOutputAssemblyDirectory)$(ProductName).xml</ILMergeOutputXmlDocs>
-		<ILMergeOutputContractAssemblyDirectory>$(ILMergeOutputAssemblyDirectory)CodeContracts\</ILMergeOutputContractAssemblyDirectory>
-		<ILMergeOutputContractAssembly>$(ILMergeOutputContractAssemblyDirectory)$(ProductName).Contracts.dll</ILMergeOutputContractAssembly>
-
-		<!-- Always use our own toolset's copy of Code Contracts for reliably reproducible builds. 
-		     Suppress the installed code contracts from importing itself. -->
-		<DontImportCodeContracts>true</DontImportCodeContracts>
-		<ImportCodeContractsFromToolset>true</ImportCodeContractsFromToolset>
 	</PropertyGroup>
 
 	<PropertyGroup Condition=" '$(ClrVersion)' == '4' ">
@@ -114,8 +106,6 @@
 		<AssemblyReferencesToReplaceWith Include="@(ProjectReferencesToRemove->'..\..\Bin-net4.0\$(ProductName).dll')" />
 
 		<SignDependsOn Include="Build" Condition=" '$(SuppressBuildTarget)' != 'true' " />
-		<ILMergeInputAssemblies Condition=" '$(ClrVersion)' == '2' "
-		                        Include="$(ProjectRoot)lib\Microsoft.Contracts.dll" />
 	</ItemGroup>
 
 	<Import Project="$(ProjectRoot)lib\DotNetOpenAuth.BuildTasks.targets" />

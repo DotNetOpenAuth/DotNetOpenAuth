@@ -42,7 +42,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="version">The DataBag version.</param>
 		protected DataBag(Version version) {
-			Contract.Requires(version != null);
+			Requires.NotNull(version, "version");
 			this.version = version;
 		}
 

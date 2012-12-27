@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>Microsoft.IdentityModel</id>
+    <version>6.1.7600.16394</version>
+    <title>Windows Identity Foundation</title>
+    <authors>Microsoft</authors>
+    <owners>Microsoft</owners>
+    <licenseUrl>http://go.microsoft.com/fwlink/?LinkID=259741</licenseUrl>
+    <projectUrl>http://www.microsoft.com/wif</projectUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <description>Windows Identity Foundation enables .NET developers to externalize identity logic from their application, improving developer productivity, enhancing application security, and enabling interoperable federation. Enjoy greater productivity, applying the same tools and programming model to build on-premises software as well as cloud services. Create more secure applications by reducing custom implementations and using a single simplified identity model based on claims. Enjoy greater flexibility in application deployment through interoperability based on industry standard protocols, allowing applications and identity infrastructure services to communicate via claims.</description>
+    <summary>Windows Identity Foundation enables .NET developers to externalize identity logic from their application, improving developer productivity, enhancing application security, and enabling interoperable federation. Enjoy greater productivity, applying the same tools and programming model to build on-premises software as well as cloud services. Create more secure applications by reducing custom implementations and using a single simplified identity model based on claims. Enjoy greater flexibility in application deployment through interoperability based on industry standard protocols, allowing applications and identity infrastructure services to communicate via claims.</summary>
+    <releaseNotes>WIF was integrated into .NET in version 4.5. WIF 3.5  is available for Windows Vista and Windows 7 as a standalone installer, as feature in Windows 8, or WebPI. WIF 3.5 works with .NET 3.5, 4.0 and 4.5.  Because many of the classes in WIF 3.5 and WIF 4.5 share the same names, when you are using both WIF 3.5 and WIF 4.5 together, be sure to either use fully qualified class names or use namespace aliases to distinguish between classes in WIF 3.5 and WIF 4.5.</releaseNotes>
+    <copyright>Copyright 2012</copyright>
+    <tags>authentication federation claims</tags>
+  </metadata>
+</package>

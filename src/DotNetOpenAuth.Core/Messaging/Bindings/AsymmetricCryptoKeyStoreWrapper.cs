@@ -138,9 +138,9 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 			/// <param name="decrypted">The decrypted key.</param>
 			internal CachedCryptoKey(CryptoKey encrypted, CryptoKey decrypted)
 				: base(decrypted.Key, decrypted.ExpiresUtc) {
-				Contract.Requires(encrypted != null);
-				Contract.Requires(decrypted != null);
-				Contract.Requires(encrypted.ExpiresUtc == decrypted.ExpiresUtc);
+				Requires.NotNull(encrypted, "encrypted");
+				Requires.NotNull(decrypted, "decrypted");
+				Requires.True(encrypted.ExpiresUtc == decrypted.ExpiresUtc);
 
 				this.EncryptedKey = encrypted.Key;
 			}

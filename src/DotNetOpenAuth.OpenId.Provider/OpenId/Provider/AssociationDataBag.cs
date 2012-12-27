@@ -58,6 +58,9 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		/// <param name="stream">The stream.</param>
 		public void Serialize(Stream stream) {
+			Requires.NotNull(stream, "stream");
+			Requires.True(stream.CanWrite, "stream");
+
 			var writer = new BinaryWriter(stream);
 			writer.Write(this.IsPrivateAssociation);
 			writer.WriteBuffer(this.Secret);
@@ -70,6 +73,9 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		/// <param name="stream">The stream.</param>
 		public void Deserialize(Stream stream) {
+			Requires.NotNull(stream, "stream");
+			Requires.True(stream.CanRead, "stream");
+
 			var reader = new BinaryReader(stream);
 			this.IsPrivateAssociation = reader.ReadBoolean();
 			this.Secret = reader.ReadBuffer(256);

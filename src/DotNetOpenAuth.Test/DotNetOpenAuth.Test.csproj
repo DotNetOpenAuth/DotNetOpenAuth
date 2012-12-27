@@ -5,7 +5,6 @@
     <ProjectRoot Condition="'$(ProjectRoot)' == ''">$(MSBuildProjectDirectory)\..\..\</ProjectRoot>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <CodeContractsAssemblyMode>0</CodeContractsAssemblyMode>
   </PropertyGroup>
   <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.props" />
   <PropertyGroup>
@@ -44,41 +43,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CodeContractsEnableRuntimeChecking>False</CodeContractsEnableRuntimeChecking>
-    <CodeContractsCustomRewriterAssembly>
-    </CodeContractsCustomRewriterAssembly>
-    <CodeContractsCustomRewriterClass>
-    </CodeContractsCustomRewriterClass>
-    <CodeContractsRuntimeCheckingLevel>None</CodeContractsRuntimeCheckingLevel>
-    <CodeContractsRunCodeAnalysis>False</CodeContractsRunCodeAnalysis>
-    <CodeContractsBuildReferenceAssembly>False</CodeContractsBuildReferenceAssembly>
-    <CodeContractsNonNullObligations>False</CodeContractsNonNullObligations>
-    <CodeContractsBoundsObligations>False</CodeContractsBoundsObligations>
-    <CodeContractsArithmeticObligations>False</CodeContractsArithmeticObligations>
-    <CodeContractsLibPaths>
-    </CodeContractsLibPaths>
-    <CodeContractsPlatformPath>
-    </CodeContractsPlatformPath>
-    <CodeContractsExtraAnalysisOptions>
-    </CodeContractsExtraAnalysisOptions>
-    <CodeContractsBaseLineFile>
-    </CodeContractsBaseLineFile>
-    <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
-    <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
-    <CodeContractsShowSquigglies>False</CodeContractsShowSquigglies>
-    <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
-    <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
-    <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <CodeContractsRedundantAssumptions>False</CodeContractsRedundantAssumptions>
-    <CodeContractsEmitXMLDocs>False</CodeContractsEmitXMLDocs>
-    <CodeContractsExtraRewriteOptions />
-    <CodeContractsReferenceAssembly>%28none%29</CodeContractsReferenceAssembly>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <CodeContractsRuntimeSkipQuantifiers>False</CodeContractsRuntimeSkipQuantifiers>
-    <CodeContractsEnumObligations>False</CodeContractsEnumObligations>
-    <CodeContractsCacheAnalysisResults>False</CodeContractsCacheAnalysisResults>
-    <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -86,41 +51,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CodeContractsEnableRuntimeChecking>False</CodeContractsEnableRuntimeChecking>
-    <CodeContractsCustomRewriterAssembly>
-    </CodeContractsCustomRewriterAssembly>
-    <CodeContractsCustomRewriterClass>
-    </CodeContractsCustomRewriterClass>
-    <CodeContractsRuntimeCheckingLevel>None</CodeContractsRuntimeCheckingLevel>
-    <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
-    <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
-    <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
-    <CodeContractsRunCodeAnalysis>False</CodeContractsRunCodeAnalysis>
-    <CodeContractsBuildReferenceAssembly>False</CodeContractsBuildReferenceAssembly>
-    <CodeContractsNonNullObligations>False</CodeContractsNonNullObligations>
-    <CodeContractsBoundsObligations>False</CodeContractsBoundsObligations>
-    <CodeContractsArithmeticObligations>False</CodeContractsArithmeticObligations>
-    <CodeContractsLibPaths>
-    </CodeContractsLibPaths>
-    <CodeContractsPlatformPath>
-    </CodeContractsPlatformPath>
-    <CodeContractsExtraAnalysisOptions>
-    </CodeContractsExtraAnalysisOptions>
-    <CodeContractsBaseLineFile>
-    </CodeContractsBaseLineFile>
-    <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
-    <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
-    <CodeContractsShowSquigglies>False</CodeContractsShowSquigglies>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <CodeContractsRedundantAssumptions>False</CodeContractsRedundantAssumptions>
-    <CodeContractsEmitXMLDocs>False</CodeContractsEmitXMLDocs>
-    <CodeContractsExtraRewriteOptions />
-    <CodeContractsReferenceAssembly>%28none%29</CodeContractsReferenceAssembly>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <CodeContractsRuntimeSkipQuantifiers>False</CodeContractsRuntimeSkipQuantifiers>
-    <CodeContractsEnumObligations>False</CodeContractsEnumObligations>
-    <CodeContractsCacheAnalysisResults>False</CodeContractsCacheAnalysisResults>
-    <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'CodeAnalysis|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -130,36 +61,7 @@
     <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
     <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
     <ErrorReport>prompt</ErrorReport>
-    <CodeContractsEnableRuntimeChecking>False</CodeContractsEnableRuntimeChecking>
-    <CodeContractsCustomRewriterAssembly>
-    </CodeContractsCustomRewriterAssembly>
-    <CodeContractsCustomRewriterClass>
-    </CodeContractsCustomRewriterClass>
-    <CodeContractsRuntimeCheckingLevel>None</CodeContractsRuntimeCheckingLevel>
-    <CodeContractsRunCodeAnalysis>True</CodeContractsRunCodeAnalysis>
-    <CodeContractsBuildReferenceAssembly>False</CodeContractsBuildReferenceAssembly>
-    <CodeContractsNonNullObligations>False</CodeContractsNonNullObligations>
-    <CodeContractsBoundsObligations>False</CodeContractsBoundsObligations>
-    <CodeContractsLibPaths>
-    </CodeContractsLibPaths>
-    <CodeContractsPlatformPath>
-    </CodeContractsPlatformPath>
-    <CodeContractsExtraAnalysisOptions>
-    </CodeContractsExtraAnalysisOptions>
-    <CodeContractsBaseLineFile>
-    </CodeContractsBaseLineFile>
-    <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
-    <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
-    <CodeContractsShowSquigglies>True</CodeContractsShowSquigglies>
-    <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
-    <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
-    <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
-    <CodeContractsArithmeticObligations>False</CodeContractsArithmeticObligations>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <CodeContractsRedundantAssumptions>False</CodeContractsRedundantAssumptions>
-    <CodeContractsEmitXMLDocs>False</CodeContractsEmitXMLDocs>
-    <CodeContractsExtraRewriteOptions />
-    <CodeContractsReferenceAssembly>%28none%29</CodeContractsReferenceAssembly>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>

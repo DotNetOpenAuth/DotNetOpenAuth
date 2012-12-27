@@ -103,8 +103,7 @@ namespace DotNetOpenAuth {
 			return new DelayedToString<IEnumerable<KeyValuePair<K, V>>>(
 				pairs,
 				p => {
-					////Contract.Requires(pairs != null); // CC: anonymous method can't handle it
-					ErrorUtilities.VerifyArgumentNotNull(pairs, "pairs");
+					Requires.NotNull(pairs, "pairs");
 					var dictionary = pairs as IDictionary<K, V>;
 					var messageDictionary = pairs as MessageDictionary;
 					StringBuilder sb = new StringBuilder(dictionary != null ? dictionary.Count * 40 : 200);
