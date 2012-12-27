@@ -6,5 +6,10 @@
 		<StyleCopTreatErrorsAsWarnings Condition=" '$(StyleCopTreatErrorsAsWarnings)' == '' ">true</StyleCopTreatErrorsAsWarnings>
 
 		<ProjectRoot>$(MSBuildThisFileDirectory)</ProjectRoot>
+
+		<SolutionDir>$(ProjectRoot)src\</SolutionDir>
+		<RestorePackages>true</RestorePackages>
+		<RequireRestoreConsent>false</RequireRestoreConsent>
+		<DownloadNuGetExe>true</DownloadNuGetExe>
 	</PropertyGroup>
 </Project>
