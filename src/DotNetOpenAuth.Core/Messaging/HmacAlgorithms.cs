@@ -51,9 +51,7 @@ namespace DotNetOpenAuth.Messaging {
 				hmac.Key = key;
 				return hmac;
 			} catch {
-#if CLR4
 				hmac.Dispose();
-#endif
 				throw;
 			}
 		}
