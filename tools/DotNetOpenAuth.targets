@@ -17,7 +17,6 @@
 	<PropertyGroup>
 		<DefineConstants Condition=" '$(SignAssembly)' == 'true' ">$(DefineConstants);StrongNameSigned</DefineConstants>
 		<AssemblySearchPaths>$(ProjectRoot)lib;$(AssemblySearchPaths)</AssemblySearchPaths>
-		<AssemblySearchPaths Condition="Exists('$(ProjectRoot)lib\net-$(TargetFrameworkVersion)')">$(ProjectRoot)lib\net-$(TargetFrameworkVersion);$(AssemblySearchPaths)</AssemblySearchPaths>
 	</PropertyGroup>
 
 	<ItemGroup>
