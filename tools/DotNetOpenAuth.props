@@ -38,7 +38,6 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<ILMergeSearchDirectories Include="$(ProjectRoot)lib" />
-		<ILMergeSearchDirectories Include="$(ProjectRoot)lib\net-$(TargetFrameworkVersion)" />
 	</ItemGroup>
 	<ItemGroup>
 		<ILMergeSearchDirectories Include="$(ILMergeTargetPlatformDirectory)" />
