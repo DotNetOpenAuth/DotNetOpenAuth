@@ -76,8 +76,6 @@
 			<DropSatelliteSourceFiles>
 				<CultureDir>$([System.IO.Path]::GetDirectoryName('$([System.IO.Path]::GetDirectoryName('%(RecursiveDir)'))'))\</CultureDir>
 			</DropSatelliteSourceFiles>
-			<_DropLibSourceFiles Include="$(ProjectRoot)Lib\**\*" />
-			<DropLibSourceFiles Include="@(_DropLibSourceFiles)" Condition=" '%(FileName)' == 'log4net' or '%(FileName)' == 'System.Net.Http' " />
 			<DropProjectTemplatesSourceFiles Include="@(ProjectTemplatesVsi)" />
 			<DropVsixSourceFiles Include="@(ExtensionVsix)" Condition=" '%(ExtensionVsix.IncludeInDrop)' == 'true' " />
 
@@ -113,7 +111,6 @@
 			<DropFiles Include="@(DropSourceFiles->'$(DropDirectory)%(RecursiveDir)%(FileName)%(Extension)')"/>
 			<DropBin45Files Include="@(DropBin45SourceFiles->'$(DropBin45Directory)%(RecursiveDir)%(FileName)%(Extension)')"/>
 			<DropSatelliteFiles Include="@(DropSatelliteSourceFiles->'$(DropBinDirectory)%(CultureDir)%(FileName)%(Extension)')" />
-			<DropLibFiles Include="@(DropLibSourceFiles->'$(DropLibDirectory)%(RecursiveDir)%(FileName)%(Extension)')"/>
 			<DropProjectTemplatesFiles Include="@(DropProjectTemplatesSourceFiles->'$(DropProjectTemplatesDirectory)%(FileName)%(Extension)')" />
 			<DropVsixFiles Include="@(DropVsixSourceFiles->'$(DropProjectTemplatesDirectory)%(FileName)%(Extension)')" />
 			<DropSamplesFiles Include="@(DropSamplesSourceFiles->'$(DropSamplesDirectory)%(RecursiveDir)%(FileName)%(Extension)')"/>
@@ -125,7 +122,6 @@
 										@(DropSourceFiles);
 										@(DropBin45SourceFiles);
 										@(DropSatelliteSourceFiles);
-										@(DropLibSourceFiles);
 										@(DropProjectTemplatesSourceFiles);
 										@(DropVsixSourceFiles);
 										@(DropSamplesSourceFiles);
@@ -138,7 +134,6 @@
 										@(DropFiles);
 										@(DropBin45Files);
 										@(DropSatelliteFiles);
-										@(DropLibFiles);
 										@(DropProjectTemplatesFiles);
 										@(DropVsixFiles);
 										@(DropSamplesFiles);
