@@ -3,16 +3,14 @@
 	<PropertyGroup>
 		<ProductName>DotNetOpenAuth</ProductName>
 		<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-		<TargetFrameworkVersion Condition=" '$(TargetFrameworkVersion)' == '' ">v4.0</TargetFrameworkVersion>
+		<TargetFrameworkVersion Condition=" '$(TargetFrameworkVersion)' == '' ">v4.5</TargetFrameworkVersion>
 		<DisableFastUpToDateCheck>false</DisableFastUpToDateCheck>
 		<DropsRoot>$(ProjectRoot)drops\$(TargetFrameworkVersion)\$(Configuration)\</DropsRoot>
 		<OutputPath>$(ProjectRoot)bin\$(TargetFrameworkVersion)\$(Configuration)\</OutputPath>
-		<OutputPath35>$(ProjectRoot)bin\v3.5\$(Configuration)\</OutputPath35>
-		<OutputPath40>$(ProjectRoot)bin\v4.0\$(Configuration)\</OutputPath40>
 		<OutputPath45>$(ProjectRoot)bin\v4.5\$(Configuration)\</OutputPath45>
 		<DocOutputPath>$(ProjectRoot)doc\</DocOutputPath>
 		<IntermediatePath>$(ProjectRoot)obj\$(TargetFrameworkVersion)\$(Configuration)\</IntermediatePath>
-		<IntermediatePath40>$(ProjectRoot)obj\v4.0\$(Configuration)\</IntermediatePath40>
+		<IntermediatePath45>$(ProjectRoot)obj\v4.5\$(Configuration)\</IntermediatePath45>
 		<BaseIntermediateOutputPath Condition=" '$(BaseIntermediateOutputPath)' == '' ">obj\$(TargetFrameworkVersion)\</BaseIntermediateOutputPath>
 		<ToolsDir>$(ProjectRoot)tools\</ToolsDir>
 		<ZipLevel>6</ZipLevel>
@@ -34,8 +32,6 @@
 		<SignedSubPath>signed\</SignedSubPath>
 
 		<ILMergeOutputAssemblyDirectory>$(OutputPath)unified\</ILMergeOutputAssemblyDirectory>
-		<ILMergeOutputAssembly35Directory>$(OutputPath35)unified\</ILMergeOutputAssembly35Directory>
-		<ILMergeOutputAssembly40Directory>$(OutputPath40)unified\</ILMergeOutputAssembly40Directory>
 		<ILMergeOutputAssembly45Directory>$(OutputPath45)unified\</ILMergeOutputAssembly45Directory>
 		<ILMergeOutputAssembly>$(ILMergeOutputAssemblyDirectory)$(ProductName).dll</ILMergeOutputAssembly>
 		<ILMergeOutputXmlDocs>$(ILMergeOutputAssemblyDirectory)$(ProductName).xml</ILMergeOutputXmlDocs>
@@ -99,7 +95,7 @@
 			<Nonshipping>true</Nonshipping>
 		</DelaySignedProjects>
 		<DelaySignedProjects Include="$(ProjectRoot)samples\openidofflineprovider\openidofflineprovider.csproj">
-			<TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+			<TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
 		</DelaySignedProjects>
 
 		<ProjectReferencesToRemove Include="@(ProductProjectNames->'..\..\src\%(Identity)\%(Identity).csproj')" />

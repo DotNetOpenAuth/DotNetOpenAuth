@@ -21,7 +21,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>OpenIdRelyingPartyWebFormsVB</RootNamespace>
     <AssemblyName>OpenIdRelyingPartyWebFormsVB</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MyType>Custom</MyType>
     <OptionExplicit>On</OptionExplicit>
     <OptionCompare>Binary</OptionCompare>
