@@ -18,7 +18,6 @@
 			<Output TaskParameter="SimpleVersion" PropertyName="BuildVersionSimple" />
 			<Output TaskParameter="PrereleaseVersion" PropertyName="PrereleaseVersion" />
 			<Output TaskParameter="MajorMinorVersion" PropertyName="MajorMinorVersion" />
-			<Output TaskParameter="OAuth2PackagesVersion" PropertyName="OAuth2PackagesVersion" />
 			<Output TaskParameter="GitCommitId" PropertyName="GitCommitId" />
 			<Output TaskParameter="BuildNumber" PropertyName="BuildNumber" />
 		</GetBuildVersion>
