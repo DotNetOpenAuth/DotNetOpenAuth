@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<ProductName>DotNetOpenAuth</ProductName>
 		<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-		<TargetFrameworkVersion Condition=" '$(TargetFrameworkVersion)' == '' ">v4.5</TargetFrameworkVersion>
+		<TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
 		<DisableFastUpToDateCheck>false</DisableFastUpToDateCheck>
 		<DropsRoot>$(ProjectRoot)drops\$(TargetFrameworkVersion)\$(Configuration)\</DropsRoot>
 		<OutputPath>$(ProjectRoot)bin\$(TargetFrameworkVersion)\$(Configuration)\</OutputPath>
@@ -17,11 +17,7 @@
 		<Zip7ToolPath>$(ToolsDir)7-Zip.x86\</Zip7ToolPath>
 		<NuGetToolPath>$(ToolsDir)NuGet\</NuGetToolPath>
 		<ZipFormat Condition=" '$(ZipFormat)' == '' ">.7z</ZipFormat>
-		<ClrVersion Condition=" '$(TargetFrameworkVersion)' == 'v4.0' or '$(TargetFrameworkVersion)' == 'v4.5' ">4</ClrVersion>
-		<ClrVersion Condition=" '$(ClrVersion)' == '' ">2</ClrVersion>
-		<ILMergeTargetPlatformVersion Condition=" '$(ClrVersion)' == '2' ">2.0</ILMergeTargetPlatformVersion>
-		<ILMergeTargetPlatformVersion Condition=" '$(TargetFrameworkVersion)' == 'v4.0' ">4.0</ILMergeTargetPlatformVersion>
-		<ILMergeTargetPlatformVersion Condition=" '$(TargetFrameworkVersion)' == 'v4.5' ">4.5</ILMergeTargetPlatformVersion>
+		<ILMergeTargetPlatformVersion>4.5</ILMergeTargetPlatformVersion>
 
 		<SignAssembly>true</SignAssembly>
 		<PublicKeyFile Condition="'$(PublicKeyFile)' == ''">$(ProjectRoot)src\official-build-key.pub</PublicKeyFile>
@@ -37,22 +33,15 @@
 		<ILMergeOutputXmlDocs>$(ILMergeOutputAssemblyDirectory)$(ProductName).xml</ILMergeOutputXmlDocs>
 	</PropertyGroup>
 
-	<PropertyGroup Condition=" '$(ClrVersion)' == '4' ">
+	<PropertyGroup>
 		<ILMergeTargetPlatformDirectory>$(MSBuildProgramFiles32)\Reference Assemblies\Microsoft\Framework\.NETFramework\$(TargetFrameworkVersion)</ILMergeTargetPlatformDirectory>
 	</PropertyGroup>
 	<ItemGroup>
 		<ILMergeSearchDirectories Include="$(ProjectRoot)lib" />
 		<ILMergeSearchDirectories Include="$(ProjectRoot)lib\net-$(TargetFrameworkVersion)" />
 	</ItemGroup>
-	<ItemGroup Condition=" '$(ClrVersion)' == '4' ">
+	<ItemGroup>
 		<ILMergeSearchDirectories Include="$(ILMergeTargetPlatformDirectory)" />
-	</ItemGroup>
-
-	<ItemGroup Condition=" '$(ClrVersion)' != '4' ">
-		<ILMergeSearchDirectories Include="
-																$(MSBuildProgramFiles32)\Reference Assemblies\Microsoft\Framework\v3.0;
-																$(MSBuildProgramFiles32)\Reference Assemblies\Microsoft\Framework\v3.5;
-																" />
 	</ItemGroup>
 
 	<ItemGroup>
