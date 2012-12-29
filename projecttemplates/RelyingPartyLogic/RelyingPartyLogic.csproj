@@ -55,10 +55,6 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\log4net.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.SqlServer.ConnectionInfo" />
     <Reference Include="Microsoft.SqlServer.Smo" />
     <Reference Include="Microsoft.SqlServer.Management.Sdk.Sfc" />
@@ -230,7 +226,7 @@
   </ItemGroup>
   <Target Name="CopySqlDeployScript">
     <MSBuild Projects="..\RelyingPartyDatabase\RelyingPartyDatabase.sqlproj" Targets="GetDeployScriptPath">
-      <Output TaskParameter="TargetOutputs" PropertyName="SqlDeployScriptPath"/>
+      <Output TaskParameter="TargetOutputs" PropertyName="SqlDeployScriptPath" />
     </MSBuild>
     <Copy SourceFiles="$(SqlDeployScriptPath)" DestinationFiles="CreateDatabase.sql" />
   </Target>
@@ -242,12 +238,12 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-	<PropertyGroup>
-		<PrepareResourceNamesDependsOn>
+  <PropertyGroup>
+    <PrepareResourceNamesDependsOn>
 			CopySqlDeployScript;
 			$(PrepareResourceNamesDependsOn)
 		</PrepareResourceNamesDependsOn>
-	</PropertyGroup>
-	<Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))\EnlistmentInfo.targets" Condition=" '$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))' != '' " />
-	<Import Project="$(SolutionDir)\.nuget\nuget.targets" />
+  </PropertyGroup>
+  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))\EnlistmentInfo.targets" Condition=" '$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))' != '' " />
+  <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
 </Project>
