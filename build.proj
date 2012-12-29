@@ -9,15 +9,15 @@
 										nuget\nuget.proj;
 										tools\drop.proj;
 										 ">
-			<Properties>TargetFrameworkVersion=v4.0</Properties>
+			<Properties>TargetFrameworkVersion=v4.5</Properties>
 		</NightlyProjects>
 		<NightlyProjects Include="samples\samples.proj">
 			<Targets>DeployableArchive</Targets>
-			<Properties>TargetFrameworkVersion=v4.0</Properties>
+			<Properties>TargetFrameworkVersion=v4.5</Properties>
 		</NightlyProjects>
 		<NightlyProjects Include="doc\doc.proj">
 			<Targets>DeployableArchive</Targets>
-			<Properties>TargetFrameworkVersion=v3.5</Properties>
+			<Properties>TargetFrameworkVersion=v4.5</Properties>
 		</NightlyProjects>
 
 		<ProjectsToClean Include="
@@ -27,10 +27,10 @@
 		                          vsix\vsix.proj;
 		                          samples\samples.proj;
 		                          ">
-			<Properties>TargetFrameworkVersion=v4.0</Properties>
+			<Properties>TargetFrameworkVersion=v4.5</Properties>
 		</ProjectsToClean>
 		<ProjectsToClean Include="doc\doc.proj">
-			<Properties>TargetFrameworkVersion=v3.5</Properties>
+			<Properties>TargetFrameworkVersion=v4.5</Properties>
 		</ProjectsToClean>
 
 		<DirectoriesToClean Include="
@@ -45,18 +45,16 @@
 		                     $(ProjectRoot)doc\$(ProductName).chm;
 		                     " />
 
-		<TestProjects Include="DotNetOpenAuth_Test;DotNetOpenAuth_TestWeb"  Condition=" '$(ClrVersion)' == '2' " />
-		<TestProjects Include="DotNetOpenAuth_AspNet_Test"  Condition=" '$(ClrVersion)' == '4' " />
-		<TestAssemblies Include="$(OutputPath)$(ProductName).Test.dll"  Condition=" '$(ClrVersion)' == '2' " />
-		<TestAssemblies Include="$(OutputPath)$(ProductName).AspNet.Test.dll" Condition=" '$(ClrVersion)' == '4' " />
+		<TestProjects Include="DotNetOpenAuth_AspNet_Test" />
+		<TestAssemblies Include="$(OutputPath)$(ProductName).AspNet.Test.dll" />
 
 		<ProjectsToPublish Include="doc\doc.proj">
 			<Targets>Publish</Targets>
-			<Properties>TargetFrameworkVersion=v3.5</Properties>
+			<Properties>TargetFrameworkVersion=v4.5</Properties>
 		</ProjectsToPublish>
 		<ProjectsToPublish Include="samples\samples.proj">
 			<Targets>Publish</Targets>
-			<Properties>TargetFrameworkVersion=v4.0</Properties>
+			<Properties>TargetFrameworkVersion=v4.5</Properties>
 		</ProjectsToPublish>
 	</ItemGroup>
 

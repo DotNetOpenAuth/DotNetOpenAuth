@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTarget="Build">
-	<UsingTask AssemblyFile="DotNetOpenAuth.BuildTasks.dll" TaskName="SetEnvironmentVariable" />
+	<UsingTask AssemblyFile="..\lib\DotNetOpenAuth.BuildTasks.dll" TaskName="SetEnvironmentVariable" />
 	<PropertyGroup>
 		<PresentationStyle Condition="'$(PresentationStyle)' == ''">vs2005</PresentationStyle>
 		<!-- Environment -->

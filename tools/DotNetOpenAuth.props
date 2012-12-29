@@ -3,27 +3,21 @@
 	<PropertyGroup>
 		<ProductName>DotNetOpenAuth</ProductName>
 		<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-		<TargetFrameworkVersion Condition=" '$(TargetFrameworkVersion)' == '' ">v4.0</TargetFrameworkVersion>
+		<TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
 		<DisableFastUpToDateCheck>false</DisableFastUpToDateCheck>
 		<DropsRoot>$(ProjectRoot)drops\$(TargetFrameworkVersion)\$(Configuration)\</DropsRoot>
 		<OutputPath>$(ProjectRoot)bin\$(TargetFrameworkVersion)\$(Configuration)\</OutputPath>
-		<OutputPath35>$(ProjectRoot)bin\v3.5\$(Configuration)\</OutputPath35>
-		<OutputPath40>$(ProjectRoot)bin\v4.0\$(Configuration)\</OutputPath40>
 		<OutputPath45>$(ProjectRoot)bin\v4.5\$(Configuration)\</OutputPath45>
 		<DocOutputPath>$(ProjectRoot)doc\</DocOutputPath>
 		<IntermediatePath>$(ProjectRoot)obj\$(TargetFrameworkVersion)\$(Configuration)\</IntermediatePath>
-		<IntermediatePath40>$(ProjectRoot)obj\v4.0\$(Configuration)\</IntermediatePath40>
+		<IntermediatePath45>$(ProjectRoot)obj\v4.5\$(Configuration)\</IntermediatePath45>
 		<BaseIntermediateOutputPath Condition=" '$(BaseIntermediateOutputPath)' == '' ">obj\$(TargetFrameworkVersion)\</BaseIntermediateOutputPath>
 		<ToolsDir>$(ProjectRoot)tools\</ToolsDir>
 		<ZipLevel>6</ZipLevel>
 		<Zip7ToolPath>$(ToolsDir)7-Zip.x86\</Zip7ToolPath>
 		<NuGetToolPath>$(ToolsDir)NuGet\</NuGetToolPath>
 		<ZipFormat Condition=" '$(ZipFormat)' == '' ">.7z</ZipFormat>
-		<ClrVersion Condition=" '$(TargetFrameworkVersion)' == 'v4.0' or '$(TargetFrameworkVersion)' == 'v4.5' ">4</ClrVersion>
-		<ClrVersion Condition=" '$(ClrVersion)' == '' ">2</ClrVersion>
-		<ILMergeTargetPlatformVersion Condition=" '$(ClrVersion)' == '2' ">2.0</ILMergeTargetPlatformVersion>
-		<ILMergeTargetPlatformVersion Condition=" '$(TargetFrameworkVersion)' == 'v4.0' ">4.0</ILMergeTargetPlatformVersion>
-		<ILMergeTargetPlatformVersion Condition=" '$(TargetFrameworkVersion)' == 'v4.5' ">4.5</ILMergeTargetPlatformVersion>
+		<ILMergeTargetPlatformVersion>4.5</ILMergeTargetPlatformVersion>
 
 		<SignAssembly>true</SignAssembly>
 		<PublicKeyFile Condition="'$(PublicKeyFile)' == ''">$(ProjectRoot)src\official-build-key.pub</PublicKeyFile>
@@ -34,29 +28,19 @@
 		<SignedSubPath>signed\</SignedSubPath>
 
 		<ILMergeOutputAssemblyDirectory>$(OutputPath)unified\</ILMergeOutputAssemblyDirectory>
-		<ILMergeOutputAssembly35Directory>$(OutputPath35)unified\</ILMergeOutputAssembly35Directory>
-		<ILMergeOutputAssembly40Directory>$(OutputPath40)unified\</ILMergeOutputAssembly40Directory>
 		<ILMergeOutputAssembly45Directory>$(OutputPath45)unified\</ILMergeOutputAssembly45Directory>
 		<ILMergeOutputAssembly>$(ILMergeOutputAssemblyDirectory)$(ProductName).dll</ILMergeOutputAssembly>
 		<ILMergeOutputXmlDocs>$(ILMergeOutputAssemblyDirectory)$(ProductName).xml</ILMergeOutputXmlDocs>
 	</PropertyGroup>
 
-	<PropertyGroup Condition=" '$(ClrVersion)' == '4' ">
+	<PropertyGroup>
 		<ILMergeTargetPlatformDirectory>$(MSBuildProgramFiles32)\Reference Assemblies\Microsoft\Framework\.NETFramework\$(TargetFrameworkVersion)</ILMergeTargetPlatformDirectory>
 	</PropertyGroup>
 	<ItemGroup>
 		<ILMergeSearchDirectories Include="$(ProjectRoot)lib" />
-		<ILMergeSearchDirectories Include="$(ProjectRoot)lib\net-$(TargetFrameworkVersion)" />
 	</ItemGroup>
-	<ItemGroup Condition=" '$(ClrVersion)' == '4' ">
+	<ItemGroup>
 		<ILMergeSearchDirectories Include="$(ILMergeTargetPlatformDirectory)" />
-	</ItemGroup>
-
-	<ItemGroup Condition=" '$(ClrVersion)' != '4' ">
-		<ILMergeSearchDirectories Include="
-																$(MSBuildProgramFiles32)\Reference Assemblies\Microsoft\Framework\v3.0;
-																$(MSBuildProgramFiles32)\Reference Assemblies\Microsoft\Framework\v3.5;
-																" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -99,7 +83,7 @@
 			<Nonshipping>true</Nonshipping>
 		</DelaySignedProjects>
 		<DelaySignedProjects Include="$(ProjectRoot)samples\openidofflineprovider\openidofflineprovider.csproj">
-			<TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+			<TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
 		</DelaySignedProjects>
 
 		<ProjectReferencesToRemove Include="@(ProductProjectNames->'..\..\src\%(Identity)\%(Identity).csproj')" />

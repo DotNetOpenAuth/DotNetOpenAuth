@@ -10,9 +10,7 @@ namespace DotNetOpenAuth.OAuth2 {
 	using System.Globalization;
 	using System.Linq;
 	using System.Net;
-#if CLR4
 	using System.Net.Http;
-#endif
 	using System.Security;
 	using System.Text;
 	using System.Xml;
@@ -145,7 +143,6 @@ namespace DotNetOpenAuth.OAuth2 {
 			AuthorizeRequest(requestHeaders, authorization.AccessToken);
 		}
 
-#if CLR4
 		/// <summary>
 		/// Creates an HTTP handler that automatically applies an OAuth 2 (bearer) access token to outbound HTTP requests.
 		/// The result of this method can be supplied to the <see cref="HttpClient(HttpMessageHandler)"/> constructor.
@@ -169,7 +166,6 @@ namespace DotNetOpenAuth.OAuth2 {
 			Requires.NotNull(authorization, "authorization");
 			return new BearerTokenHttpMessageHandler(this, authorization, innerHandler ?? new HttpClientHandler());
 		}
-#endif
 
 		/// <summary>
 		/// Refreshes a short-lived access token using a longer-lived refresh token

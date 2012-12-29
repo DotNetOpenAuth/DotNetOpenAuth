@@ -27,7 +27,7 @@
     <ProjectGuid>{08a938b6-ebbd-4036-880e-ce7ba2d14510}</ProjectGuid>
     <GenerateDatabaseFile>False</GenerateDatabaseFile>
     <GenerateCreateScript>True</GenerateCreateScript>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <SqlServerVerification>False</SqlServerVerification>
     <TargetLanguage>CS</TargetLanguage>
     <AllowSnapshotIsolation>False</AllowSnapshotIsolation>

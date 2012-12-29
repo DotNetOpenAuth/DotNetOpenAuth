@@ -20,7 +20,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>OpenIdRelyingPartyMvc</RootNamespace>
     <AssemblyName>OpenIdRelyingPartyMvc</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
     <TargetFrameworkProfile />
     <UseIISExpress>true</UseIISExpress>

@@ -55,7 +55,7 @@
 			CopyAttributes="true"
 			AllowDuplicateAttributes="true"
 			ToolPath="$(ProjectRoot)tools\ILMerge"
-			TargetPlatformVersion="$(ClrVersion).0"
+			TargetPlatformVersion="4.0"
 			TargetPlatformDirectory="$(ILMergeTargetPlatformDirectory)" />
 	</Target>
 

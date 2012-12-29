@@ -14,9 +14,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.IO.Compression;
 	using System.Linq;
 	using System.Net;
-#if CLR4
 	using System.Net.Http;
-#endif
 	using System.Net.Mime;
 	using System.Runtime.Serialization.Json;
 	using System.Security;
@@ -167,7 +165,6 @@ namespace DotNetOpenAuth.Messaging {
 			return new OutgoingWebResponseActionResult(response);
 		}
 
-#if CLR4
 		/// <summary>
 		/// Transforms an OutgoingWebResponse to a Web API-friendly HttpResponseMessage.
 		/// </summary>
@@ -188,7 +185,6 @@ namespace DotNetOpenAuth.Messaging {
 
 			return response;
 		}
-#endif
 
 		/// <summary>
 		/// Gets the original request URL, as seen from the browser before any URL rewrites on the server if any.
@@ -456,11 +452,7 @@ namespace DotNetOpenAuth.Messaging {
 			return new XmlReaderSettings {
 				MaxCharactersFromEntities = 1024,
 				XmlResolver = null,
-#if CLR4
 				DtdProcessing = DtdProcessing.Prohibit,
-#else
-				ProhibitDtd = true,
-#endif
 			};
 		}
 
@@ -1135,26 +1127,6 @@ namespace DotNetOpenAuth.Messaging {
 				}
 			}
 		}
-
-#if !CLR4
-		/// <summary>
-		/// Copies the contents of one stream to another.
-		/// </summary>
-		/// <param name="copyFrom">The stream to copy from, at the position where copying should begin.</param>
-		/// <param name="copyTo">The stream to copy to, at the position where bytes should be written.</param>
-		/// <returns>The total number of bytes copied.</returns>
-		/// <remarks>
-		/// Copying begins at the streams' current positions.
-		/// The positions are NOT reset after copying is complete.
-		/// </remarks>
-		internal static int CopyTo(this Stream copyFrom, Stream copyTo) {
-			Requires.NotNull(copyFrom, "copyFrom");
-			Requires.NotNull(copyTo, "copyTo");
-			Requires.That(copyFrom.CanRead, "copyFrom", MessagingStrings.StreamUnreadable);
-			Requires.That(copyTo.CanWrite, "copyTo", MessagingStrings.StreamUnwritable);
-			return CopyUpTo(copyFrom, copyTo, int.MaxValue);
-		}
-#endif
 
 		/// <summary>
 		/// Copies the contents of one stream to another.

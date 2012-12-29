@@ -12,10 +12,8 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Globalization;
 	using System.IO;
 	using System.Net;
-#if CLR4
 	using System.Net.Http;
 	using System.Net.Http.Headers;
-#endif
 	using System.Net.Mime;
 	using System.ServiceModel.Channels;
 	using System.Web;
@@ -124,7 +122,6 @@ namespace DotNetOpenAuth.Messaging {
 			Reporting.RecordRequestStatistics(this);
 		}
 
-#if CLR4
 		/// <summary>
 		/// Initializes a new instance of the <see cref="HttpRequestInfo" /> class.
 		/// </summary>
@@ -144,7 +141,6 @@ namespace DotNetOpenAuth.Messaging {
 
 			Reporting.RecordRequestStatistics(this);
 		}
-#endif
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="HttpRequestInfo"/> class.
@@ -309,7 +305,6 @@ namespace DotNetOpenAuth.Messaging {
 			return new NameValueCollection();
 		}
 
-#if CLR4
 		/// <summary>
 		/// Adds HTTP headers to a <see cref="NameValueCollection"/>.
 		/// </summary>
@@ -325,6 +320,5 @@ namespace DotNetOpenAuth.Messaging {
 				}
 			}
 		}
-#endif
 	}
 }

@@ -10,9 +10,7 @@ namespace DotNetOpenAuth.OAuth2 {
 	using System.Diagnostics.CodeAnalysis;
 	using System.Linq;
 	using System.Net;
-#if CLR4
 	using System.Net.Http;
-#endif
 	using System.Security.Principal;
 	using System.ServiceModel.Channels;
 	using System.Text;
@@ -129,7 +127,6 @@ namespace DotNetOpenAuth.OAuth2 {
 			}
 		}
 
-#if CLR4
 		/// <summary>
 		/// Discovers what access the client should have considering the access token in the current request.
 		/// </summary>
@@ -146,7 +143,6 @@ namespace DotNetOpenAuth.OAuth2 {
 			Requires.NotNull(request, "request");
 			return this.GetAccessToken(new HttpRequestInfo(request), requiredScopes);
 		}
-#endif
 
 		/// <summary>
 		/// Discovers what access the client should have considering the access token in the current request.
@@ -197,7 +193,6 @@ namespace DotNetOpenAuth.OAuth2 {
 			return this.GetPrincipal(new HttpRequestInfo(request, requestUri), requiredScopes);
 		}
 
-#if CLR4
 		/// <summary>
 		/// Discovers what access the client should have considering the access token in the current request.
 		/// </summary>
@@ -214,6 +209,5 @@ namespace DotNetOpenAuth.OAuth2 {
 			Requires.NotNull(request, "request");
 			return this.GetPrincipal(new HttpRequestInfo(request), requiredScopes);
 		}
-#endif
 	}
 }

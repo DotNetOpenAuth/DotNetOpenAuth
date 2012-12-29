@@ -16,10 +16,7 @@
 
 	<PropertyGroup>
 		<DefineConstants Condition=" '$(SignAssembly)' == 'true' ">$(DefineConstants);StrongNameSigned</DefineConstants>
-		<DefineConstants Condition=" '$(ClrVersion)' == '4' ">$(DefineConstants);CLR4</DefineConstants>
-		<DefineConstants Condition=" '$(TargetFrameworkVersion)' == 'v4.5' ">$(DefineConstants);NetFx45</DefineConstants>
 		<AssemblySearchPaths>$(ProjectRoot)lib;$(AssemblySearchPaths)</AssemblySearchPaths>
-		<AssemblySearchPaths Condition="Exists('$(ProjectRoot)lib\net-$(TargetFrameworkVersion)')">$(ProjectRoot)lib\net-$(TargetFrameworkVersion);$(AssemblySearchPaths)</AssemblySearchPaths>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -38,7 +35,6 @@
 	<Target Name="CreatePublicAccessors">
 		<PropertyGroup>
 			<VSVersionForTargetFramework>v10.0</VSVersionForTargetFramework>
-			<VSVersionForTargetFramework Condition=" '$(ClrVersion)' != '4' ">v9.0</VSVersionForTargetFramework>
 		</PropertyGroup>
 		<Publicize
 			Condition=" '%(ReferencePath.Shadow)' == 'true' "

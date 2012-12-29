@@ -9,9 +9,7 @@ namespace DotNetOpenAuth.OAuth2 {
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Linq;
-#if CLR4
 	using System.Net.Http;
-#endif
 	using System.Security.Cryptography;
 	using System.Text;
 	using System.Web;
@@ -132,7 +130,6 @@ namespace DotNetOpenAuth.OAuth2 {
 			this.Channel.Respond(response);
 		}
 
-#if CLR4
 		/// <summary>
 		/// Handles an incoming request to the authorization server's token endpoint.
 		/// </summary>
@@ -141,7 +138,6 @@ namespace DotNetOpenAuth.OAuth2 {
 		public OutgoingWebResponse HandleTokenRequest(HttpRequestMessage request) {
 			return this.HandleTokenRequest(new HttpRequestInfo(request));
 		}
-#endif
 
 		/// <summary>
 		/// Handles an incoming request to the authorization server's token endpoint.
