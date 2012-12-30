@@ -156,37 +156,6 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
-		/// Transforms an OutgoingWebResponse to an MVC-friendly ActionResult.
-		/// </summary>
-		/// <param name="response">The response to send to the user agent.</param>
-		/// <returns>The <see cref="ActionResult"/> instance to be returned by the Controller's action method.</returns>
-		public static ActionResult AsActionResult(this OutgoingWebResponse response) {
-			Requires.NotNull(response, "response");
-			return new OutgoingWebResponseActionResult(response);
-		}
-
-		/// <summary>
-		/// Transforms an OutgoingWebResponse to a Web API-friendly HttpResponseMessage.
-		/// </summary>
-		/// <param name="outgoingResponse">The response to send to the user agent.</param>
-		/// <returns>The <see cref="HttpResponseMessage"/> instance to be returned by the Web API method.</returns>
-		public static HttpResponseMessage AsHttpResponseMessage(this OutgoingWebResponse outgoingResponse) {
-			HttpResponseMessage response = new HttpResponseMessage(outgoingResponse.Status);
-			if (outgoingResponse.ResponseStream != null) {
-				response.Content = new StreamContent(outgoingResponse.ResponseStream);
-			}
-
-			var responseHeaders = outgoingResponse.Headers;
-			foreach (var header in responseHeaders.AllKeys) {
-				if (!response.Headers.TryAddWithoutValidation(header, responseHeaders[header])) {
-					response.Content.Headers.TryAddWithoutValidation(header, responseHeaders[header]);
-				}
-			}
-
-			return response;
-		}
-
-		/// <summary>
 		/// Gets the original request URL, as seen from the browser before any URL rewrites on the server if any.
 		/// Cookieless session directory (if applicable) is also included.
 		/// </summary>
@@ -220,22 +189,6 @@ namespace DotNetOpenAuth.Messaging {
 			} else {
 				return uri;
 			}
-		}
-
-		/// <summary>
-		/// Sends a multipart HTTP POST request (useful for posting files).
-		/// </summary>
-		/// <param name="request">The HTTP request.</param>
-		/// <param name="requestHandler">The request handler.</param>
-		/// <param name="parts">The parts to include in the POST entity.</param>
-		/// <returns>The HTTP response.</returns>
-		public static IncomingWebResponse PostMultipart(this HttpWebRequest request, IDirectWebRequestHandler requestHandler, IEnumerable<MultipartPostPart> parts) {
-			Requires.NotNull(request, "request");
-			Requires.NotNull(requestHandler, "requestHandler");
-			Requires.NotNull(parts, "parts");
-
-			PostMultipartNoGetResponse(request, requestHandler, parts);
-			return requestHandler.GetResponse(request);
 		}
 
 		/// <summary>
@@ -492,59 +445,6 @@ namespace DotNetOpenAuth.Messaging {
 				return builder.Uri;
 			} else {
 				return uri;
-			}
-		}
-
-		/// <summary>
-		/// Sends a multipart HTTP POST request (useful for posting files) but doesn't call GetResponse on it.
-		/// </summary>
-		/// <param name="request">The HTTP request.</param>
-		/// <param name="requestHandler">The request handler.</param>
-		/// <param name="parts">The parts to include in the POST entity.</param>
-		internal static void PostMultipartNoGetResponse(this HttpWebRequest request, IDirectWebRequestHandler requestHandler, IEnumerable<MultipartPostPart> parts) {
-			Requires.NotNull(request, "request");
-			Requires.NotNull(requestHandler, "requestHandler");
-			Requires.NotNull(parts, "parts");
-
-			Reporting.RecordFeatureUse("MessagingUtilities.PostMultipart");
-			parts = parts.CacheGeneratedResults();
-			string boundary = Guid.NewGuid().ToString();
-			string initialPartLeadingBoundary = string.Format(CultureInfo.InvariantCulture, "--{0}\r\n", boundary);
-			string partLeadingBoundary = string.Format(CultureInfo.InvariantCulture, "\r\n--{0}\r\n", boundary);
-			string finalTrailingBoundary = string.Format(CultureInfo.InvariantCulture, "\r\n--{0}--\r\n", boundary);
-			var contentType = new ContentType("multipart/form-data") {
-				Boundary = boundary,
-				CharSet = Channel.PostEntityEncoding.WebName,
-			};
-
-			request.Method = "POST";
-			request.ContentType = contentType.ToString();
-			long contentLength = parts.Sum(p => partLeadingBoundary.Length + p.Length) + finalTrailingBoundary.Length;
-			if (parts.Any()) {
-				contentLength -= 2; // the initial part leading boundary has no leading \r\n
-			}
-			request.ContentLength = contentLength;
-
-			var requestStream = requestHandler.GetRequestStream(request);
-			try {
-				StreamWriter writer = new StreamWriter(requestStream, Channel.PostEntityEncoding);
-				bool firstPart = true;
-				foreach (var part in parts) {
-					writer.Write(firstPart ? initialPartLeadingBoundary : partLeadingBoundary);
-					firstPart = false;
-					part.Serialize(writer);
-					part.Dispose();
-				}
-
-				writer.Write(finalTrailingBoundary);
-				writer.Flush();
-			} finally {
-				// We need to be sure to close the request stream...
-				// unless it is a MemoryStream, which is a clue that we're in
-				// a mock stream situation and closing it would preclude reading it later.
-				if (!(requestStream is MemoryStream)) {
-					requestStream.Dispose();
-				}
 			}
 		}
 

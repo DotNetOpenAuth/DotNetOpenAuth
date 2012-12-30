@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Net.Http;
 	using System.Text;
 	using Validation;
 
@@ -62,7 +63,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// Creates the HTTP response to forward to the client to report the error.
 		/// </summary>
 		/// <returns>The HTTP response.</returns>
-		public OutgoingWebResponse CreateErrorResponse() {
+		public HttpResponseMessage CreateErrorResponse() {
 			var response = this.channel.PrepareResponse(this.ErrorResponseMessage);
 			return response;
 		}

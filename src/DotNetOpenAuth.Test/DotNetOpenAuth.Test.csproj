@@ -115,7 +115,6 @@
     <Compile Include="Messaging\ErrorUtilitiesTests.cs" />
     <Compile Include="Messaging\MessageSerializerTests.cs" />
     <Compile Include="Messaging\MultipartPostPartTests.cs" />
-    <Compile Include="Messaging\OutgoingWebResponseTests.cs" />
     <Compile Include="Messaging\Reflection\MessageDescriptionTests.cs" />
     <Compile Include="Messaging\Reflection\MessageDictionaryTests.cs" />
     <Compile Include="Messaging\MessagingTestBase.cs" />
@@ -154,7 +153,6 @@
     <Compile Include="Mocks\TestExpiringMessage.cs" />
     <Compile Include="Mocks\TestSignedDirectedMessage.cs" />
     <Compile Include="Mocks\MockSigningBindingElement.cs" />
-    <Compile Include="Mocks\TestWebRequestHandler.cs" />
     <Compile Include="Mocks\TestChannel.cs" />
     <Compile Include="Mocks\TestMessage.cs" />
     <Compile Include="Mocks\TestMessageFactory.cs" />

@@ -17,10 +17,13 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Linq;
 	using System.Net;
 	using System.Net.Cache;
+	using System.Net.Http;
+	using System.Net.Http.Headers;
 	using System.Net.Mime;
 	using System.Runtime.Serialization.Json;
 	using System.Text;
 	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
 	using System.Xml;
 	using DotNetOpenAuth.Messaging.Reflection;
@@ -156,11 +159,20 @@ namespace DotNetOpenAuth.Messaging {
 		/// The binding elements to use in sending and receiving messages.
 		/// The order they are provided is used for outgoing messgaes, and reversed for incoming messages.
 		/// </param>
-		protected Channel(IMessageFactory messageTypeProvider, params IChannelBindingElement[] bindingElements) {
+		/// <param name="messageHandler">The HTTP handler to use for outgoing HTTP requests.</param>
+		protected Channel(IMessageFactory messageTypeProvider, IChannelBindingElement[] bindingElements, HttpMessageHandler messageHandler = null) {
 			Requires.NotNull(messageTypeProvider, "messageTypeProvider");
 
+			messageHandler = messageHandler ?? new WebRequestHandler();
+			var httpHandler = messageHandler as WebRequestHandler;
+			if (httpHandler != null) {
+				// TODO: provide this as a recommendation to derived Channel types, but without tampering with 
+				// the setting once it has been provided to this constructor.
+				httpHandler.CachePolicy = new RequestCachePolicy(RequestCacheLevel.NoCacheNoStore);
+			}
+
 			this.messageTypeProvider = messageTypeProvider;
-			this.WebRequestHandler = new StandardWebRequestHandler();
+			this.WebRequestHandler = new HttpClient(messageHandler);
 			this.XmlDictionaryReaderQuotas = DefaultUntrustedXmlDictionaryReaderQuotas;
 
 			this.outgoingBindingElements = new List<IChannelBindingElement>(ValidateAndPrepareBindingElements(bindingElements));
@@ -178,14 +190,14 @@ namespace DotNetOpenAuth.Messaging {
 		internal event EventHandler<ChannelEventArgs> Sending;
 
 		/// <summary>
-		/// Gets or sets an instance to a <see cref="IDirectWebRequestHandler"/> that will be used when 
+		/// Gets or sets an instance to a <see cref="HttpClient"/> that will be used when 
 		/// submitting HTTP requests and waiting for responses.
 		/// </summary>
 		/// <remarks>
 		/// This defaults to a straightforward implementation, but can be set
 		/// to a mock object for testing purposes.
 		/// </remarks>
-		public IDirectWebRequestHandler WebRequestHandler { get; set; }
+		public HttpClient WebRequestHandler { get; set; }
 
 		/// <summary>
 		/// Gets or sets the maximum allowable size for a 301 Redirect response before we send
@@ -272,61 +284,10 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
-		/// Gets or sets the cache policy to use for direct message requests.
-		/// </summary>
-		/// <value>Default is <see cref="HttpRequestCacheLevel.NoCacheNoStore"/>.</value>
-		protected RequestCachePolicy CachePolicy {
-			get {
-				return this.cachePolicy;
-			}
-
-			set {
-				Requires.NotNull(value, "value");
-				this.cachePolicy = value;
-			}
-		}
-
-		/// <summary>
 		/// Gets or sets the XML dictionary reader quotas.
 		/// </summary>
 		/// <value>The XML dictionary reader quotas.</value>
 		protected virtual XmlDictionaryReaderQuotas XmlDictionaryReaderQuotas { get; set; }
-
-		/// <summary>
-		/// Sends an indirect message (either a request or response) 
-		/// or direct message response for transmission to a remote party
-		/// and ends execution on the current page or handler.
-		/// </summary>
-		/// <param name="message">The one-way message to send</param>
-		/// <exception cref="ThreadAbortException">Thrown by ASP.NET in order to prevent additional data from the page being sent to the client and corrupting the response.</exception>
-		/// <remarks>
-		/// Requires an HttpContext.Current context.
-		/// </remarks>
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public void Send(IProtocolMessage message) {
-			RequiresEx.ValidState(HttpContext.Current != null, MessagingStrings.CurrentHttpContextRequired);
-			Requires.NotNull(message, "message");
-			this.PrepareResponse(message).Respond(HttpContext.Current, true);
-		}
-
-		/// <summary>
-		/// Sends an indirect message (either a request or response) 
-		/// or direct message response for transmission to a remote party
-		/// and skips most of the remaining ASP.NET request handling pipeline.
-		/// Not safe to call from ASP.NET web forms.
-		/// </summary>
-		/// <param name="message">The one-way message to send</param>
-		/// <remarks>
-		/// Requires an HttpContext.Current context.
-		/// This call is not safe to make from an ASP.NET web form (.aspx file or code-behind) because
-		/// ASP.NET will render HTML after the protocol message has been sent, which will corrupt the response.
-		/// Use the <see cref="Send"/> method instead for web forms.
-		/// </remarks>
-		public void Respond(IProtocolMessage message) {
-			RequiresEx.ValidState(HttpContext.Current != null, MessagingStrings.CurrentHttpContextRequired);
-			Requires.NotNull(message, "message");
-			this.PrepareResponse(message).Respond();
-		}
 
 		/// <summary>
 		/// Prepares an indirect message (either a request or response) 
@@ -334,13 +295,13 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="message">The one-way message to send</param>
 		/// <returns>The pending user agent redirect based message to be sent as an HttpResponse.</returns>
-		public OutgoingWebResponse PrepareResponse(IProtocolMessage message) {
+		public HttpResponseMessage PrepareResponse(IProtocolMessage message) {
 			Requires.NotNull(message, "message");
 
 			this.ProcessOutgoingMessage(message);
 			Logger.Channel.DebugFormat("Sending message: {0}", message.GetType().Name);
 
-			OutgoingWebResponse result;
+			HttpResponseMessage result;
 			switch (message.Transport) {
 				case MessageTransport.Direct:
 					// This is a response to a direct message.
@@ -369,8 +330,13 @@ namespace DotNetOpenAuth.Messaging {
 
 			// Apply caching policy to any response.  We want to disable all caching because in auth* protocols,
 			// caching can be utilized in identity spoofing attacks.
-			result.Headers[HttpResponseHeader.CacheControl] = "no-cache, no-store, max-age=0, must-revalidate";
-			result.Headers[HttpResponseHeader.Pragma] = "no-cache";
+			result.Headers.CacheControl = new CacheControlHeaderValue {
+				NoCache = true,
+				NoStore = true,
+				MaxAge = TimeSpan.Zero,
+				MustRevalidate = true,
+			};
+			result.Headers.Pragma.Add(new NameValueHeaderValue("no-cache"));
 
 			return result;
 		}
@@ -502,11 +468,11 @@ namespace DotNetOpenAuth.Messaging {
 		/// or an unexpected type of message is received.
 		/// </exception>
 		[SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "This returns and verifies the appropriate message type.")]
-		public TResponse Request<TResponse>(IDirectedProtocolMessage requestMessage)
+		public async Task<TResponse> RequestAsync<TResponse>(IDirectedProtocolMessage requestMessage)
 			where TResponse : class, IProtocolMessage {
 			Requires.NotNull(requestMessage, "requestMessage");
 
-			IProtocolMessage response = this.Request(requestMessage);
+			IProtocolMessage response = await this.RequestAsync(requestMessage);
 			ErrorUtilities.VerifyProtocol(response != null, MessagingStrings.ExpectedMessageNotReceived, typeof(TResponse));
 
 			var expectedResponse = response as TResponse;
@@ -521,12 +487,12 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="requestMessage">The message to send.</param>
 		/// <returns>The remote party's response.  Guaranteed to never be null.</returns>
 		/// <exception cref="ProtocolException">Thrown if the response does not include a protocol message.</exception>
-		public IProtocolMessage Request(IDirectedProtocolMessage requestMessage) {
+		public async Task<IProtocolMessage> RequestAsync(IDirectedProtocolMessage requestMessage) {
 			Requires.NotNull(requestMessage, "requestMessage");
 
 			this.ProcessOutgoingMessage(requestMessage);
 			Logger.Channel.DebugFormat("Sending {0} request.", requestMessage.GetType().Name);
-			var responseMessage = this.RequestCore(requestMessage);
+			var responseMessage = await this.RequestCoreAsync(requestMessage);
 			ErrorUtilities.VerifyProtocol(responseMessage != null, MessagingStrings.ExpectedMessageNotReceived, typeof(IProtocolMessage).Name);
 
 			Logger.Channel.DebugFormat("Received {0} response.", responseMessage.GetType().Name);
@@ -565,10 +531,10 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="request">The message to send.</param>
 		/// <returns>The <see cref="HttpWebRequest"/> prepared to send the request.</returns>
 		/// <remarks>
-		/// This method must be overridden by a derived class, unless the <see cref="RequestCore"/> method
+		/// This method must be overridden by a derived class, unless the <see cref="RequestCoreAsync"/> method
 		/// is overridden and does not require this method.
 		/// </remarks>
-		internal HttpWebRequest CreateHttpRequestTestHook(IDirectedProtocolMessage request) {
+		internal HttpRequestMessage CreateHttpRequestTestHook(IDirectedProtocolMessage request) {
 			return this.CreateHttpRequest(request);
 		}
 
@@ -581,7 +547,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <remarks>
 		/// This method implements spec OAuth V1.0 section 5.3.
 		/// </remarks>
-		internal OutgoingWebResponse PrepareDirectResponseTestHook(IProtocolMessage response) {
+		internal HttpResponseMessage PrepareDirectResponseTestHook(IProtocolMessage response) {
 			return this.PrepareDirectResponse(response);
 		}
 
@@ -591,7 +557,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="response">The response that is anticipated to contain an protocol message.</param>
 		/// <returns>The deserialized message parts, if found.  Null otherwise.</returns>
 		/// <exception cref="ProtocolException">Thrown when the response is not valid.</exception>
-		internal IDictionary<string, string> ReadFromResponseCoreTestHook(IncomingWebResponse response) {
+		internal IDictionary<string, string> ReadFromResponseCoreTestHook(HttpResponseMessage response) {
 			return this.ReadFromResponseCore(response);
 		}
 
@@ -659,11 +625,11 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="message">The message.</param>
 		/// <param name="response">The HTTP response.</param>
-		protected static void ApplyMessageTemplate(IMessage message, OutgoingWebResponse response) {
+		protected static void ApplyMessageTemplate(IMessage message, HttpResponseMessage response) {
 			Requires.NotNull(message, "message");
 			var httpMessage = message as IHttpDirectResponse;
 			if (httpMessage != null) {
-				response.Status = httpMessage.HttpStatusCode;
+				response.StatusCode = httpMessage.HttpStatusCode;
 				foreach (string headerName in httpMessage.Headers) {
 					response.Headers.Add(headerName, httpMessage.Headers[headerName]);
 				}
@@ -699,17 +665,6 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
-		/// Gets the direct response of a direct HTTP request.
-		/// </summary>
-		/// <param name="webRequest">The web request.</param>
-		/// <returns>The response to the web request.</returns>
-		/// <exception cref="ProtocolException">Thrown on network or protocol errors.</exception>
-		protected virtual IncomingWebResponse GetDirectResponse(HttpWebRequest webRequest) {
-			Requires.NotNull(webRequest, "webRequest");
-			return this.WebRequestHandler.GetResponse(webRequest);
-		}
-
-		/// <summary>
 		/// Submits a direct request message to some remote party and blocks waiting for an immediately reply.
 		/// </summary>
 		/// <param name="request">The request message.</param>
@@ -719,23 +674,23 @@ namespace DotNetOpenAuth.Messaging {
 		/// behavior.  However in non-HTTP frameworks, such as unit test mocks, it may be appropriate to override 
 		/// this method to eliminate all use of an HTTP transport.
 		/// </remarks>
-		protected virtual IProtocolMessage RequestCore(IDirectedProtocolMessage request) {
+		protected virtual async Task<IProtocolMessage> RequestCoreAsync(IDirectedProtocolMessage request) {
 			Requires.NotNull(request, "request");
 			Requires.That(request.Recipient != null, "request", MessagingStrings.DirectedMessageMissingRecipient);
 
-			HttpWebRequest webRequest = this.CreateHttpRequest(request);
+			var webRequest = this.CreateHttpRequest(request);
 			var directRequest = request as IHttpDirectRequest;
 			if (directRequest != null) {
 				foreach (string header in directRequest.Headers) {
-					webRequest.Headers[header] = directRequest.Headers[header];
+					webRequest.Headers.Add(header, directRequest.Headers[header]);
 				}
 			}
 
 			IDictionary<string, string> responseFields;
 			IDirectResponseProtocolMessage responseMessage;
 
-			using (IncomingWebResponse response = this.GetDirectResponse(webRequest)) {
-				if (response.ResponseStream == null) {
+			using (HttpResponseMessage response = await this.WebRequestHandler.SendAsync(webRequest)) {
+				if (response.Content == null) {
 					return null;
 				}
 
@@ -763,7 +718,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="response">The HTTP direct response.</param>
 		/// <param name="message">The newly instantiated message, prior to deserialization.</param>
-		protected virtual void OnReceivingDirectResponse(IncomingWebResponse response, IDirectResponseProtocolMessage message) {
+		protected virtual void OnReceivingDirectResponse(HttpResponseMessage response, IDirectResponseProtocolMessage message) {
 		}
 
 		/// <summary>
@@ -827,7 +782,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="message">The message to send.</param>
 		/// <returns>The pending user agent redirect based message to be sent as an HttpResponse.</returns>
-		protected virtual OutgoingWebResponse PrepareIndirectResponse(IDirectedProtocolMessage message) {
+		protected virtual HttpResponseMessage PrepareIndirectResponse(IDirectedProtocolMessage message) {
 			Requires.NotNull(message, "message");
 			Requires.That(message.Recipient != null, "message", MessagingStrings.DirectedMessageMissingRecipient);
 			Requires.That((message.HttpMethods & (HttpDeliveryMethods.GetRequest | HttpDeliveryMethods.PostRequest)) != 0, "message", "GET or POST expected.");
@@ -837,7 +792,7 @@ namespace DotNetOpenAuth.Messaging {
 			Assumes.True(message != null && message.Recipient != null);
 			var fields = messageAccessor.Serialize();
 
-			OutgoingWebResponse response = null;
+			HttpResponseMessage response = null;
 			bool tooLargeForGet = false;
 			if ((message.HttpMethods & HttpDeliveryMethods.GetRequest) == HttpDeliveryMethods.GetRequest) {
 				bool payloadInFragment = false;
@@ -849,7 +804,7 @@ namespace DotNetOpenAuth.Messaging {
 				// First try creating a 301 redirect, and fallback to a form POST
 				// if the message is too big.
 				response = this.Create301RedirectResponse(message, fields, payloadInFragment);
-				tooLargeForGet = response.Headers[HttpResponseHeader.Location].Length > this.MaximumIndirectMessageUrlLength;
+				tooLargeForGet = response.Headers.Location.PathAndQuery.Length > this.MaximumIndirectMessageUrlLength;
 			}
 
 			// Make sure that if the message is too large for GET that POST is allowed.
@@ -876,14 +831,13 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="payloadInFragment">if set to <c>true</c> the redirect will contain the message payload in the #fragment portion of the URL rather than the ?querystring.</param>
 		/// <returns>The encoded HTTP response.</returns>
 		[Pure]
-		protected virtual OutgoingWebResponse Create301RedirectResponse(IDirectedProtocolMessage message, IDictionary<string, string> fields, bool payloadInFragment = false) {
+		protected virtual HttpResponseMessage Create301RedirectResponse(IDirectedProtocolMessage message, IDictionary<string, string> fields, bool payloadInFragment = false) {
 			Requires.NotNull(message, "message");
 			Requires.That(message.Recipient != null, "message", MessagingStrings.DirectedMessageMissingRecipient);
 			Requires.NotNull(fields, "fields");
 
 			// As part of this redirect, we include an HTML body in order to get passed some proxy filters
 			// such as WebSense.
-			WebHeaderCollection headers = new WebHeaderCollection();
 			UriBuilder builder = new UriBuilder(message.Recipient);
 			if (payloadInFragment) {
 				builder.AppendFragmentArgs(fields);
@@ -891,16 +845,14 @@ namespace DotNetOpenAuth.Messaging {
 				builder.AppendQueryArgs(fields);
 			}
 
-			headers.Add(HttpResponseHeader.Location, builder.Uri.AbsoluteUri);
-			headers.Add(HttpResponseHeader.ContentType, "text/html; charset=utf-8");
 			Logger.Http.DebugFormat("Redirecting to {0}", builder.Uri.AbsoluteUri);
-			OutgoingWebResponse response = new OutgoingWebResponse {
-				Status = HttpStatusCode.Redirect,
-				Headers = headers,
-				Body = string.Format(CultureInfo.InvariantCulture, RedirectResponseBodyFormat, builder.Uri.AbsoluteUri),
-				OriginalMessage = message
+			HttpResponseMessage response = new HttpResponseMessage {
+				StatusCode = HttpStatusCode.Redirect,
+				Content = new StringContent(string.Format(CultureInfo.InvariantCulture, RedirectResponseBodyFormat, builder.Uri.AbsoluteUri)),
 			};
 
+			response.Headers.Location = builder.Uri;
+			response.Content.Headers.ContentType =  new MediaTypeHeaderValue("text/html; charset=utf-8");
 			return response;
 		}
 
@@ -912,13 +864,11 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="fields">The pre-serialized fields from the message.</param>
 		/// <returns>The encoded HTTP response.</returns>
 		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "No apparent problem.  False positive?")]
-		protected virtual OutgoingWebResponse CreateFormPostResponse(IDirectedProtocolMessage message, IDictionary<string, string> fields) {
+		protected virtual HttpResponseMessage CreateFormPostResponse(IDirectedProtocolMessage message, IDictionary<string, string> fields) {
 			Requires.NotNull(message, "message");
 			Requires.That(message.Recipient != null, "message", MessagingStrings.DirectedMessageMissingRecipient);
 			Requires.NotNull(fields, "fields");
 
-			WebHeaderCollection headers = new WebHeaderCollection();
-			headers.Add(HttpResponseHeader.ContentType, "text/html");
 			using (StringWriter bodyWriter = new StringWriter(CultureInfo.InvariantCulture)) {
 				StringBuilder hiddenFields = new StringBuilder();
 				foreach (var field in fields) {
@@ -932,12 +882,11 @@ namespace DotNetOpenAuth.Messaging {
 					HttpUtility.HtmlEncode(message.Recipient.AbsoluteUri),
 					hiddenFields);
 				bodyWriter.Flush();
-				OutgoingWebResponse response = new OutgoingWebResponse {
-					Status = HttpStatusCode.OK,
-					Headers = headers,
-					Body = bodyWriter.ToString(),
-					OriginalMessage = message
+				HttpResponseMessage response = new HttpResponseMessage {
+					StatusCode = HttpStatusCode.OK,
+					Content = new StringContent(bodyWriter.ToString()),
 				};
+				response.Content.Headers.ContentType = new MediaTypeHeaderValue("text/html");
 
 				return response;
 			}
@@ -949,7 +898,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="response">The response that is anticipated to contain an protocol message.</param>
 		/// <returns>The deserialized message parts, if found.  Null otherwise.</returns>
 		/// <exception cref="ProtocolException">Thrown when the response is not valid.</exception>
-		protected abstract IDictionary<string, string> ReadFromResponseCore(IncomingWebResponse response);
+		protected abstract IDictionary<string, string> ReadFromResponseCore(HttpResponseMessage response);
 
 		/// <summary>
 		/// Prepares an HTTP request that carries a given message.
@@ -957,10 +906,10 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="request">The message to send.</param>
 		/// <returns>The <see cref="HttpWebRequest"/> prepared to send the request.</returns>
 		/// <remarks>
-		/// This method must be overridden by a derived class, unless the <see cref="Channel.RequestCore"/> method
+		/// This method must be overridden by a derived class, unless the <see cref="Channel.RequestCoreAsync"/> method
 		/// is overridden and does not require this method.
 		/// </remarks>
-		protected virtual HttpWebRequest CreateHttpRequest(IDirectedProtocolMessage request) {
+		protected virtual HttpRequestMessage CreateHttpRequest(IDirectedProtocolMessage request) {
 			Requires.NotNull(request, "request");
 			Requires.That(request.Recipient != null, "request", MessagingStrings.DirectedMessageMissingRecipient);
 			throw new NotImplementedException();
@@ -975,7 +924,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <remarks>
 		/// This method implements spec OAuth V1.0 section 5.3.
 		/// </remarks>
-		protected abstract OutgoingWebResponse PrepareDirectResponse(IProtocolMessage response);
+		protected abstract HttpResponseMessage PrepareDirectResponse(IProtocolMessage response);
 
 		/// <summary>
 		/// Serializes the given message as a JSON string.
@@ -1072,7 +1021,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// This method is simply a standard HTTP Get request with the message parts serialized to the query string.
 		/// This method satisfies OAuth 1.0 section 5.2, item #3.
 		/// </remarks>
-		protected virtual HttpWebRequest InitializeRequestAsGet(IDirectedProtocolMessage requestMessage) {
+		protected virtual HttpRequestMessage InitializeRequestAsGet(IDirectedProtocolMessage requestMessage) {
 			Requires.NotNull(requestMessage, "requestMessage");
 			Requires.That(requestMessage.Recipient != null, "requestMessage", MessagingStrings.DirectedMessageMissingRecipient);
 
@@ -1081,7 +1030,7 @@ namespace DotNetOpenAuth.Messaging {
 
 			UriBuilder builder = new UriBuilder(requestMessage.Recipient);
 			MessagingUtilities.AppendQueryArgs(builder, fields);
-			HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create(builder.Uri);
+			var httpRequest = new HttpRequestMessage(HttpMethod.Get, builder.Uri);
 			this.PrepareHttpWebRequest(httpRequest);
 
 			return httpRequest;
@@ -1096,12 +1045,12 @@ namespace DotNetOpenAuth.Messaging {
 		/// This method is simply a standard HTTP HEAD request with the message parts serialized to the query string.
 		/// This method satisfies OAuth 1.0 section 5.2, item #3.
 		/// </remarks>
-		protected virtual HttpWebRequest InitializeRequestAsHead(IDirectedProtocolMessage requestMessage) {
+		protected virtual HttpRequestMessage InitializeRequestAsHead(IDirectedProtocolMessage requestMessage) {
 			Requires.NotNull(requestMessage, "requestMessage");
 			Requires.That(requestMessage.Recipient != null, "requestMessage", MessagingStrings.DirectedMessageMissingRecipient);
 
-			HttpWebRequest request = this.InitializeRequestAsGet(requestMessage);
-			request.Method = "HEAD";
+			var request = this.InitializeRequestAsGet(requestMessage);
+			request.Method = HttpMethod.Head;
 			return request;
 		}
 
@@ -1115,27 +1064,31 @@ namespace DotNetOpenAuth.Messaging {
 		/// with the application/x-www-form-urlencoded content type
 		/// This method satisfies OAuth 1.0 section 5.2, item #2 and OpenID 2.0 section 4.1.2.
 		/// </remarks>
-		protected virtual HttpWebRequest InitializeRequestAsPost(IDirectedProtocolMessage requestMessage) {
+		protected virtual HttpRequestMessage InitializeRequestAsPost(IDirectedProtocolMessage requestMessage) {
 			Requires.NotNull(requestMessage, "requestMessage");
 
 			var messageAccessor = this.MessageDescriptions.GetAccessor(requestMessage);
 			var fields = messageAccessor.Serialize();
 
-			var httpRequest = (HttpWebRequest)WebRequest.Create(requestMessage.Recipient);
+			var httpRequest = new HttpRequestMessage(HttpMethod.Post, requestMessage.Recipient);
 			this.PrepareHttpWebRequest(httpRequest);
-			httpRequest.CachePolicy = this.CachePolicy;
-			httpRequest.Method = "POST";
 
 			var requestMessageWithBinaryData = requestMessage as IMessageWithBinaryData;
 			if (requestMessageWithBinaryData != null && requestMessageWithBinaryData.SendAsMultipart) {
-				var multiPartFields = new List<MultipartPostPart>(requestMessageWithBinaryData.BinaryData);
+				var content = new MultipartFormDataContent();
+				foreach (var part in requestMessageWithBinaryData.BinaryData) {
+					content.Add(part);
+				}
 
 				// When sending multi-part, all data gets send as multi-part -- even the non-binary data.
-				multiPartFields.AddRange(fields.Select(field => MultipartPostPart.CreateFormPart(field.Key, field.Value)));
-				this.SendParametersInEntityAsMultipart(httpRequest, multiPartFields);
+				foreach (var field in fields) {
+					content.Add(new StringContent(field.Value), field.Key);
+				}
+
+				httpRequest.Content = content;
 			} else {
 				ErrorUtilities.VerifyProtocol(requestMessageWithBinaryData == null || requestMessageWithBinaryData.BinaryData.Count == 0, MessagingStrings.BinaryDataRequiresMultipart);
-				this.SendParametersInEntity(httpRequest, fields);
+				httpRequest.Content = new FormUrlEncodedContent(fields);
 			}
 
 			return httpRequest;
@@ -1149,11 +1102,11 @@ namespace DotNetOpenAuth.Messaging {
 		/// <remarks>
 		/// This method is simply a standard HTTP PUT request with the message parts serialized to the query string.
 		/// </remarks>
-		protected virtual HttpWebRequest InitializeRequestAsPut(IDirectedProtocolMessage requestMessage) {
+		protected virtual HttpRequestMessage InitializeRequestAsPut(IDirectedProtocolMessage requestMessage) {
 			Requires.NotNull(requestMessage, "requestMessage");
 
-			HttpWebRequest request = this.InitializeRequestAsGet(requestMessage);
-			request.Method = "PUT";
+			var request = this.InitializeRequestAsGet(requestMessage);
+			request.Method = HttpMethod.Put;
 			return request;
 		}
 
@@ -1165,55 +1118,12 @@ namespace DotNetOpenAuth.Messaging {
 		/// <remarks>
 		/// This method is simply a standard HTTP DELETE request with the message parts serialized to the query string.
 		/// </remarks>
-		protected virtual HttpWebRequest InitializeRequestAsDelete(IDirectedProtocolMessage requestMessage) {
+		protected virtual HttpRequestMessage InitializeRequestAsDelete(IDirectedProtocolMessage requestMessage) {
 			Requires.NotNull(requestMessage, "requestMessage");
 
-			HttpWebRequest request = this.InitializeRequestAsGet(requestMessage);
-			request.Method = "DELETE";
+			var request = this.InitializeRequestAsGet(requestMessage);
+			request.Method = HttpMethod.Delete;
 			return request;
-		}
-
-		/// <summary>
-		/// Sends the given parameters in the entity stream of an HTTP request.
-		/// </summary>
-		/// <param name="httpRequest">The HTTP request.</param>
-		/// <param name="fields">The parameters to send.</param>
-		/// <remarks>
-		/// This method calls <see cref="HttpWebRequest.GetRequestStream()"/> and closes
-		/// the request stream, but does not call <see cref="HttpWebRequest.GetResponse"/>.
-		/// </remarks>
-		protected void SendParametersInEntity(HttpWebRequest httpRequest, IDictionary<string, string> fields) {
-			Requires.NotNull(httpRequest, "httpRequest");
-			Requires.NotNull(fields, "fields");
-
-			string requestBody = MessagingUtilities.CreateQueryString(fields);
-			byte[] requestBytes = PostEntityEncoding.GetBytes(requestBody);
-			httpRequest.ContentType = HttpFormUrlEncodedContentType.ToString();
-			httpRequest.ContentLength = requestBytes.Length;
-			Stream requestStream = this.WebRequestHandler.GetRequestStream(httpRequest);
-			try {
-				requestStream.Write(requestBytes, 0, requestBytes.Length);
-			} finally {
-				// We need to be sure to close the request stream...
-				// unless it is a MemoryStream, which is a clue that we're in
-				// a mock stream situation and closing it would preclude reading it later.
-				if (!(requestStream is MemoryStream)) {
-					requestStream.Dispose();
-				}
-			}
-		}
-
-		/// <summary>
-		/// Sends the given parameters in the entity stream of an HTTP request in multi-part format.
-		/// </summary>
-		/// <param name="httpRequest">The HTTP request.</param>
-		/// <param name="fields">The parameters to send.</param>
-		/// <remarks>
-		/// This method calls <see cref="HttpWebRequest.GetRequestStream()"/> and closes
-		/// the request stream, but does not call <see cref="HttpWebRequest.GetResponse"/>.
-		/// </remarks>
-		protected void SendParametersInEntityAsMultipart(HttpWebRequest httpRequest, IEnumerable<MultipartPostPart> fields) {
-			httpRequest.PostMultipartNoGetResponse(this.WebRequestHandler, fields);
 		}
 
 		/// <summary>
@@ -1301,7 +1211,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// Performs additional processing on an outgoing web request before it is sent to the remote server.
 		/// </summary>
 		/// <param name="request">The request.</param>
-		protected virtual void PrepareHttpWebRequest(HttpWebRequest request) {
+		protected virtual void PrepareHttpWebRequest(HttpRequestMessage request) {
 			Requires.NotNull(request, "request");
 		}
 

@@ -315,7 +315,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 				} else {
 					ErrorUtilities.VerifyProtocol(requestMessageWithBinaryData == null || requestMessageWithBinaryData.BinaryData.Count == 0, MessagingStrings.BinaryDataRequiresMultipart);
 					if (requestMessage.ExtraData.Count > 0) {
-						this.SendParametersInEntity(httpRequest, requestMessage.ExtraData);
+						this.PrepareParametersForEntity(httpRequest, requestMessage.ExtraData);
 					} else {
 						// We'll assume the content length is zero since the caller may not have
 						// anything.  They're responsible to change it when the add the payload if they have one.
