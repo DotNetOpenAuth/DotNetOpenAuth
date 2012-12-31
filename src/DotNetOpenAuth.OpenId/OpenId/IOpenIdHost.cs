@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OpenId {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Net.Http;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 
@@ -23,6 +24,6 @@ namespace DotNetOpenAuth.OpenId {
 		/// <summary>
 		/// Gets the web request handler.
 		/// </summary>
-		IDirectWebRequestHandler WebRequestHandler { get; }
+		IHostFactories HostFactories { get; }
 	}
 }

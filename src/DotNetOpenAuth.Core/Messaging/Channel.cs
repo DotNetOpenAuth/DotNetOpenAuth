@@ -149,30 +149,19 @@ namespace DotNetOpenAuth.Messaging {
 		private int maximumIndirectMessageUrlLength = Configuration.DotNetOpenAuthSection.Messaging.MaximumIndirectMessageUrlLength;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Channel"/> class.
+		/// Initializes a new instance of the <see cref="Channel" /> class.
 		/// </summary>
-		/// <param name="messageTypeProvider">
-		/// A class prepared to analyze incoming messages and indicate what concrete
-		/// message types can deserialize from it.
-		/// </param>
-		/// <param name="bindingElements">
-		/// The binding elements to use in sending and receiving messages.
-		/// The order they are provided is used for outgoing messgaes, and reversed for incoming messages.
-		/// </param>
-		/// <param name="messageHandler">The HTTP handler to use for outgoing HTTP requests.</param>
-		protected Channel(IMessageFactory messageTypeProvider, IChannelBindingElement[] bindingElements, HttpMessageHandler messageHandler = null) {
+		/// <param name="messageTypeProvider">A class prepared to analyze incoming messages and indicate what concrete
+		/// message types can deserialize from it.</param>
+		/// <param name="bindingElements">The binding elements to use in sending and receiving messages.
+		/// The order they are provided is used for outgoing messgaes, and reversed for incoming messages.</param>
+		/// <param name="hostFactories">The host factories.</param>
+		protected Channel(IMessageFactory messageTypeProvider, IChannelBindingElement[] bindingElements, IHostFactories hostFactories) {
 			Requires.NotNull(messageTypeProvider, "messageTypeProvider");
-
-			messageHandler = messageHandler ?? new WebRequestHandler();
-			var httpHandler = messageHandler as WebRequestHandler;
-			if (httpHandler != null) {
-				// TODO: provide this as a recommendation to derived Channel types, but without tampering with 
-				// the setting once it has been provided to this constructor.
-				httpHandler.CachePolicy = new RequestCachePolicy(RequestCacheLevel.NoCacheNoStore);
-			}
+			Requires.NotNull(hostFactories, "hostFactories");
 
 			this.messageTypeProvider = messageTypeProvider;
-			this.WebRequestHandler = new HttpClient(messageHandler);
+			this.HostFactories = hostFactories;
 			this.XmlDictionaryReaderQuotas = DefaultUntrustedXmlDictionaryReaderQuotas;
 
 			this.outgoingBindingElements = new List<IChannelBindingElement>(ValidateAndPrepareBindingElements(bindingElements));
@@ -190,14 +179,9 @@ namespace DotNetOpenAuth.Messaging {
 		internal event EventHandler<ChannelEventArgs> Sending;
 
 		/// <summary>
-		/// Gets or sets an instance to a <see cref="HttpClient"/> that will be used when 
-		/// submitting HTTP requests and waiting for responses.
+		/// Gets the host factories instance to use.
 		/// </summary>
-		/// <remarks>
-		/// This defaults to a straightforward implementation, but can be set
-		/// to a mock object for testing purposes.
-		/// </remarks>
-		public HttpClient WebRequestHandler { get; set; }
+		public IHostFactories HostFactories { get; private set; }
 
 		/// <summary>
 		/// Gets or sets the maximum allowable size for a 301 Redirect response before we send
@@ -557,8 +541,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="response">The response that is anticipated to contain an protocol message.</param>
 		/// <returns>The deserialized message parts, if found.  Null otherwise.</returns>
 		/// <exception cref="ProtocolException">Thrown when the response is not valid.</exception>
-		internal IDictionary<string, string> ReadFromResponseCoreTestHook(HttpResponseMessage response) {
-			return this.ReadFromResponseCore(response);
+		internal Task<IDictionary<string, string>> ReadFromResponseCoreAsyncTestHook(HttpResponseMessage response) {
+			return this.ReadFromResponseCoreAsync(response);
 		}
 
 		/// <remarks>
@@ -689,28 +673,35 @@ namespace DotNetOpenAuth.Messaging {
 			IDictionary<string, string> responseFields;
 			IDirectResponseProtocolMessage responseMessage;
 
-			using (HttpResponseMessage response = await this.WebRequestHandler.SendAsync(webRequest)) {
-				if (response.Content == null) {
-					return null;
-				}
+			using (var httpClient = this.HostFactories.CreateHttpClient()) {
+				using (HttpResponseMessage response = await httpClient.SendAsync(webRequest)) {
+					if (response.Content == null) {
+						return null;
+					}
 
-				responseFields = this.ReadFromResponseCore(response);
-				if (responseFields == null) {
-					return null;
-				}
+					responseFields = await this.ReadFromResponseCoreAsync(response);
+					if (responseFields == null) {
+						return null;
+					}
 
-				responseMessage = this.MessageFactory.GetNewResponseMessage(request, responseFields);
-				if (responseMessage == null) {
-					return null;
-				}
+					responseMessage = this.MessageFactory.GetNewResponseMessage(request, responseFields);
+					if (responseMessage == null) {
+						return null;
+					}
 
-				this.OnReceivingDirectResponse(response, responseMessage);
+					this.OnReceivingDirectResponse(response, responseMessage);
+				}
 			}
 
 			var messageAccessor = this.MessageDescriptions.GetAccessor(responseMessage);
 			messageAccessor.Deserialize(responseFields);
 
 			return responseMessage;
+		}
+
+		protected virtual HttpMessageHandler WrapMessageHandler(HttpMessageHandler innerHandler) {
+			// No wrapping by default.
+			return innerHandler;
 		}
 
 		/// <summary>
@@ -898,7 +889,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="response">The response that is anticipated to contain an protocol message.</param>
 		/// <returns>The deserialized message parts, if found.  Null otherwise.</returns>
 		/// <exception cref="ProtocolException">Thrown when the response is not valid.</exception>
-		protected abstract IDictionary<string, string> ReadFromResponseCore(HttpResponseMessage response);
+		protected abstract Task<IDictionary<string, string>> ReadFromResponseCoreAsync(HttpResponseMessage response);
 
 		/// <summary>
 		/// Prepares an HTTP request that carries a given message.

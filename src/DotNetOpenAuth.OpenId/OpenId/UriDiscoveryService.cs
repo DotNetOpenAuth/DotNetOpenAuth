@@ -8,14 +8,19 @@ namespace DotNetOpenAuth.OpenId {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Net.Http;
+	using System.Runtime.CompilerServices;
 	using System.Text;
 	using System.Text.RegularExpressions;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web.UI.HtmlControls;
 	using System.Xml;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using DotNetOpenAuth.Xrds;
 	using DotNetOpenAuth.Yadis;
+	using Validation;
 
 	/// <summary>
 	/// The discovery service for URI identifiers.
@@ -24,10 +29,14 @@ namespace DotNetOpenAuth.OpenId {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="UriDiscoveryService"/> class.
 		/// </summary>
-		public UriDiscoveryService() {
+		public UriDiscoveryService(IHostFactories hostFactories) {
+			Requires.NotNull(hostFactories, "hostFactories");
+			this.HostFactories = hostFactories;
 		}
 
-		#region IDiscoveryService Members
+		public IHostFactories HostFactories { get; private set; }
+
+		#region IIdentifierDiscoveryService Members
 
 		/// <summary>
 		/// Performs discovery on the specified identifier.
@@ -38,17 +47,20 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>
 		/// A sequence of service endpoints yielded by discovery.  Must not be null, but may be empty.
 		/// </returns>
-		public IEnumerable<IdentifierDiscoveryResult> Discover(Identifier identifier, IDirectWebRequestHandler requestHandler, out bool abortDiscoveryChain) {
-			abortDiscoveryChain = false;
+		public async Task<IdentifierDiscoveryServiceResult> DiscoverAsync(Identifier identifier, CancellationToken cancellationToken) {
+			Requires.NotNull(identifier, "identifier");
+			cancellationToken.ThrowIfCancellationRequested();
+
 			var uriIdentifier = identifier as UriIdentifier;
 			if (uriIdentifier == null) {
-				return Enumerable.Empty<IdentifierDiscoveryResult>();
+				return new IdentifierDiscoveryServiceResult(Enumerable.Empty<IdentifierDiscoveryResult>());
 			}
 
 			var endpoints = new List<IdentifierDiscoveryResult>();
 
 			// Attempt YADIS discovery
-			DiscoveryResult yadisResult = Yadis.Discover(requestHandler, uriIdentifier, identifier.IsDiscoverySecureEndToEnd);
+			DiscoveryResult yadisResult = await Yadis.DiscoverAsync(this.HostFactories, uriIdentifier, identifier.IsDiscoverySecureEndToEnd, cancellationToken);
+			cancellationToken.ThrowIfCancellationRequested();
 			if (yadisResult != null) {
 				if (yadisResult.IsXrds) {
 					try {
@@ -67,7 +79,7 @@ namespace DotNetOpenAuth.OpenId {
 
 				// Failing YADIS discovery of an XRDS document, we try HTML discovery.
 				if (endpoints.Count == 0) {
-					yadisResult.TryRevertToHtmlResponse();
+					await yadisResult.TryRevertToHtmlResponseAsync();
 					var htmlEndpoints = new List<IdentifierDiscoveryResult>(DiscoverFromHtml(yadisResult.NormalizedUri, uriIdentifier, yadisResult.ResponseText));
 					if (htmlEndpoints.Any()) {
 						Logger.Yadis.DebugFormat("Total services discovered in HTML: {0}", htmlEndpoints.Count);
@@ -83,7 +95,8 @@ namespace DotNetOpenAuth.OpenId {
 					Logger.Yadis.Debug("Skipping HTML discovery because XRDS contained service endpoints.");
 				}
 			}
-			return endpoints;
+
+			return new IdentifierDiscoveryServiceResult(endpoints);
 		}
 
 		#endregion

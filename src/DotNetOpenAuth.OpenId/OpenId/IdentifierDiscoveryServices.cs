@@ -7,6 +7,9 @@
 namespace DotNetOpenAuth.OpenId {
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Runtime.CompilerServices;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using Validation;
@@ -48,15 +51,14 @@ namespace DotNetOpenAuth.OpenId {
 		/// </summary>
 		/// <param name="identifier">The identifier to discover services for.</param>
 		/// <returns>A non-null sequence of services discovered for the identifier.</returns>
-		public IEnumerable<IdentifierDiscoveryResult> Discover(Identifier identifier) {
+		public async Task<IEnumerable<IdentifierDiscoveryResult>> DiscoverAsync(Identifier identifier, CancellationToken cancellationToken) {
 			Requires.NotNull(identifier, "identifier");
 
 			IEnumerable<IdentifierDiscoveryResult> results = Enumerable.Empty<IdentifierDiscoveryResult>();
 			foreach (var discoverer in this.DiscoveryServices) {
-				bool abortDiscoveryChain;
-				var discoveryResults = discoverer.Discover(identifier, this.host.WebRequestHandler, out abortDiscoveryChain).CacheGeneratedResults();
-				results = results.Concat(discoveryResults);
-				if (abortDiscoveryChain) {
+				var discoveryResults = await discoverer.DiscoverAsync(identifier, cancellationToken);
+				results = results.Concat(discoveryResults.Results.CacheGeneratedResults());
+				if (discoveryResults.AbortDiscoveryChain) {
 					Logger.OpenId.InfoFormat("Further discovery on '{0}' was stopped by the {1} discovery service.", identifier, discoverer.GetType().Name);
 					break;
 				}

@@ -10,7 +10,11 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Diagnostics.CodeAnalysis;
 	using System.Globalization;
 	using System.Linq;
+	using System.Net.Http;
+	using System.Runtime.CompilerServices;
 	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Xml;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
@@ -39,8 +43,12 @@ namespace DotNetOpenAuth.OpenId {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="XriDiscoveryProxyService"/> class.
 		/// </summary>
-		public XriDiscoveryProxyService() {
+		public XriDiscoveryProxyService(IHostFactories hostFactories) {
+			Requires.NotNull(hostFactories, "hostFactories");
+			this.HostFactories = hostFactories;
 		}
+
+		public IHostFactories HostFactories { get; private set; }
 
 		#region IDiscoveryService Members
 
@@ -48,19 +56,21 @@ namespace DotNetOpenAuth.OpenId {
 		/// Performs discovery on the specified identifier.
 		/// </summary>
 		/// <param name="identifier">The identifier to perform discovery on.</param>
-		/// <param name="requestHandler">The means to place outgoing HTTP requests.</param>
-		/// <param name="abortDiscoveryChain">if set to <c>true</c>, no further discovery services will be called for this identifier.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// A sequence of service endpoints yielded by discovery.  Must not be null, but may be empty.
 		/// </returns>
-		public IEnumerable<IdentifierDiscoveryResult> Discover(Identifier identifier, IDirectWebRequestHandler requestHandler, out bool abortDiscoveryChain) {
-			abortDiscoveryChain = false;
+		public async Task<IdentifierDiscoveryServiceResult> DiscoverAsync(Identifier identifier, CancellationToken cancellationToken) {
+			Requires.NotNull(identifier, "identifier");
+
 			var xriIdentifier = identifier as XriIdentifier;
 			if (xriIdentifier == null) {
-				return Enumerable.Empty<IdentifierDiscoveryResult>();
+				return new IdentifierDiscoveryServiceResult(Enumerable.Empty<IdentifierDiscoveryResult>());
 			}
 
-			return DownloadXrds(xriIdentifier, requestHandler).XrdElements.CreateServiceEndpoints(xriIdentifier);
+			var xrds = await DownloadXrdsAsync(xriIdentifier, this.HostFactories, cancellationToken);
+			var endpoints = xrds.XrdElements.CreateServiceEndpoints(xriIdentifier);
+			return new IdentifierDiscoveryServiceResult(endpoints);
 		}
 
 		#endregion
@@ -71,14 +81,19 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="identifier">The identifier.</param>
 		/// <param name="requestHandler">The request handler.</param>
 		/// <returns>The XRDS document.</returns>
-		private static XrdsDocument DownloadXrds(XriIdentifier identifier, IDirectWebRequestHandler requestHandler) {
+		private static async Task<XrdsDocument> DownloadXrdsAsync(XriIdentifier identifier, IHostFactories hostFactories, CancellationToken cancellationToken) {
 			Requires.NotNull(identifier, "identifier");
-			Requires.NotNull(requestHandler, "requestHandler");
+			Requires.NotNull(hostFactories, "hostFactories");
+
 			XrdsDocument doc;
-			using (var xrdsResponse = Yadis.Request(requestHandler, GetXrdsUrl(identifier), identifier.IsDiscoverySecureEndToEnd)) {
+			using (var xrdsResponse = await Yadis.RequestAsync(GetXrdsUrl(identifier), identifier.IsDiscoverySecureEndToEnd, hostFactories, cancellationToken)) {
 				var readerSettings = MessagingUtilities.CreateUntrustedXmlReaderSettings();
-				doc = new XrdsDocument(XmlReader.Create(xrdsResponse.ResponseStream, readerSettings));
+				await xrdsResponse.Content.LoadIntoBufferAsync();
+				using (var xrdsStream = await xrdsResponse.Content.ReadAsStreamAsync()) {
+					doc = new XrdsDocument(XmlReader.Create(xrdsStream, readerSettings));
+				}
 			}
+
 			ErrorUtilities.VerifyProtocol(doc.IsXrdResolutionSuccessful, OpenIdStrings.XriResolutionFailed);
 			return doc;
 		}

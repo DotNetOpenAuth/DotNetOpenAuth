@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Net.Http;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
@@ -27,7 +28,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Gets the HTTP response the relying party should send to the user agent 
 		/// to redirect it to the OpenID Provider to start the OpenID authentication process.
 		/// </summary>
-		OutgoingWebResponse RedirectingResponse { get; }
+		HttpResponseMessage RedirectingResponse { get; }
 
 		/// <summary>
 		/// Gets the URL that the user agent will return to after authentication

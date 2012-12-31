@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System.Globalization;
 	using System.IO;
 	using System.Text;
+	using System.Threading.Tasks;
 	using DotNetOpenAuth.Messaging;
 	using Validation;
 
@@ -131,12 +132,12 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <param name="data">The stream of Key-Value Form encoded bytes.</param>
 		/// <returns>The deserialized dictionary.</returns>
 		/// <exception cref="FormatException">Thrown when the data is not in the expected format.</exception>
-		public IDictionary<string, string> GetDictionary(Stream data) {
+		public async Task<IDictionary<string, string>> GetDictionaryAsync(Stream data) {
 			using (StreamReader reader = new StreamReader(data, textEncoding)) {
 				var dict = new Dictionary<string, string>();
 				int line_num = 0;
 				string line;
-				while ((line = reader.ReadLine()) != null) {
+				while ((line = await reader.ReadLineAsync()) != null) {
 					line_num++;
 					if (this.ConformanceLevel == KeyValueFormConformanceLevel.Loose) {
 						line = line.Trim();

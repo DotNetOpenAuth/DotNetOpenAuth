@@ -9,6 +9,10 @@ namespace DotNetOpenAuth.Yadis {
 	using System.IO;
 	using System.Net;
 	using System.Net.Cache;
+	using System.Net.Http;
+	using System.Net.Http.Headers;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web.UI.HtmlControls;
 	using System.Xml;
 	using DotNetOpenAuth.Configuration;
@@ -16,6 +20,9 @@ namespace DotNetOpenAuth.Yadis {
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.Xrds;
 	using Validation;
+
+	using System.Linq;
+	using System.Collections.Generic;
 
 	/// <summary>
 	/// YADIS discovery manager.
@@ -53,16 +60,21 @@ namespace DotNetOpenAuth.Yadis {
 		/// or if <paramref name="requireSsl"/> is true but part of discovery
 		/// is not protected by SSL.
 		/// </returns>
-		public static DiscoveryResult Discover(IDirectWebRequestHandler requestHandler, UriIdentifier uri, bool requireSsl) {
-			CachedDirectWebResponse response;
+		public static async Task<DiscoveryResult> DiscoverAsync(IHostFactories hostFactories, UriIdentifier uri, bool requireSsl, CancellationToken cancellationToken) {
+			Requires.NotNull(hostFactories, "hostFactories");
+			Requires.NotNull(uri, "uri");
+
+			HttpResponseMessage response;
 			try {
 				if (requireSsl && !string.Equals(uri.Uri.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase)) {
 					Logger.Yadis.WarnFormat("Discovery on insecure identifier '{0}' aborted.", uri);
 					return null;
 				}
-				response = Request(requestHandler, uri, requireSsl, ContentTypes.Html, ContentTypes.XHtml, ContentTypes.Xrds).GetSnapshot(MaximumResultToScan);
-				if (response.Status != System.Net.HttpStatusCode.OK) {
-					Logger.Yadis.ErrorFormat("HTTP error {0} {1} while performing discovery on {2}.", (int)response.Status, response.Status, uri);
+
+				response = await RequestAsync(uri, requireSsl, hostFactories, cancellationToken, ContentTypes.Html, ContentTypes.XHtml, ContentTypes.Xrds);
+				await response.Content.LoadIntoBufferAsync();
+				if (response.StatusCode != System.Net.HttpStatusCode.OK) {
+					Logger.Yadis.ErrorFormat("HTTP error {0} {1} while performing discovery on {2}.", (int)response.StatusCode, response.StatusCode, uri);
 					return null;
 				}
 			} catch (ArgumentException ex) {
@@ -70,13 +82,18 @@ namespace DotNetOpenAuth.Yadis {
 				Logger.Yadis.WarnFormat("Unsafe OpenId URL detected ({0}).  Request aborted.  {1}", uri, ex);
 				return null;
 			}
-			CachedDirectWebResponse response2 = null;
-			if (IsXrdsDocument(response)) {
+			HttpResponseMessage response2 = null;
+			if (await IsXrdsDocumentAsync(response)) {
 				Logger.Yadis.Debug("An XRDS response was received from GET at user-supplied identifier.");
 				Reporting.RecordEventOccurrence("Yadis", "XRDS in initial response");
 				response2 = response;
 			} else {
-				string uriString = response.Headers.Get(HeaderName);
+				IEnumerable<string> uriStrings;
+				string uriString = null;
+				if (response.Headers.TryGetValues(HeaderName, out uriStrings)) {
+					uriString = uriStrings.FirstOrDefault();
+				}
+
 				Uri url = null;
 				if (uriString != null) {
 					if (Uri.TryCreate(uriString, UriKind.Absolute, out url)) {
@@ -84,8 +101,10 @@ namespace DotNetOpenAuth.Yadis {
 						Reporting.RecordEventOccurrence("Yadis", "XRDS referenced in HTTP header");
 					}
 				}
-				if (url == null && response.ContentType != null && (response.ContentType.MediaType == ContentTypes.Html || response.ContentType.MediaType == ContentTypes.XHtml)) {
-					url = FindYadisDocumentLocationInHtmlMetaTags(response.GetResponseString());
+
+				var contentType = response.Content.Headers.ContentType;
+				if (url == null && contentType != null && (contentType.MediaType == ContentTypes.Html || contentType.MediaType == ContentTypes.XHtml)) {
+					url = FindYadisDocumentLocationInHtmlMetaTags(await response.Content.ReadAsStringAsync());
 					if (url != null) {
 						Logger.Yadis.DebugFormat("{0} found in HTML Http-Equiv tag.  Preparing to pull XRDS from {1}", HeaderName, url);
 						Reporting.RecordEventOccurrence("Yadis", "XRDS referenced in HTML");
@@ -93,16 +112,17 @@ namespace DotNetOpenAuth.Yadis {
 				}
 				if (url != null) {
 					if (!requireSsl || string.Equals(url.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase)) {
-						response2 = Request(requestHandler, url, requireSsl, ContentTypes.Xrds).GetSnapshot(MaximumResultToScan);
-						if (response2.Status != HttpStatusCode.OK) {
-							Logger.Yadis.ErrorFormat("HTTP error {0} {1} while performing discovery on {2}.", (int)response2.Status, response2.Status, uri);
+						response2 = await RequestAsync(url, requireSsl, hostFactories, cancellationToken, ContentTypes.Xrds);
+						if (response2.StatusCode != HttpStatusCode.OK) {
+							Logger.Yadis.ErrorFormat("HTTP error {0} {1} while performing discovery on {2}.", (int)response2.StatusCode, response2.StatusCode, uri);
 						}
 					} else {
 						Logger.Yadis.WarnFormat("XRDS document at insecure location '{0}'.  Aborting YADIS discovery.", url);
 					}
 				}
 			}
-			return new DiscoveryResult(uri, response, response2);
+
+			return await DiscoveryResult.CreateAsync(uri, response, response2);
 		}
 
 		/// <summary>
@@ -129,43 +149,46 @@ namespace DotNetOpenAuth.Yadis {
 		/// <summary>
 		/// Sends a YADIS HTTP request as part of identifier discovery.
 		/// </summary>
-		/// <param name="requestHandler">The request handler to use to actually submit the request.</param>
 		/// <param name="uri">The URI to GET.</param>
 		/// <param name="requireSsl">Whether only HTTPS URLs should ever be retrieved.</param>
+		/// <param name="hostFactories">The host factories.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <param name="acceptTypes">The value of the Accept HTTP header to include in the request.</param>
-		/// <returns>The HTTP response retrieved from the request.</returns>
-		internal static IncomingWebResponse Request(IDirectWebRequestHandler requestHandler, Uri uri, bool requireSsl, params string[] acceptTypes) {
-			Requires.NotNull(requestHandler, "requestHandler");
+		/// <returns>
+		/// The HTTP response retrieved from the request.
+		/// </returns>
+		internal static async Task<HttpResponseMessage> RequestAsync(Uri uri, bool requireSsl, IHostFactories hostFactories, CancellationToken cancellationToken, params string[] acceptTypes) {
 			Requires.NotNull(uri, "uri");
+			Requires.NotNull(hostFactories, "hostFactories");
 
-			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
-			request.CachePolicy = IdentifierDiscoveryCachePolicy;
-			if (acceptTypes != null) {
-				request.Accept = string.Join(",", acceptTypes);
-			}
-
-			DirectWebRequestOptions options = DirectWebRequestOptions.None;
-			if (requireSsl) {
-				options |= DirectWebRequestOptions.RequireSsl;
-			}
-
-			try {
-				return requestHandler.GetResponse(request, options);
-			} catch (ProtocolException ex) {
-				var webException = ex.InnerException as WebException;
-				if (webException != null) {
-					var response = webException.Response as HttpWebResponse;
-					if (response != null && response.IsFromCache) {
-						// We don't want to report error responses from the cache, since the server may have fixed
-						// whatever was causing the problem.  So try again with cache disabled.
-						Logger.Messaging.Error("An HTTP error response was obtained from the cache.  Retrying with cache disabled.", ex);
-						var nonCachingRequest = request.Clone();
-						nonCachingRequest.CachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.Reload);
-						return requestHandler.GetResponse(nonCachingRequest, options);
-					}
+			using (var httpClient = hostFactories.CreateHttpClient(requireSsl, IdentifierDiscoveryCachePolicy)) {
+				var request = new HttpRequestMessage(HttpMethod.Get, uri);
+				if (acceptTypes != null) {
+					request.Headers.Accept.AddRange(acceptTypes.Select(at => new MediaTypeWithQualityHeaderValue(at)));
 				}
 
-				throw;
+				HttpResponseMessage response = null;
+				try {
+					response = await httpClient.SendAsync(request, cancellationToken);
+					// http://stackoverflow.com/questions/14103154/how-to-determine-if-an-httpresponsemessage-was-fulfilled-from-cache-using-httpcl
+					if (!response.IsSuccessStatusCode && response.Headers.Age.HasValue && response.Headers.Age.Value > TimeSpan.Zero) {
+						// We don't want to report error responses from the cache, since the server may have fixed
+						// whatever was causing the problem.  So try again with cache disabled.
+						Logger.Messaging.ErrorFormat("An HTTP {0} response was obtained from the cache.  Retrying with cache disabled.", response.StatusCode);
+						response.Dispose(); // discard the old one
+
+						var nonCachingRequest = request.Clone();
+						using (var nonCachingHttpClient = hostFactories.CreateHttpClient(requireSsl, new RequestCachePolicy(RequestCacheLevel.Reload))) {
+							response = await nonCachingHttpClient.SendAsync(nonCachingRequest, cancellationToken);
+						}
+					}
+
+					response.EnsureSuccessStatusCode();
+					return response;
+				} catch {
+					response.DisposeIfNotNull();
+					throw;
+				}
 			}
 		}
 
@@ -176,25 +199,26 @@ namespace DotNetOpenAuth.Yadis {
 		/// <returns>
 		/// 	<c>true</c> if the response constains an XRDS document; otherwise, <c>false</c>.
 		/// </returns>
-		private static bool IsXrdsDocument(CachedDirectWebResponse response) {
-			if (response.ContentType == null) {
+		private static async Task<bool> IsXrdsDocumentAsync(HttpResponseMessage response) {
+			if (response.Content.Headers.ContentType == null) {
 				return false;
 			}
 
-			if (response.ContentType.MediaType == ContentTypes.Xrds) {
+			if (response.Content.Headers.ContentType.MediaType == ContentTypes.Xrds) {
 				return true;
 			}
 
-			if (response.ContentType.MediaType == ContentTypes.Xml) {
+			if (response.Content.Headers.ContentType.MediaType == ContentTypes.Xml) {
 				// This COULD be an XRDS document with an imprecise content-type.
-				response.ResponseStream.Seek(0, SeekOrigin.Begin);
-				var readerSettings = MessagingUtilities.CreateUntrustedXmlReaderSettings();
-				XmlReader reader = XmlReader.Create(response.ResponseStream, readerSettings);
-				while (reader.Read() && reader.NodeType != XmlNodeType.Element) {
-					// intentionally blank
-				}
-				if (reader.NamespaceURI == XrdsNode.XrdsNamespace && reader.Name == "XRDS") {
-					return true;
+				using (var responseStream = await response.Content.ReadAsStreamAsync()) {
+					var readerSettings = MessagingUtilities.CreateUntrustedXmlReaderSettings();
+					XmlReader reader = XmlReader.Create(responseStream, readerSettings);
+					while (await reader.ReadAsync() && reader.NodeType != XmlNodeType.Element) {
+						// intentionally blank
+					}
+					if (reader.NamespaceURI == XrdsNode.XrdsNamespace && reader.Name == "XRDS") {
+						return true;
+					}
 				}
 			}
 

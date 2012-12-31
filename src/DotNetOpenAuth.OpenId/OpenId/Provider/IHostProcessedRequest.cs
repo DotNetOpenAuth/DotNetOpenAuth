@@ -6,6 +6,8 @@
 
 namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
+	using System.Net.Http;
+	using System.Threading.Tasks;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
 	using Validation;
@@ -53,6 +55,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		///   <para>Return URL verification is only attempted if this method is called.</para>
 		///   <para>See OpenID Authentication 2.0 spec section 9.2.1.</para>
 		/// </remarks>
-		RelyingPartyDiscoveryResult IsReturnUrlDiscoverable(IDirectWebRequestHandler webRequestHandler);
+		Task<RelyingPartyDiscoveryResult> IsReturnUrlDiscoverableAsync(HttpMessageHandler webRequestHandler);
 	}
 }

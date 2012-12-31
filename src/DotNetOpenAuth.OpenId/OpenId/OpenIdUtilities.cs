@@ -11,7 +11,11 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Globalization;
 	using System.IO;
 	using System.Linq;
+	using System.Net;
+	using System.Net.Cache;
+	using System.Net.Http;
 	using System.Text.RegularExpressions;
+	using System.Threading.Tasks;
 	using System.Web;
 	using System.Web.UI;
 	using DotNetOpenAuth.Messaging;
@@ -178,6 +182,50 @@ namespace DotNetOpenAuth.OpenId {
 			new Realm(fullyQualifiedRealm); // throws if not valid
 
 			return fullyQualifiedRealm;
+		}
+
+		internal static HttpClient CreateHttpClient(this IHostFactories hostFactories, bool requireSsl, RequestCachePolicy cachePolicy = null) {
+			Requires.NotNull(hostFactories, "hostFactories");
+
+			var handler = hostFactories.CreateHttpMessageHandler();
+			var webRequestHandler = handler as WebRequestHandler;
+			var untrustedHandler = handler as UntrustedWebRequestHandler;
+			if (webRequestHandler != null) {
+				if (cachePolicy != null) {
+					webRequestHandler.CachePolicy = cachePolicy;
+				}
+			} else if (untrustedHandler != null) {
+				if (cachePolicy != null) {
+					untrustedHandler.CachePolicy = cachePolicy;
+				}
+
+				untrustedHandler.IsSslRequired = requireSsl;
+			} else {
+				Logger.Http.DebugFormat("Unable to set cache policy on unsupported {0}.", handler.GetType().FullName);
+			}
+
+			return hostFactories.CreateHttpClient(handler);
+		}
+
+		internal static Uri GetDirectUriRequest(this HttpResponseMessage response) {
+			Requires.NotNull(response, "response");
+			Requires.Argument(
+				response.StatusCode == HttpStatusCode.Redirect || response.StatusCode == HttpStatusCode.RedirectKeepVerb
+				|| response.StatusCode == HttpStatusCode.RedirectMethod || response.StatusCode == HttpStatusCode.TemporaryRedirect,
+				"response",
+				"Redirecting response expected.");
+			Requires.Argument(response.Headers.Location != null, "response", "Redirect URL header expected.");
+			Requires.Argument(response.Content == null || response.Content is FormUrlEncodedContent, "response", "FormUrlEncodedContent expected");
+
+			var builder = new UriBuilder(response.Headers.Location);
+			if (response.Content != null) {
+				var content = response.Content.ReadAsStringAsync();
+				Assumes.True(content.IsCompleted); // cached in memory, so it should never complete asynchronously.
+				var formFields = HttpUtility.ParseQueryString(content.Result).ToDictionary();
+				MessagingUtilities.AppendQueryArgs(builder, formFields);
+			}
+
+			return builder.Uri;
 		}
 
 		/// <summary>

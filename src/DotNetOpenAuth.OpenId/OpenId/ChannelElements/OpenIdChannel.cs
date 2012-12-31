@@ -7,12 +7,18 @@
 namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Globalization;
 	using System.IO;
 	using System.Linq;
 	using System.Net;
+	using System.Net.Http;
+	using System.Net.Http.Headers;
 	using System.Text;
+	using System.Threading.Tasks;
+
+	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId.Extensions;
@@ -45,8 +51,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <param name="messageTypeProvider">A class prepared to analyze incoming messages and indicate what concrete
 		/// message types can deserialize from it.</param>
 		/// <param name="bindingElements">The binding elements to use in sending and receiving messages.</param>
-		protected OpenIdChannel(IMessageFactory messageTypeProvider, IChannelBindingElement[] bindingElements)
-			: base(messageTypeProvider, bindingElements) {
+		protected OpenIdChannel(IMessageFactory messageTypeProvider, IChannelBindingElement[] bindingElements, IHostFactories hostFactories)
+			: base(messageTypeProvider, bindingElements, hostFactories ?? new DefaultOpenIdHostFactories()) {
 			Requires.NotNull(messageTypeProvider, "messageTypeProvider");
 
 			// Customize the binding element order, since we play some tricks for higher
@@ -68,11 +74,6 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			}
 
 			this.CustomizeBindingElementOrder(outgoingBindingElements, incomingBindingElements);
-
-			// Change out the standard web request handler to reflect the standard
-			// OpenID pattern that outgoing web requests are to unknown and untrusted
-			// servers on the Internet.
-			this.WebRequestHandler = new UntrustedWebRequestHandler();
 		}
 
 		/// <summary>
@@ -120,7 +121,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <returns>
 		/// The <see cref="HttpWebRequest"/> prepared to send the request.
 		/// </returns>
-		protected override HttpWebRequest CreateHttpRequest(IDirectedProtocolMessage request) {
+		protected override HttpRequestMessage CreateHttpRequest(IDirectedProtocolMessage request) {
 			return this.InitializeRequestAsPost(request);
 		}
 
@@ -132,9 +133,11 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// The deserialized message parts, if found.  Null otherwise.
 		/// </returns>
 		/// <exception cref="ProtocolException">Thrown when the response is not valid.</exception>
-		protected override IDictionary<string, string> ReadFromResponseCore(IncomingWebResponse response) {
+		protected override async Task<IDictionary<string, string>> ReadFromResponseCoreAsync(HttpResponseMessage response) {
 			try {
-				return this.keyValueForm.GetDictionary(response.ResponseStream);
+				using (var responseStream = await response.Content.ReadAsStreamAsync()) {
+					return await this.keyValueForm.GetDictionaryAsync(responseStream);
+				}
 			} catch (FormatException ex) {
 				throw ErrorUtilities.Wrap(ex, ex.Message);
 			}
@@ -145,7 +148,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// </summary>
 		/// <param name="response">The HTTP direct response.</param>
 		/// <param name="message">The newly instantiated message, prior to deserialization.</param>
-		protected override void OnReceivingDirectResponse(IncomingWebResponse response, IDirectResponseProtocolMessage message) {
+		protected override void OnReceivingDirectResponse(HttpResponseMessage response, IDirectResponseProtocolMessage message) {
 			base.OnReceivingDirectResponse(response, message);
 
 			// Verify that the expected HTTP status code was used for the message,
@@ -155,10 +158,10 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 				var httpDirectResponse = message as IHttpDirectResponse;
 				if (httpDirectResponse != null) {
 					ErrorUtilities.VerifyProtocol(
-						httpDirectResponse.HttpStatusCode == response.Status,
+						httpDirectResponse.HttpStatusCode == response.StatusCode,
 						MessagingStrings.UnexpectedHttpStatusCode,
 						(int)httpDirectResponse.HttpStatusCode,
-						(int)response.Status);
+						(int)response.StatusCode);
 				}
 			}
 		}
@@ -174,55 +177,58 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <remarks>
 		/// This method implements spec V1.0 section 5.3.
 		/// </remarks>
-		protected override OutgoingWebResponse PrepareDirectResponse(IProtocolMessage response) {
+		protected override HttpResponseMessage PrepareDirectResponse(IProtocolMessage response) {
 			var messageAccessor = this.MessageDescriptions.GetAccessor(response);
 			var fields = messageAccessor.Serialize();
 			byte[] keyValueEncoding = KeyValueFormEncoding.GetBytes(fields);
 
-			OutgoingWebResponse preparedResponse = new OutgoingWebResponse();
+			var preparedResponse = new HttpResponseMessage();
 			ApplyMessageTemplate(response, preparedResponse);
-			preparedResponse.Headers.Add(HttpResponseHeader.ContentType, KeyValueFormContentType);
-			preparedResponse.OriginalMessage = response;
-			preparedResponse.ResponseStream = new MemoryStream(keyValueEncoding);
+			var content = new StreamContent(new MemoryStream(keyValueEncoding));
+			content.Headers.ContentType = new MediaTypeHeaderValue(KeyValueFormContentType);
+			preparedResponse.Content = content;
 
 			IHttpDirectResponse httpMessage = response as IHttpDirectResponse;
 			if (httpMessage != null) {
-				preparedResponse.Status = httpMessage.HttpStatusCode;
+				preparedResponse.StatusCode = httpMessage.HttpStatusCode;
 			}
 
 			return preparedResponse;
 		}
 
-		/// <summary>
-		/// Gets the direct response of a direct HTTP request.
-		/// </summary>
-		/// <param name="webRequest">The web request.</param>
-		/// <returns>The response to the web request.</returns>
-		/// <exception cref="ProtocolException">Thrown on network or protocol errors.</exception>
-		protected override IncomingWebResponse GetDirectResponse(HttpWebRequest webRequest) {
-			IncomingWebResponse response = this.WebRequestHandler.GetResponse(webRequest, DirectWebRequestOptions.AcceptAllHttpResponses);
+		protected override HttpMessageHandler WrapMessageHandler(HttpMessageHandler innerHandler) {
+			return new ErrorFilteringMessageHandler(base.WrapMessageHandler(innerHandler));
+		}
 
-			// Filter the responses to the allowable set of HTTP status codes.
-			if (response.Status != HttpStatusCode.OK && response.Status != HttpStatusCode.BadRequest) {
-				if (Logger.Channel.IsErrorEnabled) {
-					using (var reader = new StreamReader(response.ResponseStream)) {
-						Logger.Channel.ErrorFormat(
-							"Unexpected HTTP status code {0} {1} received in direct response:{2}{3}",
-							(int)response.Status,
-							response.Status,
-							Environment.NewLine,
-							reader.ReadToEnd());
-					}
-				}
-
-				// Call dispose before throwing since we're not including the response in the
-				// exception we're throwing.
-				response.Dispose();
-
-				ErrorUtilities.ThrowProtocol(OpenIdStrings.UnexpectedHttpStatusCode, (int)response.Status, response.Status);
+		private class ErrorFilteringMessageHandler : DelegatingHandler {
+			internal ErrorFilteringMessageHandler(HttpMessageHandler innerHandler)
+				: base(innerHandler) {
 			}
 
-			return response;
+			protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, System.Threading.CancellationToken cancellationToken) {
+				var response = await base.SendAsync(request, cancellationToken);
+
+				// Filter the responses to the allowable set of HTTP status codes.
+				if (response.StatusCode != HttpStatusCode.OK && response.StatusCode != HttpStatusCode.BadRequest) {
+					if (Logger.Channel.IsErrorEnabled) {
+						var content = await response.Content.ReadAsStringAsync();
+						Logger.Channel.ErrorFormat(
+							"Unexpected HTTP status code {0} {1} received in direct response:{2}{3}",
+							(int)response.StatusCode,
+							response.StatusCode,
+							Environment.NewLine,
+							content);
+					}
+
+					// Call dispose before throwing since we're not including the response in the
+					// exception we're throwing.
+					response.Dispose();
+
+					ErrorUtilities.ThrowProtocol(OpenIdStrings.UnexpectedHttpStatusCode, (int)response.StatusCode, response.StatusCode);
+				}
+
+				return response;
+			}
 		}
 	}
 }

@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
+	using System.Threading.Tasks;
 	using DotNetOpenAuth.Messaging;
 	using Validation;
 
@@ -123,7 +124,8 @@ namespace DotNetOpenAuth.OpenId.Messages {
 			setupRequest.ReturnTo = immediateRequest.ReturnTo;
 			setupRequest.Realm = immediateRequest.Realm;
 			setupRequest.AssociationHandle = immediateRequest.AssociationHandle;
-			return channel.PrepareResponse(setupRequest).GetDirectUriRequest(channel);
+			var response = channel.PrepareResponse(setupRequest);
+			return response.GetDirectUriRequest();
 		}
 
 		/// <summary>

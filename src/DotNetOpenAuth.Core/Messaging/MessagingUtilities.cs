@@ -378,6 +378,29 @@ namespace DotNetOpenAuth.Messaging {
 			return GetPublicFacingUrl(request, request.ServerVariables);
 		}
 
+		internal static void DisposeIfNotNull(this IDisposable disposable) {
+			if (disposable != null) {
+				disposable.Dispose();
+			}
+		}
+
+		internal static HttpRequestMessage Clone(this HttpRequestMessage original, Uri newRequestUri = null) {
+			Requires.NotNull(original, "original");
+
+			var clone = new HttpRequestMessage(original.Method, newRequestUri ?? original.RequestUri);
+			clone.Content = original.Content;
+			foreach (var header in original.Headers) {
+				clone.Headers.Add(header.Key, header.Value);
+			}
+
+			foreach (var property in original.Properties) {
+				clone.Properties[property.Key] = property.Value;
+			}
+
+			clone.Version = original.Version;
+			return clone;
+		}
+
 		/// <summary>
 		/// Gets the URL to the root of a web site, which may include a virtual directory path.
 		/// </summary>
