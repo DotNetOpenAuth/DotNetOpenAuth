@@ -378,6 +378,11 @@ namespace DotNetOpenAuth.Messaging {
 			return GetPublicFacingUrl(request, request.ServerVariables);
 		}
 
+		public static ActionResult AsActionResult(this HttpResponseMessage response) {
+			Requires.NotNull(response, "response");
+			return new HttpResponseMessageActionResult(response);
+		}
+
 		internal static void DisposeIfNotNull(this IDisposable disposable) {
 			if (disposable != null) {
 				disposable.Dispose();
@@ -1961,6 +1966,29 @@ namespace DotNetOpenAuth.Messaging {
 			}
 
 			#endregion
+		}
+
+		private class HttpResponseMessageActionResult : ActionResult {
+			private readonly HttpResponseMessage response;
+
+			internal HttpResponseMessageActionResult(HttpResponseMessage response) {
+				Requires.NotNull(response, "response");
+				this.response = response;
+			}
+
+			public override void ExecuteResult(ControllerContext context) {
+				context.HttpContext.Response.StatusCode = (int)this.response.StatusCode;
+				context.HttpContext.Response.Status = this.response.ReasonPhrase;
+				foreach (var header in this.response.Headers) {
+					foreach (var value in header.Value) {
+						context.HttpContext.Response.AddHeader(header.Key, value);
+					}
+				}
+
+				if (this.response.Content != null) {
+					this.response.Content.CopyToAsync(context.HttpContext.Response.OutputStream).Wait();
+				}
+			}
 		}
 	}
 }
