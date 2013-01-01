@@ -104,7 +104,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 				return CompletedExpirationTask;
 			}
 
-			return null;
+			return NullTask;
 		}
 
 		#endregion

@@ -44,11 +44,15 @@ namespace DotNetOpenAuth.OpenId {
 		public HttpClient CreateHttpClient(HttpMessageHandler handler) {
 			handler = handler ?? this.CreateHttpMessageHandler();
 			var untrustedHandler = handler as UntrustedWebRequestHandler;
+			HttpClient client;
 			if (untrustedHandler != null) {
-				return untrustedHandler.CreateClient();
+				client = untrustedHandler.CreateClient();
 			} else {
-				return new HttpClient(handler);
+				client = new HttpClient(handler);
 			}
+
+			client.DefaultRequestHeaders.UserAgent.Add(Util.LibraryVersionHeader);
+			return client;
 		}
 	}
 }

@@ -1978,7 +1978,7 @@ namespace DotNetOpenAuth.Messaging {
 
 			public override void ExecuteResult(ControllerContext context) {
 				context.HttpContext.Response.StatusCode = (int)this.response.StatusCode;
-				context.HttpContext.Response.Status = this.response.ReasonPhrase;
+				context.HttpContext.Response.StatusDescription = this.response.ReasonPhrase;
 				foreach (var header in this.response.Headers) {
 					foreach (var value in header.Value) {
 						context.HttpContext.Response.AddHeader(header.Key, value);

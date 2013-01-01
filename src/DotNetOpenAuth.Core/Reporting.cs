@@ -74,11 +74,6 @@ namespace DotNetOpenAuth {
 		private static Uri wellKnownPostLocation = new Uri("https://reports.dotnetopenauth.net/ReportingPost.ashx");
 
 		/// <summary>
-		/// The outgoing HTTP request handler to use for publishing reports.
-		/// </summary>
-		private static HttpClient webRequestHandler;
-
-		/// <summary>
 		/// A few HTTP request hosts and paths we've seen.
 		/// </summary>
 		private static PersistentHashSet observedRequests;
@@ -349,10 +344,6 @@ namespace DotNetOpenAuth {
 						file = GetIsolatedStorage();
 						reportOriginIdentity = GetOrCreateOriginIdentity();
 
-						var channel = new HttpClientHandler();
-						channel.AllowAutoRedirect = false;
-						webRequestHandler = new HttpClient(channel);
-						webRequestHandler.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(new ProductHeaderValue(Util.LibraryVersion)));
 						observations.Add(observedRequests = new PersistentHashSet(file, "requests.txt", 3));
 						observations.Add(observedCultures = new PersistentHashSet(file, "cultures.txt", 20));
 						observations.Add(observedFeatures = new PersistentHashSet(file, "features.txt", int.MaxValue));
@@ -374,6 +365,17 @@ namespace DotNetOpenAuth {
 					}
 				}
 			}
+		}
+
+		/// <summary>
+		/// Creates an HTTP client that can be used for outbound HTTP requests.
+		/// </summary>
+		private static HttpClient CreateHttpClient() {
+			var channel = new HttpClientHandler();
+			channel.AllowAutoRedirect = false;
+			var webRequestHandler = new HttpClient(channel);
+			webRequestHandler.DefaultRequestHeaders.UserAgent.Add(Util.LibraryVersionHeader);
+			return webRequestHandler;
 		}
 
 		/// <summary>
@@ -437,17 +439,19 @@ namespace DotNetOpenAuth {
 				Stream report = GetReport();
 				var content = new StreamContent(report);
 				content.Headers.ContentType = new MediaTypeHeaderValue("text/dnoa-report1");
-				using (var response = await webRequestHandler.PostAsync(wellKnownPostLocation, content)) {
-					Logger.Library.Info("Statistical report submitted successfully.");
+				using (var webRequestHandler = CreateHttpClient()) {
+					using (var response = await webRequestHandler.PostAsync(wellKnownPostLocation, content)) {
+						Logger.Library.Info("Statistical report submitted successfully.");
 
-					// The response stream may contain a message for the webmaster.
-					// Since as part of the report we submit the library version number,
-					// the report receiving service may have alerts such as:
-					// "You're using an obsolete version with exploitable security vulnerabilities."
-					using (var responseReader = new StreamReader(await response.Content.ReadAsStreamAsync())) {
-						string line = await responseReader.ReadLineAsync();
-						if (line != null) {
-							DemuxLogMessage(line);
+						// The response stream may contain a message for the webmaster.
+						// Since as part of the report we submit the library version number,
+						// the report receiving service may have alerts such as:
+						// "You're using an obsolete version with exploitable security vulnerabilities."
+						using (var responseReader = new StreamReader(await response.Content.ReadAsStreamAsync())) {
+							string line = await responseReader.ReadLineAsync();
+							if (line != null) {
+								DemuxLogMessage(line);
+							}
 						}
 					}
 				}

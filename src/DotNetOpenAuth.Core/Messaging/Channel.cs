@@ -813,7 +813,7 @@ namespace DotNetOpenAuth.Messaging {
 			};
 
 			response.Headers.Location = builder.Uri;
-			response.Content.Headers.ContentType = new MediaTypeHeaderValue("text/html; charset=utf-8");
+			response.Content.Headers.ContentType = new MediaTypeHeaderValue("text/html") { CharSet = "utf-8" };
 			return response;
 		}
 
