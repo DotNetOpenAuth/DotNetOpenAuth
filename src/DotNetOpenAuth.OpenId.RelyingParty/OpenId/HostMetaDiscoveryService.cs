@@ -13,12 +13,17 @@ namespace DotNetOpenAuth.OpenId {
 	using System.IO;
 	using System.Linq;
 	using System.Net;
+	using System.Net.Cache;
+	using System.Net.Http;
+	using System.Net.Http.Headers;
 	using System.Security;
 	using System.Security.Cryptography;
 	using System.Security.Cryptography.X509Certificates;
 	using System.Security.Permissions;
 	using System.Text;
 	using System.Text.RegularExpressions;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Xml;
 	using System.Xml.XPath;
 	using DotNetOpenAuth.Configuration;
@@ -62,9 +67,14 @@ namespace DotNetOpenAuth.OpenId {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="HostMetaDiscoveryService"/> class.
 		/// </summary>
-		public HostMetaDiscoveryService() {
+		public HostMetaDiscoveryService(IHostFactories hostFactories) {
+			Requires.NotNull(hostFactories, "hostFactories");
+
 			this.TrustedHostMetaProxies = new List<HostMetaProxy>();
+			this.HostFactories = hostFactories;
 		}
+
+		public IHostFactories HostFactories { get; private set; }
 
 		/// <summary>
 		/// Gets the set of URI templates to use to contact host-meta hosting proxies
@@ -106,27 +116,25 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>
 		/// A sequence of service endpoints yielded by discovery.  Must not be null, but may be empty.
 		/// </returns>
-		public IEnumerable<IdentifierDiscoveryResult> Discover(Identifier identifier, IDirectWebRequestHandler requestHandler, out bool abortDiscoveryChain) {
-			abortDiscoveryChain = false;
-
+		public async Task<IdentifierDiscoveryServiceResult> DiscoverAsync(Identifier identifier, CancellationToken cancellationToken) {
 			// Google Apps are always URIs -- not XRIs.
 			var uriIdentifier = identifier as UriIdentifier;
 			if (uriIdentifier == null) {
-				return Enumerable.Empty<IdentifierDiscoveryResult>();
+				return new IdentifierDiscoveryServiceResult(Enumerable.Empty<IdentifierDiscoveryResult>());
 			}
 
 			var results = new List<IdentifierDiscoveryResult>();
-			string signingHost;
-			using (var response = GetXrdsResponse(uriIdentifier, requestHandler, out signingHost)) {
-				if (response != null) {
+			using (var response = await this.GetXrdsResponseAsync(uriIdentifier, cancellationToken)) {
+				if (response.Result != null) {
 					try {
 						var readerSettings = MessagingUtilities.CreateUntrustedXmlReaderSettings();
-						var document = new XrdsDocument(XmlReader.Create(response.ResponseStream, readerSettings));
-						ValidateXmlDSig(document, uriIdentifier, response, signingHost);
+						var responseStream = await response.Result.Content.ReadAsStreamAsync();
+						var document = new XrdsDocument(XmlReader.Create(responseStream, readerSettings));
+						await ValidateXmlDSigAsync(document, uriIdentifier, response.Result, response.SigningHost);
 						var xrds = GetXrdElements(document, uriIdentifier.Uri.Host);
 
 						// Look for claimed identifier template URIs for an additional XRDS document.
-						results.AddRange(GetExternalServices(xrds, uriIdentifier, requestHandler));
+						results.AddRange(await this.GetExternalServicesAsync(xrds, uriIdentifier, cancellationToken));
 
 						// If we couldn't find any claimed identifiers, look for OP identifiers.
 						// Normally this would be the opposite (OP Identifiers take precedence over
@@ -136,15 +144,13 @@ namespace DotNetOpenAuth.OpenId {
 						if (results.Count == 0) {
 							results.AddRange(xrds.CreateServiceEndpoints(uriIdentifier, uriIdentifier));
 						}
-
-						abortDiscoveryChain = true;
 					} catch (XmlException ex) {
-						Logger.Yadis.ErrorFormat("Error while parsing XRDS document at {0} pointed to by host-meta: {1}", response.FinalUri, ex);
+						Logger.Yadis.ErrorFormat("Error while parsing XRDS document at {0} pointed to by host-meta: {1}", response.Result.RequestMessage.RequestUri, ex);
 					}
 				}
 			}
 
-			return results;
+			return new IdentifierDiscoveryServiceResult(results, abortDiscoveryChain: true);
 		}
 
 		#endregion
@@ -181,10 +187,9 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="identifier">The identifier under discovery.</param>
 		/// <param name="requestHandler">The request handler.</param>
 		/// <returns>The discovered services.</returns>
-		private static IEnumerable<IdentifierDiscoveryResult> GetExternalServices(IEnumerable<XrdElement> xrds, UriIdentifier identifier, IDirectWebRequestHandler requestHandler) {
+		private async Task<IEnumerable<IdentifierDiscoveryResult>> GetExternalServicesAsync(IEnumerable<XrdElement> xrds, UriIdentifier identifier, CancellationToken cancellationToken) {
 			Requires.NotNull(xrds, "xrds");
 			Requires.NotNull(identifier, "identifier");
-			Requires.NotNull(requestHandler, "requestHandler");
 
 			var results = new List<IdentifierDiscoveryResult>();
 			foreach (var serviceElement in GetDescribedByServices(xrds)) {
@@ -194,10 +199,11 @@ namespace DotNetOpenAuth.OpenId {
 					Uri externalLocation = new Uri(templateNode.Value.Trim().Replace("{%uri}", Uri.EscapeDataString(identifier.Uri.AbsoluteUri)));
 					string nextAuthority = nextAuthorityNode != null ? nextAuthorityNode.Value.Trim() : identifier.Uri.Host;
 					try {
-						using (var externalXrdsResponse = GetXrdsResponse(identifier, requestHandler, externalLocation)) {
+						using (var externalXrdsResponse = await this.GetXrdsResponseAsync(identifier, externalLocation, cancellationToken)) {
 							var readerSettings = MessagingUtilities.CreateUntrustedXmlReaderSettings();
-							XrdsDocument externalXrds = new XrdsDocument(XmlReader.Create(externalXrdsResponse.ResponseStream, readerSettings));
-							ValidateXmlDSig(externalXrds, identifier, externalXrdsResponse, nextAuthority);
+							var responseStream = await externalXrdsResponse.Content.ReadAsStreamAsync();
+							XrdsDocument externalXrds = new XrdsDocument(XmlReader.Create(responseStream, readerSettings));
+							await ValidateXmlDSigAsync(externalXrds, identifier, externalXrdsResponse, nextAuthority);
 							results.AddRange(GetXrdElements(externalXrds, identifier).CreateServiceEndpoints(identifier, identifier));
 						}
 					} catch (ProtocolException ex) {
@@ -220,7 +226,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="signingHost">The host name on the certificate that should be used to verify the signature in the XRDS.</param>
 		/// <exception cref="ProtocolException">Thrown if the XRDS document has an invalid or a missing signature.</exception>
 		[SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "XmlDSig", Justification = "xml")]
-		private static void ValidateXmlDSig(XrdsDocument document, UriIdentifier identifier, IncomingWebResponse response, string signingHost) {
+		private static async Task ValidateXmlDSigAsync(XrdsDocument document, UriIdentifier identifier, HttpResponseMessage response, string signingHost) {
 			Requires.NotNull(document, "document");
 			Requires.NotNull(identifier, "identifier");
 			Requires.NotNull(response, "response");
@@ -246,11 +252,12 @@ namespace DotNetOpenAuth.OpenId {
 			ErrorUtilities.VerifyProtocol(string.Equals(hostName, signingHost, StringComparison.OrdinalIgnoreCase), OpenIdStrings.MisdirectedSigningCertificate, hostName, signingHost);
 
 			// Verify the signature itself
-			byte[] signature = Convert.FromBase64String(response.Headers["Signature"]);
+			byte[] signature = Convert.FromBase64String(response.Headers.GetValues("Signature").First());
 			var provider = (RSACryptoServiceProvider)certs.First().PublicKey.Key;
-			byte[] data = new byte[response.ResponseStream.Length];
-			response.ResponseStream.Seek(0, SeekOrigin.Begin);
-			response.ResponseStream.Read(data, 0, data.Length);
+			var responseStream = await response.Content.ReadAsStreamAsync();
+			byte[] data = new byte[responseStream.Length];
+			responseStream.Seek(0, SeekOrigin.Begin);
+			await responseStream.ReadAsync(data, 0, data.Length);
 			ErrorUtilities.VerifyProtocol(provider.VerifyData(data, "SHA1", signature), OpenIdStrings.InvalidDSig);
 		}
 
@@ -292,21 +299,28 @@ namespace DotNetOpenAuth.OpenId {
 		/// A HTTP response carrying an XRDS document.
 		/// </returns>
 		/// <exception cref="ProtocolException">Thrown if the XRDS document could not be obtained.</exception>
-		private static IncomingWebResponse GetXrdsResponse(UriIdentifier identifier, IDirectWebRequestHandler requestHandler, Uri xrdsLocation) {
+		private async Task<HttpResponseMessage> GetXrdsResponseAsync(UriIdentifier identifier, Uri xrdsLocation, CancellationToken cancellationToken) {
 			Requires.NotNull(identifier, "identifier");
-			Requires.NotNull(requestHandler, "requestHandler");
 			Requires.NotNull(xrdsLocation, "xrdsLocation");
 
-			var request = (HttpWebRequest)WebRequest.Create(xrdsLocation);
-			request.CachePolicy = Yadis.IdentifierDiscoveryCachePolicy;
-			request.Accept = ContentTypes.Xrds;
-			var options = identifier.IsDiscoverySecureEndToEnd ? DirectWebRequestOptions.RequireSsl : DirectWebRequestOptions.None;
-			var response = requestHandler.GetResponse(request, options).GetSnapshot(Yadis.MaximumResultToScan);
-			if (!string.Equals(response.ContentType.MediaType, ContentTypes.Xrds, StringComparison.Ordinal)) {
-				Logger.Yadis.WarnFormat("Host-meta pointed to XRDS at {0}, but Content-Type at that URL was unexpected value '{1}'.", xrdsLocation, response.ContentType);
-			}
+			using (var httpClient = this.HostFactories.CreateHttpClient(identifier.IsDiscoverySecureEndToEnd, Yadis.IdentifierDiscoveryCachePolicy)) {
+				var request = new HttpRequestMessage(HttpMethod.Get, xrdsLocation);
+				request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(ContentTypes.Xrds));
+				var response = await httpClient.SendAsync(request, cancellationToken);
+				try {
+					if (!string.Equals(response.Content.Headers.ContentType.MediaType, ContentTypes.Xrds, StringComparison.Ordinal)) {
+						Logger.Yadis.WarnFormat(
+							"Host-meta pointed to XRDS at {0}, but Content-Type at that URL was unexpected value '{1}'.",
+							xrdsLocation,
+							response.Content.Headers.ContentType);
+					}
 
-			return response;
+					return response;
+				} catch {
+					response.Dispose();
+					throw;
+				}
+			}
 		}
 
 		/// <summary>
@@ -358,17 +372,16 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="signingHost">The host name on the certificate that should be used to verify the signature in the XRDS.</param>
 		/// <returns>A HTTP response carrying an XRDS document, or <c>null</c> if one could not be obtained.</returns>
 		/// <exception cref="ProtocolException">Thrown if the XRDS document could not be obtained.</exception>
-		private IncomingWebResponse GetXrdsResponse(UriIdentifier identifier, IDirectWebRequestHandler requestHandler, out string signingHost) {
+		private async Task<ResultWithSigningHost<HttpResponseMessage>> GetXrdsResponseAsync(UriIdentifier identifier, CancellationToken cancellationToken) {
 			Requires.NotNull(identifier, "identifier");
-			Requires.NotNull(requestHandler, "requestHandler");
-			Uri xrdsLocation = this.GetXrdsLocation(identifier, requestHandler, out signingHost);
-			if (xrdsLocation == null) {
-				return null;
+
+			var result = await this.GetXrdsLocationAsync(identifier, cancellationToken);
+			if (result.Result == null) {
+				return new ResultWithSigningHost<HttpResponseMessage>();
 			}
 
-			var response = GetXrdsResponse(identifier, requestHandler, xrdsLocation);
-
-			return response;
+			var response = await this.GetXrdsResponseAsync(identifier, result.Result, cancellationToken);
+			return new ResultWithSigningHost<HttpResponseMessage>(response, result.SigningHost);
 		}
 
 		/// <summary>
@@ -378,26 +391,26 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="requestHandler">The request handler.</param>
 		/// <param name="signingHost">The host name on the certificate that should be used to verify the signature in the XRDS.</param>
 		/// <returns>An absolute URI, or <c>null</c> if one could not be determined.</returns>
-		private Uri GetXrdsLocation(UriIdentifier identifier, IDirectWebRequestHandler requestHandler, out string signingHost) {
+		private async Task<ResultWithSigningHost<Uri>> GetXrdsLocationAsync(UriIdentifier identifier, CancellationToken cancellationToken) {
 			Requires.NotNull(identifier, "identifier");
-			Requires.NotNull(requestHandler, "requestHandler");
-			using (var hostMetaResponse = this.GetHostMeta(identifier, requestHandler, out signingHost)) {
-				if (hostMetaResponse == null) {
-					return null;
+
+			using (var hostMetaResponse = await this.GetHostMetaAsync(identifier, cancellationToken)) {
+				if (hostMetaResponse.Result == null) {
+					return new ResultWithSigningHost<Uri>();
 				}
 
-				using (var sr = hostMetaResponse.GetResponseReader()) {
-					string line = sr.ReadLine();
+				using (var sr = new StreamReader(await hostMetaResponse.Result.Content.ReadAsStreamAsync())) {
+					string line = await sr.ReadLineAsync();
 					Match m = HostMetaLink.Match(line);
 					if (m.Success) {
 						Uri location = new Uri(m.Groups["location"].Value);
-						Logger.Yadis.InfoFormat("Found link to XRDS at {0} in host-meta document {1}.", location, hostMetaResponse.FinalUri);
-						return location;
+						Logger.Yadis.InfoFormat("Found link to XRDS at {0} in host-meta document {1}.", location, hostMetaResponse.Result.RequestMessage.RequestUri);
+						return new ResultWithSigningHost<Uri>(location, hostMetaResponse.SigningHost);
 					}
 				}
 
-				Logger.Yadis.WarnFormat("Could not find link to XRDS in host-meta document: {0}", hostMetaResponse.FinalUri);
-				return null;
+				Logger.Yadis.WarnFormat("Could not find link to XRDS in host-meta document: {0}", hostMetaResponse.Result.RequestMessage.RequestUri);
+				return new ResultWithSigningHost<Uri>();
 			}
 		}
 
@@ -410,35 +423,29 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>
 		/// The host-meta response, or <c>null</c> if no host-meta document could be obtained.
 		/// </returns>
-		private IncomingWebResponse GetHostMeta(UriIdentifier identifier, IDirectWebRequestHandler requestHandler, out string signingHost) {
+		private async Task<ResultWithSigningHost<HttpResponseMessage>> GetHostMetaAsync(UriIdentifier identifier, CancellationToken cancellationToken) {
 			Requires.NotNull(identifier, "identifier");
-			Requires.NotNull(requestHandler, "requestHandler");
-			foreach (var hostMetaProxy in this.GetHostMetaLocations(identifier)) {
-				var hostMetaLocation = hostMetaProxy.GetProxy(identifier);
-				var request = (HttpWebRequest)WebRequest.Create(hostMetaLocation);
-				request.CachePolicy = Yadis.IdentifierDiscoveryCachePolicy;
-				var options = DirectWebRequestOptions.AcceptAllHttpResponses;
-				if (identifier.IsDiscoverySecureEndToEnd) {
-					options |= DirectWebRequestOptions.RequireSsl;
-				}
-				var response = requestHandler.GetResponse(request, options).GetSnapshot(Yadis.MaximumResultToScan);
-				try {
-					if (response.Status == HttpStatusCode.OK) {
-						Logger.Yadis.InfoFormat("Found host-meta for {0} at: {1}", identifier.Uri.Host, hostMetaLocation);
-						signingHost = hostMetaProxy.GetSigningHost(identifier);
-						return response;
-					} else {
-						Logger.Yadis.InfoFormat("Could not obtain host-meta for {0} from {1}", identifier.Uri.Host, hostMetaLocation);
+
+			using (var httpClient = this.HostFactories.CreateHttpClient(identifier.IsDiscoverySecureEndToEnd, Yadis.IdentifierDiscoveryCachePolicy)) {
+				foreach (var hostMetaProxy in this.GetHostMetaLocations(identifier)) {
+					var hostMetaLocation = hostMetaProxy.GetProxy(identifier);
+					var response = await httpClient.GetAsync(hostMetaLocation, cancellationToken);
+					try {
+						if (response.IsSuccessStatusCode) {
+							Logger.Yadis.InfoFormat("Found host-meta for {0} at: {1}", identifier.Uri.Host, hostMetaLocation);
+							return new ResultWithSigningHost<HttpResponseMessage>(response, hostMetaProxy.GetSigningHost(identifier));
+						} else {
+							Logger.Yadis.InfoFormat("Could not obtain host-meta for {0} from {1}", identifier.Uri.Host, hostMetaLocation);
+							response.Dispose();
+						}
+					} catch {
 						response.Dispose();
+						throw;
 					}
-				} catch {
-					response.Dispose();
-					throw;
 				}
 			}
 
-			signingHost = null;
-			return null;
+			return new ResultWithSigningHost<HttpResponseMessage>();
 		}
 
 		/// <summary>
@@ -544,6 +551,23 @@ namespace DotNetOpenAuth.OpenId {
 			/// </returns>
 			public override int GetHashCode() {
 				return this.ProxyFormat.GetHashCode();
+			}
+		}
+
+		private struct ResultWithSigningHost<T> : IDisposable {
+			internal ResultWithSigningHost(T result, string signingHost)
+				: this() {
+				this.Result = result;
+				this.SigningHost = signingHost;
+			}
+
+			public T Result { get; private set; }
+
+			public string SigningHost { get; private set; }
+
+			public void Dispose() {
+				var disposable = this.Result as IDisposable;
+				disposable.DisposeIfNotNull();
 			}
 		}
 	}

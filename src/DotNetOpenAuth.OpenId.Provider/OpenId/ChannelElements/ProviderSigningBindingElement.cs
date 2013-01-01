@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
+	using System.Threading.Tasks;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
@@ -161,10 +162,12 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <returns>
 		/// The applied protections.
 		/// </returns>
-		protected override MessageProtections VerifySignatureByUnrecognizedHandle(IProtocolMessage message, ITamperResistantOpenIdMessage signedMessage, MessageProtections protectionsApplied) {
+		protected override Task<MessageProtections> VerifySignatureByUnrecognizedHandleAsync(IProtocolMessage message, ITamperResistantOpenIdMessage signedMessage, MessageProtections protectionsApplied) {
 			// If we're on the Provider, then the RP sent us a check_auth with a signature
 			// we don't have an association for.  (It may have expired, or it may be a faulty RP).
-			throw new InvalidSignatureException(message);
+			var tcs = new TaskCompletionSource<MessageProtections>();
+			tcs.SetException(new InvalidSignatureException(message));
+			return tcs.Task;
 		}
 
 		/// <summary>
@@ -224,9 +227,9 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 
 			MessageDescription description = this.Channel.MessageDescriptions.Get(signedMessage);
 			var signedParts = from part in description.Mapping.Values
-			                  where (part.RequiredProtection & System.Net.Security.ProtectionLevel.Sign) != 0
-			                      && part.GetValue(signedMessage) != null
-			                  select part.Name;
+							  where (part.RequiredProtection & System.Net.Security.ProtectionLevel.Sign) != 0
+								  && part.GetValue(signedMessage) != null
+							  select part.Name;
 			string prefix = Protocol.V20.openid.Prefix;
 			ErrorUtilities.VerifyInternal(signedParts.All(name => name.StartsWith(prefix, StringComparison.Ordinal)), "All signed message parts must start with 'openid.'.");
 

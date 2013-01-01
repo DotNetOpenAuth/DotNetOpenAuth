@@ -22,7 +22,7 @@ namespace DotNetOpenAuth.OpenId {
 		SecuritySettings SecuritySettings { get; }
 
 		/// <summary>
-		/// Gets the web request handler.
+		/// Gets the factory for various dependencies.
 		/// </summary>
 		IHostFactories HostFactories { get; }
 	}

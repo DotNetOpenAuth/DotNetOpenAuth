@@ -10,12 +10,16 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System.Diagnostics;
 	using System.Linq;
 	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
 	/// Spoofs security checks on incoming OpenID messages.
 	/// </summary>
 	internal class SkipSecurityBindingElement : IChannelBindingElement {
+		private static readonly Task<MessageProtections?> NullTask = Task.FromResult<MessageProtections?>(null);
+
 		#region IChannelBindingElement Members
 
 		/// <summary>
@@ -50,7 +54,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// Implementations that provide message protection must honor the
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
-		public MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
+		public Task<MessageProtections?> ProcessOutgoingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
 			Debug.Fail("SkipSecurityBindingElement.ProcessOutgoingMessage should never be called.");
 			return null;
 		}
@@ -72,14 +76,14 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// Implementations that provide message protection must honor the
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
-		public MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
+		public Task<MessageProtections?> ProcessIncomingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
 			var signedMessage = message as ITamperResistantOpenIdMessage;
 			if (signedMessage != null) {
 				Logger.Bindings.DebugFormat("Skipped security checks of incoming {0} message for preview purposes.", message.GetType().Name);
-				return this.Protection;
+				return Task.FromResult<MessageProtections?>(this.Protection);
 			}
 
-			return null;
+			return NullTask;
 		}
 
 		#endregion

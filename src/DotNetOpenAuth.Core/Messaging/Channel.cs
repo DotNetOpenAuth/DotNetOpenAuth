@@ -279,10 +279,10 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="message">The one-way message to send</param>
 		/// <returns>The pending user agent redirect based message to be sent as an HttpResponse.</returns>
-		public HttpResponseMessage PrepareResponse(IProtocolMessage message) {
+		public async Task<HttpResponseMessage> PrepareResponseAsync(IProtocolMessage message, CancellationToken cancellationToken) {
 			Requires.NotNull(message, "message");
 
-			this.ProcessOutgoingMessage(message);
+			await this.ProcessOutgoingMessageAsync(message, cancellationToken);
 			Logger.Channel.DebugFormat("Sending message: {0}", message.GetType().Name);
 
 			HttpResponseMessage result;
@@ -333,24 +333,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// Requires an HttpContext.Current context.
 		/// </remarks>
 		/// <exception cref="InvalidOperationException">Thrown when <see cref="HttpContext.Current"/> is null.</exception>
-		public IDirectedProtocolMessage ReadFromRequest() {
-			return this.ReadFromRequest(this.GetRequestFromContext());
-		}
-
-		/// <summary>
-		/// Gets the protocol message embedded in the given HTTP request, if present.
-		/// </summary>
-		/// <typeparam name="TRequest">The expected type of the message to be received.</typeparam>
-		/// <param name="request">The deserialized message, if one is found.  Null otherwise.</param>
-		/// <returns>True if the expected message was recognized and deserialized.  False otherwise.</returns>
-		/// <remarks>
-		/// Requires an HttpContext.Current context.
-		/// </remarks>
-		/// <exception cref="InvalidOperationException">Thrown when <see cref="HttpContext.Current"/> is null.</exception>
-		/// <exception cref="ProtocolException">Thrown when a request message of an unexpected type is received.</exception>
-		public bool TryReadFromRequest<TRequest>(out TRequest request)
-			where TRequest : class, IProtocolMessage {
-			return TryReadFromRequest<TRequest>(this.GetRequestFromContext(), out request);
+		public Task<IDirectedProtocolMessage> ReadFromRequestAsync(CancellationToken cancellationToken) {
+			return this.ReadFromRequestAsync(this.GetRequestFromContext(), cancellationToken);
 		}
 
 		/// <summary>
@@ -362,36 +346,18 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>True if the expected message was recognized and deserialized.  False otherwise.</returns>
 		/// <exception cref="InvalidOperationException">Thrown when <see cref="HttpContext.Current"/> is null.</exception>
 		/// <exception cref="ProtocolException">Thrown when a request message of an unexpected type is received.</exception>
-		public bool TryReadFromRequest<TRequest>(HttpRequestBase httpRequest, out TRequest request)
+		public async Task<TRequest> TryReadFromRequestAsync<TRequest>(CancellationToken cancellationToken, HttpRequestBase httpRequest = null)
 			where TRequest : class, IProtocolMessage {
-			Requires.NotNull(httpRequest, "httpRequest");
+			httpRequest = httpRequest ?? this.GetRequestFromContext();
 
-			IProtocolMessage untypedRequest = this.ReadFromRequest(httpRequest);
+			IProtocolMessage untypedRequest = await this.ReadFromRequestAsync(httpRequest, cancellationToken);
 			if (untypedRequest == null) {
-				request = null;
-				return false;
+				return null;
 			}
 
-			request = untypedRequest as TRequest;
+			var request = untypedRequest as TRequest;
 			ErrorUtilities.VerifyProtocol(request != null, MessagingStrings.UnexpectedMessageReceived, typeof(TRequest), untypedRequest.GetType());
-
-			return true;
-		}
-
-		/// <summary>
-		/// Gets the protocol message embedded in the current HTTP request.
-		/// </summary>
-		/// <typeparam name="TRequest">The expected type of the message to be received.</typeparam>
-		/// <returns>The deserialized message.  Never null.</returns>
-		/// <remarks>
-		/// Requires an HttpContext.Current context.
-		/// </remarks>
-		/// <exception cref="InvalidOperationException">Thrown when <see cref="HttpContext.Current"/> is null.</exception>
-		/// <exception cref="ProtocolException">Thrown if the expected message was not recognized in the response.</exception>
-		[SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "This returns and verifies the appropriate message type.")]
-		public TRequest ReadFromRequest<TRequest>()
-			where TRequest : class, IProtocolMessage {
-			return this.ReadFromRequest<TRequest>(this.GetRequestFromContext());
+			return request;
 		}
 
 		/// <summary>
@@ -402,15 +368,12 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>The deserialized message.  Never null.</returns>
 		/// <exception cref="ProtocolException">Thrown if the expected message was not recognized in the response.</exception>
 		[SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "This returns and verifies the appropriate message type.")]
-		public TRequest ReadFromRequest<TRequest>(HttpRequestBase httpRequest)
+		public async Task<TRequest> ReadFromRequestAsync<TRequest>(CancellationToken cancellationToken, HttpRequestBase httpRequest = null)
 			where TRequest : class, IProtocolMessage {
-			Requires.NotNull(httpRequest, "httpRequest");
-			TRequest request;
-			if (this.TryReadFromRequest<TRequest>(httpRequest, out request)) {
-				return request;
-			} else {
-				throw ErrorUtilities.ThrowProtocol(MessagingStrings.ExpectedMessageNotReceived, typeof(TRequest));
-			}
+			httpRequest = httpRequest ?? this.GetRequestFromContext();
+			TRequest request = await this.TryReadFromRequestAsync<TRequest>(cancellationToken, httpRequest);
+			ErrorUtilities.VerifyProtocol(request != null, MessagingStrings.ExpectedMessageNotReceived, typeof(TRequest));
+			return request;
 		}
 
 		/// <summary>
@@ -418,13 +381,13 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="httpRequest">The request to search for an embedded message.</param>
 		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
-		public IDirectedProtocolMessage ReadFromRequest(HttpRequestBase httpRequest) {
+		public async Task<IDirectedProtocolMessage> ReadFromRequestAsync(HttpRequestBase httpRequest, CancellationToken cancellationToken) {
 			Requires.NotNull(httpRequest, "httpRequest");
 
 			if (Logger.Channel.IsInfoEnabled && httpRequest.GetPublicFacingUrl() != null) {
 				Logger.Channel.InfoFormat("Scanning incoming request for messages: {0}", httpRequest.GetPublicFacingUrl().AbsoluteUri);
 			}
-			IDirectedProtocolMessage requestMessage = this.ReadFromRequestCore(httpRequest);
+			IDirectedProtocolMessage requestMessage = this.ReadFromRequestCore(httpRequest, cancellationToken);
 			if (requestMessage != null) {
 				Logger.Channel.DebugFormat("Incoming request received: {0}", requestMessage.GetType().Name);
 
@@ -435,7 +398,7 @@ namespace DotNetOpenAuth.Messaging {
 					}
 				}
 
-				this.ProcessIncomingMessage(requestMessage);
+				await this.ProcessIncomingMessageAsync(requestMessage, cancellationToken);
 			}
 
 			return requestMessage;
@@ -446,17 +409,18 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <typeparam name="TResponse">The expected type of the message to be received.</typeparam>
 		/// <param name="requestMessage">The message to send.</param>
-		/// <returns>The remote party's response.</returns>
-		/// <exception cref="ProtocolException">
-		/// Thrown if no message is recognized in the response
-		/// or an unexpected type of message is received.
-		/// </exception>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The remote party's response.
+		/// </returns>
+		/// <exception cref="ProtocolException">Thrown if no message is recognized in the response
+		/// or an unexpected type of message is received.</exception>
 		[SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "This returns and verifies the appropriate message type.")]
-		public async Task<TResponse> RequestAsync<TResponse>(IDirectedProtocolMessage requestMessage)
+		public async Task<TResponse> RequestAsync<TResponse>(IDirectedProtocolMessage requestMessage, CancellationToken cancellationToken)
 			where TResponse : class, IProtocolMessage {
 			Requires.NotNull(requestMessage, "requestMessage");
 
-			IProtocolMessage response = await this.RequestAsync(requestMessage);
+			IProtocolMessage response = await this.RequestAsync(requestMessage, cancellationToken);
 			ErrorUtilities.VerifyProtocol(response != null, MessagingStrings.ExpectedMessageNotReceived, typeof(TResponse));
 
 			var expectedResponse = response as TResponse;
@@ -469,18 +433,21 @@ namespace DotNetOpenAuth.Messaging {
 		/// Sends a direct message to a remote party and waits for the response.
 		/// </summary>
 		/// <param name="requestMessage">The message to send.</param>
-		/// <returns>The remote party's response.  Guaranteed to never be null.</returns>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The remote party's response.  Guaranteed to never be null.
+		/// </returns>
 		/// <exception cref="ProtocolException">Thrown if the response does not include a protocol message.</exception>
-		public async Task<IProtocolMessage> RequestAsync(IDirectedProtocolMessage requestMessage) {
+		public async Task<IProtocolMessage> RequestAsync(IDirectedProtocolMessage requestMessage, CancellationToken cancellationToken) {
 			Requires.NotNull(requestMessage, "requestMessage");
 
-			this.ProcessOutgoingMessage(requestMessage);
+			await this.ProcessOutgoingMessageAsync(requestMessage, cancellationToken);
 			Logger.Channel.DebugFormat("Sending {0} request.", requestMessage.GetType().Name);
-			var responseMessage = await this.RequestCoreAsync(requestMessage);
+			var responseMessage = await this.RequestCoreAsync(requestMessage, cancellationToken);
 			ErrorUtilities.VerifyProtocol(responseMessage != null, MessagingStrings.ExpectedMessageNotReceived, typeof(IProtocolMessage).Name);
 
 			Logger.Channel.DebugFormat("Received {0} response.", responseMessage.GetType().Name);
-			this.ProcessIncomingMessage(responseMessage);
+			await this.ProcessIncomingMessageAsync(responseMessage, cancellationToken);
 
 			return responseMessage;
 		}
@@ -505,8 +472,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// Thrown when the message is somehow invalid.
 		/// This can be due to tampering, replay attack or expiration, among other things.
 		/// </exception>
-		internal void ProcessIncomingMessageTestHook(IProtocolMessage message) {
-			this.ProcessIncomingMessage(message);
+		internal Task ProcessIncomingMessageTestHookAsync(IProtocolMessage message, CancellationToken cancellationToken) {
+			return this.ProcessIncomingMessageAsync(message, cancellationToken);
 		}
 
 		/// <summary>
@@ -545,16 +512,18 @@ namespace DotNetOpenAuth.Messaging {
 			return this.ReadFromResponseCoreAsync(response);
 		}
 
-		/// <remarks>
-		/// 	This method should NOT be called by derived types
-		/// 	except when sending ONE WAY request messages.
-		/// </remarks>
 		/// <summary>
 		/// Prepares a message for transmit by applying signatures, nonces, etc.
 		/// </summary>
 		/// <param name="message">The message to prepare for sending.</param>
-		internal void ProcessOutgoingMessageTestHook(IProtocolMessage message) {
-			this.ProcessOutgoingMessage(message);
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns></returns>
+		/// <remarks>
+		/// This method should NOT be called by derived types
+		/// except when sending ONE WAY request messages.
+		/// </remarks>
+		internal Task ProcessOutgoingMessageTestHookAsync(IProtocolMessage message, CancellationToken cancellationToken) {
+			return this.ProcessOutgoingMessageAsync(message, cancellationToken);
 		}
 
 		/// <summary>
@@ -658,7 +627,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// behavior.  However in non-HTTP frameworks, such as unit test mocks, it may be appropriate to override 
 		/// this method to eliminate all use of an HTTP transport.
 		/// </remarks>
-		protected virtual async Task<IProtocolMessage> RequestCoreAsync(IDirectedProtocolMessage request) {
+		protected virtual async Task<IProtocolMessage> RequestCoreAsync(IDirectedProtocolMessage request, CancellationToken cancellationToken) {
 			Requires.NotNull(request, "request");
 			Requires.That(request.Recipient != null, "request", MessagingStrings.DirectedMessageMissingRecipient);
 
@@ -674,7 +643,8 @@ namespace DotNetOpenAuth.Messaging {
 			IDirectResponseProtocolMessage responseMessage;
 
 			using (var httpClient = this.HostFactories.CreateHttpClient()) {
-				using (HttpResponseMessage response = await httpClient.SendAsync(webRequest)) {
+				using (HttpResponseMessage response = await httpClient.SendAsync(webRequest, cancellationToken)) {
+					response.EnsureSuccessStatusCode();
 					if (response.Content == null) {
 						return null;
 					}
@@ -717,7 +687,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="request">The request to search for an embedded message.</param>
 		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
-		protected virtual IDirectedProtocolMessage ReadFromRequestCore(HttpRequestBase request) {
+		protected virtual IDirectedProtocolMessage ReadFromRequestCore(HttpRequestBase request, CancellationToken cancellationToken) {
 			Requires.NotNull(request, "request");
 
 			Logger.Channel.DebugFormat("Incoming HTTP request: {0} {1}", request.HttpMethod, request.GetPublicFacingUrl().AbsoluteUri);
@@ -843,7 +813,7 @@ namespace DotNetOpenAuth.Messaging {
 			};
 
 			response.Headers.Location = builder.Uri;
-			response.Content.Headers.ContentType =  new MediaTypeHeaderValue("text/html; charset=utf-8");
+			response.Content.Headers.ContentType = new MediaTypeHeaderValue("text/html; charset=utf-8");
 			return response;
 		}
 
@@ -949,11 +919,14 @@ namespace DotNetOpenAuth.Messaging {
 		/// Prepares a message for transmit by applying signatures, nonces, etc.
 		/// </summary>
 		/// <param name="message">The message to prepare for sending.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns></returns>
+		/// <exception cref="UnprotectedMessageException"></exception>
 		/// <remarks>
 		/// This method should NOT be called by derived types
 		/// except when sending ONE WAY request messages.
 		/// </remarks>
-		protected void ProcessOutgoingMessage(IProtocolMessage message) {
+		protected async Task ProcessOutgoingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
 			Requires.NotNull(message, "message");
 
 			Logger.Channel.DebugFormat("Preparing to send {0} ({1}) message.", message.GetType().Name, message.Version);
@@ -968,7 +941,7 @@ namespace DotNetOpenAuth.Messaging {
 			MessageProtections appliedProtection = MessageProtections.None;
 			foreach (IChannelBindingElement bindingElement in this.outgoingBindingElements) {
 				Assumes.True(bindingElement.Channel != null);
-				MessageProtections? elementProtection = bindingElement.ProcessOutgoingMessage(message);
+				MessageProtections? elementProtection = await bindingElement.ProcessOutgoingMessageAsync(message, cancellationToken);
 				if (elementProtection.HasValue) {
 					Logger.Bindings.DebugFormat("Binding element {0} applied to message.", bindingElement.GetType().FullName);
 
@@ -1125,7 +1098,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// Thrown when the message is somehow invalid.
 		/// This can be due to tampering, replay attack or expiration, among other things.
 		/// </exception>
-		protected virtual void ProcessIncomingMessage(IProtocolMessage message) {
+		protected virtual async Task ProcessIncomingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
 			Requires.NotNull(message, "message");
 
 			if (Logger.Channel.IsInfoEnabled) {
@@ -1141,7 +1114,7 @@ namespace DotNetOpenAuth.Messaging {
 			MessageProtections appliedProtection = MessageProtections.None;
 			foreach (IChannelBindingElement bindingElement in this.IncomingBindingElements) {
 				Assumes.True(bindingElement.Channel != null); // CC bug: this.IncomingBindingElements ensures this... why must we assume it here?
-				MessageProtections? elementProtection = bindingElement.ProcessIncomingMessage(message);
+				MessageProtections? elementProtection = await bindingElement.ProcessIncomingMessageAsync(message, cancellationToken);
 				if (elementProtection.HasValue) {
 					Logger.Bindings.DebugFormat("Binding element {0} applied to message.", bindingElement.GetType().FullName);
 

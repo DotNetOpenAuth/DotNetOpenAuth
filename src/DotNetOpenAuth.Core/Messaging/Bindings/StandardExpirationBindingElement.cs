@@ -6,6 +6,8 @@
 
 namespace DotNetOpenAuth.Messaging.Bindings {
 	using System;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using DotNetOpenAuth.Configuration;
 
 	/// <summary>
@@ -13,6 +15,9 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 	/// implementing the <see cref="IExpiringProtocolMessage"/> interface.
 	/// </summary>
 	internal class StandardExpirationBindingElement : IChannelBindingElement {
+		private static readonly Task<MessageProtections?> NullTask = Task.FromResult<MessageProtections?>(null);
+		private static readonly Task<MessageProtections?> CompletedExpirationTask = Task.FromResult<MessageProtections?>(MessageProtections.Expiration);
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StandardExpirationBindingElement"/> class.
 		/// </summary>
@@ -55,14 +60,14 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// The protections (if any) that this binding element applied to the message.
 		/// Null if this binding element did not even apply to this binding element.
 		/// </returns>
-		public MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
+		public Task<MessageProtections?> ProcessOutgoingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
 			IExpiringProtocolMessage expiringMessage = message as IExpiringProtocolMessage;
 			if (expiringMessage != null) {
 				expiringMessage.UtcCreationDate = DateTime.UtcNow;
-				return MessageProtections.Expiration;
+				return CompletedExpirationTask;
 			}
 
-			return null;
+			return NullTask;
 		}
 
 		/// <summary>
@@ -78,7 +83,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// Thrown when the binding element rules indicate that this message is invalid and should
 		/// NOT be processed.
 		/// </exception>
-		public MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
+		public Task<MessageProtections?> ProcessIncomingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
 			IExpiringProtocolMessage expiringMessage = message as IExpiringProtocolMessage;
 			if (expiringMessage != null) {
 				// Yes the UtcCreationDate is supposed to always be in UTC already,
@@ -96,7 +101,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 					MessagingStrings.MessageTimestampInFuture,
 					creationDate);
 
-				return MessageProtections.Expiration;
+				return CompletedExpirationTask;
 			}
 
 			return null;

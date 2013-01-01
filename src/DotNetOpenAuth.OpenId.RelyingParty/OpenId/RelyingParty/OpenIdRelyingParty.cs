@@ -14,8 +14,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Globalization;
 	using System.Linq;
 	using System.Net;
+	using System.Net.Http;
+	using System.Net.Http.Headers;
 	using System.Net.Mime;
 	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
@@ -272,11 +276,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
-		/// Gets the web request handler to use for discovery and the part of
-		/// authentication where direct messages are sent to an untrusted remote party.
+		/// Gets the factory for various dependencies.
 		/// </summary>
-		IDirectWebRequestHandler IOpenIdHost.WebRequestHandler {
-			get { return this.Channel.WebRequestHandler; }
+		IHostFactories IOpenIdHost.HostFactories {
+			get { return this.channel.HostFactories; }
 		}
 
 		/// <summary>
@@ -285,14 +288,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		internal bool CanSignCallbackArguments {
 			get { return this.Channel.BindingElements.OfType<ReturnToSignatureBindingElement>().Any(); }
-		}
-
-		/// <summary>
-		/// Gets the web request handler to use for discovery and the part of
-		/// authentication where direct messages are sent to an untrusted remote party.
-		/// </summary>
-		internal IDirectWebRequestHandler WebRequestHandler {
-			get { return this.Channel.WebRequestHandler; }
 		}
 
 		/// <summary>
@@ -339,12 +334,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// an object to send to the user agent to initiate the authentication.
 		/// </returns>
 		/// <exception cref="ProtocolException">Thrown if no OpenID endpoint could be found.</exception>
-		public IAuthenticationRequest CreateRequest(Identifier userSuppliedIdentifier, Realm realm, Uri returnToUrl) {
+		public async Task<IAuthenticationRequest> CreateRequestAsync(Identifier userSuppliedIdentifier, Realm realm, Uri returnToUrl, CancellationToken cancellationToken = default(CancellationToken)) {
 			Requires.NotNull(userSuppliedIdentifier, "userSuppliedIdentifier");
 			Requires.NotNull(realm, "realm");
 			Requires.NotNull(returnToUrl, "returnToUrl");
 			try {
-				return this.CreateRequests(userSuppliedIdentifier, realm, returnToUrl).First();
+				return (await this.CreateRequestsAsync(userSuppliedIdentifier, realm, returnToUrl)).First();
 			} catch (InvalidOperationException ex) {
 				throw ErrorUtilities.Wrap(ex, OpenIdStrings.OpenIdEndpointNotFound);
 			}
@@ -371,11 +366,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </remarks>
 		/// <exception cref="ProtocolException">Thrown if no OpenID endpoint could be found.</exception>
 		/// <exception cref="InvalidOperationException">Thrown if <see cref="HttpContext.Current">HttpContext.Current</see> == <c>null</c>.</exception>
-		public IAuthenticationRequest CreateRequest(Identifier userSuppliedIdentifier, Realm realm) {
+		public async Task<IAuthenticationRequest> CreateRequestAsync(Identifier userSuppliedIdentifier, Realm realm) {
 			Requires.NotNull(userSuppliedIdentifier, "userSuppliedIdentifier");
 			Requires.NotNull(realm, "realm");
 			try {
-				var result = this.CreateRequests(userSuppliedIdentifier, realm).First();
+				var result = (await this.CreateRequestsAsync(userSuppliedIdentifier, realm)).First();
 				Assumes.True(result != null);
 				return result;
 			} catch (InvalidOperationException ex) {
@@ -399,10 +394,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </remarks>
 		/// <exception cref="ProtocolException">Thrown if no OpenID endpoint could be found.</exception>
 		/// <exception cref="InvalidOperationException">Thrown if <see cref="HttpContext.Current">HttpContext.Current</see> == <c>null</c>.</exception>
-		public IAuthenticationRequest CreateRequest(Identifier userSuppliedIdentifier) {
+		public async Task<IAuthenticationRequest> CreateRequestAsync(Identifier userSuppliedIdentifier) {
 			Requires.NotNull(userSuppliedIdentifier, "userSuppliedIdentifier");
 			try {
-				return this.CreateRequests(userSuppliedIdentifier).First();
+				return (await this.CreateRequestsAsync(userSuppliedIdentifier)).First();
 			} catch (InvalidOperationException ex) {
 				throw ErrorUtilities.Wrap(ex, OpenIdStrings.OpenIdEndpointNotFound);
 			}
@@ -435,12 +430,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <para>No exception is thrown if no OpenID endpoints were discovered.  
 		/// An empty enumerable is returned instead.</para>
 		/// </remarks>
-		public virtual IEnumerable<IAuthenticationRequest> CreateRequests(Identifier userSuppliedIdentifier, Realm realm, Uri returnToUrl) {
+		public virtual async Task<IEnumerable<IAuthenticationRequest>> CreateRequestsAsync(Identifier userSuppliedIdentifier, Realm realm, Uri returnToUrl, CancellationToken cancellationToken = default(CancellationToken)) {
 			Requires.NotNull(userSuppliedIdentifier, "userSuppliedIdentifier");
 			Requires.NotNull(realm, "realm");
 			Requires.NotNull(returnToUrl, "returnToUrl");
 
-			return AuthenticationRequest.Create(userSuppliedIdentifier, this, realm, returnToUrl, true).Cast<IAuthenticationRequest>().CacheGeneratedResults();
+			var requests = await AuthenticationRequest.CreateAsync(userSuppliedIdentifier, this, realm, returnToUrl, true, cancellationToken);
+			return requests.Cast<IAuthenticationRequest>().CacheGeneratedResults();
 		}
 
 		/// <summary>
@@ -468,7 +464,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <para>Requires an <see cref="HttpContext.Current">HttpContext.Current</see> context.</para>
 		/// </remarks>
 		/// <exception cref="InvalidOperationException">Thrown if <see cref="HttpContext.Current">HttpContext.Current</see> == <c>null</c>.</exception>
-		public IEnumerable<IAuthenticationRequest> CreateRequests(Identifier userSuppliedIdentifier, Realm realm) {
+		public async Task<IEnumerable<IAuthenticationRequest>> CreateRequestsAsync(Identifier userSuppliedIdentifier, Realm realm) {
 			RequiresEx.ValidState(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
 			Requires.NotNull(userSuppliedIdentifier, "userSuppliedIdentifier");
 			Requires.NotNull(realm, "realm");
@@ -491,7 +487,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 			returnTo.AppendQueryArgs(returnToParams);
 
-			return this.CreateRequests(userSuppliedIdentifier, realm, returnTo.Uri);
+			return await this.CreateRequestsAsync(userSuppliedIdentifier, realm, returnTo.Uri);
 		}
 
 		/// <summary>
@@ -514,11 +510,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <para>Requires an <see cref="HttpContext.Current">HttpContext.Current</see> context.</para>
 		/// </remarks>
 		/// <exception cref="InvalidOperationException">Thrown if <see cref="HttpContext.Current">HttpContext.Current</see> == <c>null</c>.</exception>
-		public IEnumerable<IAuthenticationRequest> CreateRequests(Identifier userSuppliedIdentifier) {
+		public async Task<IEnumerable<IAuthenticationRequest>> CreateRequestsAsync(Identifier userSuppliedIdentifier) {
 			Requires.NotNull(userSuppliedIdentifier, "userSuppliedIdentifier");
 			RequiresEx.ValidState(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
 
-			return this.CreateRequests(userSuppliedIdentifier, Realm.AutoDetect);
+			return await this.CreateRequestsAsync(userSuppliedIdentifier, Realm.AutoDetect);
 		}
 
 		/// <summary>
@@ -528,9 +524,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <remarks>
 		/// <para>Requires an <see cref="HttpContext.Current">HttpContext.Current</see> context.</para>
 		/// </remarks>
-		public IAuthenticationResponse GetResponse() {
+		public Task<IAuthenticationResponse> GetResponseAsync(CancellationToken cancellationToken) {
 			RequiresEx.ValidState(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
-			return this.GetResponse(this.Channel.GetRequestFromContext());
+			return this.GetResponseAsync(this.Channel.GetRequestFromContext(), cancellationToken);
 		}
 
 		/// <summary>
@@ -538,10 +534,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="httpRequestInfo">The HTTP request that may be carrying an authentication response from the Provider.</param>
 		/// <returns>The processed authentication response if there is any; <c>null</c> otherwise.</returns>
-		public IAuthenticationResponse GetResponse(HttpRequestBase httpRequestInfo) {
+		public async Task<IAuthenticationResponse> GetResponseAsync(HttpRequestBase httpRequestInfo, CancellationToken cancellationToken) {
 			Requires.NotNull(httpRequestInfo, "httpRequestInfo");
 			try {
-				var message = this.Channel.ReadFromRequest(httpRequestInfo);
+				var message = await this.Channel.ReadFromRequestAsync(httpRequestInfo, cancellationToken);
 				PositiveAssertionResponse positiveAssertion;
 				NegativeAssertionResponse negativeAssertion;
 				IndirectSignedResponse positiveExtensionOnly;
@@ -554,7 +550,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 						OpenIdStrings.PositiveAssertionFromNonQualifiedProvider,
 						providerEndpoint.Uri);
 
-					var response = new PositiveAuthenticationResponse(positiveAssertion, this);
+					var response = await PositiveAuthenticationResponse.CreateAsync(positiveAssertion, this, cancellationToken);
 					foreach (var behavior in this.Behaviors) {
 						behavior.OnIncomingPositiveAssertion(response);
 					}
@@ -581,10 +577,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <remarks>
 		/// <para>Requires an <see cref="HttpContext.Current">HttpContext.Current</see> context.</para>
 		/// </remarks>
-		public OutgoingWebResponse ProcessResponseFromPopup() {
+		public Task<HttpResponseMessage> ProcessResponseFromPopupAsync(CancellationToken cancellationToken) {
 			RequiresEx.ValidState(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
 
-			return this.ProcessResponseFromPopup(this.Channel.GetRequestFromContext());
+			return this.ProcessResponseFromPopupAsync(this.Channel.GetRequestFromContext(), cancellationToken);
 		}
 
 		/// <summary>
@@ -592,10 +588,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="request">The incoming HTTP request that is expected to carry an OpenID authentication response.</param>
 		/// <returns>The HTTP response to send to this HTTP request.</returns>
-		public OutgoingWebResponse ProcessResponseFromPopup(HttpRequestBase request) {
+		public Task<HttpResponseMessage> ProcessResponseFromPopupAsync(HttpRequestBase request, CancellationToken cancellationToken) {
 			Requires.NotNull(request, "request");
 
-			return this.ProcessResponseFromPopup(request, null);
+			return this.ProcessResponseFromPopupAsync(request, null, cancellationToken);
 		}
 
 		/// <summary>
@@ -678,11 +674,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// The HTTP response to send to this HTTP request.
 		/// </returns>
 		[SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "OpenID", Justification = "real word"), SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "iframe", Justification = "Code contracts")]
-		internal OutgoingWebResponse ProcessResponseFromPopup(HttpRequestBase request, Action<AuthenticationStatus> callback) {
+		internal async Task<HttpResponseMessage> ProcessResponseFromPopupAsync(HttpRequestBase request, Action<AuthenticationStatus> callback, CancellationToken cancellationToken) {
 			Requires.NotNull(request, "request");
 
 			string extensionsJson = null;
-			var authResponse = this.NonVerifyingRelyingParty.GetResponse();
+			var authResponse = await this.NonVerifyingRelyingParty.GetResponseAsync(cancellationToken);
 			ErrorUtilities.VerifyProtocol(authResponse != null, OpenIdStrings.PopupRedirectMissingResponse);
 
 			// Give the caller a chance to notify the hosting page and fill up the clientScriptExtensions collection.
@@ -734,8 +730,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="identifier">The identifier to discover services for.</param>
 		/// <returns>A non-null sequence of services discovered for the identifier.</returns>
-		internal IEnumerable<IdentifierDiscoveryResult> Discover(Identifier identifier) {
-			return this.discoveryServices.Discover(identifier);
+		internal Task<IEnumerable<IdentifierDiscoveryResult>> DiscoverAsync(Identifier identifier, CancellationToken cancellationToken) {
+			return this.discoveryServices.DiscoverAsync(identifier, cancellationToken);
 		}
 
 		/// <summary>
@@ -795,7 +791,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="methodCall">The method to call on the parent window, including
 		/// parameters.  (i.e. "callback('arg1', 2)").  No escaping is done by this method.</param>
 		/// <returns>The entire HTTP response to send to the popup window or iframe to perform the invocation.</returns>
-		private static OutgoingWebResponse InvokeParentPageScript(string methodCall) {
+		private static HttpResponseMessage InvokeParentPageScript(string methodCall) {
 			Requires.NotNullOrEmpty(methodCall, "methodCall");
 
 			Logger.OpenId.DebugFormat("Sending Javascript callback: {0}", methodCall);
@@ -824,9 +820,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			builder.AppendLine("//]]>--></script>");
 			builder.AppendLine("</body></html>");
 
-			var response = new OutgoingWebResponse();
-			response.Body = builder.ToString();
-			response.Headers.Add(HttpResponseHeader.ContentType, new ContentType("text/html").ToString());
+			var response = new HttpResponseMessage();
+			response.Content = new StringContent(builder.ToString());
+			response.Content.Headers.ContentType = new MediaTypeHeaderValue("text/html");
 			return response;
 		}
 

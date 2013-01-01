@@ -9,6 +9,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId.Messages;
@@ -78,12 +80,12 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <returns>
 		/// The applied protections.
 		/// </returns>
-		protected override MessageProtections VerifySignatureByUnrecognizedHandle(IProtocolMessage message, ITamperResistantOpenIdMessage signedMessage, MessageProtections protectionsApplied) {
+		protected override async Task<MessageProtections> VerifySignatureByUnrecognizedHandleAsync(IProtocolMessage message, ITamperResistantOpenIdMessage signedMessage, MessageProtections protectionsApplied, CancellationToken cancellationToken) {
 			// We did not recognize the association the provider used to sign the message.
 			// Ask the provider to check the signature then.
 			var indirectSignedResponse = (IndirectSignedResponse)signedMessage;
 			var checkSignatureRequest = new CheckAuthenticationRequest(indirectSignedResponse, this.Channel);
-			var checkSignatureResponse = this.Channel.Request<CheckAuthenticationResponse>(checkSignatureRequest);
+			var checkSignatureResponse = await this.Channel.RequestAsync<CheckAuthenticationResponse>(checkSignatureRequest, cancellationToken);
 			if (!checkSignatureResponse.IsValid) {
 				Logger.Bindings.Error("Provider reports signature verification failed.");
 				throw new InvalidSignatureException(message);

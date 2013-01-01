@@ -16,6 +16,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System.Net.Http;
 	using System.Net.Http.Headers;
 	using System.Text;
+	using System.Threading;
 	using System.Threading.Tasks;
 
 	using DotNetOpenAuth.Configuration;
@@ -51,7 +52,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <param name="messageTypeProvider">A class prepared to analyze incoming messages and indicate what concrete
 		/// message types can deserialize from it.</param>
 		/// <param name="bindingElements">The binding elements to use in sending and receiving messages.</param>
-		protected OpenIdChannel(IMessageFactory messageTypeProvider, IChannelBindingElement[] bindingElements, IHostFactories hostFactories)
+		protected OpenIdChannel(IMessageFactory messageTypeProvider, IChannelBindingElement[] bindingElements, IHostFactories hostFactories = null)
 			: base(messageTypeProvider, bindingElements, hostFactories ?? new DefaultOpenIdHostFactories()) {
 			Requires.NotNull(messageTypeProvider, "messageTypeProvider");
 
@@ -84,18 +85,18 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// Thrown when the message is somehow invalid, except for check_authentication messages.
 		/// This can be due to tampering, replay attack or expiration, among other things.
 		/// </exception>
-		protected override void ProcessIncomingMessage(IProtocolMessage message) {
+		protected override async Task ProcessIncomingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
 			var checkAuthRequest = message as CheckAuthenticationRequest;
 			if (checkAuthRequest != null) {
 				IndirectSignedResponse originalResponse = new IndirectSignedResponse(checkAuthRequest, this);
 				try {
-					base.ProcessIncomingMessage(originalResponse);
+					await base.ProcessIncomingMessageAsync(originalResponse, cancellationToken);
 					checkAuthRequest.IsValid = true;
 				} catch (ProtocolException) {
 					checkAuthRequest.IsValid = false;
 				}
 			} else {
-				base.ProcessIncomingMessage(message);
+				await base.ProcessIncomingMessageAsync(message, cancellationToken);
 			}
 
 			// Convert an OpenID indirect error message, which we never expect

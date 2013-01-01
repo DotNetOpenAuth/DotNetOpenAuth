@@ -7,12 +7,17 @@
 namespace DotNetOpenAuth.Messaging.Bindings {
 	using System;
 	using System.Diagnostics;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using Validation;
 
 	/// <summary>
 	/// A binding element that checks/verifies a nonce message part.
 	/// </summary>
 	internal class StandardReplayProtectionBindingElement : IChannelBindingElement {
+		private static readonly Task<MessageProtections?> NullTask = Task.FromResult<MessageProtections?>(null);
+		private static readonly Task<MessageProtections?> CompletedReplayProtectionTask = Task.FromResult<MessageProtections?>(MessageProtections.ReplayProtection);
+
 		/// <summary>
 		/// These are the characters that may be chosen from when forming a random nonce.
 		/// </summary>
@@ -100,14 +105,14 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// The protections (if any) that this binding element applied to the message.
 		/// Null if this binding element did not even apply to this binding element.
 		/// </returns>
-		public MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
+		public Task<MessageProtections?> ProcessOutgoingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
 			IReplayProtectedProtocolMessage nonceMessage = message as IReplayProtectedProtocolMessage;
 			if (nonceMessage != null) {
 				nonceMessage.Nonce = this.GenerateUniqueFragment();
-				return MessageProtections.ReplayProtection;
+				return CompletedReplayProtectionTask;
 			}
 
-			return null;
+			return NullTask;
 		}
 
 		/// <summary>
@@ -119,7 +124,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// Null if this binding element did not even apply to this binding element.
 		/// </returns>
 		/// <exception cref="ReplayedMessageException">Thrown when the nonce check revealed a replayed message.</exception>
-		public MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
+		public Task<MessageProtections?> ProcessIncomingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
 			IReplayProtectedProtocolMessage nonceMessage = message as IReplayProtectedProtocolMessage;
 			if (nonceMessage != null && nonceMessage.Nonce != null) {
 				ErrorUtilities.VerifyProtocol(nonceMessage.Nonce.Length > 0 || this.AllowZeroLengthNonce, MessagingStrings.InvalidNonceReceived);
@@ -129,10 +134,10 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 					throw new ReplayedMessageException(message);
 				}
 
-				return MessageProtections.ReplayProtection;
+				return CompletedReplayProtectionTask;
 			}
 
-			return null;
+			return NullTask;
 		}
 
 		#endregion

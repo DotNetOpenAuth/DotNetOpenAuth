@@ -6,10 +6,12 @@
 
 namespace DotNetOpenAuth.OpenId.RelyingParty.Extensions.UI {
 	using System;
-	using System.Globalization;
-	using DotNetOpenAuth.Messaging;
-	using DotNetOpenAuth.OpenId.RelyingParty;
-	using Validation;
+using System.Globalization;
+using System.Threading;
+using System.Threading.Tasks;
+using DotNetOpenAuth.Messaging;
+using DotNetOpenAuth.OpenId.RelyingParty;
+using Validation;
 
 	/// <summary>
 	/// Constants used in implementing support for the UI extension.
@@ -23,12 +25,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty.Extensions.UI {
 		/// <param name="request">The authentication request to place in the window.</param>
 		/// <param name="windowName">The name to assign to the popup window.</param>
 		/// <returns>A string starting with 'window.open' and forming just that one method call.</returns>
-		internal static string GetWindowPopupScript(OpenIdRelyingParty relyingParty, IAuthenticationRequest request, string windowName) {
+		internal static async Task<string> GetWindowPopupScriptAsync(OpenIdRelyingParty relyingParty, IAuthenticationRequest request, string windowName, CancellationToken cancellationToken) {
 			Requires.NotNull(relyingParty, "relyingParty");
 			Requires.NotNull(request, "request");
 			Requires.NotNullOrEmpty(windowName, "windowName");
 
-			Uri popupUrl = request.RedirectingResponse.GetDirectUriRequest(relyingParty.Channel);
+			var response = await request.GetRedirectingResponseAsync(cancellationToken);
+			Uri popupUrl = response.GetDirectUriRequest();
 
 			return string.Format(
 				CultureInfo.InvariantCulture,

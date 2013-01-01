@@ -6,6 +6,8 @@
 
 namespace DotNetOpenAuth.Messaging {
 	using System;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using Validation;
 
 	/// <summary>
@@ -41,7 +43,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// Implementations that provide message protection must honor the 
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
-		MessageProtections? ProcessOutgoingMessage(IProtocolMessage message);
+		Task<MessageProtections?> ProcessOutgoingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken);
 
 		/// <summary>
 		/// Performs any transformation on an incoming message that may be necessary and/or
@@ -60,6 +62,6 @@ namespace DotNetOpenAuth.Messaging {
 		/// Implementations that provide message protection must honor the 
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
-		MessageProtections? ProcessIncomingMessage(IProtocolMessage message);
+		Task<MessageProtections?> ProcessIncomingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken);
 	}
 }

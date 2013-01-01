@@ -207,6 +207,31 @@ namespace DotNetOpenAuth.OpenId {
 			return client;
 		}
 
+		/// <summary>
+		/// Determines whether an exception was thrown because of the remote HTTP server returning HTTP 417 Expectation Failed.
+		/// </summary>
+		/// <param name="ex">The caught exception.</param>
+		/// <returns>
+		/// 	<c>true</c> if the failure was originally caused by a 417 Exceptation Failed error; otherwise, <c>false</c>.
+		/// </returns>
+		internal static bool IsExceptionFrom417ExpectationFailed(Exception ex) {
+			while (ex != null) {
+				WebException webEx = ex as WebException;
+				if (webEx != null) {
+					HttpWebResponse response = webEx.Response as HttpWebResponse;
+					if (response != null) {
+						if (response.StatusCode == HttpStatusCode.ExpectationFailed) {
+							return true;
+						}
+					}
+				}
+
+				ex = ex.InnerException;
+			}
+
+			return false;
+		}
+
 		protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken) {
 			this.EnsureAllowableRequestUri(request.RequestUri);
 
@@ -226,9 +251,24 @@ namespace DotNetOpenAuth.OpenId {
 					ErrorUtilities.VerifyProtocol(request.Method != HttpMethod.Post, MessagingStrings.UntrustedRedirectsOnPOSTNotSupported);
 					Uri redirectUri = new Uri(request.RequestUri, response.Headers.Location);
 					request = request.Clone(redirectUri);
-				} else {
-					return response;
+					continue;
 				}
+
+				if (response.StatusCode == HttpStatusCode.ExpectationFailed) {
+					// Some OpenID servers doesn't understand the Expect header and send 417 error back.
+					// If this server just failed from that, alter the ServicePoint for this server
+					// so that we don't send that header again next time (whenever that is).
+					// "Expect: 100-Continue" HTTP header. (see Google Code Issue 72)
+					// We don't want to blindly set all ServicePoints to not use the Expect header
+					// as that would be a security hole allowing any visitor to a web site change
+					// the web site's global behavior when calling that host.
+					// TODO: verify that this still works in DNOA 5.0
+					var servicePoint = ServicePointManager.FindServicePoint(request.RequestUri);
+					Logger.Http.InfoFormat("HTTP POST to {0} resulted in 417 Expectation Failed.  Changing ServicePoint to not use Expect: Continue next time.", request.RequestUri);
+					servicePoint.Expect100Continue = false;
+				}
+
+				return response;
 			}
 
 			throw ErrorUtilities.ThrowProtocol(MessagingStrings.TooManyRedirects, originalRequestUri);

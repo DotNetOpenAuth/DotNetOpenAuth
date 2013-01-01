@@ -8,6 +8,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
 	using System.Diagnostics;
 	using System.Linq;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
@@ -24,7 +26,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="response">The positive assertion response that was just received by the Relying Party.</param>
 		/// <param name="relyingParty">The relying party.</param>
-		internal PositiveAuthenticationResponse(PositiveAssertionResponse response, OpenIdRelyingParty relyingParty)
+		private PositiveAuthenticationResponse(PositiveAssertionResponse response, OpenIdRelyingParty relyingParty)
 			: base(response) {
 			Requires.NotNull(relyingParty, "relyingParty");
 
@@ -35,8 +37,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				new ProviderEndpointDescription(this.Response.ProviderEndpoint, this.Response.Version),
 				null,
 				null);
-
-			this.VerifyDiscoveryMatchesAssertion(relyingParty);
 
 			Logger.OpenId.InfoFormat("Received identity assertion for {0} via {1}.", this.Response.ClaimedIdentifier, this.Provider.Uri);
 		}
@@ -123,6 +123,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			get { return (PositiveAssertionResponse)base.Response; }
 		}
 
+		internal static async Task<PositiveAuthenticationResponse> CreateAsync(
+			PositiveAssertionResponse response, OpenIdRelyingParty relyingParty, CancellationToken cancellationToken) {
+			var result = new PositiveAuthenticationResponse(response, relyingParty);
+			await result.VerifyDiscoveryMatchesAssertionAsync(relyingParty, cancellationToken);
+			return result;
+		}
+
 		/// <summary>
 		/// Verifies that the positive assertion data matches the results of
 		/// discovery on the Claimed Identifier.
@@ -134,7 +141,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// This would be an indication of either a misconfigured Provider or
 		/// an attempt by someone to spoof another user's identity with a rogue Provider.
 		/// </exception>
-		private void VerifyDiscoveryMatchesAssertion(OpenIdRelyingParty relyingParty) {
+		private async Task VerifyDiscoveryMatchesAssertionAsync(OpenIdRelyingParty relyingParty, CancellationToken cancellationToken) {
 			Logger.OpenId.Debug("Verifying assertion matches identifier discovery results...");
 
 			// Ensure that we abide by the RP's rules regarding RequireSsl for this discovery step.
@@ -163,7 +170,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			// is signed by the RP before it's considered reliable.  In 1.x stateless mode, this RP
 			// doesn't (and can't) sign its own return_to URL, so its cached discovery information
 			// is merely a hint that must be verified by performing discovery again here.
-			var discoveryResults = relyingParty.Discover(claimedId);
+			var discoveryResults = await relyingParty.DiscoverAsync(claimedId, cancellationToken);
 			ErrorUtilities.VerifyProtocol(
 				discoveryResults.Contains(this.Endpoint),
 				OpenIdStrings.IssuedAssertionFailsIdentifierDiscovery,

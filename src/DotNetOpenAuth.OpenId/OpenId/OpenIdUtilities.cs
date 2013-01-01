@@ -187,24 +187,36 @@ namespace DotNetOpenAuth.OpenId {
 		internal static HttpClient CreateHttpClient(this IHostFactories hostFactories, bool requireSsl, RequestCachePolicy cachePolicy = null) {
 			Requires.NotNull(hostFactories, "hostFactories");
 
-			var handler = hostFactories.CreateHttpMessageHandler();
-			var webRequestHandler = handler as WebRequestHandler;
-			var untrustedHandler = handler as UntrustedWebRequestHandler;
-			if (webRequestHandler != null) {
-				if (cachePolicy != null) {
-					webRequestHandler.CachePolicy = cachePolicy;
-				}
-			} else if (untrustedHandler != null) {
-				if (cachePolicy != null) {
-					untrustedHandler.CachePolicy = cachePolicy;
-				}
+			var rootHandler = hostFactories.CreateHttpMessageHandler();
+			var handler = rootHandler;
+			do {
+				var webRequestHandler = handler as WebRequestHandler;
+				var untrustedHandler = handler as UntrustedWebRequestHandler;
+				var delegatingHandler = handler as DelegatingHandler;
+				if (webRequestHandler != null) {
+					if (cachePolicy != null) {
+						webRequestHandler.CachePolicy = cachePolicy;
+					}
 
-				untrustedHandler.IsSslRequired = requireSsl;
-			} else {
-				Logger.Http.DebugFormat("Unable to set cache policy on unsupported {0}.", handler.GetType().FullName);
+					break;
+				} else if (untrustedHandler != null) {
+					if (cachePolicy != null) {
+						untrustedHandler.CachePolicy = cachePolicy;
+					}
+
+					untrustedHandler.IsSslRequired = requireSsl;
+					break;
+				} else if (delegatingHandler != null) {
+					handler = delegatingHandler.InnerHandler;
+				} else {
+					Logger.Http.DebugFormat("Unable to set cache policy on unsupported {0}.", handler.GetType().FullName);
+					break;
+				}
 			}
+			while (true);
 
-			return hostFactories.CreateHttpClient(handler);
+
+			return hostFactories.CreateHttpClient(rootHandler);
 		}
 
 		internal static Uri GetDirectUriRequest(this HttpResponseMessage response) {

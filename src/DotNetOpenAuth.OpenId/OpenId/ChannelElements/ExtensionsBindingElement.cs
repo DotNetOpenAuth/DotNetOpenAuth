@@ -10,6 +10,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System.Diagnostics.CodeAnalysis;
 	using System.Linq;
 	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.OpenId.Extensions;
@@ -21,6 +23,11 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	/// their carrying OpenID messages.
 	/// </summary>
 	internal class ExtensionsBindingElement : IChannelBindingElement {
+		private static readonly Task<MessageProtections?> NullTask = Task.FromResult<MessageProtections?>(null);
+
+		private static readonly Task<MessageProtections?> NoneTask =
+			Task.FromResult<MessageProtections?>(MessageProtections.None);
+
 		/// <summary>
 		/// False if unsigned extensions should be dropped.  Must always be true on Providers, since RPs never sign extensions.
 		/// </summary>
@@ -77,7 +84,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
 		[SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = "It doesn't look too bad to me. :)")]
-		public MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
+		public Task<MessageProtections?> ProcessOutgoingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
 			var extendableMessage = message as IProtocolMessageWithExtensions;
 			if (extendableMessage != null) {
 				Protocol protocol = Protocol.Lookup(message.Version);
@@ -120,10 +127,10 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 
 				// Add the extension parameters to the base message for transmission.
 				baseMessageDictionary.AddExtraParameters(extensionManager.GetArgumentsToSend(includeOpenIdPrefix));
-				return MessageProtections.None;
+				return NoneTask;
 			}
 
-			return null;
+			return NullTask;
 		}
 
 		/// <summary>
@@ -143,7 +150,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// Implementations that provide message protection must honor the
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
-		public MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
+		public Task<MessageProtections?> ProcessIncomingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
 			var extendableMessage = message as IProtocolMessageWithExtensions;
 			if (extendableMessage != null) {
 				// First add the extensions that are signed by the Provider.
@@ -164,10 +171,10 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 					}
 				}
 
-				return MessageProtections.None;
+				return NoneTask;
 			}
 
-			return null;
+			return NullTask;
 		}
 
 		#endregion

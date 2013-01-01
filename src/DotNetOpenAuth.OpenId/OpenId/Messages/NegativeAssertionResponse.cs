@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
+	using System.Threading;
 	using System.Threading.Tasks;
 	using DotNetOpenAuth.Messaging;
 	using Validation;
@@ -22,24 +23,9 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="NegativeAssertionResponse"/> class.
 		/// </summary>
-		/// <param name="request">The request that the relying party sent.</param>
-		internal NegativeAssertionResponse(CheckIdRequest request)
-			: this(request, null) {
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="NegativeAssertionResponse"/> class.
-		/// </summary>
-		/// <param name="request">The request that the relying party sent.</param>
-		/// <param name="channel">The channel to use to simulate construction of the user_setup_url, if applicable.  May be null, but the user_setup_url will not be constructed.</param>
-		internal NegativeAssertionResponse(SignedResponseRequest request, Channel channel)
+		/// <param name="request">The request.</param>
+		private NegativeAssertionResponse(SignedResponseRequest request)
 			: base(request, GetMode(request)) {
-			// If appropriate, and when we're provided with a channel to do it,
-			// go ahead and construct the user_setup_url
-			if (this.Version.Major < 2 && request.Immediate && channel != null) {
-				// All requests are CheckIdRequests in OpenID 1.x, so this cast should be safe.
-				this.UserSetupUrl = ConstructUserSetupUrl((CheckIdRequest)request, channel);
-			}
 		}
 
 		/// <summary>
@@ -50,6 +36,24 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <param name="mode">The value of the openid.mode parameter.</param>
 		internal NegativeAssertionResponse(Version version, Uri relyingPartyReturnTo, string mode)
 			: base(version, relyingPartyReturnTo, mode) {
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="NegativeAssertionResponse"/> class.
+		/// </summary>
+		/// <param name="request">The request that the relying party sent.</param>
+		/// <param name="channel">The channel to use to simulate construction of the user_setup_url, if applicable.  May be null, but the user_setup_url will not be constructed.</param>
+		internal static async Task<NegativeAssertionResponse> CreateAsync(SignedResponseRequest request, CancellationToken cancellationToken, Channel channel = null) {
+			var result = new NegativeAssertionResponse(request);
+			
+			// If appropriate, and when we're provided with a channel to do it,
+			// go ahead and construct the user_setup_url
+			if (result.Version.Major < 2 && request.Immediate && channel != null) {
+				// All requests are CheckIdRequests in OpenID 1.x, so this cast should be safe.
+				result.UserSetupUrl = await ConstructUserSetupUrlAsync((CheckIdRequest)request, channel, cancellationToken);
+			}
+
+			return result;
 		}
 
 		/// <summary>
@@ -114,7 +118,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <param name="immediateRequest">The immediate request.</param>
 		/// <param name="channel">The channel to use to simulate construction of the message.</param>
 		/// <returns>The value to use for the user_setup_url parameter.</returns>
-		private static Uri ConstructUserSetupUrl(CheckIdRequest immediateRequest, Channel channel) {
+		private static async Task<Uri> ConstructUserSetupUrlAsync(CheckIdRequest immediateRequest, Channel channel, CancellationToken cancellationToken) {
 			Requires.NotNull(immediateRequest, "immediateRequest");
 			Requires.NotNull(channel, "channel");
 			ErrorUtilities.VerifyInternal(immediateRequest.Immediate, "Only immediate requests should be sent here.");
@@ -124,7 +128,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 			setupRequest.ReturnTo = immediateRequest.ReturnTo;
 			setupRequest.Realm = immediateRequest.Realm;
 			setupRequest.AssociationHandle = immediateRequest.AssociationHandle;
-			var response = channel.PrepareResponse(setupRequest);
+			var response = await channel.PrepareResponseAsync(setupRequest, cancellationToken);
 			return response.GetDirectUriRequest();
 		}
 

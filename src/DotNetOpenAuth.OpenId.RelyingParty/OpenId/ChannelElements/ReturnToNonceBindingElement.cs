@@ -9,6 +9,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId.Messages;
@@ -46,6 +48,11 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	/// only on the RP side and only on some messages.</para>
 	/// </remarks>
 	internal class ReturnToNonceBindingElement : IChannelBindingElement {
+		private static readonly Task<MessageProtections?> NullTask = Task.FromResult<MessageProtections?>(null);
+
+		private static readonly Task<MessageProtections?> ReplayProtectionTask =
+			Task.FromResult<MessageProtections?>(MessageProtections.ReplayProtection);
+
 		/// <summary>
 		/// The context within which return_to nonces must be unique -- they all go into the same bucket.
 		/// </summary>
@@ -136,17 +143,17 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// Implementations that provide message protection must honor the
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
-		public MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
+		public Task<MessageProtections?> ProcessOutgoingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
 			// We only add a nonce to some auth requests.
 			SignedResponseRequest request = message as SignedResponseRequest;
 			if (this.UseRequestNonce(request)) {
 				request.AddReturnToArguments(Protocol.ReturnToNonceParameter, CustomNonce.NewNonce().Serialize());
 				request.SignReturnTo = true; // a nonce without a signature is completely pointless
 
-				return MessageProtections.ReplayProtection;
+				return ReplayProtectionTask;
 			}
 
-			return null;
+			return NullTask;
 		}
 
 		/// <summary>
@@ -166,7 +173,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// Implementations that provide message protection must honor the
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
-		public MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
+		public Task<MessageProtections?> ProcessIncomingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
 			IndirectSignedResponse response = message as IndirectSignedResponse;
 			if (this.UseRequestNonce(response)) {
 				if (!response.ReturnToParametersSignatureValidated) {
@@ -190,10 +197,10 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 					throw new ReplayedMessageException(message);
 				}
 
-				return MessageProtections.ReplayProtection;
+				return ReplayProtectionTask;
 			}
 
-			return null;
+			return NullTask;
 		}
 
 		#endregion

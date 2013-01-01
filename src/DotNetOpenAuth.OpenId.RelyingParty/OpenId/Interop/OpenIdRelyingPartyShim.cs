@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.OpenId.Interop {
 	using System.IO;
 	using System.Runtime.InteropServices;
 	using System.Text;
+	using System.Threading;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
@@ -68,8 +69,9 @@ namespace DotNetOpenAuth.OpenId.Interop {
 		/// <exception cref="ProtocolException">Thrown if no OpenID endpoint could be found.</exception>
 		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "COM requires primitive types")]
 		public string CreateRequest(string userSuppliedIdentifier, string realm, string returnToUrl) {
-			var request = relyingParty.CreateRequest(userSuppliedIdentifier, realm, new Uri(returnToUrl));
-			return request.RedirectingResponse.GetDirectUriRequest(relyingParty.Channel).AbsoluteUri;
+			var request = relyingParty.CreateRequestAsync(userSuppliedIdentifier, realm, new Uri(returnToUrl)).Result;
+			var response = request.GetRedirectingResponseAsync(CancellationToken.None).Result;
+			return response.GetDirectUriRequest().AbsoluteUri;
 		}
 
 		/// <summary>
@@ -91,7 +93,7 @@ namespace DotNetOpenAuth.OpenId.Interop {
 		/// <exception cref="ProtocolException">Thrown if no OpenID endpoint could be found.</exception>
 		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "COM requires primitive types")]
 		public string CreateRequestWithSimpleRegistration(string userSuppliedIdentifier, string realm, string returnToUrl, string optionalSreg, string requiredSreg) {
-			var request = relyingParty.CreateRequest(userSuppliedIdentifier, realm, new Uri(returnToUrl));
+			var request = relyingParty.CreateRequestAsync(userSuppliedIdentifier, realm, new Uri(returnToUrl)).Result;
 
 			ClaimsRequest sreg = new ClaimsRequest();
 			if (!string.IsNullOrEmpty(optionalSreg)) {
@@ -101,7 +103,8 @@ namespace DotNetOpenAuth.OpenId.Interop {
 				sreg.SetProfileRequestFromList(requiredSreg.Split(','), DemandLevel.Require);
 			}
 			request.AddExtension(sreg);
-			return request.RedirectingResponse.GetDirectUriRequest(relyingParty.Channel).AbsoluteUri;
+			var response = request.GetRedirectingResponseAsync(CancellationToken.None).Result;
+			return response.GetDirectUriRequest().AbsoluteUri;
 		}
 
 		/// <summary>
@@ -120,7 +123,7 @@ namespace DotNetOpenAuth.OpenId.Interop {
 			}
 
 			HttpRequestBase requestInfo = new HttpRequestInfo(method, new Uri(url), form: formMap);
-			var response = relyingParty.GetResponse(requestInfo);
+			var response = relyingParty.GetResponseAsync(requestInfo, CancellationToken.None).Result;
 			if (response != null) {
 				return new AuthenticationResponseShim(response);
 			}
