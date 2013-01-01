@@ -15,12 +15,15 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Net.Cache;
 	using System.Net.Http;
 	using System.Text.RegularExpressions;
+	using System.Threading;
 	using System.Threading.Tasks;
 	using System.Web;
 	using System.Web.UI;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.Extensions;
+	using DotNetOpenAuth.OpenId.RelyingParty;
+
 	using Org.Mentalis.Security.Cryptography;
 	using Validation;
 
@@ -77,6 +80,15 @@ namespace DotNetOpenAuth.OpenId {
 			// so we use a time element and a random data element to generate it.
 			string uniq = MessagingUtilities.GetCryptoRandomDataAsBase64(4);
 			return string.Format(CultureInfo.InvariantCulture, "{{{0}}}{{{1}}}", DateTime.UtcNow.Ticks, uniq);
+		}
+
+		public static async Task RedirectToProviderAsync(this IAuthenticationRequest authenticationRequest, HttpContextBase context = null, CancellationToken cancellationToken = default(CancellationToken)) {
+			Requires.NotNull(authenticationRequest, "authenticationRequest");
+			Verify.Operation(context != null || HttpContext.Current != null, MessagingStrings.HttpContextRequired);
+
+			context = context ?? new HttpContextWrapper(HttpContext.Current);
+			var response = await authenticationRequest.GetRedirectingResponseAsync(cancellationToken);
+			response.Send(context);
 		}
 
 		/// <summary>

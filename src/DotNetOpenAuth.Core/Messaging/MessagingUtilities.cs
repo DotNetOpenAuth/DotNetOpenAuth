@@ -383,6 +383,24 @@ namespace DotNetOpenAuth.Messaging {
 			return new HttpResponseMessageActionResult(response);
 		}
 
+		public static void Send(this HttpResponseMessage response, HttpContextBase context = null) {
+			Requires.NotNull(response, "response");
+			context = context ?? new HttpContextWrapper(HttpContext.Current);
+			Verify.Operation(context != null, MessagingStrings.HttpContextRequired);
+
+			context.Response.StatusCode = (int)response.StatusCode;
+			context.Response.StatusDescription = response.ReasonPhrase;
+			foreach (var header in response.Headers) {
+				foreach (var value in header.Value) {
+					context.Response.AddHeader(header.Key, value);
+				}
+			}
+
+			if (response.Content != null) {
+				response.Content.CopyToAsync(context.Response.OutputStream).Wait();
+			}
+		}
+
 		internal static void DisposeIfNotNull(this IDisposable disposable) {
 			if (disposable != null) {
 				disposable.Dispose();
@@ -1977,17 +1995,7 @@ namespace DotNetOpenAuth.Messaging {
 			}
 
 			public override void ExecuteResult(ControllerContext context) {
-				context.HttpContext.Response.StatusCode = (int)this.response.StatusCode;
-				context.HttpContext.Response.StatusDescription = this.response.ReasonPhrase;
-				foreach (var header in this.response.Headers) {
-					foreach (var value in header.Value) {
-						context.HttpContext.Response.AddHeader(header.Key, value);
-					}
-				}
-
-				if (this.response.Content != null) {
-					this.response.Content.CopyToAsync(context.HttpContext.Response.OutputStream).Wait();
-				}
+				this.response.Send(context.HttpContext);
 			}
 		}
 	}
