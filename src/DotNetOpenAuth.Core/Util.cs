@@ -30,7 +30,7 @@ namespace DotNetOpenAuth {
 		/// <summary>
 		/// The web.config file-specified provider of web resource URLs.
 		/// </summary>
-		private static IEmbeddedResourceRetrieval embeddedResourceRetrieval = MessagingElement.Configuration.EmbeddedResourceRetrievalProvider.CreateInstance(null, false);
+		private static IEmbeddedResourceRetrieval embeddedResourceRetrieval = MessagingElement.Configuration.EmbeddedResourceRetrievalProvider.CreateInstance(null, false, null);
 
 		/// <summary>
 		/// Gets a human-readable description of the library name and version, including

@@ -96,7 +96,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Initializes a new instance of the <see cref="OpenIdRelyingParty"/> class.
 		/// </summary>
 		public OpenIdRelyingParty()
-			: this(OpenIdElement.Configuration.RelyingParty.ApplicationStore.CreateInstance(HttpApplicationStore)) {
+			: this(OpenIdElement.Configuration.RelyingParty.ApplicationStore.CreateInstance(HttpApplicationStore, null)) {
 		}
 
 		/// <summary>
@@ -122,7 +122,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			this.securitySettings = OpenIdElement.Configuration.RelyingParty.SecuritySettings.CreateSecuritySettings();
 
 			this.behaviors.CollectionChanged += this.OnBehaviorsChanged;
-			foreach (var behavior in OpenIdElement.Configuration.RelyingParty.Behaviors.CreateInstances(false)) {
+			foreach (var behavior in OpenIdElement.Configuration.RelyingParty.Behaviors.CreateInstances(false, null)) {
 				this.behaviors.Add(behavior);
 			}
 

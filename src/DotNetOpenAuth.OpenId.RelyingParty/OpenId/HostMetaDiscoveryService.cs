@@ -42,7 +42,7 @@ namespace DotNetOpenAuth.OpenId {
 	/// and the XMLDSig spec referenced in that spec can be found at:
 	/// http://wiki.oasis-open.org/xri/XrdOne/XmlDsigProfile
 	/// </remarks>
-	public class HostMetaDiscoveryService : IIdentifierDiscoveryService {
+	public class HostMetaDiscoveryService : IIdentifierDiscoveryService, IRequireHostFactories {
 		/// <summary>
 		/// The URI template for discovery host-meta on domains hosted by
 		/// Google Apps for Domains.
@@ -67,14 +67,11 @@ namespace DotNetOpenAuth.OpenId {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="HostMetaDiscoveryService"/> class.
 		/// </summary>
-		public HostMetaDiscoveryService(IHostFactories hostFactories) {
-			Requires.NotNull(hostFactories, "hostFactories");
-
+		public HostMetaDiscoveryService() {
 			this.TrustedHostMetaProxies = new List<HostMetaProxy>();
-			this.HostFactories = hostFactories;
 		}
 
-		public IHostFactories HostFactories { get; private set; }
+		public IHostFactories HostFactories { get; set; }
 
 		/// <summary>
 		/// Gets the set of URI templates to use to contact host-meta hosting proxies
@@ -117,6 +114,10 @@ namespace DotNetOpenAuth.OpenId {
 		/// A sequence of service endpoints yielded by discovery.  Must not be null, but may be empty.
 		/// </returns>
 		public async Task<IdentifierDiscoveryServiceResult> DiscoverAsync(Identifier identifier, CancellationToken cancellationToken) {
+			Requires.NotNull(identifier, "identifier");
+			Verify.Operation(this.HostFactories != null, Strings.HostFactoriesRequired);
+			cancellationToken.ThrowIfCancellationRequested();
+
 			// Google Apps are always URIs -- not XRIs.
 			var uriIdentifier = identifier as UriIdentifier;
 			if (uriIdentifier == null) {

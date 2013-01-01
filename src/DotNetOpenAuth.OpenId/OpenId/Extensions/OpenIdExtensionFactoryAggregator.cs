@@ -72,7 +72,7 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 			var factoriesElement = DotNetOpenAuth.Configuration.OpenIdElement.Configuration.ExtensionFactories;
 			var aggregator = new OpenIdExtensionFactoryAggregator();
 			aggregator.Factories.Add(new StandardOpenIdExtensionFactory());
-			aggregator.factories.AddRange(factoriesElement.CreateInstances(false));
+			aggregator.factories.AddRange(factoriesElement.CreateInstances(false, null));
 			return aggregator;
 		}
 	}

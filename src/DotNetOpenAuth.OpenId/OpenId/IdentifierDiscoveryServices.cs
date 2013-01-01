@@ -36,7 +36,7 @@ namespace DotNetOpenAuth.OpenId {
 			Requires.NotNull(host, "host");
 
 			this.host = host;
-			this.discoveryServices.AddRange(OpenIdElement.Configuration.RelyingParty.DiscoveryServices.CreateInstances(true));
+			this.discoveryServices.AddRange(OpenIdElement.Configuration.RelyingParty.DiscoveryServices.CreateInstances(true, host.HostFactories));
 		}
 
 		/// <summary>

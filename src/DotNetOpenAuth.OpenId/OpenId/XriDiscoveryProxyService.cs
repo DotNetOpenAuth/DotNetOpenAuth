@@ -27,7 +27,7 @@ namespace DotNetOpenAuth.OpenId {
 	/// The discovery service for XRI identifiers that uses an XRI proxy resolver for discovery.
 	/// </summary>
 	[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Xri", Justification = "Acronym")]
-	public class XriDiscoveryProxyService : IIdentifierDiscoveryService {
+	public class XriDiscoveryProxyService : IIdentifierDiscoveryService, IRequireHostFactories {
 		/// <summary>
 		/// The magic URL that will provide us an XRDS document for a given XRI identifier.
 		/// </summary>
@@ -43,12 +43,10 @@ namespace DotNetOpenAuth.OpenId {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="XriDiscoveryProxyService"/> class.
 		/// </summary>
-		public XriDiscoveryProxyService(IHostFactories hostFactories) {
-			Requires.NotNull(hostFactories, "hostFactories");
-			this.HostFactories = hostFactories;
+		public XriDiscoveryProxyService() {
 		}
 
-		public IHostFactories HostFactories { get; private set; }
+		public IHostFactories HostFactories { get; set; }
 
 		#region IDiscoveryService Members
 
@@ -62,6 +60,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// </returns>
 		public async Task<IdentifierDiscoveryServiceResult> DiscoverAsync(Identifier identifier, CancellationToken cancellationToken) {
 			Requires.NotNull(identifier, "identifier");
+			Verify.Operation(this.HostFactories != null, Strings.HostFactoriesRequired);
 
 			var xriIdentifier = identifier as XriIdentifier;
 			if (xriIdentifier == null) {

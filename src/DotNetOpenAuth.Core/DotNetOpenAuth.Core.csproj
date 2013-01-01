@@ -21,6 +21,7 @@
   <ItemGroup>
     <Compile Include="Assumes.cs" />
     <Compile Include="IHostFactories.cs" />
+    <Compile Include="IRequireHostFactories.cs" />
     <Compile Include="Messaging\Base64WebEncoder.cs" />
     <Compile Include="Messaging\Bindings\AsymmetricCryptoKeyStoreWrapper.cs" />
     <Compile Include="Messaging\Bindings\CryptoKey.cs" />

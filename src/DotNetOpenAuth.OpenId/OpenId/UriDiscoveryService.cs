@@ -25,16 +25,14 @@ namespace DotNetOpenAuth.OpenId {
 	/// <summary>
 	/// The discovery service for URI identifiers.
 	/// </summary>
-	public class UriDiscoveryService : IIdentifierDiscoveryService {
+	public class UriDiscoveryService : IIdentifierDiscoveryService, IRequireHostFactories {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="UriDiscoveryService"/> class.
 		/// </summary>
-		public UriDiscoveryService(IHostFactories hostFactories) {
-			Requires.NotNull(hostFactories, "hostFactories");
-			this.HostFactories = hostFactories;
+		public UriDiscoveryService() {
 		}
 
-		public IHostFactories HostFactories { get; private set; }
+		public IHostFactories HostFactories { get; set; }
 
 		#region IIdentifierDiscoveryService Members
 
@@ -49,6 +47,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// </returns>
 		public async Task<IdentifierDiscoveryServiceResult> DiscoverAsync(Identifier identifier, CancellationToken cancellationToken) {
 			Requires.NotNull(identifier, "identifier");
+			Verify.Operation(this.HostFactories != null, Strings.HostFactoriesRequired);
 			cancellationToken.ThrowIfCancellationRequested();
 
 			var uriIdentifier = identifier as UriIdentifier;

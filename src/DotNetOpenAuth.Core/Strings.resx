@@ -141,4 +141,7 @@
   <data name="ResponseBodyNotSupported" xml:space="preserve">
     <value>This object contains a response body, which is not supported.</value>
   </data>
+  <data name="HostFactoriesRequired" xml:space="preserve">
+    <value>The HostFactories property must be set first.</value>
+  </data>
 </root>
