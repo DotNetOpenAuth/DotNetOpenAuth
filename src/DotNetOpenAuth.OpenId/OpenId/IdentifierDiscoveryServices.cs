@@ -5,7 +5,7 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OpenId {
-	using System.Collections.Generic;
+    using System.Collections.Generic;
 	using System.Linq;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
@@ -53,13 +53,13 @@ namespace DotNetOpenAuth.OpenId {
 
 			IEnumerable<IdentifierDiscoveryResult> results = Enumerable.Empty<IdentifierDiscoveryResult>();
 			foreach (var discoverer in this.DiscoveryServices) {
-				bool abortDiscoveryChain;
-				var discoveryResults = discoverer.Discover(identifier, this.host.WebRequestHandler, out abortDiscoveryChain).CacheGeneratedResults();
-				results = results.Concat(discoveryResults);
-				if (abortDiscoveryChain) {
-					Logger.OpenId.InfoFormat("Further discovery on '{0}' was stopped by the {1} discovery service.", identifier, discoverer.GetType().Name);
-					break;
-				}
+			    bool abortDiscoveryChain;
+			    var discoveryResults = discoverer.Discover(identifier, this.host.WebRequestHandler, out abortDiscoveryChain).CacheGeneratedResults();
+			    results = results.Concat(discoveryResults);
+			    if (abortDiscoveryChain) {
+			        Logger.OpenId.InfoFormat("Further discovery on '{0}' was stopped by the {1} discovery service.", identifier, discoverer.GetType().Name);
+			        break;
+			    }
 			}
 
 			// If any OP Identifier service elements were found, we must not proceed

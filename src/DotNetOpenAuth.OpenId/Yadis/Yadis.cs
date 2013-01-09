@@ -60,8 +60,8 @@ namespace DotNetOpenAuth.Yadis {
 					Logger.Yadis.WarnFormat("Discovery on insecure identifier '{0}' aborted.", uri);
 					return null;
 				}
-				response = Request(requestHandler, uri, requireSsl, ContentTypes.Html, ContentTypes.XHtml, ContentTypes.Xrds).GetSnapshot(MaximumResultToScan);
-				if (response.Status != System.Net.HttpStatusCode.OK) {
+			    response = Request(requestHandler, uri, requireSsl, ContentTypes.Html, ContentTypes.XHtml, ContentTypes.Xrds).GetSnapshot(MaximumResultToScan);
+			    if (response.Status != System.Net.HttpStatusCode.OK) {
 					Logger.Yadis.ErrorFormat("HTTP error {0} {1} while performing discovery on {2}.", (int)response.Status, response.Status, uri);
 					return null;
 				}
@@ -71,11 +71,11 @@ namespace DotNetOpenAuth.Yadis {
 				return null;
 			}
 			CachedDirectWebResponse response2 = null;
-			if (IsXrdsDocument(response)) {
+            if (IsXrdsDocument(response)) {
 				Logger.Yadis.Debug("An XRDS response was received from GET at user-supplied identifier.");
 				Reporting.RecordEventOccurrence("Yadis", "XRDS in initial response");
 				response2 = response;
-			} else {
+            } else {
 				string uriString = response.Headers.Get(HeaderName);
 				Uri url = null;
 				if (uriString != null) {
@@ -138,8 +138,8 @@ namespace DotNetOpenAuth.Yadis {
 			Requires.NotNull(requestHandler, "requestHandler");
 			Requires.NotNull(uri, "uri");
 
-			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
-			request.CachePolicy = IdentifierDiscoveryCachePolicy;
+		    HttpWebRequest request = (HttpWebRequest) WebRequest.Create(uri);
+		    request.CachePolicy = IdentifierDiscoveryCachePolicy;
 			if (acceptTypes != null) {
 				request.Accept = string.Join(",", acceptTypes);
 			}
@@ -150,7 +150,7 @@ namespace DotNetOpenAuth.Yadis {
 			}
 
 			try {
-				return requestHandler.GetResponse(request, options);
+			    return requestHandler.GetResponse(request, options);
 			} catch (ProtocolException ex) {
 				var webException = ex.InnerException as WebException;
 				if (webException != null) {
@@ -176,7 +176,7 @@ namespace DotNetOpenAuth.Yadis {
 		/// <returns>
 		/// 	<c>true</c> if the response constains an XRDS document; otherwise, <c>false</c>.
 		/// </returns>
-		private static bool IsXrdsDocument(CachedDirectWebResponse response) {
+        private static bool IsXrdsDocument(CachedDirectWebResponse response) {
 			if (response.ContentType == null) {
 				return false;
 			}

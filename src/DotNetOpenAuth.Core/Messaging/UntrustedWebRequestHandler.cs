@@ -238,41 +238,40 @@ namespace DotNetOpenAuth.Messaging {
 		public IncomingWebResponse GetResponse(HttpWebRequest request, DirectWebRequestOptions options) {
 			// This request MAY have already been prepared by GetRequestStream, but
 			// we have no guarantee, so do it just to be safe.
-			this.PrepareRequest(request, false);
+		    this.PrepareRequest(request, false);
 
-			// Since we may require SSL for every redirect, we handle each redirect manually
+		    // Since we may require SSL for every redirect, we handle each redirect manually
 			// in order to detect and fail if any redirect sends us to an HTTP url.
 			// We COULD allow automatic redirect in the cases where HTTPS is not required,
 			// but our mock request infrastructure can't do redirects on its own either.
 			Uri originalRequestUri = request.RequestUri;
 			int i;
-			for (i = 0; i < this.MaximumRedirections; i++) {
-				this.EnsureAllowableRequestUri(request.RequestUri, (options & DirectWebRequestOptions.RequireSsl) != 0);
-				CachedDirectWebResponse response = this.chainedWebRequestHandler.GetResponse(request, options & ~DirectWebRequestOptions.RequireSsl).GetSnapshot(this.MaximumBytesToRead);
-				if (response.Status == HttpStatusCode.MovedPermanently ||
-					response.Status == HttpStatusCode.Redirect ||
-					response.Status == HttpStatusCode.RedirectMethod ||
-					response.Status == HttpStatusCode.RedirectKeepVerb) {
-					// We have no copy of the post entity stream to repeat on our manually
-					// cloned HttpWebRequest, so we have to bail.
-					ErrorUtilities.VerifyProtocol(request.Method != "POST", MessagingStrings.UntrustedRedirectsOnPOSTNotSupported);
-					Uri redirectUri = new Uri(response.FinalUri, response.Headers[HttpResponseHeader.Location]);
-					request = request.Clone(redirectUri);
-				} else {
-					if (response.FinalUri != request.RequestUri) {
-						// Since we don't automatically follow redirects, there's only one scenario where this
-						// can happen: when the server sends a (non-redirecting) Content-Location header in the response.
-						// It's imperative that we do not trust that header though, so coerce the FinalUri to be
-						// what we just requested.
-						Logger.Http.WarnFormat("The response from {0} included an HTTP header indicating it's the same as {1}, but it's not a redirect so we won't trust that.", request.RequestUri, response.FinalUri);
-						response.FinalUri = request.RequestUri;
-					}
+		    for (i = 0; i < this.MaximumRedirections; i++) {
+		        this.EnsureAllowableRequestUri(request.RequestUri, (options & DirectWebRequestOptions.RequireSsl) != 0);
+		        CachedDirectWebResponse response = this.chainedWebRequestHandler.GetResponse(request, options & ~DirectWebRequestOptions.RequireSsl).GetSnapshot(this.MaximumBytesToRead);
+		        if (response.Status == HttpStatusCode.MovedPermanently ||
+		            response.Status == HttpStatusCode.Redirect ||
+		            response.Status == HttpStatusCode.RedirectMethod ||
+		            response.Status == HttpStatusCode.RedirectKeepVerb) {
+		            // We have no copy of the post entity stream to repeat on our manually
+		            // cloned HttpWebRequest, so we have to bail.
+		            ErrorUtilities.VerifyProtocol(request.Method != "POST", MessagingStrings.UntrustedRedirectsOnPOSTNotSupported);
+		            Uri redirectUri = new Uri(response.FinalUri, response.Headers[HttpResponseHeader.Location]);
+		            request = request.Clone(redirectUri);
+		        } else {
+		            if (response.FinalUri != request.RequestUri) {
+		                // Since we don't automatically follow redirects, there's only one scenario where this
+		                // can happen: when the server sends a (non-redirecting) Content-Location header in the response.
+		                // It's imperative that we do not trust that header though, so coerce the FinalUri to be
+		                // what we just requested.
+		                Logger.Http.WarnFormat("The response from {0} included an HTTP header indicating it's the same as {1}, but it's not a redirect so we won't trust that.", request.RequestUri, response.FinalUri);
+		                response.FinalUri = request.RequestUri;
+		            }
 
-					return response;
-				}
-			}
-
-			throw ErrorUtilities.ThrowProtocol(MessagingStrings.TooManyRedirects, originalRequestUri);
+		            return response;
+		        }
+		    }
+		    throw ErrorUtilities.ThrowProtocol(MessagingStrings.TooManyRedirects, originalRequestUri);
 		}
 
 		/// <summary>

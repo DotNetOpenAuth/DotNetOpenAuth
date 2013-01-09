@@ -124,6 +124,9 @@ namespace DotNetOpenAuth.Messaging {
 			PrepareRequest(request, false);
 
 			try {
+                // Web Exceptions are thrown on Linux machines when calling HTTPS - fix found on StackOverflow below :
+                //   http://stackoverflow.com/questions/12463569/getresponse-giving-exception-always-in-monodroid-i-am-using-dropnet-dll
+			    ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
 				Logger.Http.DebugFormat("HTTP {0} {1}", request.Method, request.RequestUri);
 				HttpWebResponse response = (HttpWebResponse)request.GetResponse();
 				return new NetworkDirectWebResponse(request.RequestUri, response);
@@ -181,7 +184,6 @@ namespace DotNetOpenAuth.Messaging {
 				if (response != null) {
 					response.Close();
 				}
-
 				throw ErrorUtilities.Wrap(ex, MessagingStrings.ErrorInRequestReplyMessage);
 			}
 		}

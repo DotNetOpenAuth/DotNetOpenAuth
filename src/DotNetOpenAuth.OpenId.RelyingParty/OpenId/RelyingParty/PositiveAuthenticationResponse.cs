@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
+	using System.Collections.Generic;
 	using System.Diagnostics;
 	using System.Linq;
 	using System.Web;
@@ -164,6 +165,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			// doesn't (and can't) sign its own return_to URL, so its cached discovery information
 			// is merely a hint that must be verified by performing discovery again here.
 			var discoveryResults = relyingParty.Discover(claimedId);
+
 			ErrorUtilities.VerifyProtocol(
 				discoveryResults.Contains(this.Endpoint),
 				OpenIdStrings.IssuedAssertionFailsIdentifierDiscovery,
