@@ -360,7 +360,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			// Perform discovery right now (not deferred).
 			IEnumerable<IdentifierDiscoveryResult> serviceEndpoints;
 			try {
-				var results = relyingParty.Discover(userSuppliedIdentifier).CacheGeneratedResults();
+			    var results = relyingParty.Discover(userSuppliedIdentifier).CacheGeneratedResults();
 
 				// If any OP Identifier service elements were found, we must not proceed
 				// to use any Claimed Identifier services, per OpenID 2.0 sections 7.3.2.2 and 11.2.

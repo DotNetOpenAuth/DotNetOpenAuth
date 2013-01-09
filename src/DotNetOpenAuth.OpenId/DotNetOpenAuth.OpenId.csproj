@@ -164,8 +164,12 @@
     <Compile Include="Yadis\Yadis.cs" />
     <EmbeddedResource Include="OpenId\Behaviors\BehaviorStrings.resx" />
     <EmbeddedResource Include="OpenId\Behaviors\BehaviorStrings.sr.resx" />
-    <EmbeddedResource Include="OpenId\OpenIdStrings.resx" />
-    <EmbeddedResource Include="OpenId\OpenIdStrings.sr.resx" />
+    <EmbeddedResource Include="OpenId\OpenIdStrings.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OpenId\OpenIdStrings.sr.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Xrds\XrdsStrings.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>XrdsStrings.Designer.cs</LastGenOutput>

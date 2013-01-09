@@ -464,9 +464,21 @@ namespace DotNetOpenAuth.OpenId {
 			if (schemeSubstitution) {
 				UriBuilder uriBuilder = new UriBuilder(uri);
 
+                //dnoahttp, dnoahttps
+                //throw new Exception(string.Format("publishableHttpParser.RegisteredScheme = {0}, publishableHttpsParser.RegisteredScheme = {1}", publishableHttpParser.RegisteredScheme, publishableHttpsParser.RegisteredScheme));
+
 				// Swap out our round-trippable scheme for the publishable (hidden) scheme.
-				uriBuilder.Scheme = uriBuilder.Scheme == roundTrippingHttpParser.RegisteredScheme ? publishableHttpParser.RegisteredScheme : publishableHttpsParser.RegisteredScheme;
-				canonicalUri = uriBuilder.Uri;
+			    if (Type.GetType("Mono.Runtime") == null) {
+			        uriBuilder.Scheme = uriBuilder.Scheme == roundTrippingHttpParser.RegisteredScheme
+			                                ? publishableHttpParser.RegisteredScheme
+			                                : publishableHttpsParser.RegisteredScheme;
+			    } else {
+                    //On Mono the schemes are dnoahttp and dnoahttps, which when used throw an invalid Uri exception
+			        uriBuilder.Scheme = uriBuilder.Scheme == roundTrippingHttpParser.RegisteredScheme
+			                                ? "http"
+			                                : "https";
+			    }
+			    canonicalUri = uriBuilder.Uri;
 			} else {
 				canonicalUri = new Uri(uri);
 			}

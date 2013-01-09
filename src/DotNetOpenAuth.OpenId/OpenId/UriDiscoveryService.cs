@@ -48,8 +48,8 @@ namespace DotNetOpenAuth.OpenId {
 			var endpoints = new List<IdentifierDiscoveryResult>();
 
 			// Attempt YADIS discovery
-			DiscoveryResult yadisResult = Yadis.Discover(requestHandler, uriIdentifier, identifier.IsDiscoverySecureEndToEnd);
-			if (yadisResult != null) {
+		    DiscoveryResult yadisResult = Yadis.Discover(requestHandler, uriIdentifier, identifier.IsDiscoverySecureEndToEnd);
+		    if (yadisResult != null) {
 				if (yadisResult.IsXrds) {
 					try {
 						XrdsDocument xrds = new XrdsDocument(yadisResult.ResponseText);

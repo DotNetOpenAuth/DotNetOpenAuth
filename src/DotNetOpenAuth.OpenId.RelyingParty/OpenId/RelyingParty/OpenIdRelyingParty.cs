@@ -344,7 +344,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			Requires.NotNull(realm, "realm");
 			Requires.NotNull(returnToUrl, "returnToUrl");
 			try {
-				return this.CreateRequests(userSuppliedIdentifier, realm, returnToUrl).First();
+			    return this.CreateRequests(userSuppliedIdentifier, realm, returnToUrl).First();
 			} catch (InvalidOperationException ex) {
 				throw ErrorUtilities.Wrap(ex, OpenIdStrings.OpenIdEndpointNotFound);
 			}
@@ -440,7 +440,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			Requires.NotNull(realm, "realm");
 			Requires.NotNull(returnToUrl, "returnToUrl");
 
-			return AuthenticationRequest.Create(userSuppliedIdentifier, this, realm, returnToUrl, true).Cast<IAuthenticationRequest>().CacheGeneratedResults();
+		    return AuthenticationRequest.Create(userSuppliedIdentifier, this, realm, returnToUrl, true).Cast<IAuthenticationRequest>().CacheGeneratedResults();
 		}
 
 		/// <summary>

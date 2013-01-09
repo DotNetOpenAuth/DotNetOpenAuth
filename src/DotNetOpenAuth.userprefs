@@ -1,0 +1,40 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Org.Mentalis.Security.Cryptography\Properties\AssemblyInfo.cs">
+    <Files>
+      <File FileName="Mono.Math\Properties\AssemblyInfo.cs" Line="15" Column="35" />
+      <File FileName="Org.Mentalis.Security.Cryptography\Properties\AssemblyInfo.cs" Line="15" Column="35" />
+      <File FileName="Mono.Math\SequentialSearchPrimeGeneratorBase.cs" Line="47" Column="27" />
+      <File FileName="DotNetOpenAuth.Core\Strings.resx" Line="1" Column="1" />
+      <File FileName="DotNetOpenAuth.Core\Strings.sr.resx" Line="94" Column="31" />
+      <File FileName="Mono.Math\Properties\AssemblyInfo.cs" Line="15" Column="35" />
+      <File FileName="Org.Mentalis.Security.Cryptography\Properties\AssemblyInfo.cs" Line="15" Column="35" />
+      <File FileName="Mono.Math\SequentialSearchPrimeGeneratorBase.cs" Line="47" Column="27" />
+      <File FileName="DotNetOpenAuth.Core\Strings.resx" Line="1" Column="1" />
+      <File FileName="DotNetOpenAuth.Core\Strings.sr.resx" Line="94" Column="31" />
+      <File FileName="Mono.Math\Properties\AssemblyInfo.cs" Line="15" Column="35" />
+      <File FileName="Org.Mentalis.Security.Cryptography\Properties\AssemblyInfo.cs" Line="15" Column="35" />
+      <File FileName="Mono.Math\SequentialSearchPrimeGeneratorBase.cs" Line="47" Column="27" />
+      <File FileName="DotNetOpenAuth.Core\Strings.resx" Line="1" Column="1" />
+      <File FileName="DotNetOpenAuth.Core\Strings.sr.resx" Line="94" Column="31" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State expanded="True">
+          <Node name="Product" expanded="True">
+            <Node name="OpenID" expanded="True" />
+            <Node name="DotNetOpenAuth.Core" expanded="True" />
+          </Node>
+          <Node name="Project Templates" expanded="True">
+            <Node name="RelyingPartyLogic" selected="True" />
+          </Node>
+          <Node name="Samples" expanded="True" />
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>
