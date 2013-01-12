@@ -1928,7 +1928,7 @@ namespace DotNetOpenAuth.Messaging {
 			if (serverVariables["HTTP_HOST"] != null) {
 				ErrorUtilities.VerifySupported(request.Url.Scheme == Uri.UriSchemeHttps || request.Url.Scheme == Uri.UriSchemeHttp, "Only HTTP and HTTPS are supported protocols.");
 				string scheme = serverVariables["HTTP_X_FORWARDED_PROTO"] ??
-					(String.Equals(serverVariables["HTTP_FRONT_END_HTTPS"], "on", StringComparison.OrdinalIgnoreCase) ? Uri.UriSchemeHttps : request.Url.Scheme);
+					(string.Equals(serverVariables["HTTP_FRONT_END_HTTPS"], "on", StringComparison.OrdinalIgnoreCase) ? Uri.UriSchemeHttps : request.Url.Scheme);
 				Uri hostAndPort = new Uri(scheme + Uri.SchemeDelimiter + serverVariables["HTTP_HOST"]);
 				UriBuilder publicRequestUri = new UriBuilder(request.Url);
 				publicRequestUri.Scheme = scheme;
