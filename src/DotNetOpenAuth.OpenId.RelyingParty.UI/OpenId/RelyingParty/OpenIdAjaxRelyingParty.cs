@@ -11,11 +11,14 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Globalization;
 	using System.Linq;
 	using System.Net;
+	using System.Net.Http;
+	using System.Net.Http.Headers;
 	using System.Net.Mime;
 	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
 	using System.Web.Script.Serialization;
-
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Extensions;
@@ -63,8 +66,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// 	<para>No exception is thrown if no OpenID endpoints were discovered.
 		/// An empty enumerable is returned instead.</para>
 		/// </remarks>
-		public override IEnumerable<IAuthenticationRequest> CreateRequests(Identifier userSuppliedIdentifier, Realm realm, Uri returnToUrl) {
-			var requests = base.CreateRequests(userSuppliedIdentifier, realm, returnToUrl);
+		public override async Task<IEnumerable<IAuthenticationRequest>> CreateRequestsAsync(Identifier userSuppliedIdentifier, Realm realm, Uri returnToUrl, CancellationToken cancellationToken) {
+			var requests = await base.CreateRequestsAsync(userSuppliedIdentifier, realm, returnToUrl, cancellationToken);
+			var results = new List<IAuthenticationRequest>();
 
 			// Alter the requests so that have AJAX characteristics.
 			// Some OPs may be listed multiple times (one with HTTPS and the other with HTTP, for example).
@@ -113,8 +117,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				// http://www.nabble.com/Re:-Defining-how-OpenID-should-behave-with-fragments-in-the-return_to-url-p22694227.html
 				////TODO:
 
-				yield return req;
+				results.Add(req);
 			}
+
+			return results;
 		}
 
 		/// <summary>
@@ -142,13 +148,15 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// }
 		/// </code>
 		/// </remarks>
-		public OutgoingWebResponse AsAjaxDiscoveryResult(IEnumerable<IAuthenticationRequest> requests) {
+		public async Task<HttpResponseMessage> AsAjaxDiscoveryResultAsync(IEnumerable<IAuthenticationRequest> requests, CancellationToken cancellationToken) {
 			Requires.NotNull(requests, "requests");
 
 			var serializer = new JavaScriptSerializer();
-			return new OutgoingWebResponse {
-				Body = serializer.Serialize(this.AsJsonDiscoveryResult(requests)),
+			var response = new HttpResponseMessage {
+				Content = new StringContent(serializer.Serialize(await this.AsJsonDiscoveryResultAsync(requests, cancellationToken))),
 			};
+			response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+			return response;
 		}
 
 		/// <summary>
@@ -159,11 +167,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <returns>
 		/// The JSON result to return to the user agent.
 		/// </returns>
-		public string AsAjaxPreloadedDiscoveryResult(IEnumerable<IAuthenticationRequest> requests) {
+		public async Task<string> AsAjaxPreloadedDiscoveryResultAsync(IEnumerable<IAuthenticationRequest> requests, CancellationToken cancellationToken) {
 			Requires.NotNull(requests, "requests");
 
 			var serializer = new JavaScriptSerializer();
-			string json = serializer.Serialize(this.AsJsonPreloadedDiscoveryResult(requests));
+			string json = serializer.Serialize(await this.AsJsonPreloadedDiscoveryResultAsync(requests, cancellationToken));
 
 			string script = "window.dnoa_internal.loadPreloadedDiscoveryResults(" + json + ");";
 			return script;
@@ -174,18 +182,27 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="requests">The discovery results from just <i>one</i> identifier to serialize as a JSON response.</param>
 		/// <returns>A JSON object, not yet serialized.</returns>
-		internal object AsJsonDiscoveryResult(IEnumerable<IAuthenticationRequest> requests) {
+		internal async Task<object> AsJsonDiscoveryResultAsync(IEnumerable<IAuthenticationRequest> requests, CancellationToken cancellationToken) {
 			Requires.NotNull(requests, "requests");
 
 			requests = requests.CacheGeneratedResults();
 
 			if (requests.Any()) {
+				var requestUrls =
+					requests.Select(
+						req =>
+						new {
+							endpoint = req.Provider.Uri.AbsoluteUri,
+							immediate = this.GetRedirectUrlAsync(req, true, cancellationToken),
+							setup = this.GetRedirectUrlAsync(req, false, cancellationToken),
+						}).ToList();
+				await Task.WhenAll(requestUrls.Select(r => r.immediate).Concat(requestUrls.Select(r => r.setup)));
 				return new {
 					claimedIdentifier = (string)requests.First().ClaimedIdentifier,
-					requests = requests.Select(req => new {
-						endpoint = req.Provider.Uri.AbsoluteUri,
-						immediate = this.GetRedirectUrl(req, true),
-						setup = this.GetRedirectUrl(req, false),
+					requests = requestUrls.Select(req => new {
+						endpoint = req.endpoint,
+						immediate = req.immediate.Result, // await already took place
+						setup = req.setup.Result, // await already took place
 					}).ToArray()
 				};
 			} else {
@@ -204,7 +221,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <returns>
 		/// A JSON object, not yet serialized to a string.
 		/// </returns>
-		private object AsJsonPreloadedDiscoveryResult(IEnumerable<IAuthenticationRequest> requests) {
+		private async Task<object> AsJsonPreloadedDiscoveryResultAsync(IEnumerable<IAuthenticationRequest> requests, CancellationToken cancellationToken) {
 			Requires.NotNull(requests, "requests");
 
 			// We prepare a JSON object with this interface:
@@ -214,13 +231,18 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			//    string userSuppliedIdentifier;
 			//    jsonResponse discoveryResult; // contains result of call to SerializeDiscoveryAsJson(Identifier)
 			// }
-			var json = (from request in requests
-						group request by request.DiscoveryResult.UserSuppliedIdentifier into requestsByIdentifier
-						select new {
-							userSuppliedIdentifier = (string)requestsByIdentifier.Key,
-							discoveryResult = this.AsJsonDiscoveryResult(requestsByIdentifier),
-						}).ToArray();
-
+			var jsonAsync = (from request in requests
+			                 group request by request.DiscoveryResult.UserSuppliedIdentifier into requestsByIdentifier
+			                 select new {
+			                     userSuppliedIdentifier = (string)requestsByIdentifier.Key,
+			                     discoveryResult = this.AsJsonDiscoveryResultAsync(requestsByIdentifier, cancellationToken),
+			                 }).ToArray();
+			await Task.WhenAll(jsonAsync.Select(j => j.discoveryResult));
+			var json = from j in jsonAsync
+			           select new {
+			               userSuppliedIdentifier = j.userSuppliedIdentifier,
+			               discoveryResult = j.discoveryResult.Result, // await happened previously
+			           };
 			return json;
 		}
 
@@ -232,11 +254,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="immediate"><c>true</c>to create a checkid_immediate request;
 		/// <c>false</c> to create a checkid_setup request.</param>
 		/// <returns>The absolute URL that carries the entire OpenID message.</returns>
-		private Uri GetRedirectUrl(IAuthenticationRequest request, bool immediate) {
+		private async Task<Uri> GetRedirectUrlAsync(IAuthenticationRequest request, bool immediate, CancellationToken cancellationToken) {
 			Requires.NotNull(request, "request");
 
 			request.Mode = immediate ? AuthenticationRequestMode.Immediate : AuthenticationRequestMode.Setup;
-			return request.RedirectingResponse.GetDirectUriRequest(this.Channel);
+			var response = await request.GetRedirectingResponseAsync(cancellationToken);
+			return response.GetDirectUriRequest();
 		}
 	}
 }

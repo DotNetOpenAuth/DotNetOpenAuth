@@ -10,6 +10,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Diagnostics.CodeAnalysis;
 	using System.Globalization;
 	using System.Linq;
+	using System.Threading;
 	using System.Web.UI;
 	using System.Web.UI.HtmlControls;
 	using System.Web.UI.WebControls;
@@ -933,14 +934,14 @@ idselector_input_id = '" + this.ClientID + @"';
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-		private void LoginButton_Click(object sender, EventArgs e) {
+		private async void LoginButton_Click(object sender, EventArgs e) {
 			if (!this.Page.IsValid) {
 				return;
 			}
 
-			IAuthenticationRequest request = this.CreateRequests().FirstOrDefault();
+			IAuthenticationRequest request = (await this.CreateRequestsAsync(CancellationToken.None)).FirstOrDefault();
 			if (request != null) {
-				this.LogOn(request);
+				await this.LogOnAsync(request, CancellationToken.None);
 			} else {
 				if (!string.IsNullOrEmpty(this.FailedMessageText)) {
 					this.errorLabel.Text = string.Format(CultureInfo.CurrentCulture, this.FailedMessageText, OpenIdStrings.OpenIdEndpointNotFound);

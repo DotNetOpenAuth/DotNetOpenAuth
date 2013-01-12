@@ -16,6 +16,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.IdentityModel.Claims;
 	using System.Linq;
 	using System.Text;
+	using System.Threading;
 	using System.Web;
 	using System.Web.UI;
 	using System.Web.UI.HtmlControls;
@@ -317,7 +318,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				this.positiveAssertionField.ClientID);
 			this.Page.ClientScript.RegisterClientScriptBlock(this.GetType(), "Postback", script, true);
 
-			this.PreloadDiscovery(this.Buttons.OfType<SelectorProviderButton>().Select(op => op.OPIdentifier).Where(id => id != null));
+			this.PreloadDiscoveryAsync(
+				this.Buttons.OfType<SelectorProviderButton>().Select(op => op.OPIdentifier).Where(id => id != null),
+				CancellationToken.None).Wait();
 			this.textBox.Visible = this.OpenIdTextBoxVisible;
 		}
 

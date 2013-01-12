@@ -13,7 +13,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Diagnostics.CodeAnalysis;
 	using System.Globalization;
 	using System.Linq;
+	using System.Net.Http;
 	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
 	using System.Web.Script.Serialization;
 	using System.Web.UI;
@@ -169,38 +172,36 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Gets the completed authentication response.
 		/// </summary>
-		public IAuthenticationResponse AuthenticationResponse {
-			get {
-				if (this.authenticationResponse == null) {
-					// We will either validate a new response and return a live AuthenticationResponse
-					// or we will try to deserialize a previous IAuthenticationResponse (snapshot)
-					// from viewstate and return that.
-					IAuthenticationResponse viewstateResponse = this.ViewState[AuthenticationResponseViewStateKey] as IAuthenticationResponse;
-					string viewstateAuthData = this.ViewState[AuthDataViewStateKey] as string;
-					string formAuthData = this.Page.Request.Form[this.OpenIdAuthDataFormKey];
+		public async Task<IAuthenticationResponse> GetAuthenticationResponseAsync(CancellationToken cancellationToken) {
+			if (this.authenticationResponse == null) {
+				// We will either validate a new response and return a live AuthenticationResponse
+				// or we will try to deserialize a previous IAuthenticationResponse (snapshot)
+				// from viewstate and return that.
+				IAuthenticationResponse viewstateResponse = this.ViewState[AuthenticationResponseViewStateKey] as IAuthenticationResponse;
+				string viewstateAuthData = this.ViewState[AuthDataViewStateKey] as string;
+				string formAuthData = this.Page.Request.Form[this.OpenIdAuthDataFormKey];
 
-					// First see if there is fresh auth data to be processed into a response.
-					if (!string.IsNullOrEmpty(formAuthData) && !string.Equals(viewstateAuthData, formAuthData, StringComparison.Ordinal)) {
-						this.ViewState[AuthDataViewStateKey] = formAuthData;
+				// First see if there is fresh auth data to be processed into a response.
+				if (!string.IsNullOrEmpty(formAuthData) && !string.Equals(viewstateAuthData, formAuthData, StringComparison.Ordinal)) {
+					this.ViewState[AuthDataViewStateKey] = formAuthData;
 
-						HttpRequestBase clientResponseInfo = new HttpRequestInfo("GET", new Uri(formAuthData));
-						this.authenticationResponse = this.RelyingParty.GetResponse(clientResponseInfo);
-						Logger.Controls.DebugFormat(
-							"The {0} control checked for an authentication response and found: {1}",
-							this.ID,
-							this.authenticationResponse.Status);
-						this.AuthenticationProcessedAlready = false;
+					HttpRequestBase clientResponseInfo = new HttpRequestInfo("GET", new Uri(formAuthData));
+					this.authenticationResponse = await this.RelyingParty.GetResponseAsync(clientResponseInfo, cancellationToken);
+					Logger.Controls.DebugFormat(
+						"The {0} control checked for an authentication response and found: {1}",
+						this.ID,
+						this.authenticationResponse.Status);
+					this.AuthenticationProcessedAlready = false;
 
-						// Save out the authentication response to viewstate so we can find it on
-						// a subsequent postback.
-						this.ViewState[AuthenticationResponseViewStateKey] = new PositiveAuthenticationResponseSnapshot(this.authenticationResponse);
-					} else {
-						this.authenticationResponse = viewstateResponse;
-					}
+					// Save out the authentication response to viewstate so we can find it on
+					// a subsequent postback.
+					this.ViewState[AuthenticationResponseViewStateKey] = new PositiveAuthenticationResponseSnapshot(this.authenticationResponse);
+				} else {
+					this.authenticationResponse = viewstateResponse;
 				}
-
-				return this.authenticationResponse;
 			}
+
+			return this.authenticationResponse;
 		}
 
 		/// <summary>
@@ -278,7 +279,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Processes a callback event that targets a control.
 		/// </summary>
 		/// <param name="eventArgument">A string that represents an event argument to pass to the event handler.</param>
-		[SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate", Justification = "We want to preserve the signature of the interface.")]
+		[SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate",
+			Justification = "We want to preserve the signature of the interface.")]
 		protected virtual void RaiseCallbackEvent(string eventArgument) {
 			string userSuppliedIdentifier = eventArgument;
 
@@ -288,8 +290,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			this.Identifier = userSuppliedIdentifier;
 
 			var serializer = new JavaScriptSerializer();
-			IEnumerable<IAuthenticationRequest> requests = this.CreateRequests(this.Identifier);
-			this.discoveryResult = serializer.Serialize(this.AjaxRelyingParty.AsJsonDiscoveryResult(requests));
+			this.discoveryResult = Task.Run(async delegate {
+				IEnumerable<IAuthenticationRequest> requests = await this.CreateRequestsAsync(this.Identifier, CancellationToken.None);
+				return serializer.Serialize(await this.AjaxRelyingParty.AsJsonDiscoveryResultAsync(requests, CancellationToken.None));
+			}).GetAwaiter().GetResult();
 		}
 
 		/// <summary>
@@ -306,8 +310,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// user agent for javascript as soon as the page loads.
 		/// </summary>
 		/// <param name="identifier">The identifier.</param>
-		protected void PreloadDiscovery(Identifier identifier) {
-			this.PreloadDiscovery(new[] { identifier });
+		protected Task PreloadDiscoveryAsync(Identifier identifier, CancellationToken cancellationToken) {
+			return this.PreloadDiscoveryAsync(new[] { identifier }, cancellationToken);
 		}
 
 		/// <summary>
@@ -315,9 +319,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// user agent for javascript as soon as the page loads.
 		/// </summary>
 		/// <param name="identifiers">The identifiers to perform discovery on.</param>
-		protected void PreloadDiscovery(IEnumerable<Identifier> identifiers) {
-			string script = this.AjaxRelyingParty.AsAjaxPreloadedDiscoveryResult(
-				identifiers.SelectMany(id => this.CreateRequests(id)));
+		protected async Task PreloadDiscoveryAsync(IEnumerable<Identifier> identifiers, CancellationToken cancellationToken) {
+			var requests = await Task.WhenAll(identifiers.Select(id => this.CreateRequestsAsync(id, cancellationToken)));
+			string script = await this.AjaxRelyingParty.AsAjaxPreloadedDiscoveryResultAsync(requests.SelectMany(r => r), cancellationToken);
 			this.Page.ClientScript.RegisterClientScriptBlock(typeof(OpenIdRelyingPartyAjaxControlBase), this.ClientID, script, true);
 		}
 
@@ -342,12 +346,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			// but our AJAX controls hide an old OpenID message in a postback payload,
 			// so we deserialize it and process it when appropriate.
 			if (this.Page.IsPostBack) {
-				if (this.AuthenticationResponse != null && !this.AuthenticationProcessedAlready) {
+				var response = Task.Run(() => this.GetAuthenticationResponseAsync(CancellationToken.None)).GetAwaiter().GetResult();
+				if (response != null && !this.AuthenticationProcessedAlready) {
 					// Only process messages targeted at this control.
 					// Note that Stateless mode causes no receiver to be indicated.
-					string receiver = this.AuthenticationResponse.GetUntrustedCallbackArgument(ReturnToReceivingControlId);
+					string receiver = response.GetUntrustedCallbackArgument(ReturnToReceivingControlId);
 					if (receiver == null || receiver == this.ClientID) {
-						this.ProcessResponse(this.AuthenticationResponse);
+						this.ProcessResponse(response);
 						this.AuthenticationProcessedAlready = true;
 					}
 				}
@@ -413,16 +418,17 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Notifies the user agent via an AJAX response of a completed authentication attempt.
 		/// </summary>
-		protected override void ScriptClosingPopupOrIFrame() {
+		protected override async Task ScriptClosingPopupOrIFrameAsync(CancellationToken cancellationToken) {
 			Action<AuthenticationStatus> callback = status => {
 				if (status == AuthenticationStatus.Authenticated) {
 					this.OnUnconfirmedPositiveAssertion(); // event handler will fill the clientScriptExtensions collection.
 				}
 			};
 
-			OutgoingWebResponse response = this.RelyingParty.ProcessResponseFromPopup(
-				this.RelyingParty.Channel.GetRequestFromContext(),
-				callback);
+			HttpResponseMessage response = await this.RelyingParty.ProcessResponseFromPopupAsync(
+				new HttpRequestWrapper(this.Context.Request),
+				callback,
+				cancellationToken);
 
 			response.Send();
 		}

@@ -20,6 +20,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Net;
 	using System.Text;
 	using System.Text.RegularExpressions;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
 	using System.Web.Security;
 	using System.Web.UI;
@@ -550,12 +552,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// A sequence of authentication requests, any one of which may be
 		/// used to determine the user's control of the <see cref="IAuthenticationRequest.ClaimedIdentifier"/>.
 		/// </returns>
-		protected internal override IEnumerable<IAuthenticationRequest> CreateRequests(Identifier identifier) {
+		protected internal override async Task<IEnumerable<IAuthenticationRequest>> CreateRequestsAsync(Identifier identifier, CancellationToken cancellationToken) {
 			ErrorUtilities.VerifyArgumentNotNull(identifier, "identifier");
 
 			// We delegate all our logic to another method, since invoking base. methods
 			// within an iterator method results in unverifiable code.
-			return this.CreateRequestsCore(base.CreateRequests(identifier));
+			return this.CreateRequestsCore(await base.CreateRequestsAsync(identifier, cancellationToken));
 		}
 
 		/// <summary>
@@ -696,7 +698,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				Language = this.RequestLanguage,
 				TimeZone = this.RequestTimeZone,
 				PolicyUrl = string.IsNullOrEmpty(this.PolicyUrl) ?
-					null : new Uri(this.RelyingParty.Channel.GetRequestFromContext().GetPublicFacingUrl(), this.Page.ResolveUrl(this.PolicyUrl)),
+					null : new Uri(new HttpRequestWrapper(this.Context.Request).GetPublicFacingUrl(), this.Page.ResolveUrl(this.PolicyUrl)),
 			};
 
 			// Only actually add the extension request if fields are actually being requested.

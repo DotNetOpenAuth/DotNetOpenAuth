@@ -17,6 +17,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Linq;
 	using System.Text;
 	using System.Text.RegularExpressions;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
 	using System.Web.Security;
 	using System.Web.UI;
@@ -363,7 +365,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 				if (Page != null && !DesignMode) {
 					// Validate new value by trying to construct a Realm object based on it.
-					new Realm(OpenIdUtilities.GetResolvedRealm(this.Page, value, this.RelyingParty.Channel.GetRequestFromContext())); // throws an exception on failure.
+					new Realm(OpenIdUtilities.GetResolvedRealm(this.Page, value, new HttpRequestWrapper(this.Context.Request))); // throws an exception on failure.
 				} else {
 					// We can't fully test it, but it should start with either ~/ or a protocol.
 					if (Regex.IsMatch(value, @"^https?://")) {
@@ -395,7 +397,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			set {
 				if (this.Page != null && !this.DesignMode) {
 					// Validate new value by trying to construct a Uri based on it.
-					new Uri(this.RelyingParty.Channel.GetRequestFromContext().GetPublicFacingUrl(), this.Page.ResolveUrl(value)); // throws an exception on failure.
+					new Uri(new HttpRequestWrapper(this.Context.Request).GetPublicFacingUrl(), this.Page.ResolveUrl(value)); // throws an exception on failure.
 				} else {
 					// We can't fully test it, but it should start with either ~/ or a protocol.
 					if (Regex.IsMatch(value, @"^https?://")) {
@@ -510,10 +512,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Immediately redirects to the OpenID Provider to verify the Identifier
 		/// provided in the text box.
 		/// </summary>
-		public void LogOn() {
-			IAuthenticationRequest request = this.CreateRequests().FirstOrDefault();
+		public async Task LogOnAsync(CancellationToken cancellationToken) {
+			IAuthenticationRequest request = (await this.CreateRequestsAsync(cancellationToken)).FirstOrDefault();
 			ErrorUtilities.VerifyProtocol(request != null, OpenIdStrings.OpenIdEndpointNotFound);
-			this.LogOn(request);
+			await this.LogOnAsync(request, cancellationToken);
 		}
 
 		/// <summary>
@@ -521,13 +523,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// provided in the text box.
 		/// </summary>
 		/// <param name="request">The request.</param>
-		public void LogOn(IAuthenticationRequest request) {
+		public async Task LogOnAsync(IAuthenticationRequest request, CancellationToken cancellationToken) {
 			Requires.NotNull(request, "request");
 
 			if (this.IsPopupAppropriate(request)) {
-				this.ScriptPopupWindow(request);
+				await this.ScriptPopupWindowAsync(request, cancellationToken);
 			} else {
-				request.RedirectToProvider();
+				await request.RedirectToProviderAsync(cancellationToken: cancellationToken);
 			}
 		}
 
@@ -561,17 +563,17 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// A sequence of authentication requests, any one of which may be
 		/// used to determine the user's control of the <see cref="IAuthenticationRequest.ClaimedIdentifier"/>.
 		/// </returns>
-		protected internal virtual IEnumerable<IAuthenticationRequest> CreateRequests(Identifier identifier) {
+		protected internal virtual Task<IEnumerable<IAuthenticationRequest>> CreateRequestsAsync(Identifier identifier, CancellationToken cancellationToken) {
 			Requires.NotNull(identifier, "identifier");
 
 			// If this control is actually a member of another OpenID RP control,
 			// delegate creation of requests to the parent control.
 			var parentOwner = this.ParentControls.OfType<OpenIdRelyingPartyControlBase>().FirstOrDefault();
 			if (parentOwner != null) {
-				return parentOwner.CreateRequests(identifier);
+				return parentOwner.CreateRequestsAsync(identifier, cancellationToken);
 			} else {
 				// Delegate to a private method to keep 'yield return' and Code Contract separate.
-				return this.CreateRequestsCore(identifier);
+				return this.CreateRequestsCoreAsync(identifier, cancellationToken);
 			}
 		}
 
@@ -603,9 +605,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// A sequence of authentication requests, any one of which may be
 		/// used to determine the user's control of the <see cref="IAuthenticationRequest.ClaimedIdentifier"/>.
 		/// </returns>
-		protected IEnumerable<IAuthenticationRequest> CreateRequests() {
+		protected Task<IEnumerable<IAuthenticationRequest>> CreateRequestsAsync(CancellationToken cancellationToken) {
 			RequiresEx.ValidState(this.Identifier != null, OpenIdStrings.NoIdentifierSet);
-			return this.CreateRequests(this.Identifier);
+			return this.CreateRequestsAsync(this.Identifier, cancellationToken);
 		}
 
 		/// <summary>
@@ -626,10 +628,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			// Take an unreliable sneek peek to see if we're in a popup and an OpenID
 			// assertion is coming in.  We shouldn't process assertions in a popup window.
-			if (this.Page.Request.QueryString[UIPopupCallbackKey] == "1" && this.Page.Request.QueryString[UIPopupCallbackParentKey] == null) {
+			if (this.Page.Request.QueryString[UIPopupCallbackKey] == "1"
+				&& this.Page.Request.QueryString[UIPopupCallbackParentKey] == null) {
 				// We're in a popup window.  We need to close it and pass the
 				// message back to the parent window for processing.
-				this.ScriptClosingPopupOrIFrame();
+				this.ScriptClosingPopupOrIFrameAsync(CancellationToken.None).Wait();
 				return; // don't do any more processing on it now
 			}
 
@@ -637,9 +640,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			// Note that Stateless mode causes no receiver to be indicated, and
 			// we want to handle that, but only if there isn't a parent control that
 			// will be handling that.
-			string receiver = this.Page.Request.QueryString[ReturnToReceivingControlId] ?? this.Page.Request.Form[ReturnToReceivingControlId];
+			string receiver = this.Page.Request.QueryString[ReturnToReceivingControlId]
+							  ?? this.Page.Request.Form[ReturnToReceivingControlId];
 			if (receiver == this.ClientID || (receiver == null && !this.IsEmbeddedInParentOpenIdControl)) {
-				var response = this.RelyingParty.GetResponse();
+				var response = Task.Run(() => this.RelyingParty.GetResponseAsync(new HttpRequestWrapper(this.Context.Request), CancellationToken.None)).GetAwaiter().GetResult();
 				Logger.Controls.DebugFormat(
 					"The {0} control checked for an authentication response and found: {1}",
 					this.ID,
@@ -651,8 +655,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Notifies the user agent via an AJAX response of a completed authentication attempt.
 		/// </summary>
-		protected virtual void ScriptClosingPopupOrIFrame() {
-			this.RelyingParty.ProcessResponseFromPopup();
+		protected virtual Task ScriptClosingPopupOrIFrameAsync(CancellationToken cancellationToken) {
+			return this.RelyingParty.ProcessResponseFromPopupAsync(cancellationToken);
 		}
 
 		/// <summary>
@@ -792,7 +796,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <returns>The instantiated relying party.</returns>
 		protected OpenIdRelyingParty CreateRelyingParty() {
-			IOpenIdApplicationStore store = this.Stateless ? null : OpenIdElement.Configuration.RelyingParty.ApplicationStore.CreateInstance(OpenIdRelyingParty.HttpApplicationStore);
+			IOpenIdApplicationStore store = this.Stateless ? null : OpenIdElement.Configuration.RelyingParty.ApplicationStore.CreateInstance(OpenIdRelyingParty.GetHttpApplicationStore(new HttpContextWrapper(this.Context)), null);
 			return this.CreateRelyingParty(store);
 		}
 
@@ -849,15 +853,16 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="writer">The HTML writer.</param>
 		/// <param name="request">The outgoing authentication request.</param>
 		/// <param name="windowStatus">The text to try to display in the status bar on mouse hover.</param>
-		protected void RenderOpenIdMessageTransmissionAsAnchorAttributes(HtmlTextWriter writer, IAuthenticationRequest request, string windowStatus) {
+		protected async Task RenderOpenIdMessageTransmissionAsAnchorAttributesAsync(HtmlTextWriter writer, IAuthenticationRequest request, string windowStatus, CancellationToken cancellationToken) {
 			Requires.NotNull(writer, "writer");
 			Requires.NotNull(request, "request");
 
 			// We render a standard HREF attribute for non-javascript browsers.
-			writer.AddAttribute(HtmlTextWriterAttribute.Href, request.RedirectingResponse.GetDirectUriRequest(this.RelyingParty.Channel).AbsoluteUri);
+			var response = await request.GetRedirectingResponseAsync(cancellationToken);
+			writer.AddAttribute(HtmlTextWriterAttribute.Href, response.GetDirectUriRequest().AbsoluteUri);
 
 			// And for the Javascript ones we do the extra work to use form POST where necessary.
-			writer.AddAttribute(HtmlTextWriterAttribute.Onclick, this.CreateGetOrPostAHrefValue(request) + " return false;");
+			writer.AddAttribute(HtmlTextWriterAttribute.Onclick, await this.CreateGetOrPostAHrefValueAsync(request, cancellationToken) + " return false;");
 
 			writer.AddStyleAttribute(HtmlTextWriterStyle.Cursor, "pointer");
 			if (!string.IsNullOrEmpty(windowStatus)) {
@@ -910,16 +915,18 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// A sequence of authentication requests, any one of which may be
 		/// used to determine the user's control of the <see cref="IAuthenticationRequest.ClaimedIdentifier"/>.
 		/// </returns>
-		private IEnumerable<IAuthenticationRequest> CreateRequestsCore(Identifier identifier) {
+		private async Task<IEnumerable<IAuthenticationRequest>> CreateRequestsCoreAsync(Identifier identifier, CancellationToken cancellationToken) {
 			ErrorUtilities.VerifyArgumentNotNull(identifier, "identifier"); // NO CODE CONTRACTS! (yield return used here)
 			IEnumerable<IAuthenticationRequest> requests;
+			var requestContext = new HttpRequestWrapper(this.Context.Request);
+			var results = new List<IAuthenticationRequest>();
 
 			// Approximate the returnTo (either based on the customize property or the page URL)
 			// so we can use it to help with Realm resolution.
 			Uri returnToApproximation;
 			if (this.ReturnToUrl != null) {
 				string returnToResolvedPath = this.ResolveUrl(this.ReturnToUrl);
-				returnToApproximation = new Uri(this.RelyingParty.Channel.GetRequestFromContext().GetPublicFacingUrl(), returnToResolvedPath);
+				returnToApproximation = new Uri(requestContext.GetPublicFacingUrl(), returnToResolvedPath);
 			} else {
 				returnToApproximation = this.Page.Request.Url;
 			}
@@ -927,7 +934,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			// Resolve the trust root, and swap out the scheme and port if necessary to match the
 			// return_to URL, since this match is required by OpenID, and the consumer app
 			// may be using HTTP at some times and HTTPS at others.
-			UriBuilder realm = OpenIdUtilities.GetResolvedRealm(this.Page, this.RealmUrl, this.RelyingParty.Channel.GetRequestFromContext());
+			UriBuilder realm = OpenIdUtilities.GetResolvedRealm(this.Page, this.RealmUrl, requestContext);
 			realm.Scheme = returnToApproximation.Scheme;
 			realm.Port = returnToApproximation.Port;
 
@@ -936,11 +943,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			// might slip through our validator control if it is disabled.
 			Realm typedRealm = new Realm(realm);
 			if (string.IsNullOrEmpty(this.ReturnToUrl)) {
-				requests = this.RelyingParty.CreateRequests(identifier, typedRealm);
+				requests = await this.RelyingParty.CreateRequestsAsync(identifier, typedRealm, requestContext);
 			} else {
 				// Since the user actually gave us a return_to value,
 				// the "approximation" is exactly what we want.
-				requests = this.RelyingParty.CreateRequests(identifier, typedRealm, returnToApproximation);
+				requests = await this.RelyingParty.CreateRequestsAsync(identifier, typedRealm, returnToApproximation, cancellationToken);
 			}
 
 			// Some OPs may be listed multiple times (one with HTTPS and the other with HTTP, for example).
@@ -993,9 +1000,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 					// change its value and have that value saved.
 					req.SetUntrustedCallbackArgument(UsePersistentCookieCallbackKey, this.UsePersistentCookie.ToString());
 
-					yield return req;
+					results.Add(req);
 				}
 			}
+
+			return results;
 		}
 
 		/// <summary>
@@ -1003,10 +1012,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="request">The authentication request to send.</param>
 		/// <returns>The javascript that should execute.</returns>
-		private string CreateGetOrPostAHrefValue(IAuthenticationRequest request) {
+		private async Task<string> CreateGetOrPostAHrefValueAsync(IAuthenticationRequest request, CancellationToken cancellationToken) {
 			Requires.NotNull(request, "request");
 
-			Uri directUri = request.RedirectingResponse.GetDirectUriRequest(this.RelyingParty.Channel);
+			var response = await request.GetRedirectingResponseAsync(cancellationToken);
+			Uri directUri = response.GetDirectUriRequest();
 			return "window.dnoa_internal.GetOrPost(" + MessagingUtilities.GetSafeJavascriptValue(directUri.AbsoluteUri) + ");";
 		}
 
@@ -1014,7 +1024,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Wires the return page to immediately display a popup window with the Provider in it.
 		/// </summary>
 		/// <param name="request">The request.</param>
-		private void ScriptPopupWindow(IAuthenticationRequest request) {
+		private async Task ScriptPopupWindowAsync(IAuthenticationRequest request, CancellationToken cancellationToken) {
 			Requires.NotNull(request, "request");
 			RequiresEx.ValidState(this.RelyingParty != null);
 
@@ -1027,7 +1037,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			startupScript.AppendLine("window.dnoa_internal.popupWindow = function() {");
 			startupScript.AppendFormat(
 				@"\tvar openidPopup = {0}",
-				OpenId.RelyingParty.Extensions.UI.UIUtilities.GetWindowPopupScript(this.RelyingParty, request, "openidPopup"));
+				await OpenId.RelyingParty.Extensions.UI.UIUtilities.GetWindowPopupScriptAsync(this.RelyingParty, request, "openidPopup", cancellationToken));
 			startupScript.AppendLine("};");
 
 			this.Page.ClientScript.RegisterClientScriptBlock(this.GetType(), "loginPopup", startupScript.ToString(), true);

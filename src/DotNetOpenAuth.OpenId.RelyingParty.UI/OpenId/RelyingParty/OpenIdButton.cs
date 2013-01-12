@@ -13,6 +13,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Globalization;
 	using System.Linq;
 	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
+	using System.Web;
 	using System.Web.UI;
 	using DotNetOpenAuth.Messaging;
 
@@ -117,8 +120,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		protected override void RaisePostBackEvent(string eventArgument) {
 			if (!this.PrecreateRequest) {
 				try {
-					IAuthenticationRequest request = this.CreateRequests().First();
-					request.RedirectToProvider();
+					// We have to use Task.Run here to escape our SynchronizationContext
+					Task.Run(
+						async delegate {
+							var requests = await this.CreateRequestsAsync(CancellationToken.None);
+							var request = requests.First();
+							await request.RedirectToProviderAsync(new HttpContextWrapper(this.Context));
+						}).GetAwaiter().GetResult();
 				} catch (InvalidOperationException ex) {
 					throw ErrorUtilities.Wrap(ex, OpenIdStrings.OpenIdEndpointNotFound);
 				}
@@ -148,9 +156,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			} else {
 				string tooltip = this.Text;
 				if (this.PrecreateRequest && !this.DesignMode) {
-					IAuthenticationRequest request = this.CreateRequests().FirstOrDefault();
+					IAuthenticationRequest request = Task.Run(() => this.CreateRequestsAsync(CancellationToken.None)).GetAwaiter().GetResult().FirstOrDefault();
 					if (request != null) {
-						RenderOpenIdMessageTransmissionAsAnchorAttributes(writer, request, tooltip);
+						this.RenderOpenIdMessageTransmissionAsAnchorAttributesAsync(writer, request, tooltip, CancellationToken.None).Wait();
 					} else {
 						tooltip = OpenIdStrings.OpenIdEndpointNotFound;
 					}

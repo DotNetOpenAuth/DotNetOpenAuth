@@ -96,7 +96,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Initializes a new instance of the <see cref="OpenIdRelyingParty"/> class.
 		/// </summary>
 		public OpenIdRelyingParty()
-			: this(OpenIdElement.Configuration.RelyingParty.ApplicationStore.CreateInstance(HttpApplicationStore, null)) {
+			: this(OpenIdElement.Configuration.RelyingParty.ApplicationStore.CreateInstance(GetHttpApplicationStore(), null)) {
 		}
 
 		/// <summary>
@@ -161,24 +161,25 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// HttpApplication state dictionary to store associations and nonces.
 		/// </summary>
 		[EditorBrowsable(EditorBrowsableState.Advanced)]
-		public static IOpenIdApplicationStore HttpApplicationStore {
-			get {
-				HttpContext context = HttpContext.Current;
-				ErrorUtilities.VerifyOperation(context != null, Strings.StoreRequiredWhenNoHttpContextAvailable, typeof(IOpenIdApplicationStore).Name);
-				var store = (IOpenIdApplicationStore)context.Application[ApplicationStoreKey];
-				if (store == null) {
-					context.Application.Lock();
-					try {
-						if ((store = (IOpenIdApplicationStore)context.Application[ApplicationStoreKey]) == null) {
-							context.Application[ApplicationStoreKey] = store = new StandardRelyingPartyApplicationStore();
-						}
-					} finally {
-						context.Application.UnLock();
-					}
-				}
-
-				return store;
+		public static IOpenIdApplicationStore GetHttpApplicationStore(HttpContextBase context = null) {
+			if (context == null) {
+				ErrorUtilities.VerifyOperation(HttpContext.Current != null, Strings.StoreRequiredWhenNoHttpContextAvailable, typeof(IOpenIdApplicationStore).Name);
+				context = new HttpContextWrapper(HttpContext.Current);
 			}
+
+			var store = (IOpenIdApplicationStore)context.Application[ApplicationStoreKey];
+			if (store == null) {
+				context.Application.Lock();
+				try {
+					if ((store = (IOpenIdApplicationStore)context.Application[ApplicationStoreKey]) == null) {
+						context.Application[ApplicationStoreKey] = store = new StandardRelyingPartyApplicationStore();
+					}
+				} finally {
+					context.Application.UnLock();
+				}
+			}
+
+			return store;
 		}
 
 		/// <summary>
@@ -394,10 +395,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </remarks>
 		/// <exception cref="ProtocolException">Thrown if no OpenID endpoint could be found.</exception>
 		/// <exception cref="InvalidOperationException">Thrown if <see cref="HttpContext.Current">HttpContext.Current</see> == <c>null</c>.</exception>
-		public async Task<IAuthenticationRequest> CreateRequestAsync(Identifier userSuppliedIdentifier) {
+		public async Task<IAuthenticationRequest> CreateRequestAsync(Identifier userSuppliedIdentifier, HttpRequestBase requestContext = null) {
 			Requires.NotNull(userSuppliedIdentifier, "userSuppliedIdentifier");
 			try {
-				return (await this.CreateRequestsAsync(userSuppliedIdentifier)).First();
+				return (await this.CreateRequestsAsync(userSuppliedIdentifier, requestContext)).First();
 			} catch (InvalidOperationException ex) {
 				throw ErrorUtilities.Wrap(ex, OpenIdStrings.OpenIdEndpointNotFound);
 			}
@@ -464,30 +465,33 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <para>Requires an <see cref="HttpContext.Current">HttpContext.Current</see> context.</para>
 		/// </remarks>
 		/// <exception cref="InvalidOperationException">Thrown if <see cref="HttpContext.Current">HttpContext.Current</see> == <c>null</c>.</exception>
-		public async Task<IEnumerable<IAuthenticationRequest>> CreateRequestsAsync(Identifier userSuppliedIdentifier, Realm realm) {
-			RequiresEx.ValidState(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
+		public async Task<IEnumerable<IAuthenticationRequest>> CreateRequestsAsync(Identifier userSuppliedIdentifier, Realm realm, HttpRequestBase requestContext = null, CancellationToken cancellationToken = default(CancellationToken)) {
+			RequiresEx.ValidState(requestContext != null || (HttpContext.Current != null && HttpContext.Current.Request != null), MessagingStrings.HttpContextRequired);
 			Requires.NotNull(userSuppliedIdentifier, "userSuppliedIdentifier");
 			Requires.NotNull(realm, "realm");
+
+			requestContext = requestContext ?? this.channel.GetRequestFromContext();
 
 			// This next code contract is a BAD idea, because it causes each authentication request to be generated
 			// at least an extra time.
 			////
 			// Build the return_to URL
-			UriBuilder returnTo = new UriBuilder(this.Channel.GetRequestFromContext().GetPublicFacingUrl());
+			UriBuilder returnTo = new UriBuilder(requestContext.GetPublicFacingUrl());
 
 			// Trim off any parameters with an "openid." prefix, and a few known others
 			// to avoid carrying state from a prior login attempt.
 			returnTo.Query = string.Empty;
-			NameValueCollection queryParams = this.Channel.GetRequestFromContext().GetQueryStringBeforeRewriting();
+			NameValueCollection queryParams = requestContext.GetQueryStringBeforeRewriting();
 			var returnToParams = new Dictionary<string, string>(queryParams.Count);
 			foreach (string key in queryParams) {
 				if (!IsOpenIdSupportingParameter(key) && key != null) {
 					returnToParams.Add(key, queryParams[key]);
 				}
 			}
+
 			returnTo.AppendQueryArgs(returnToParams);
 
-			return await this.CreateRequestsAsync(userSuppliedIdentifier, realm, returnTo.Uri);
+			return await this.CreateRequestsAsync(userSuppliedIdentifier, realm, returnTo.Uri, cancellationToken);
 		}
 
 		/// <summary>
@@ -510,11 +514,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <para>Requires an <see cref="HttpContext.Current">HttpContext.Current</see> context.</para>
 		/// </remarks>
 		/// <exception cref="InvalidOperationException">Thrown if <see cref="HttpContext.Current">HttpContext.Current</see> == <c>null</c>.</exception>
-		public async Task<IEnumerable<IAuthenticationRequest>> CreateRequestsAsync(Identifier userSuppliedIdentifier) {
+		public async Task<IEnumerable<IAuthenticationRequest>> CreateRequestsAsync(Identifier userSuppliedIdentifier, HttpRequestBase requestContext = null, CancellationToken cancellationToken = default(CancellationToken)) {
 			Requires.NotNull(userSuppliedIdentifier, "userSuppliedIdentifier");
-			RequiresEx.ValidState(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
 
-			return await this.CreateRequestsAsync(userSuppliedIdentifier, Realm.AutoDetect);
+			return await this.CreateRequestsAsync(userSuppliedIdentifier, Realm.AutoDetect, requestContext, cancellationToken);
 		}
 
 		/// <summary>
