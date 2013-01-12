@@ -80,7 +80,7 @@ namespace DotNetOpenAuth.OpenId.Provider.Behaviors {
 		/// should not change the properties on the instance of <see cref="ProviderSecuritySettings"/>
 		/// itself as that instance may be shared across many requests.
 		/// </remarks>
-		bool IProviderBehavior.OnIncomingRequest(IRequest request) {
+		Task<bool> IProviderBehavior.OnIncomingRequestAsync(IRequest request, CancellationToken cancellationToken) {
 			var hostProcessedRequest = request as IHostProcessedRequest;
 			if (hostProcessedRequest != null) {
 				// Only apply our special policies if the RP requested it.
@@ -93,12 +93,12 @@ namespace DotNetOpenAuth.OpenId.Provider.Behaviors {
 
 						// Apply GSA-specific security to this individual request.
 						request.SecuritySettings.RequireSsl = !DisableSslRequirement;
-						return true;
+						return Task.FromResult(true);
 					}
 				}
 			}
 
-			return false;
+			return Task.FromResult(false);
 		}
 
 		/// <summary>

@@ -63,8 +63,8 @@ namespace DotNetOpenAuth.OpenId.Provider.Behaviors {
 		/// should not change the properties on the instance of <see cref="ProviderSecuritySettings"/>
 		/// itself as that instance may be shared across many requests.
 		/// </remarks>
-		bool IProviderBehavior.OnIncomingRequest(IRequest request) {
-			return false;
+		Task<bool> IProviderBehavior.OnIncomingRequestAsync(IRequest request, CancellationToken cancellationToken) {
+			return Task.FromResult(false);
 		}
 
 		/// <summary>

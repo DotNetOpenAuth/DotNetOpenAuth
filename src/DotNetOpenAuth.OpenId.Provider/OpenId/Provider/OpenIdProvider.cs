@@ -275,7 +275,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 
 				if (result != null) {
 					foreach (var behavior in this.Behaviors) {
-						if (behavior.OnIncomingRequest(result)) {
+						if (await behavior.OnIncomingRequestAsync(result, cancellationToken)) {
 							// This behavior matched this request.
 							break;
 						}

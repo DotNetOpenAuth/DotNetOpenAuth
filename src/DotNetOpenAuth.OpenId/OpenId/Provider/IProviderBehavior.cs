@@ -39,7 +39,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// should not change the properties on the instance of <see cref="ProviderSecuritySettings"/>
 		/// itself as that instance may be shared across many requests.
 		/// </remarks>
-		bool OnIncomingRequest(IRequest request);
+		Task<bool> OnIncomingRequestAsync(IRequest request, CancellationToken cancellationToken);
 
 		/// <summary>
 		/// Called when the Provider is preparing to send a response to an authentication request.

@@ -62,13 +62,13 @@ namespace DotNetOpenAuth.OpenId.Provider.Behaviors {
 		/// should not change the properties on the instance of <see cref="ProviderSecuritySettings"/>
 		/// itself as that instance may be shared across many requests.
 		/// </remarks>
-		bool IProviderBehavior.OnIncomingRequest(IRequest request) {
+		Task<bool> IProviderBehavior.OnIncomingRequestAsync(IRequest request, CancellationToken cancellationToken) {
 			var extensionRequest = request as Provider.HostProcessedRequest;
 			if (extensionRequest != null) {
 				extensionRequest.UnifyExtensionsAsSreg();
 			}
 
-			return false;
+			return Task.FromResult(false);
 		}
 
 		/// <summary>
