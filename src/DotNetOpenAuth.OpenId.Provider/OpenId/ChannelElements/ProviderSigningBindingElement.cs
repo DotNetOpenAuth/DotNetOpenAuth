@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
+	using System.Threading;
 	using System.Threading.Tasks;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
@@ -61,8 +62,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// The protections (if any) that this binding element applied to the message.
 		/// Null if this binding element did not even apply to this binding element.
 		/// </returns>
-		public override MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
-			var result = base.ProcessOutgoingMessage(message);
+		public override async Task<MessageProtections?> ProcessOutgoingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
+			var result = await base.ProcessOutgoingMessageAsync(message, cancellationToken);
 			if (result != null) {
 				return result;
 			}
@@ -162,7 +163,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <returns>
 		/// The applied protections.
 		/// </returns>
-		protected override Task<MessageProtections> VerifySignatureByUnrecognizedHandleAsync(IProtocolMessage message, ITamperResistantOpenIdMessage signedMessage, MessageProtections protectionsApplied) {
+		protected override Task<MessageProtections> VerifySignatureByUnrecognizedHandleAsync(IProtocolMessage message, ITamperResistantOpenIdMessage signedMessage, MessageProtections protectionsApplied, CancellationToken cancellationToken) {
 			// If we're on the Provider, then the RP sent us a check_auth with a signature
 			// we don't have an association for.  (It may have expired, or it may be a faulty RP).
 			var tcs = new TaskCompletionSource<MessageProtections>();

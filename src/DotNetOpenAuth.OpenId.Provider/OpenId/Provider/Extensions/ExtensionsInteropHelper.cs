@@ -9,6 +9,8 @@ namespace DotNetOpenAuth.OpenId.Provider.Extensions {
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Linq;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Extensions;
 	using DotNetOpenAuth.OpenId.Extensions.AttributeExchange;
@@ -78,9 +80,9 @@ namespace DotNetOpenAuth.OpenId.Provider.Extensions {
 		/// If the original attribute request came in as AX, the Simple Registration extension is converted
 		/// to an AX response and then the Simple Registration extension is removed from the response.
 		/// </remarks>
-		internal static void ConvertSregToMatchRequest(this Provider.IHostProcessedRequest request) {
+		internal static async Task ConvertSregToMatchRequestAsync(this Provider.IHostProcessedRequest request, CancellationToken cancellationToken) {
 			var req = (Provider.HostProcessedRequest)request;
-			var response = req.Response as IProtocolMessageWithExtensions; // negative responses don't support extensions.
+			var response = (await req.GetResponseAsync(cancellationToken)) as IProtocolMessageWithExtensions; // negative responses don't support extensions.
 			var sregRequest = request.GetExtension<ClaimsRequest>();
 			if (sregRequest != null && response != null) {
 				if (sregRequest.Synthesized) {

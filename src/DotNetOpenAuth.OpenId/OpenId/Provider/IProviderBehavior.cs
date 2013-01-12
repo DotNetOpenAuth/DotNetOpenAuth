@@ -6,6 +6,8 @@
 
 namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using DotNetOpenAuth.OpenId.ChannelElements;
 	using Validation;
 
@@ -47,6 +49,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <c>true</c> if this behavior owns this request and wants to stop other behaviors
 		/// from handling it; <c>false</c> to allow other behaviors to process this request.
 		/// </returns>
-		bool OnOutgoingResponse(IAuthenticationRequest request);
+		Task<bool> OnOutgoingResponseAsync(IAuthenticationRequest request, CancellationToken cancellationToken);
 	}
 }

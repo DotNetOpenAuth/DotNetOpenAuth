@@ -160,7 +160,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Gets the standard state storage mechanism that uses ASP.NET's
 		/// HttpApplication state dictionary to store associations and nonces.
 		/// </summary>
-		[EditorBrowsable(EditorBrowsableState.Advanced)]
 		public static IOpenIdApplicationStore GetHttpApplicationStore(HttpContextBase context = null) {
 			if (context == null) {
 				ErrorUtilities.VerifyOperation(HttpContext.Current != null, Strings.StoreRequiredWhenNoHttpContextAvailable, typeof(IOpenIdApplicationStore).Name);

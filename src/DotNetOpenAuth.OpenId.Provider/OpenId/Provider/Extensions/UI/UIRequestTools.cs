@@ -10,6 +10,8 @@ namespace DotNetOpenAuth.OpenId.Provider.Extensions.UI {
 	using System.Diagnostics.CodeAnalysis;
 	using System.Globalization;
 	using System.Linq;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Extensions.UI;
 	using DotNetOpenAuth.OpenId.Messages;
@@ -51,13 +53,11 @@ namespace DotNetOpenAuth.OpenId.Provider.Extensions.UI {
 		/// &lt;/Service&gt;
 		/// </example>
 		/// </remarks>
-		public static IEnumerable<Uri> GetRelyingPartyIconUrls(Realm realm, IDirectWebRequestHandler webRequestHandler) {
+		public static async Task<IEnumerable<Uri>> GetRelyingPartyIconUrlsAsync(Realm realm, IHostFactories hostFactories, CancellationToken cancellationToken) {
 			Requires.NotNull(realm, "realm");
-			Requires.NotNull(webRequestHandler, "webRequestHandler");
-			ErrorUtilities.VerifyArgumentNotNull(realm, "realm");
-			ErrorUtilities.VerifyArgumentNotNull(webRequestHandler, "webRequestHandler");
+			Requires.NotNull(hostFactories, "hostFactories");
 
-			XrdsDocument xrds = realm.Discover(webRequestHandler, false);
+			XrdsDocument xrds = await realm.DiscoverAsync(hostFactories, false, cancellationToken);
 			if (xrds == null) {
 				return Enumerable.Empty<Uri>();
 			} else {

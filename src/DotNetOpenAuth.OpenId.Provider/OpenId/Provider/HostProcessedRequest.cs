@@ -10,6 +10,8 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	using System.Linq;
 	using System.Net;
 	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
 	using Validation;
@@ -22,7 +24,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <summary>
 		/// The negative assertion to send, if the host site chooses to send it.
 		/// </summary>
-		private readonly NegativeAssertionResponse negativeResponse;
+		private readonly Lazy<Task<NegativeAssertionResponse>> negativeResponse;
 
 		/// <summary>
 		/// A cache of the result from discovery of the Realm URL.
@@ -38,7 +40,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			: base(request, provider.SecuritySettings) {
 			Requires.NotNull(provider, "provider");
 
-			this.negativeResponse = new NegativeAssertionResponse(request, provider.Channel);
+			this.negativeResponse = new Lazy<Task<NegativeAssertionResponse>>(() => NegativeAssertionResponse.CreateAsync(request, CancellationToken.None, provider.Channel));
 			Reporting.RecordEventOccurrence(this, request.Realm);
 		}
 
@@ -85,13 +87,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		}
 
 		/// <summary>
-		/// Gets the negative response.
-		/// </summary>
-		protected NegativeAssertionResponse NegativeResponse {
-			get { return this.negativeResponse; }
-		}
-
-		/// <summary>
 		/// Gets the original request message.
 		/// </summary>
 		/// <value>This may be null in the case of an unrecognizable message.</value>
@@ -105,7 +100,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// Gets a value indicating whether verification of the return URL claimed by the Relying Party
 		/// succeeded.
 		/// </summary>
-		/// <param name="requestHandler">The request handler.</param>
+		/// <param name="hostFactories">The host factories.</param>
 		/// <returns>
 		/// Result of realm discovery.
 		/// </returns>
@@ -115,9 +110,9 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// property getter multiple times in one request is not a performance hit.
 		/// See OpenID Authentication 2.0 spec section 9.2.1.
 		/// </remarks>
-		public RelyingPartyDiscoveryResult IsReturnUrlDiscoverable(IDirectWebRequestHandler requestHandler) {
+		public async Task<RelyingPartyDiscoveryResult> IsReturnUrlDiscoverableAsync(IHostFactories hostFactories, CancellationToken cancellationToken) {
 			if (!this.realmDiscoveryResult.HasValue) {
-				this.realmDiscoveryResult = this.IsReturnUrlDiscoverableCore(requestHandler);
+				this.realmDiscoveryResult = await this.IsReturnUrlDiscoverableCoreAsync(hostFactories, cancellationToken);
 			}
 
 			return this.realmDiscoveryResult.Value;
@@ -127,13 +122,12 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// Gets a value indicating whether verification of the return URL claimed by the Relying Party
 		/// succeeded.
 		/// </summary>
-		/// <param name="requestHandler">The request handler.</param>
+		/// <param name="hostFactories">The host factories.</param>
 		/// <returns>
 		/// Result of realm discovery.
 		/// </returns>
-		private RelyingPartyDiscoveryResult IsReturnUrlDiscoverableCore(IDirectWebRequestHandler requestHandler) {
-			Requires.NotNull(requestHandler, "requestHandler");
-
+		private async Task<RelyingPartyDiscoveryResult> IsReturnUrlDiscoverableCoreAsync(IHostFactories hostFactories, CancellationToken cancellationToken) {
+			Requires.NotNull(hostFactories, "hostFactories");
 			ErrorUtilities.VerifyInternal(this.Realm != null, "Realm should have been read or derived by now.");
 
 			try {
@@ -142,7 +136,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 					return RelyingPartyDiscoveryResult.NoServiceDocument;
 				}
 
-				var returnToEndpoints = this.Realm.DiscoverReturnToEndpoints(requestHandler, false);
+				var returnToEndpoints = await this.Realm.DiscoverReturnToEndpointsAsync(hostFactories, false, cancellationToken);
 				if (returnToEndpoints == null) {
 					return RelyingPartyDiscoveryResult.NoServiceDocument;
 				}
@@ -178,5 +172,12 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Gets the negative response.
+		/// </summary>
+		protected Task<NegativeAssertionResponse> GetNegativeResponseAsync() {
+			return this.negativeResponse.Value;
+		}
 	}
 }

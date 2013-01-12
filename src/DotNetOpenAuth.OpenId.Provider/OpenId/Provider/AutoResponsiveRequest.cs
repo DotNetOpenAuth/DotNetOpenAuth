@@ -9,6 +9,8 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
 	using Validation;
@@ -64,15 +66,15 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <summary>
 		/// Gets the response message, once <see cref="IsResponseReady"/> is <c>true</c>.
 		/// </summary>
-		internal IProtocolMessage ResponseMessageTestHook {
-			get { return this.ResponseMessage; }
+		internal Task<IProtocolMessage> GetResponseMessageAsyncTestHook() {
+			return this.GetResponseMessageAsync(CancellationToken.None);
 		}
 
 		/// <summary>
 		/// Gets the response message, once <see cref="IsResponseReady"/> is <c>true</c>.
 		/// </summary>
-		protected override IProtocolMessage ResponseMessage {
-			get { return this.response; }
+		protected override Task<IProtocolMessage> GetResponseMessageAsync(CancellationToken cancellationToken) {
+			return Task.FromResult(this.response);
 		}
 	}
 }

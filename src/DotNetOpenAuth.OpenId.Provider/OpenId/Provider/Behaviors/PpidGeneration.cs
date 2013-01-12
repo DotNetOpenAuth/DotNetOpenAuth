@@ -8,6 +8,8 @@ namespace DotNetOpenAuth.OpenId.Provider.Behaviors {
 	using System;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Linq;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Behaviors;
 	using DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy;
@@ -73,14 +75,14 @@ namespace DotNetOpenAuth.OpenId.Provider.Behaviors {
 		/// 	<c>true</c> if this behavior owns this request and wants to stop other behaviors
 		/// from handling it; <c>false</c> to allow other behaviors to process this request.
 		/// </returns>
-		bool IProviderBehavior.OnOutgoingResponse(IAuthenticationRequest request) {
+		async Task<bool> IProviderBehavior.OnOutgoingResponseAsync(IAuthenticationRequest request, CancellationToken cancellationToken) {
 			// Nothing to do for negative assertions.
 			if (!request.IsAuthenticated.Value) {
 				return false;
 			}
 
 			var requestInternal = (Provider.AuthenticationRequest)request;
-			var responseMessage = (IProtocolMessageWithExtensions)requestInternal.Response;
+			var responseMessage = (IProtocolMessageWithExtensions)await requestInternal.GetResponseAsync(cancellationToken);
 
 			// Only apply our special policies if the RP requested it.
 			var papeRequest = request.GetExtension<PolicyRequest>();
