@@ -7,7 +7,12 @@
 namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	using System;
 	using System.Collections.Generic;
+	using System.Net.Http;
+	using System.Net.Http.Headers;
 	using System.Net.Mime;
+	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2.AuthServer.Messages;
@@ -61,7 +66,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// The deserialized message parts, if found.  Null otherwise.
 		/// </returns>
 		/// <exception cref="ProtocolException">Thrown when the response is not valid.</exception>
-		protected override IDictionary<string, string> ReadFromResponseCore(IncomingWebResponse response) {
+		protected override Task<IDictionary<string, string>> ReadFromResponseCoreAsync(HttpResponseMessage response) {
 			throw new NotImplementedException();
 		}
 
@@ -75,11 +80,11 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <remarks>
 		/// This method implements spec OAuth V1.0 section 5.3.
 		/// </remarks>
-		protected override OutgoingWebResponse PrepareDirectResponse(IProtocolMessage response) {
-			var webResponse = new OutgoingWebResponse();
+		protected override HttpResponseMessage PrepareDirectResponse(IProtocolMessage response) {
+			var webResponse = new HttpResponseMessage();
 			ApplyMessageTemplate(response, webResponse);
 			string json = this.SerializeAsJson(response);
-			webResponse.SetResponse(json, new ContentType(JsonEncoded));
+			webResponse.Content = new StringContent(json, Encoding.UTF8, JsonEncoded);
 			return webResponse;
 		}
 
@@ -90,7 +95,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <returns>
 		/// The deserialized message, if one is found.  Null otherwise.
 		/// </returns>
-		protected override IDirectedProtocolMessage ReadFromRequestCore(HttpRequestBase request) {
+		protected override IDirectedProtocolMessage ReadFromRequestCore(HttpRequestBase request, CancellationToken cancellationToken) {
 			if (!string.IsNullOrEmpty(request.Url.Fragment)) {
 				var fields = HttpUtility.ParseQueryString(request.Url.Fragment.Substring(1)).ToDictionary();
 
@@ -105,7 +110,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 				return (IDirectedProtocolMessage)this.Receive(fields, recipient);
 			}
 
-			return base.ReadFromRequestCore(request);
+			return base.ReadFromRequestCore(request, cancellationToken);
 		}
 
 		/// <summary>

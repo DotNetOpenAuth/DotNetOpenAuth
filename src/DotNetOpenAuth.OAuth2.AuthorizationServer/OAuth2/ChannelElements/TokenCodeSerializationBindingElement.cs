@@ -12,6 +12,8 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	using System.Linq;
 	using System.Security.Cryptography;
 	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OAuth2.AuthServer.ChannelElements;
@@ -45,7 +47,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// Implementations that provide message protection must honor the
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
-		public override MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
+		public override async Task<MessageProtections?> ProcessOutgoingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
 			var directResponse = message as IDirectResponseProtocolMessage;
 			var request = directResponse != null ? directResponse.OriginatingRequest as IAccessTokenRequestInternal : null;
 
@@ -98,7 +100,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		[SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "incorrectclientcredentials", Justification = "Protocol requirement")]
 		[SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "authorizationexpired", Justification = "Protocol requirement")]
 		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "DotNetOpenAuth.Messaging.ErrorUtilities.VerifyProtocol(System.Boolean,System.String,System.Object[])", Justification = "Protocol requirement")]
-		public override MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
+		public override async Task<MessageProtections?> ProcessIncomingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
 			var authCodeCarrier = message as IAuthorizationCodeCarryingRequest;
 			if (authCodeCarrier != null) {
 				var authorizationCodeFormatter = AuthorizationCode.CreateFormatter(this.AuthorizationServer);

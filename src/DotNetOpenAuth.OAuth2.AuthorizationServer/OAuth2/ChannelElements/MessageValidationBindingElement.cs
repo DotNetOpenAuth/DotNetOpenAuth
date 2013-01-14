@@ -10,6 +10,8 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	using System.Globalization;
 	using System.Linq;
 	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using DotNetOpenAuth.OAuth2.Messages;
 	using Messaging;
 	using Validation;
@@ -60,7 +62,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// Implementations that provide message protection must honor the
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
-		public override MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
+		public override Task<MessageProtections?> ProcessOutgoingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
 			var accessTokenResponse = message as AccessTokenSuccessResponse;
 			if (accessTokenResponse != null) {
 				var directResponseMessage = (IDirectResponseProtocolMessage)accessTokenResponse;
@@ -88,7 +90,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// Implementations that provide message protection must honor the
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
-		public override MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
+		public override async Task<MessageProtections?> ProcessIncomingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
 			bool applied = false;
 
 			// Check that the client secret is correct for client authenticated messages.
