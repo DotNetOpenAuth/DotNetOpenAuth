@@ -15,6 +15,8 @@ namespace DotNetOpenAuth.OAuth2 {
 	using System.ServiceModel.Channels;
 	using System.Text;
 	using System.Text.RegularExpressions;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
 	using ChannelElements;
 	using DotNetOpenAuth.OAuth.ChannelElements;
@@ -86,7 +88,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// Thrown when the client is not authorized.  This exception should be caught and the
 		/// <see cref="ProtocolFaultResponseException.ErrorResponseMessage"/> message should be returned to the client.
 		/// </exception>
-		public virtual AccessToken GetAccessToken(HttpRequestBase httpRequestInfo = null, params string[] requiredScopes) {
+		public virtual async Task<AccessToken> GetAccessTokenAsync(HttpRequestBase httpRequestInfo = null, CancellationToken cancellationToken = default(CancellationToken), params string[] requiredScopes) {
 			Requires.NotNull(requiredScopes, "requiredScopes");
 			RequiresEx.ValidState(this.ScopeSatisfiedCheck != null, Strings.RequiredPropertyNotYetPreset);
 			if (httpRequestInfo == null) {
@@ -96,7 +98,8 @@ namespace DotNetOpenAuth.OAuth2 {
 			AccessToken accessToken;
 			AccessProtectedResourceRequest request = null;
 			try {
-				if (this.Channel.TryReadFromRequest<AccessProtectedResourceRequest>(httpRequestInfo, out request)) {
+				request = await this.Channel.TryReadFromRequestAsync<AccessProtectedResourceRequest>(cancellationToken, httpRequestInfo);
+				if (request != null) {
 					accessToken = this.AccessTokenAnalyzer.DeserializeAccessToken(request, request.AccessToken);
 					ErrorUtilities.VerifyHost(accessToken != null, "IAccessTokenAnalyzer.DeserializeAccessToken returned a null reslut.");
 					if (string.IsNullOrEmpty(accessToken.User) && string.IsNullOrEmpty(accessToken.ClientIdentifier)) {
@@ -139,9 +142,9 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// Thrown when the client is not authorized.  This exception should be caught and the
 		/// <see cref="ProtocolFaultResponseException.ErrorResponseMessage"/> message should be returned to the client.
 		/// </exception>
-		public virtual AccessToken GetAccessToken(HttpRequestMessage request, params string[] requiredScopes) {
+		public virtual Task<AccessToken> GetAccessTokenAsync(HttpRequestMessage request, CancellationToken cancellationToken = default(CancellationToken), params string[] requiredScopes) {
 			Requires.NotNull(request, "request");
-			return this.GetAccessToken(new HttpRequestInfo(request), requiredScopes);
+			return this.GetAccessTokenAsync(new HttpRequestInfo(request), cancellationToken, requiredScopes);
 		}
 
 		/// <summary>
@@ -156,8 +159,8 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// Thrown when the client is not authorized.  This exception should be caught and the
 		/// <see cref="ProtocolFaultResponseException.ErrorResponseMessage"/> message should be returned to the client.
 		/// </exception>
-		public virtual IPrincipal GetPrincipal(HttpRequestBase httpRequestInfo = null, params string[] requiredScopes) {
-			AccessToken accessToken = this.GetAccessToken(httpRequestInfo, requiredScopes);
+		public virtual async Task<IPrincipal> GetPrincipalAsync(HttpRequestBase httpRequestInfo = null, CancellationToken cancellationToken = default(CancellationToken), params string[] requiredScopes) {
+			AccessToken accessToken = await this.GetAccessTokenAsync(httpRequestInfo, cancellationToken, requiredScopes);
 
 			// Mitigates attacks on this approach of differentiating clients from resource owners
 			// by checking that a username doesn't look suspiciously engineered to appear like the other type.
@@ -186,11 +189,11 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// Thrown when the client is not authorized.  This exception should be caught and the
 		/// <see cref="ProtocolFaultResponseException.ErrorResponseMessage"/> message should be returned to the client.
 		/// </exception>
-		public virtual IPrincipal GetPrincipal(HttpRequestMessageProperty request, Uri requestUri, params string[] requiredScopes) {
+		public virtual Task<IPrincipal> GetPrincipalAsync(HttpRequestMessageProperty request, Uri requestUri, CancellationToken cancellationToken = default(CancellationToken), params string[] requiredScopes) {
 			Requires.NotNull(request, "request");
 			Requires.NotNull(requestUri, "requestUri");
 
-			return this.GetPrincipal(new HttpRequestInfo(request, requestUri), requiredScopes);
+			return this.GetPrincipalAsync(new HttpRequestInfo(request, requestUri), cancellationToken, requiredScopes);
 		}
 
 		/// <summary>
@@ -205,9 +208,9 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// Thrown when the client is not authorized.  This exception should be caught and the
 		/// <see cref="ProtocolFaultResponseException.ErrorResponseMessage"/> message should be returned to the client.
 		/// </exception>
-		public IPrincipal GetPrincipal(HttpRequestMessage request, params string[] requiredScopes) {
+		public Task<IPrincipal> GetPrincipalAsync(HttpRequestMessage request, CancellationToken cancellationToken = default(CancellationToken), params string[] requiredScopes) {
 			Requires.NotNull(request, "request");
-			return this.GetPrincipal(new HttpRequestInfo(request), requiredScopes);
+			return this.GetPrincipalAsync(new HttpRequestInfo(request), cancellationToken, requiredScopes);
 		}
 	}
 }

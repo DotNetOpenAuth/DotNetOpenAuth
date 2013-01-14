@@ -9,13 +9,18 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Net;
+	using System.Net.Http;
+	using System.Net.Http.Headers;
 	using System.Net.Mime;
 	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.OAuth2.Messages;
 	using Validation;
+	using HttpRequestHeaders = DotNetOpenAuth.Messaging.HttpRequestHeaders;
 
 	/// <summary>
 	/// The channel for the OAuth protocol.
@@ -36,8 +41,8 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OAuth2ResourceServerChannel"/> class.
 		/// </summary>
-		protected internal OAuth2ResourceServerChannel()
-			: base(MessageTypes, Versions) {
+		protected internal OAuth2ResourceServerChannel(IHostFactories hostFactories = null)
+			: base(MessageTypes, Versions, hostFactories ?? new DefaultOAuth2HostFactories()) {
 			// TODO: add signing (authenticated request) binding element.
 		}
 
@@ -48,7 +53,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <returns>
 		/// The deserialized message, if one is found.  Null otherwise.
 		/// </returns>
-		protected override IDirectedProtocolMessage ReadFromRequestCore(HttpRequestBase request) {
+		protected override IDirectedProtocolMessage ReadFromRequestCore(HttpRequestBase request, CancellationToken cancellationToken) {
 			var fields = new Dictionary<string, string>();
 			string accessToken;
 			if ((accessToken = SearchForBearerAccessTokenInRequest(request)) != null) {
@@ -81,7 +86,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// The deserialized message parts, if found.  Null otherwise.
 		/// </returns>
 		/// <exception cref="ProtocolException">Thrown when the response is not valid.</exception>
-		protected override IDictionary<string, string> ReadFromResponseCore(IncomingWebResponse response) {
+		protected override Task<IDictionary<string, string>> ReadFromResponseCoreAsync(HttpResponseMessage response) {
 			// We never expect resource servers to send out direct requests,
 			// and therefore won't have direct responses.
 			throw new NotImplementedException();
@@ -98,8 +103,8 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <remarks>
 		/// This method implements spec OAuth V1.0 section 5.3.
 		/// </remarks>
-		protected override OutgoingWebResponse PrepareDirectResponse(IProtocolMessage response) {
-			var webResponse = new OutgoingWebResponse();
+		protected override HttpResponseMessage PrepareDirectResponse(IProtocolMessage response) {
+			var webResponse = new HttpResponseMessage();
 
 			// The only direct response from a resource server is some authorization error (400, 401, 403).
 			var unauthorizedResponse = response as UnauthorizedResponse;
@@ -108,12 +113,12 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			// First initialize based on the specifics within the message.
 			ApplyMessageTemplate(response, webResponse);
 			if (!(response is IHttpDirectResponse)) {
-				webResponse.Status = HttpStatusCode.Unauthorized;
+				webResponse.StatusCode = HttpStatusCode.Unauthorized;
 			}
 
 			// Now serialize all the message parts into the WWW-Authenticate header.
 			var fields = this.MessageDescriptions.GetAccessor(response);
-			webResponse.Headers[HttpResponseHeader.WwwAuthenticate] = MessagingUtilities.AssembleAuthorizationHeader(unauthorizedResponse.Scheme, fields);
+			webResponse.Headers.WwwAuthenticate.Add(new AuthenticationHeaderValue(unauthorizedResponse.Scheme, MessagingUtilities.AssembleAuthorizationHeader(fields)));
 			return webResponse;
 		}
 

@@ -501,13 +501,10 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="scheme">The scheme.</param>
 		/// <param name="fields">The fields to include.</param>
 		/// <returns>A value prepared for an HTTP header.</returns>
-		internal static string AssembleAuthorizationHeader(string scheme, IEnumerable<KeyValuePair<string, string>> fields) {
-			Requires.NotNullOrEmpty(scheme, "scheme");
+		internal static string AssembleAuthorizationHeader(IEnumerable<KeyValuePair<string, string>> fields) {
 			Requires.NotNull(fields, "fields");
 
 			var authorization = new StringBuilder();
-			authorization.Append(scheme);
-			authorization.Append(" ");
 			foreach (var pair in fields) {
 				string key = MessagingUtilities.EscapeUriDataStringRfc3986(pair.Key);
 				string value = MessagingUtilities.EscapeUriDataStringRfc3986(pair.Value);
