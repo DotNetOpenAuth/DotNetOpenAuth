@@ -10,6 +10,8 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using System.Diagnostics.CodeAnalysis;
 	using System.Linq;
 	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth.Messages;
@@ -76,7 +78,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// Implementations that provide message protection must honor the
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
-		public MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
+		public async Task<MessageProtections?> ProcessOutgoingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
 			var userAuthResponse = message as UserAuthorizationResponse;
 			if (userAuthResponse != null && userAuthResponse.Version >= Protocol.V10a.Version) {
 				var requestToken = this.tokenManager.GetRequestToken(userAuthResponse.RequestToken);
@@ -121,7 +123,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// Implementations that provide message protection must honor the
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
-		public MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
+		public async Task<MessageProtections?> ProcessIncomingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
 			var authorizedTokenRequest = message as AuthorizedTokenRequest;
 			if (authorizedTokenRequest != null) {
 				if (authorizedTokenRequest.Version >= Protocol.V10a.Version) {

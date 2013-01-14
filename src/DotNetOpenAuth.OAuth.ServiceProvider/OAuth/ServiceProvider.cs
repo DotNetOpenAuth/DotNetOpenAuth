@@ -12,6 +12,8 @@ namespace DotNetOpenAuth.OAuth {
 	using System.Globalization;
 	using System.Security.Principal;
 	using System.ServiceModel.Channels;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
@@ -64,7 +66,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="tokenManager">The host's method of storing and recalling tokens and secrets.</param>
 		/// <param name="messageTypeProvider">An object that can figure out what type of message is being received for deserialization.</param>
 		public ServiceProvider(ServiceProviderDescription serviceDescription, IServiceProviderTokenManager tokenManager, OAuthServiceProviderMessageFactory messageTypeProvider)
-			: this(serviceDescription, tokenManager, OAuthElement.Configuration.ServiceProvider.ApplicationStore.CreateInstance(HttpApplicationStore), messageTypeProvider) {
+			: this(serviceDescription, tokenManager, OAuthElement.Configuration.ServiceProvider.ApplicationStore.CreateInstance(GetHttpApplicationStore(), null), messageTypeProvider) {
 			Requires.NotNull(serviceDescription, "serviceDescription");
 			Requires.NotNull(tokenManager, "tokenManager");
 			Requires.NotNull(messageTypeProvider, "messageTypeProvider");
@@ -106,25 +108,25 @@ namespace DotNetOpenAuth.OAuth {
 		/// Gets the standard state storage mechanism that uses ASP.NET's
 		/// HttpApplication state dictionary to store associations and nonces.
 		/// </summary>
-		[EditorBrowsable(EditorBrowsableState.Advanced)]
-		public static INonceStore HttpApplicationStore {
-			get {
-				HttpContext context = HttpContext.Current;
-				ErrorUtilities.VerifyOperation(context != null, Strings.StoreRequiredWhenNoHttpContextAvailable, typeof(INonceStore).Name);
-				var store = (INonceStore)context.Application[ApplicationStoreKey];
-				if (store == null) {
-					context.Application.Lock();
-					try {
-						if ((store = (INonceStore)context.Application[ApplicationStoreKey]) == null) {
-							context.Application[ApplicationStoreKey] = store = new NonceMemoryStore(StandardExpirationBindingElement.MaximumMessageAge);
-						}
-					} finally {
-						context.Application.UnLock();
-					}
-				}
-
-				return store;
+		public static INonceStore GetHttpApplicationStore(HttpContextBase context = null) {
+			if (context == null) {
+				ErrorUtilities.VerifyOperation(HttpContext.Current != null, Strings.StoreRequiredWhenNoHttpContextAvailable, typeof(INonceStore).Name);
+				context = new HttpContextWrapper(HttpContext.Current);
 			}
+
+			var store = (INonceStore)context.Application[ApplicationStoreKey];
+			if (store == null) {
+				context.Application.Lock();
+				try {
+					if ((store = (INonceStore)context.Application[ApplicationStoreKey]) == null) {
+						context.Application[ApplicationStoreKey] = store = new NonceMemoryStore(StandardExpirationBindingElement.MaximumMessageAge);
+					}
+				} finally {
+					context.Application.UnLock();
+				}
+			}
+
+			return store;
 		}
 
 		/// <summary>
@@ -205,29 +207,8 @@ namespace DotNetOpenAuth.OAuth {
 		/// <remarks>
 		/// Requires HttpContext.Current.
 		/// </remarks>
-		public IDirectedProtocolMessage ReadRequest() {
-			return this.Channel.ReadFromRequest();
-		}
-
-		/// <summary>
-		/// Reads any incoming OAuth message.
-		/// </summary>
-		/// <param name="request">The HTTP request to read the message from.</param>
-		/// <returns>The deserialized message.</returns>
-		public IDirectedProtocolMessage ReadRequest(HttpRequestBase request) {
-			return this.Channel.ReadFromRequest(request);
-		}
-
-		/// <summary>
-		/// Gets the incoming request for an unauthorized token, if any.
-		/// </summary>
-		/// <returns>The incoming request, or null if no OAuth message was attached.</returns>
-		/// <exception cref="ProtocolException">Thrown if an unexpected OAuth message is attached to the incoming request.</exception>
-		/// <remarks>
-		/// Requires HttpContext.Current.
-		/// </remarks>
-		public UnauthorizedTokenRequest ReadTokenRequest() {
-			return this.ReadTokenRequest(this.Channel.GetRequestFromContext());
+		public Task<IDirectedProtocolMessage> ReadRequestAsync(HttpRequestBase request = null, CancellationToken cancellationToken = default(CancellationToken)) {
+			return this.Channel.ReadFromRequestAsync(request ?? this.Channel.GetRequestFromContext(), cancellationToken);
 		}
 
 		/// <summary>
@@ -236,11 +217,12 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="request">The HTTP request to read from.</param>
 		/// <returns>The incoming request, or null if no OAuth message was attached.</returns>
 		/// <exception cref="ProtocolException">Thrown if an unexpected OAuth message is attached to the incoming request.</exception>
-		public UnauthorizedTokenRequest ReadTokenRequest(HttpRequestBase request) {
-			UnauthorizedTokenRequest message;
-			if (this.Channel.TryReadFromRequest(request, out message)) {
+		public async Task<UnauthorizedTokenRequest> ReadTokenRequestAsync(HttpRequestBase request = null, CancellationToken cancellationToken = default(CancellationToken)) {
+			var message = await this.Channel.TryReadFromRequestAsync<UnauthorizedTokenRequest>(cancellationToken, request);
+			if (message != null) {
 				ErrorUtilities.VerifyProtocol(message.Version >= Protocol.Lookup(this.SecuritySettings.MinimumRequiredOAuthVersion).Version, OAuthStrings.MinimumConsumerVersionRequirementNotMet, this.SecuritySettings.MinimumRequiredOAuthVersion, message.Version);
 			}
+
 			return message;
 		}
 
@@ -261,29 +243,14 @@ namespace DotNetOpenAuth.OAuth {
 		}
 
 		/// <summary>
-		/// Gets the incoming request for the Service Provider to authorize a Consumer's
-		/// access to some protected resources.
-		/// </summary>
-		/// <returns>The incoming request, or null if no OAuth message was attached.</returns>
-		/// <exception cref="ProtocolException">Thrown if an unexpected OAuth message is attached to the incoming request.</exception>
-		/// <remarks>
-		/// Requires HttpContext.Current.
-		/// </remarks>
-		public UserAuthorizationRequest ReadAuthorizationRequest() {
-			return this.ReadAuthorizationRequest(this.Channel.GetRequestFromContext());
-		}
-
-		/// <summary>
 		/// Reads in a Consumer's request for the Service Provider to obtain permission from
 		/// the user to authorize the Consumer's access of some protected resource(s).
 		/// </summary>
 		/// <param name="request">The HTTP request to read from.</param>
 		/// <returns>The incoming request, or null if no OAuth message was attached.</returns>
 		/// <exception cref="ProtocolException">Thrown if an unexpected OAuth message is attached to the incoming request.</exception>
-		public UserAuthorizationRequest ReadAuthorizationRequest(HttpRequestBase request) {
-			UserAuthorizationRequest message;
-			this.Channel.TryReadFromRequest(request, out message);
-			return message;
+		public Task<UserAuthorizationRequest> ReadAuthorizationRequestAsync(HttpRequestBase request, CancellationToken cancellationToken = default (CancellationToken)) {
+			return this.Channel.TryReadFromRequestAsync<UserAuthorizationRequest>(cancellationToken, request);
 		}
 
 		/// <summary>
@@ -349,27 +316,13 @@ namespace DotNetOpenAuth.OAuth {
 		}
 
 		/// <summary>
-		/// Gets the incoming request to exchange an authorized token for an access token.
-		/// </summary>
-		/// <returns>The incoming request, or null if no OAuth message was attached.</returns>
-		/// <exception cref="ProtocolException">Thrown if an unexpected OAuth message is attached to the incoming request.</exception>
-		/// <remarks>
-		/// Requires HttpContext.Current.
-		/// </remarks>
-		public AuthorizedTokenRequest ReadAccessTokenRequest() {
-			return this.ReadAccessTokenRequest(this.Channel.GetRequestFromContext());
-		}
-
-		/// <summary>
 		/// Reads in a Consumer's request to exchange an authorized request token for an access token.
 		/// </summary>
 		/// <param name="request">The HTTP request to read from.</param>
 		/// <returns>The incoming request, or null if no OAuth message was attached.</returns>
 		/// <exception cref="ProtocolException">Thrown if an unexpected OAuth message is attached to the incoming request.</exception>
-		public AuthorizedTokenRequest ReadAccessTokenRequest(HttpRequestBase request) {
-			AuthorizedTokenRequest message;
-			this.Channel.TryReadFromRequest(request, out message);
-			return message;
+		public Task<AuthorizedTokenRequest> ReadAccessTokenRequestAsync(HttpRequestBase request = null, CancellationToken cancellationToken = default(CancellationToken)) {
+			return this.Channel.TryReadFromRequestAsync<AuthorizedTokenRequest>(cancellationToken, request);
 		}
 
 		/// <summary>
@@ -396,20 +349,6 @@ namespace DotNetOpenAuth.OAuth {
 		/// <summary>
 		/// Gets the authorization (access token) for accessing some protected resource.
 		/// </summary>
-		/// <returns>The authorization message sent by the Consumer, or null if no authorization message is attached.</returns>
-		/// <remarks>
-		/// This method verifies that the access token and token secret are valid.
-		/// It falls on the caller to verify that the access token is actually authorized
-		/// to access the resources being requested.
-		/// </remarks>
-		/// <exception cref="ProtocolException">Thrown if an unexpected message is attached to the request.</exception>
-		public AccessProtectedResourceRequest ReadProtectedResourceAuthorization() {
-			return this.ReadProtectedResourceAuthorization(this.Channel.GetRequestFromContext());
-		}
-
-		/// <summary>
-		/// Gets the authorization (access token) for accessing some protected resource.
-		/// </summary>
 		/// <param name="request">HTTP details from an incoming WCF message.</param>
 		/// <param name="requestUri">The URI of the WCF service endpoint.</param>
 		/// <returns>The authorization message sent by the Consumer, or null if no authorization message is attached.</returns>
@@ -419,8 +358,8 @@ namespace DotNetOpenAuth.OAuth {
 		/// to access the resources being requested.
 		/// </remarks>
 		/// <exception cref="ProtocolException">Thrown if an unexpected message is attached to the request.</exception>
-		public AccessProtectedResourceRequest ReadProtectedResourceAuthorization(HttpRequestMessageProperty request, Uri requestUri) {
-			return this.ReadProtectedResourceAuthorization(new HttpRequestInfo(request, requestUri));
+		public Task<AccessProtectedResourceRequest> ReadProtectedResourceAuthorizationAsync(HttpRequestMessageProperty request, Uri requestUri, CancellationToken cancellationToken = default(CancellationToken)) {
+			return this.ReadProtectedResourceAuthorizationAsync(new HttpRequestInfo(request, requestUri), cancellationToken);
 		}
 
 		/// <summary>
@@ -434,11 +373,11 @@ namespace DotNetOpenAuth.OAuth {
 		/// to access the resources being requested.
 		/// </remarks>
 		/// <exception cref="ProtocolException">Thrown if an unexpected message is attached to the request.</exception>
-		public AccessProtectedResourceRequest ReadProtectedResourceAuthorization(HttpRequestBase request) {
+		public async Task<AccessProtectedResourceRequest> ReadProtectedResourceAuthorizationAsync(HttpRequestBase request = null, CancellationToken cancellationToken = default(CancellationToken)) {
 			Requires.NotNull(request, "request");
 
-			AccessProtectedResourceRequest accessMessage;
-			if (this.Channel.TryReadFromRequest<AccessProtectedResourceRequest>(request, out accessMessage)) {
+			var accessMessage = await this.Channel.TryReadFromRequestAsync<AccessProtectedResourceRequest>(cancellationToken, request);
+			if (accessMessage != null) {
 				if (this.TokenManager.GetTokenType(accessMessage.AccessToken) != TokenType.AccessToken) {
 					throw new ProtocolException(
 						string.Format(
