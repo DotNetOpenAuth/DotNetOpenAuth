@@ -8,7 +8,10 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
 	using System.Collections.Generic;
 	using System.ComponentModel;
+	using System.Net.Http;
 	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
 	using System.Web.UI;
 	using System.Web.UI.WebControls;
@@ -174,10 +177,10 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <summary>
 		/// Sends the response for the <see cref="PendingAuthenticationRequest"/> and clears the property.
 		/// </summary>
-		public static void SendResponse() {
+		public static Task<HttpResponseMessage> PrepareResponseAsync(CancellationToken cancellationToken = default(CancellationToken)) {
 			var pendingRequest = PendingRequest;
 			PendingRequest = null;
-			Provider.SendResponse(pendingRequest);
+			return Provider.PrepareResponseAsync(pendingRequest, cancellationToken);
 		}
 
 		/// <summary>
@@ -189,41 +192,46 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		protected override void OnLoad(EventArgs e) {
 			base.OnLoad(e);
 
-			// There is the unusual scenario that this control is hosted by
-			// an ASP.NET web page that has other UI on it to that the user
-			// might see, including controls that cause a postback to occur.
-			// We definitely want to ignore postbacks, since any openid messages
-			// they contain will be old.
-			if (this.Enabled && !this.Page.IsPostBack) {
-				// Use the explicitly given state store on this control if there is one.  
-				// Then try the configuration file specified one.  Finally, use the default
-				// in-memory one that's built into OpenIdProvider.
-				// determine what incoming message was received
-				IRequest request = Provider.GetRequest();
-				if (request != null) {
-					PendingRequest = null;
+			Task.Run(
+				async delegate {
+					// There is the unusual scenario that this control is hosted by
+					// an ASP.NET web page that has other UI on it to that the user
+					// might see, including controls that cause a postback to occur.
+					// We definitely want to ignore postbacks, since any openid messages
+					// they contain will be old.
+					if (this.Enabled && !this.Page.IsPostBack) {
+						// Use the explicitly given state store on this control if there is one.  
+						// Then try the configuration file specified one.  Finally, use the default
+						// in-memory one that's built into OpenIdProvider.
+						// determine what incoming message was received
+						IRequest request = await Provider.GetRequestAsync(new HttpRequestWrapper(this.Context.Request), CancellationToken.None);
+						if (request != null) {
+							PendingRequest = null;
 
-					// process the incoming message appropriately and send the response
-					IAuthenticationRequest idrequest;
-					IAnonymousRequest anonRequest;
-					if ((idrequest = request as IAuthenticationRequest) != null) {
-						PendingAuthenticationRequest = idrequest;
-						this.OnAuthenticationChallenge(idrequest);
-					} else if ((anonRequest = request as IAnonymousRequest) != null) {
-						PendingAnonymousRequest = anonRequest;
-						if (!this.OnAnonymousRequest(anonRequest)) {
-							// This is a feature not supported by the OP, so
-							// go ahead and set disapproved so we can send a response.
-							Logger.OpenId.Warn("An incoming anonymous OpenID request message was detected, but the ProviderEndpoint.AnonymousRequest event is not handled, so returning cancellation message to relying party.");
-							anonRequest.IsApproved = false;
+							// process the incoming message appropriately and send the response
+							IAuthenticationRequest idrequest;
+							IAnonymousRequest anonRequest;
+							if ((idrequest = request as IAuthenticationRequest) != null) {
+								PendingAuthenticationRequest = idrequest;
+								this.OnAuthenticationChallenge(idrequest);
+							} else if ((anonRequest = request as IAnonymousRequest) != null) {
+								PendingAnonymousRequest = anonRequest;
+								if (!this.OnAnonymousRequest(anonRequest)) {
+									// This is a feature not supported by the OP, so
+									// go ahead and set disapproved so we can send a response.
+									Logger.OpenId.Warn(
+										"An incoming anonymous OpenID request message was detected, but the ProviderEndpoint.AnonymousRequest event is not handled, so returning cancellation message to relying party.");
+									anonRequest.IsApproved = false;
+								}
+							}
+							if (request.IsResponseReady) {
+								PendingAuthenticationRequest = null;
+								var response = await Provider.PrepareResponseAsync(request, CancellationToken.None);
+								response.Send(new HttpContextWrapper(this.Context));
+							}
 						}
 					}
-					if (request.IsResponseReady) {
-						PendingAuthenticationRequest = null;
-						Provider.SendResponse(request);
-					}
-				}
-			}
+				});
 		}
 
 		/// <summary>
@@ -257,7 +265,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		/// <returns>The new instance of OpenIdProvider.</returns>
 		private static OpenIdProvider CreateProvider() {
-			return new OpenIdProvider(OpenIdElement.Configuration.Provider.ApplicationStore.CreateInstance(OpenIdProvider.HttpApplicationStore));
+			return new OpenIdProvider(OpenIdElement.Configuration.Provider.ApplicationStore.CreateInstance(OpenIdProvider.GetHttpApplicationStore(), null));
 		}
 	}
 }
