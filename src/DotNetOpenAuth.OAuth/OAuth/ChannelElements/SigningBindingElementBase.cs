@@ -12,6 +12,8 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using System.Globalization;
 	using System.Linq;
 	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
@@ -83,7 +85,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// The protections (if any) that this binding element applied to the message.
 		/// Null if this binding element did not even apply to this binding element.
 		/// </returns>
-		public MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
+		public async Task<MessageProtections?> ProcessOutgoingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
 			var signedMessage = message as ITamperResistantOAuthMessage;
 			if (signedMessage != null && this.IsMessageApplicable(signedMessage)) {
 				if (this.SignatureCallback != null) {
@@ -110,7 +112,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// Null if this binding element did not even apply to this binding element.
 		/// </returns>
 		/// <exception cref="InvalidSignatureException">Thrown if the signature is invalid.</exception>
-		public MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
+		public async Task<MessageProtections?> ProcessIncomingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
 			var signedMessage = message as ITamperResistantOAuthMessage;
 			if (signedMessage != null && this.IsMessageApplicable(signedMessage)) {
 				Logger.Bindings.DebugFormat("Verifying incoming {0} message signature of: {1}", message.GetType().Name, signedMessage.Signature);
@@ -151,13 +153,13 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		[SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = "Unavoidable")]
 		internal static string ConstructSignatureBaseString(ITamperResistantOAuthMessage message, MessageDictionary messageDictionary) {
 			Requires.NotNull(message, "message");
-			Requires.NotNullOrEmpty(message.HttpMethod, "message.HttpMethod");
+			Requires.NotNull(message.HttpMethod, "message.HttpMethod");
 			Requires.NotNull(messageDictionary, "messageDictionary");
 			ErrorUtilities.VerifyInternal(messageDictionary.Message == message, "Message references are not equal.");
 
 			List<string> signatureBaseStringElements = new List<string>(3);
 
-			signatureBaseStringElements.Add(message.HttpMethod.ToUpperInvariant());
+			signatureBaseStringElements.Add(message.HttpMethod.ToString().ToUpperInvariant());
 
 			// For multipart POST messages, only include the message parts that are NOT
 			// in the POST entity (those parts that may appear in an OAuth authorization header).

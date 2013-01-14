@@ -1484,23 +1484,23 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="httpMethod">The HTTP method.</param>
 		/// <returns>An HTTP verb, such as GET, POST, PUT, DELETE, PATCH, or OPTION.</returns>
-		internal static string GetHttpVerb(HttpDeliveryMethods httpMethod) {
+		internal static HttpMethod GetHttpVerb(HttpDeliveryMethods httpMethod) {
 			if ((httpMethod & HttpDeliveryMethods.HttpVerbMask) == HttpDeliveryMethods.GetRequest) {
-				return "GET";
+				return HttpMethod.Get;
 			} else if ((httpMethod & HttpDeliveryMethods.HttpVerbMask) == HttpDeliveryMethods.PostRequest) {
-				return "POST";
+				return HttpMethod.Post;
 			} else if ((httpMethod & HttpDeliveryMethods.HttpVerbMask) == HttpDeliveryMethods.PutRequest) {
-				return "PUT";
+				return HttpMethod.Put;
 			} else if ((httpMethod & HttpDeliveryMethods.HttpVerbMask) == HttpDeliveryMethods.DeleteRequest) {
-				return "DELETE";
+				return HttpMethod.Delete;
 			} else if ((httpMethod & HttpDeliveryMethods.HttpVerbMask) == HttpDeliveryMethods.HeadRequest) {
-				return "HEAD";
+				return HttpMethod.Head;
 			} else if ((httpMethod & HttpDeliveryMethods.HttpVerbMask) == HttpDeliveryMethods.PatchRequest) {
-				return "PATCH";
+				return new HttpMethod("PATCH");
 			} else if ((httpMethod & HttpDeliveryMethods.HttpVerbMask) == HttpDeliveryMethods.OptionsRequest) {
-				return "OPTIONS";
+				return HttpMethod.Options;
 			} else if ((httpMethod & HttpDeliveryMethods.AuthorizationHeaderRequest) != 0) {
-				return "GET"; // if AuthorizationHeaderRequest is specified without an explicit HTTP verb, assume GET.
+				return HttpMethod.Get; // if AuthorizationHeaderRequest is specified without an explicit HTTP verb, assume GET.
 			} else {
 				throw ErrorUtilities.ThrowArgumentNamed("httpMethod", MessagingStrings.UnsupportedHttpVerb, httpMethod);
 			}

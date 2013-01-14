@@ -558,15 +558,17 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="httpMethod">The HTTP method.</param>
 		/// <returns><c>true</c> if the HTTP method is supposed to have an entity; <c>false</c> otherwise.</returns>
-		protected static bool HttpMethodHasEntity(string httpMethod) {
-			if (string.Equals(httpMethod, "GET", StringComparison.Ordinal) ||
-				string.Equals(httpMethod, "HEAD", StringComparison.Ordinal) ||
-				string.Equals(httpMethod, "DELETE", StringComparison.Ordinal) ||
-				string.Equals(httpMethod, "OPTIONS", StringComparison.Ordinal)) {
+		protected static bool HttpMethodHasEntity(HttpMethod httpMethod) {
+			Requires.NotNull(httpMethod, "httpMethod");
+
+			if (httpMethod == HttpMethod.Get ||
+				httpMethod == HttpMethod.Head ||
+				httpMethod == HttpMethod.Delete ||
+				httpMethod == HttpMethod.Options) {
 				return false;
-			} else if (string.Equals(httpMethod, "POST", StringComparison.Ordinal) ||
-				string.Equals(httpMethod, "PUT", StringComparison.Ordinal) ||
-				string.Equals(httpMethod, "PATCH", StringComparison.Ordinal)) {
+			} else if (httpMethod == HttpMethod.Post ||
+				httpMethod == HttpMethod.Put ||
+				string.Equals(httpMethod.Method, "PATCH", StringComparison.Ordinal)) {
 				return true;
 			} else {
 				throw ErrorUtilities.ThrowArgumentNamed("httpMethod", MessagingStrings.UnsupportedHttpVerb, httpMethod);
@@ -1041,7 +1043,7 @@ namespace DotNetOpenAuth.Messaging {
 			if (requestMessageWithBinaryData != null && requestMessageWithBinaryData.SendAsMultipart) {
 				var content = new MultipartFormDataContent();
 				foreach (var part in requestMessageWithBinaryData.BinaryData) {
-					content.Add(part);
+					content.Add(part.Value, part.Key);
 				}
 
 				// When sending multi-part, all data gets send as multi-part -- even the non-binary data.

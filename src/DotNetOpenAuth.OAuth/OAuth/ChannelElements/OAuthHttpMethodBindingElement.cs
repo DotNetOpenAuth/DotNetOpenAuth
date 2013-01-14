@@ -9,6 +9,8 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
@@ -37,7 +39,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// True if the <paramref name="message"/> applied to this binding element
 		/// and the operation was successful.  False otherwise.
 		/// </returns>
-		public MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
+		public async Task<MessageProtections?> ProcessOutgoingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
 			var oauthMessage = message as ITamperResistantOAuthMessage;
 
 			if (oauthMessage != null) {
@@ -67,7 +69,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// Thrown when the binding element rules indicate that this message is invalid and should
 		/// NOT be processed.
 		/// </exception>
-		public MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
+		public async Task<MessageProtections?> ProcessIncomingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
 			return null;
 		}
 
