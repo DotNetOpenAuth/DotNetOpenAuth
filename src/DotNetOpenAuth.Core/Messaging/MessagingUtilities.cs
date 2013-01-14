@@ -15,6 +15,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Linq;
 	using System.Net;
 	using System.Net.Http;
+	using System.Net.Http.Headers;
 	using System.Net.Mime;
 	using System.Runtime.Serialization.Json;
 	using System.Security;
@@ -622,6 +623,26 @@ namespace DotNetOpenAuth.Messaging {
 			byte[] uniq_bytes = GetNonCryptoRandomData(binaryLength);
 			string uniq = Convert.ToBase64String(uniq_bytes);
 			return uniq;
+		}
+
+		/// <summary>
+		/// Adds a Set-Cookie HTTP header for the specified cookie.
+		/// WARNING: support for cookie properties is currently VERY LIMITED.
+		/// </summary>
+		internal static void SetCookie(this HttpResponseHeaders headers, Cookie cookie) {
+			Requires.NotNull(headers, "headers");
+			Requires.NotNull(cookie, "cookie");
+
+			var cookieBuilder = new StringBuilder(HttpUtility.UrlEncode(cookie.Name) + "=" + HttpUtility.UrlEncode(cookie.Value));
+			if (cookie.HttpOnly) {
+				cookieBuilder.Append("; HttpOnly");
+			}
+
+			if (cookie.Secure) {
+				cookieBuilder.Append("; Secure");
+			}
+
+			headers.Add("Set-Cookie", cookieBuilder.ToString());
 		}
 
 		/// <summary>
@@ -1523,6 +1544,27 @@ namespace DotNetOpenAuth.Messaging {
 					}
 				}
 			}
+		}
+
+		internal static Uri GetDirectUriRequest(this HttpResponseMessage response) {
+			Requires.NotNull(response, "response");
+			Requires.Argument(
+				response.StatusCode == HttpStatusCode.Redirect || response.StatusCode == HttpStatusCode.RedirectKeepVerb
+				|| response.StatusCode == HttpStatusCode.RedirectMethod || response.StatusCode == HttpStatusCode.TemporaryRedirect,
+				"response",
+				"Redirecting response expected.");
+			Requires.Argument(response.Headers.Location != null, "response", "Redirect URL header expected.");
+			Requires.Argument(response.Content == null || response.Content is FormUrlEncodedContent, "response", "FormUrlEncodedContent expected");
+
+			var builder = new UriBuilder(response.Headers.Location);
+			if (response.Content != null) {
+				var content = response.Content.ReadAsStringAsync();
+				Assumes.True(content.IsCompleted); // cached in memory, so it should never complete asynchronously.
+				var formFields = HttpUtility.ParseQueryString(content.Result).ToDictionary();
+				MessagingUtilities.AppendQueryArgs(builder, formFields);
+			}
+
+			return builder.Uri;
 		}
 
 		/// <summary>

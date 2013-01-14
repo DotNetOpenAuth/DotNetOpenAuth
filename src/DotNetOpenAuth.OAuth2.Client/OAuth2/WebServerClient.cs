@@ -10,10 +10,12 @@ namespace DotNetOpenAuth.OAuth2 {
 	using System.Globalization;
 	using System.Linq;
 	using System.Net;
+	using System.Net.Http;
 	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
 	using System.Web.Security;
-
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2.Messages;
@@ -60,26 +62,14 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <summary>
 		/// Prepares a request for user authorization from an authorization server.
 		/// </summary>
-		/// <param name="scope">The scope of authorized access requested.</param>
-		/// <param name="returnTo">The URL the authorization server should redirect the browser (typically on this site) to when the authorization is completed.  If null, the current request's URL will be used.</param>
-		public void RequestUserAuthorization(IEnumerable<string> scope = null, Uri returnTo = null) {
-			var authorizationState = new AuthorizationState(scope) {
-				Callback = returnTo,
-			};
-			this.PrepareRequestUserAuthorization(authorizationState).Send();
-		}
-
-		/// <summary>
-		/// Prepares a request for user authorization from an authorization server.
-		/// </summary>
 		/// <param name="scopes">The scope of authorized access requested.</param>
 		/// <param name="returnTo">The URL the authorization server should redirect the browser (typically on this site) to when the authorization is completed.  If null, the current request's URL will be used.</param>
 		/// <returns>The authorization request.</returns>
-		public OutgoingWebResponse PrepareRequestUserAuthorization(IEnumerable<string> scopes = null, Uri returnTo = null) {
+		public Task<HttpResponseMessage> PrepareRequestUserAuthorizationAsync(IEnumerable<string> scopes = null, Uri returnTo = null, CancellationToken cancellationToken = default(CancellationToken)) {
 			var authorizationState = new AuthorizationState(scopes) {
 				Callback = returnTo,
 			};
-			return this.PrepareRequestUserAuthorization(authorizationState);
+			return this.PrepareRequestUserAuthorizationAsync(authorizationState, cancellationToken);
 		}
 
 		/// <summary>
@@ -87,7 +77,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <param name="authorization">The authorization state to associate with this particular request.</param>
 		/// <returns>The authorization request.</returns>
-		public OutgoingWebResponse PrepareRequestUserAuthorization(IAuthorizationState authorization) {
+		public async Task<HttpResponseMessage> PrepareRequestUserAuthorizationAsync(IAuthorizationState authorization, CancellationToken cancellationToken) {
 			Requires.NotNull(authorization, "authorization");
 			RequiresEx.ValidState(authorization.Callback != null || (HttpContext.Current != null && HttpContext.Current.Request != null), MessagingStrings.HttpContextRequired);
 			RequiresEx.ValidState(!string.IsNullOrEmpty(this.ClientIdentifier), Strings.RequiredPropertyNotYetPreset, "ClientIdentifier");
@@ -108,12 +98,12 @@ namespace DotNetOpenAuth.OAuth2 {
 			// Mitigate XSRF attacks by including a state value that would be unpredictable between users, but
 			// verifiable for the same user/session.
 			// If the host is implementing the authorization tracker though, they're handling this protection themselves.
-			HttpCookie cookie = null;
+			Cookie cookie = null;
 			if (this.AuthorizationTracker == null) {
 				var context = this.Channel.GetHttpContext();
 
 				string xsrfKey = MessagingUtilities.GetNonCryptoRandomDataAsBase64(16);
-				cookie = new HttpCookie(XsrfCookieName, xsrfKey) {
+				cookie = new Cookie(XsrfCookieName, xsrfKey) {
 					HttpOnly = true,
 					Secure = FormsAuthentication.RequireSSL,
 					////Expires = DateTime.Now.Add(OAuth2ClientSection.Configuration.MaxAuthorizationTime), // we prefer session cookies to persistent ones
@@ -121,9 +111,9 @@ namespace DotNetOpenAuth.OAuth2 {
 				request.ClientState = xsrfKey;
 			}
 
-			var response = this.Channel.PrepareResponse(request);
+			var response = await this.Channel.PrepareResponseAsync(request, cancellationToken);
 			if (cookie != null) {
-				response.Cookies.Add(cookie);
+				response.Headers.SetCookie(cookie);
 			}
 
 			return response;
@@ -134,7 +124,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <param name="request">The incoming HTTP request that may carry an authorization response.</param>
 		/// <returns>The authorization state that contains the details of the authorization.</returns>
-		public IAuthorizationState ProcessUserAuthorization(HttpRequestBase request = null) {
+		public async Task<IAuthorizationState> ProcessUserAuthorizationAsync(HttpRequestBase request = null, CancellationToken cancellationToken = default(CancellationToken)) {
 			RequiresEx.ValidState(!string.IsNullOrEmpty(this.ClientIdentifier), Strings.RequiredPropertyNotYetPreset, "ClientIdentifier");
 			RequiresEx.ValidState(this.ClientCredentialApplicator != null, Strings.RequiredPropertyNotYetPreset, "ClientCredentialApplicator");
 
@@ -142,8 +132,8 @@ namespace DotNetOpenAuth.OAuth2 {
 				request = this.Channel.GetRequestFromContext();
 			}
 
-			IMessageWithClientState response;
-			if (this.Channel.TryReadFromRequest<IMessageWithClientState>(request, out response)) {
+			var response = await this.Channel.TryReadFromRequestAsync<IMessageWithClientState>(cancellationToken, request);
+			if (response != null) {
 				Uri callback = MessagingUtilities.StripMessagePartsFromQueryString(request.GetPublicFacingUrl(), this.Channel.MessageDescriptions.Get(response));
 				IAuthorizationState authorizationState;
 				if (this.AuthorizationTracker != null) {
@@ -160,7 +150,7 @@ namespace DotNetOpenAuth.OAuth2 {
 				var failure = response as EndUserAuthorizationFailedResponse;
 				ErrorUtilities.VerifyProtocol(success != null || failure != null, MessagingStrings.UnexpectedMessageReceivedOfMany);
 				if (success != null) {
-					this.UpdateAuthorizationWithResponse(authorizationState, success);
+					await this.UpdateAuthorizationWithResponseAsync(authorizationState, success, cancellationToken);
 				} else { // failure
 					Logger.OAuth.Info("User refused to grant the requested authorization at the Authorization Server.");
 					authorizationState.Delete();

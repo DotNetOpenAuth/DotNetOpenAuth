@@ -9,8 +9,9 @@ namespace DotNetOpenAuth.OAuth2 {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
-
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2.Messages;
 	using Validation;
@@ -80,12 +81,12 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <returns>
 		/// A fully-qualified URL suitable to initiate the authorization flow.
 		/// </returns>
-		public Uri RequestUserAuthorization(IEnumerable<string> scope = null, string state = null, Uri returnTo = null) {
+		public Task<Uri> RequestUserAuthorizationAsync(IEnumerable<string> scope = null, string state = null, Uri returnTo = null, CancellationToken cancellationToken = default(CancellationToken)) {
 			var authorization = new AuthorizationState(scope) {
 				Callback = returnTo,
 			};
 
-			return this.RequestUserAuthorization(authorization, state: state);
+			return this.RequestUserAuthorizationAsync(authorization, state: state, cancellationToken: cancellationToken);
 		}
 
 		/// <summary>
@@ -101,12 +102,13 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <returns>
 		/// A fully-qualified URL suitable to initiate the authorization flow.
 		/// </returns>
-		public Uri RequestUserAuthorization(IAuthorizationState authorization, bool implicitResponseType = false, string state = null) {
+		public async Task<Uri> RequestUserAuthorizationAsync(IAuthorizationState authorization, bool implicitResponseType = false, string state = null, CancellationToken cancellationToken = default(CancellationToken)) {
 			Requires.NotNull(authorization, "authorization");
 			RequiresEx.ValidState(!string.IsNullOrEmpty(this.ClientIdentifier));
 
 			var request = this.PrepareRequestUserAuthorization(authorization, implicitResponseType, state);
-			return this.Channel.PrepareResponse(request).GetDirectUriRequest(this.Channel);
+			var response = await this.Channel.PrepareResponseAsync(request, cancellationToken);
+			return response.GetDirectUriRequest();
 		}
 
 		/// <summary>
@@ -115,7 +117,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="actualRedirectUrl">The actual URL of the incoming HTTP request.</param>
 		/// <param name="authorizationState">The authorization.</param>
 		/// <returns>The granted authorization, or <c>null</c> if the incoming HTTP request did not contain an authorization server response or authorization was rejected.</returns>
-		public IAuthorizationState ProcessUserAuthorization(Uri actualRedirectUrl, IAuthorizationState authorizationState = null) {
+		public async Task<IAuthorizationState> ProcessUserAuthorizationAsync(Uri actualRedirectUrl, IAuthorizationState authorizationState = null, CancellationToken cancellationToken = default(CancellationToken)) {
 			Requires.NotNull(actualRedirectUrl, "actualRedirectUrl");
 
 			if (authorizationState == null) {
@@ -123,12 +125,12 @@ namespace DotNetOpenAuth.OAuth2 {
 			}
 
 			var carrier = new HttpRequestInfo("GET", actualRedirectUrl);
-			IDirectedProtocolMessage response = this.Channel.ReadFromRequest(carrier);
+			IDirectedProtocolMessage response = await this.Channel.ReadFromRequestAsync(carrier, cancellationToken);
 			if (response == null) {
 				return null;
 			}
 
-			return this.ProcessUserAuthorization(authorizationState, response);
+			return await this.ProcessUserAuthorizationAsync(authorizationState, response, cancellationToken);
 		}
 
 		/// <summary>
@@ -139,7 +141,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <returns>
 		/// The granted authorization, or <c>null</c> if the incoming HTTP request did not contain an authorization server response or authorization was rejected.
 		/// </returns>
-		internal IAuthorizationState ProcessUserAuthorization(IAuthorizationState authorizationState, IDirectedProtocolMessage response) {
+		internal async Task<IAuthorizationState> ProcessUserAuthorizationAsync(IAuthorizationState authorizationState, IDirectedProtocolMessage response, CancellationToken cancellationToken) {
 			Requires.NotNull(authorizationState, "authorizationState");
 			Requires.NotNull(response, "response");
 
@@ -148,7 +150,7 @@ namespace DotNetOpenAuth.OAuth2 {
 			if ((accessTokenSuccess = response as EndUserAuthorizationSuccessAccessTokenResponse) != null) {
 				UpdateAuthorizationWithResponse(authorizationState, accessTokenSuccess);
 			} else if ((authCodeSuccess = response as EndUserAuthorizationSuccessAuthCodeResponse) != null) {
-				this.UpdateAuthorizationWithResponse(authorizationState, authCodeSuccess);
+				await this.UpdateAuthorizationWithResponseAsync(authorizationState, authCodeSuccess, cancellationToken);
 			} else if (response is EndUserAuthorizationFailedResponse) {
 				authorizationState.Delete();
 				return null;

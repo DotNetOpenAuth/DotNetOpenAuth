@@ -9,9 +9,11 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	using System.Collections.Generic;
 	using System.Collections.Specialized;
 	using System.Net;
+	using System.Net.Http;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
 	using System.Xml;
-
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2.Messages;
 
@@ -67,8 +69,8 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// This method must be overridden by a derived class, unless the <see cref="Channel.RequestCore"/> method
 		/// is overridden and does not require this method.
 		/// </remarks>
-		protected override HttpWebRequest CreateHttpRequest(IDirectedProtocolMessage request) {
-			HttpWebRequest httpRequest;
+		protected override HttpRequestMessage CreateHttpRequest(IDirectedProtocolMessage request) {
+			HttpRequestMessage httpRequest;
 			if ((request.HttpMethods & HttpDeliveryMethods.GetRequest) != 0) {
 				httpRequest = InitializeRequestAsGet(request);
 			} else if ((request.HttpMethods & HttpDeliveryMethods.PostRequest) != 0) {
@@ -88,16 +90,17 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// The deserialized message parts, if found.  Null otherwise.
 		/// </returns>
 		/// <exception cref="ProtocolException">Thrown when the response is not valid.</exception>
-		protected override IDictionary<string, string> ReadFromResponseCore(IncomingWebResponse response) {
+		protected override async Task<IDictionary<string, string>> ReadFromResponseCoreAsync(HttpResponseMessage response) {
 			// The spec says direct responses should be JSON objects, but Facebook uses HttpFormUrlEncoded instead, calling it text/plain
 			// Others return text/javascript.  Again bad.
-			string body = response.GetResponseReader().ReadToEnd();
-			if (response.ContentType.MediaType == JsonEncoded || response.ContentType.MediaType == JsonTextEncoded) {
+			string body = await response.Content.ReadAsStringAsync();
+			var contentType = response.Content.Headers.ContentType.MediaType;
+			if (contentType == JsonEncoded || contentType == JsonTextEncoded) {
 				return this.DeserializeFromJson(body);
-			} else if (response.ContentType.MediaType == HttpFormUrlEncoded || response.ContentType.MediaType == PlainTextEncoded) {
+			} else if (contentType == HttpFormUrlEncoded || contentType == PlainTextEncoded) {
 				return HttpUtility.ParseQueryString(body).ToDictionary();
 			} else {
-				throw ErrorUtilities.ThrowProtocol(ClientStrings.UnexpectedResponseContentType, response.ContentType.MediaType);
+				throw ErrorUtilities.ThrowProtocol(ClientStrings.UnexpectedResponseContentType, contentType);
 			}
 		}
 
@@ -108,7 +111,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <returns>
 		/// The deserialized message, if one is found.  Null otherwise.
 		/// </returns>
-		protected override IDirectedProtocolMessage ReadFromRequestCore(HttpRequestBase request) {
+		protected override IDirectedProtocolMessage ReadFromRequestCore(HttpRequestBase request, CancellationToken cancellationToken) {
 			Logger.Channel.DebugFormat("Incoming HTTP request: {0} {1}", request.HttpMethod, request.GetPublicFacingUrl().AbsoluteUri);
 
 			var fields = request.GetQueryStringBeforeRewriting().ToDictionary();
@@ -146,7 +149,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <remarks>
 		/// This method implements spec OAuth V1.0 section 5.3.
 		/// </remarks>
-		protected override OutgoingWebResponse PrepareDirectResponse(IProtocolMessage response) {
+		protected override HttpResponseMessage PrepareDirectResponse(IProtocolMessage response) {
 			// Clients don't ever send direct responses.
 			throw new NotImplementedException();
 		}
@@ -155,7 +158,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// Performs additional processing on an outgoing web request before it is sent to the remote server.
 		/// </summary>
 		/// <param name="request">The request.</param>
-		protected override void PrepareHttpWebRequest(HttpWebRequest request) {
+		protected override void PrepareHttpWebRequest(HttpRequestMessage request) {
 			base.PrepareHttpWebRequest(request);
 
 			if (this.ClientCredentialApplicator != null) {

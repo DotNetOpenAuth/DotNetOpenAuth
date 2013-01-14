@@ -10,9 +10,12 @@ namespace DotNetOpenAuth.OAuth2 {
 	using System.Globalization;
 	using System.Linq;
 	using System.Net;
+	using System.Net.Http.Headers;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using Validation;
+
+	using HttpRequestHeaders = DotNetOpenAuth.Messaging.HttpRequestHeaders;
 
 	/// <summary>
 	/// Some common utility methods for OAuth 2.0.
@@ -161,7 +164,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="headers">The headers collection to set the authorization header to.</param>
 		/// <param name="userName">The username.  Cannot be empty.</param>
 		/// <param name="password">The password.  Cannot be null.</param>
-		internal static void ApplyHttpBasicAuth(WebHeaderCollection headers, string userName, string password) {
+		internal static void ApplyHttpBasicAuth(System.Net.Http.Headers.HttpRequestHeaders headers, string userName, string password) {
 			Requires.NotNull(headers, "headers");
 			Requires.NotNullOrEmpty(userName, "userName");
 			Requires.NotNull(password, "password");
@@ -169,8 +172,7 @@ namespace DotNetOpenAuth.OAuth2 {
 			string concat = userName + ":" + password;
 			byte[] bits = HttpBasicEncoding.GetBytes(concat);
 			string base64 = Convert.ToBase64String(bits);
-			string header = HttpBasicAuthScheme + base64;
-			headers[HttpRequestHeader.Authorization] = header;
+			headers.Authorization = new AuthenticationHeaderValue(HttpBasicAuthScheme, base64);
 		}
 
 		/// <summary>
