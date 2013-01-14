@@ -13,6 +13,8 @@ namespace DotNetOpenAuth.OAuth2 {
 	using System.Drawing;
 	using System.Linq;
 	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Windows.Forms;
 	using DotNetOpenAuth.Messaging;
 
@@ -108,10 +110,10 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data.</param>
 		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "Avoid bug in .NET WebBrowser control.")]
 		[SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands", Justification = "It's a new instance we control.")]
-		protected override void OnLoad(EventArgs e) {
+		protected override async void OnLoad(EventArgs e) {
 			base.OnLoad(e);
 
-			Uri authorizationUrl = this.Client.RequestUserAuthorization(this.Authorization);
+			Uri authorizationUrl = await this.Client.RequestUserAuthorizationAsync(this.Authorization);
 			this.webBrowser1.Navigate(authorizationUrl.AbsoluteUri); // use AbsoluteUri to workaround bug in WebBrowser that calls Uri.ToString instead of Uri.AbsoluteUri leading to escaping errors.
 		}
 
@@ -133,18 +135,18 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="System.Windows.Forms.WebBrowserNavigatingEventArgs"/> instance containing the event data.</param>
-		private void WebBrowser1_Navigating(object sender, WebBrowserNavigatingEventArgs e) {
-			this.ProcessLocationChanged(e.Url);
+		private async void WebBrowser1_Navigating(object sender, WebBrowserNavigatingEventArgs e) {
+			await this.ProcessLocationChangedAsync(e.Url);
 		}
 
 		/// <summary>
 		/// Processes changes in the URL the browser has navigated to.
 		/// </summary>
 		/// <param name="location">The location.</param>
-		private void ProcessLocationChanged(Uri location) {
+		private async Task ProcessLocationChangedAsync(Uri location) {
 			if (SignificantlyEqual(location, this.Authorization.Callback, UriComponents.SchemeAndServer | UriComponents.Path)) {
 				try {
-					this.Client.ProcessUserAuthorization(location, this.Authorization);
+					await this.Client.ProcessUserAuthorizationAsync(location, this.Authorization);
 				} catch (ProtocolException ex) {
 					var options = (MessageBoxOptions)0;
 					if (this.RightToLeft == System.Windows.Forms.RightToLeft.Yes) {
@@ -162,8 +164,8 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="System.Windows.Forms.WebBrowserNavigatedEventArgs"/> instance containing the event data.</param>
-		private void WebBrowser1_Navigated(object sender, WebBrowserNavigatedEventArgs e) {
-			this.ProcessLocationChanged(e.Url);
+		private async void WebBrowser1_Navigated(object sender, WebBrowserNavigatedEventArgs e) {
+			await this.ProcessLocationChangedAsync(e.Url);
 		}
 
 		/// <summary>
@@ -171,8 +173,8 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-		private void WebBrowser1_LocationChanged(object sender, EventArgs e) {
-			this.ProcessLocationChanged(this.webBrowser1.Url);
+		private async void WebBrowser1_LocationChanged(object sender, EventArgs e) {
+			await this.ProcessLocationChangedAsync(this.webBrowser1.Url);
 		}
 	}
 }
