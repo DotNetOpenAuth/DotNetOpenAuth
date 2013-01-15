@@ -8,6 +8,8 @@ namespace DotNetOpenAuth.OAuth {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.ChannelElements;
@@ -38,10 +40,10 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="requestToken">The request token that must be exchanged for an access token after the user has provided authorization.</param>
 		/// <returns>The URL to open a browser window to allow the user to provide authorization.</returns>
 		[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "2#", Justification = "Two results")]
-		public Uri RequestUserAuthorization(IDictionary<string, string> requestParameters, IDictionary<string, string> redirectParameters, out string requestToken) {
-			var message = this.PrepareRequestUserAuthorization(null, requestParameters, redirectParameters, out requestToken);
-			OutgoingWebResponse response = this.Channel.PrepareResponse(message);
-			return response.GetDirectUriRequest(this.Channel);
+		public async Task<Tuple<Uri, string>> RequestUserAuthorizationAsync(IDictionary<string, string> requestParameters, IDictionary<string, string> redirectParameters, CancellationToken cancellationToken = default(CancellationToken)) {
+			var message = await this.PrepareRequestUserAuthorizationAsync(null, requestParameters, redirectParameters, cancellationToken);
+			var response = await this.Channel.PrepareResponseAsync(message, cancellationToken);
+			return Tuple.Create(response.GetDirectUriRequest(), message.RequestToken);
 		}
 
 		/// <summary>
@@ -50,8 +52,8 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="requestToken">The request token that the user has authorized.</param>
 		/// <returns>The access token assigned by the Service Provider.</returns>
 		[Obsolete("Use the ProcessUserAuthorization method that takes a verifier parameter instead.")]
-		public AuthorizedTokenResponse ProcessUserAuthorization(string requestToken) {
-			return this.ProcessUserAuthorization(requestToken, null);
+		public Task<AuthorizedTokenResponse> ProcessUserAuthorizationAsync(string requestToken, CancellationToken cancellationToken = default(CancellationToken)) {
+			return this.ProcessUserAuthorizationAsync(requestToken, null, cancellationToken);
 		}
 
 		/// <summary>
@@ -62,12 +64,12 @@ namespace DotNetOpenAuth.OAuth {
 		/// <returns>
 		/// The access token assigned by the Service Provider.
 		/// </returns>
-		public new AuthorizedTokenResponse ProcessUserAuthorization(string requestToken, string verifier) {
+		public new Task<AuthorizedTokenResponse> ProcessUserAuthorizationAsync(string requestToken, string verifier, CancellationToken cancellationToken = default(CancellationToken)) {
 			if (this.ServiceProvider.Version >= Protocol.V10a.Version) {
 				ErrorUtilities.VerifyNonZeroLength(verifier, "verifier");
 			}
 
-			return base.ProcessUserAuthorization(requestToken, verifier);
+			return base.ProcessUserAuthorizationAsync(requestToken, verifier, cancellationToken);
 		}
 	}
 }

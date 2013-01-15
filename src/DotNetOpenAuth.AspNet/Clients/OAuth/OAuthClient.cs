@@ -9,6 +9,8 @@ namespace DotNetOpenAuth.AspNet.Clients {
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
 	using System.IO;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
 	using System.Xml;
 	using System.Xml.Linq;
@@ -109,12 +111,12 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <param name="returnUrl">
 		/// The return url after users have completed authenticating against external website. 
 		/// </param>
-		public virtual void RequestAuthentication(HttpContextBase context, Uri returnUrl) {
+		public virtual Task RequestAuthenticationAsync(HttpContextBase context, Uri returnUrl, CancellationToken cancellationToken = default(CancellationToken)) {
 			Requires.NotNull(returnUrl, "returnUrl");
 			Requires.NotNull(context, "context");
 
 			Uri callback = returnUrl.StripQueryArgumentsWithPrefix("oauth_");
-			this.WebWorker.RequestAuthentication(callback);
+			return this.WebWorker.RequestAuthenticationAsync(callback, cancellationToken);
 		}
 
 		/// <summary>
@@ -126,13 +128,13 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <returns>
 		/// An instance of <see cref="AuthenticationResult"/> containing authentication result. 
 		/// </returns>
-		public virtual AuthenticationResult VerifyAuthentication(HttpContextBase context) {
-			AuthorizedTokenResponse response = this.WebWorker.ProcessUserAuthorization();
+		public virtual async Task<AuthenticationResult> VerifyAuthenticationAsync(HttpContextBase context, CancellationToken cancellationToken = default(CancellationToken)) {
+			AuthorizedTokenResponse response = await this.WebWorker.ProcessUserAuthorizationAsync(cancellationToken);
 			if (response == null) {
 				return AuthenticationResult.Failed;
 			}
 
-			AuthenticationResult result = this.VerifyAuthenticationCore(response);
+			AuthenticationResult result = await this.VerifyAuthenticationCoreAsync(response, cancellationToken);
 			if (result.IsSuccessful && result.ExtraData != null) {
 				// add the access token to the user data dictionary just in case page developers want to use it
 				var wrapExtraData = result.ExtraData.IsReadOnly
@@ -179,7 +181,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <returns>
 		/// Authentication result 
 		/// </returns>
-		protected abstract AuthenticationResult VerifyAuthenticationCore(AuthorizedTokenResponse response);
+		protected abstract Task<AuthenticationResult> VerifyAuthenticationCoreAsync(AuthorizedTokenResponse response, CancellationToken cancellationToken);
 		#endregion
 	}
 }

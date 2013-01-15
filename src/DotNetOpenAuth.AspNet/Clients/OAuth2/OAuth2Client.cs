@@ -8,6 +8,8 @@ namespace DotNetOpenAuth.AspNet.Clients {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
 	using Validation;
 
@@ -63,7 +65,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <param name="returnUrl">
 		/// The return url after users have completed authenticating against external website. 
 		/// </param>
-		public virtual void RequestAuthentication(HttpContextBase context, Uri returnUrl) {
+		public virtual async Task RequestAuthenticationAsync(HttpContextBase context, Uri returnUrl, CancellationToken cancellationToken = default(CancellationToken)) {
 			Requires.NotNull(context, "context");
 			Requires.NotNull(returnUrl, "returnUrl");
 
@@ -80,7 +82,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <returns>
 		/// An instance of <see cref="AuthenticationResult"/> containing authentication result. 
 		/// </returns>
-		public AuthenticationResult VerifyAuthentication(HttpContextBase context) {
+		public Task<AuthenticationResult> VerifyAuthenticationAsync(HttpContextBase context, CancellationToken cancellationToken = default(CancellationToken)) {
 			throw new InvalidOperationException(WebResources.OAuthRequireReturnUrl);
 		}
 
@@ -92,7 +94,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <returns>
 		/// An instance of <see cref="AuthenticationResult"/> containing authentication result.
 		/// </returns>
-		public virtual AuthenticationResult VerifyAuthentication(HttpContextBase context, Uri returnPageUrl) {
+		public virtual async Task<AuthenticationResult> VerifyAuthenticationAsync(HttpContextBase context, Uri returnPageUrl, CancellationToken cancellationToken = default(CancellationToken)) {
 			Requires.NotNull(context, "context");
 
 			string code = context.Request.QueryString["code"];

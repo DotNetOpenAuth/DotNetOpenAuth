@@ -10,6 +10,9 @@ namespace DotNetOpenAuth.AspNet.Clients {
 	using System.Diagnostics.CodeAnalysis;
 	using System.IO;
 	using System.Net;
+	using System.Net.Http;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Xml.Linq;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth;
@@ -87,34 +90,40 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// </returns>
 		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes",
 			Justification = "We don't care if the request fails.")]
-		protected override AuthenticationResult VerifyAuthenticationCore(AuthorizedTokenResponse response) {
+		protected override async Task<AuthenticationResult> VerifyAuthenticationCoreAsync(AuthorizedTokenResponse response, CancellationToken cancellationToken = default(CancellationToken)) {
 			// See here for Field Selectors API http://developer.linkedin.com/docs/DOC-1014
 			const string ProfileRequestUrl = "https://api.linkedin.com/v1/people/~:(id,first-name,last-name,headline,industry,summary)";
 
 			string accessToken = response.AccessToken;
 
 			var profileEndpoint = new MessageReceivingEndpoint(ProfileRequestUrl, HttpDeliveryMethods.GetRequest);
-			HttpWebRequest request = this.WebWorker.PrepareAuthorizedRequest(profileEndpoint, accessToken);
+			HttpRequestMessage request = await this.WebWorker.PrepareAuthorizedRequestAsync(profileEndpoint, accessToken, cancellationToken);
 
 			try {
-				using (WebResponse profileResponse = request.GetResponse()) {
-					using (Stream responseStream = profileResponse.GetResponseStream()) {
-						XDocument document = LoadXDocumentFromStream(responseStream);
-						string userId = document.Root.Element("id").Value;
+				using(var httpClient = new HttpClient()) {
+					using (HttpResponseMessage profileResponse = await httpClient.SendAsync(request, cancellationToken)) {
+						using (Stream responseStream = await profileResponse.Content.ReadAsStreamAsync()) {
+							XDocument document = LoadXDocumentFromStream(responseStream);
+							string userId = document.Root.Element("id").Value;
 
-						string firstName = document.Root.Element("first-name").Value;
-						string lastName = document.Root.Element("last-name").Value;
-						string userName = firstName + " " + lastName;
+							string firstName = document.Root.Element("first-name").Value;
+							string lastName = document.Root.Element("last-name").Value;
+							string userName = firstName + " " + lastName;
 
-						var extraData = new Dictionary<string, string>();
-						extraData.Add("accesstoken", accessToken);
-						extraData.Add("name", userName);
-						extraData.AddDataIfNotEmpty(document, "headline");
-						extraData.AddDataIfNotEmpty(document, "summary");
-						extraData.AddDataIfNotEmpty(document, "industry");
+							var extraData = new Dictionary<string, string>();
+							extraData.Add("accesstoken", accessToken);
+							extraData.Add("name", userName);
+							extraData.AddDataIfNotEmpty(document, "headline");
+							extraData.AddDataIfNotEmpty(document, "summary");
+							extraData.AddDataIfNotEmpty(document, "industry");
 
-						return new AuthenticationResult(
-							isSuccessful: true, provider: this.ProviderName, providerUserId: userId, userName: userName, extraData: extraData);
+							return new AuthenticationResult(
+								isSuccessful: true,
+								provider: this.ProviderName,
+								providerUserId: userId,
+								userName: userName,
+								extraData: extraData);
+						}
 					}
 				}
 			}

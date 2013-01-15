@@ -6,6 +6,8 @@
 
 namespace DotNetOpenAuth.AspNet {
 	using System;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
 
 	/// <summary>
@@ -26,7 +28,7 @@ namespace DotNetOpenAuth.AspNet {
 		/// <param name="returnUrl">
 		/// The return url after users have completed authenticating against external website. 
 		/// </param>
-		void RequestAuthentication(HttpContextBase context, Uri returnUrl);
+		Task RequestAuthenticationAsync(HttpContextBase context, Uri returnUrl, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Check if authentication succeeded after user is redirected back from the service provider.
@@ -37,6 +39,6 @@ namespace DotNetOpenAuth.AspNet {
 		/// <returns>
 		/// An instance of <see cref="AuthenticationResult"/> containing authentication result. 
 		/// </returns>
-		AuthenticationResult VerifyAuthentication(HttpContextBase context);
+		Task<AuthenticationResult> VerifyAuthenticationAsync(HttpContextBase context, CancellationToken cancellationToken = default(CancellationToken));
 	}
 }

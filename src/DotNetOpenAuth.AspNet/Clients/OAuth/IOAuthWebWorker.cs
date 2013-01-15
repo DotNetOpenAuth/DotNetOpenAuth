@@ -7,6 +7,9 @@
 namespace DotNetOpenAuth.AspNet.Clients {
 	using System;
 	using System.Net;
+	using System.Net.Http;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth.Messages;
 
@@ -26,13 +29,13 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// The access token.
 		/// </param>
 		/// <returns>An HTTP request.</returns>
-		HttpWebRequest PrepareAuthorizedRequest(MessageReceivingEndpoint profileEndpoint, string accessToken);
+		Task<HttpRequestMessage> PrepareAuthorizedRequestAsync(MessageReceivingEndpoint profileEndpoint, string accessToken, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// The process user authorization.
 		/// </summary>
 		/// <returns>The response message.</returns>
-		AuthorizedTokenResponse ProcessUserAuthorization();
+		Task<AuthorizedTokenResponse> ProcessUserAuthorizationAsync(CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// The request authentication.
@@ -40,7 +43,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <param name="callback">
 		/// The callback.
 		/// </param>
-		void RequestAuthentication(Uri callback);
+		Task<HttpResponseMessage> RequestAuthenticationAsync(Uri callback, CancellationToken cancellationToken = default(CancellationToken));
 
 		#endregion
 	}

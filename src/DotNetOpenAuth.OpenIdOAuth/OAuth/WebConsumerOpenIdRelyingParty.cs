@@ -9,6 +9,8 @@ namespace DotNetOpenAuth.OAuth {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.OAuth.Messages;
@@ -61,7 +63,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// The access token, if granted, is automatically stored in the <see cref="ConsumerBase.TokenManager"/>.
 		/// The token manager instance must implement <see cref="IOpenIdOAuthTokenManager"/>.
 		/// </remarks>
-		public AuthorizedTokenResponse ProcessUserAuthorization(IAuthenticationResponse openIdAuthenticationResponse) {
+		public async Task<AuthorizedTokenResponse> ProcessUserAuthorizationAsync(IAuthenticationResponse openIdAuthenticationResponse, CancellationToken cancellationToken = default(CancellationToken)) {
 			Requires.NotNull(openIdAuthenticationResponse, "openIdAuthenticationResponse");
 			RequiresEx.ValidState(this.TokenManager is IOpenIdOAuthTokenManager);
 			var openidTokenManager = this.TokenManager as IOpenIdOAuthTokenManager;
@@ -87,7 +89,7 @@ namespace DotNetOpenAuth.OAuth {
 
 			// Retrieve the access token and store it in the token manager.
 			openidTokenManager.StoreOpenIdAuthorizedRequestToken(this.ConsumerKey, positiveAuthorization);
-			var grantAccess = this.Channel.Request<AuthorizedTokenResponse>(requestAccess);
+			var grantAccess = await this.Channel.RequestAsync<AuthorizedTokenResponse>(requestAccess, cancellationToken);
 			this.TokenManager.ExpireRequestTokenAndStoreNewAccessToken(this.ConsumerKey, positiveAuthorization.RequestToken, grantAccess.AccessToken, grantAccess.TokenSecret);
 
 			// Provide the caller with the access token so it may be associated with the user

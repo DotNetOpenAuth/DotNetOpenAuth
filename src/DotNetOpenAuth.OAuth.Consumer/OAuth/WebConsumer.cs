@@ -7,6 +7,8 @@
 namespace DotNetOpenAuth.OAuth {
 	using System;
 	using System.Collections.Generic;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth.ChannelElements;
@@ -39,9 +41,9 @@ namespace DotNetOpenAuth.OAuth {
 		/// <remarks>
 		/// Requires HttpContext.Current.
 		/// </remarks>
-		public UserAuthorizationRequest PrepareRequestUserAuthorization() {
+		public Task<UserAuthorizationRequest> PrepareRequestUserAuthorizationAsync(CancellationToken cancellationToken = default(CancellationToken)) {
 			Uri callback = this.Channel.GetRequestFromContext().GetPublicFacingUrl().StripQueryArgumentsWithPrefix(Protocol.ParameterPrefix);
-			return this.PrepareRequestUserAuthorization(callback, null, null);
+			return this.PrepareRequestUserAuthorizationAsync(callback, null, null, cancellationToken);
 		}
 
 		/// <summary>
@@ -55,20 +57,8 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="requestParameters">Extra parameters to add to the request token message.  Optional.</param>
 		/// <param name="redirectParameters">Extra parameters to add to the redirect to Service Provider message.  Optional.</param>
 		/// <returns>The pending user agent redirect based message to be sent as an HttpResponse.</returns>
-		public UserAuthorizationRequest PrepareRequestUserAuthorization(Uri callback, IDictionary<string, string> requestParameters, IDictionary<string, string> redirectParameters) {
-			string token;
-			return this.PrepareRequestUserAuthorization(callback, requestParameters, redirectParameters, out token);
-		}
-
-		/// <summary>
-		/// Processes an incoming authorization-granted message from an SP and obtains an access token.
-		/// </summary>
-		/// <returns>The access token, or null if no incoming authorization message was recognized.</returns>
-		/// <remarks>
-		/// Requires HttpContext.Current.
-		/// </remarks>
-		public AuthorizedTokenResponse ProcessUserAuthorization() {
-			return this.ProcessUserAuthorization(this.Channel.GetRequestFromContext());
+		public Task<UserAuthorizationRequest> PrepareRequestUserAuthorizationAsync(Uri callback, IDictionary<string, string> requestParameters, IDictionary<string, string> redirectParameters, CancellationToken cancellationToken = default(CancellationToken)) {
+			return this.PrepareRequestUserAuthorizationAsync(callback, requestParameters, redirectParameters, cancellationToken);
 		}
 
 		/// <summary>
@@ -76,14 +66,14 @@ namespace DotNetOpenAuth.OAuth {
 		/// </summary>
 		/// <param name="request">The incoming HTTP request.</param>
 		/// <returns>The access token, or null if no incoming authorization message was recognized.</returns>
-		public AuthorizedTokenResponse ProcessUserAuthorization(HttpRequestBase request) {
-			Requires.NotNull(request, "request");
+		public async Task<AuthorizedTokenResponse> ProcessUserAuthorizationAsync(HttpRequestBase request = null, CancellationToken cancellationToken = default(CancellationToken)) {
+			request = request ?? this.Channel.GetRequestFromContext();
 
-			UserAuthorizationResponse authorizationMessage;
-			if (this.Channel.TryReadFromRequest<UserAuthorizationResponse>(request, out authorizationMessage)) {
+			var authorizationMessage = await this.Channel.TryReadFromRequestAsync<UserAuthorizationResponse>(cancellationToken, request);
+			if (authorizationMessage != null) {
 				string requestToken = authorizationMessage.RequestToken;
 				string verifier = authorizationMessage.VerificationCode;
-				return this.ProcessUserAuthorization(requestToken, verifier);
+				return await this.ProcessUserAuthorizationAsync(requestToken, verifier, cancellationToken);
 			} else {
 				return null;
 			}

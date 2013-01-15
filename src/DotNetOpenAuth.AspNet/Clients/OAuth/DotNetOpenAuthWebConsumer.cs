@@ -8,6 +8,9 @@ namespace DotNetOpenAuth.AspNet.Clients {
 	using System;
 	using System.Collections.Generic;
 	using System.Net;
+	using System.Net.Http;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.ChannelElements;
@@ -59,16 +62,16 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// The access token.
 		/// </param>
 		/// <returns>An HTTP request.</returns>
-		public HttpWebRequest PrepareAuthorizedRequest(MessageReceivingEndpoint profileEndpoint, string accessToken) {
-			return this.webConsumer.PrepareAuthorizedRequest(profileEndpoint, accessToken);
+		public Task<HttpRequestMessage> PrepareAuthorizedRequestAsync(MessageReceivingEndpoint profileEndpoint, string accessToken, CancellationToken cancellationToken = default(CancellationToken)) {
+			return this.webConsumer.PrepareAuthorizedRequestAsync(profileEndpoint, accessToken, cancellationToken);
 		}
 
 		/// <summary>
 		/// The process user authorization.
 		/// </summary>
 		/// <returns>The response message.</returns>
-		public AuthorizedTokenResponse ProcessUserAuthorization() {
-			return this.webConsumer.ProcessUserAuthorization();
+		public Task<AuthorizedTokenResponse> ProcessUserAuthorizationAsync(CancellationToken cancellationToken = default(CancellationToken)) {
+			return this.webConsumer.ProcessUserAuthorizationAsync(cancellationToken: cancellationToken);
 		}
 
 		/// <summary>
@@ -77,11 +80,12 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <param name="callback">
 		/// The callback.
 		/// </param>
-		public void RequestAuthentication(Uri callback) {
+		public async Task<HttpResponseMessage> RequestAuthenticationAsync(Uri callback, CancellationToken cancellationToken = default(CancellationToken)) {
 			var redirectParameters = new Dictionary<string, string>();
-			UserAuthorizationRequest request = this.webConsumer.PrepareRequestUserAuthorization(
-				callback, null, redirectParameters);
-			this.webConsumer.Channel.PrepareResponse(request).Send();
+			UserAuthorizationRequest request = await this.webConsumer.PrepareRequestUserAuthorizationAsync(
+				callback, null, redirectParameters, cancellationToken);
+			var response = await this.webConsumer.Channel.PrepareResponseAsync(request, cancellationToken);
+			return response;
 		}
 
 		#endregion

@@ -302,7 +302,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			var httpRequest = new HttpRequestMessage(GetHttpMethod(requestMessage), recipientBuilder.Uri);
 			this.PrepareHttpWebRequest(httpRequest);
 
-			httpRequest.Headers.Authorization = new AuthenticationHeaderValue(MessagingUtilities.AssembleAuthorizationHeader(Protocol.AuthorizationHeaderScheme, fields));
+			httpRequest.Headers.Authorization = new AuthenticationHeaderValue(Protocol.AuthorizationHeaderScheme, MessagingUtilities.AssembleAuthorizationHeader(fields));
 
 			if (hasEntity) {
 				var requestMessageWithBinaryData = requestMessage as IMessageWithBinaryData;

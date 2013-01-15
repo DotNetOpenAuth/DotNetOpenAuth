@@ -8,6 +8,8 @@ namespace DotNetOpenAuth.AspNet {
 	using System;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
 	using System.Web.Security;
 	using DotNetOpenAuth.AspNet.Clients;
@@ -144,7 +146,7 @@ namespace DotNetOpenAuth.AspNet {
 		/// <param name="returnUrl">
 		/// The return url after user is authenticated. 
 		/// </param>
-		public void RequestAuthentication(string returnUrl) {
+		public async Task RequestAuthenticationAsync(string returnUrl, CancellationToken cancellationToken = default(CancellationToken)) {
 			// convert returnUrl to an absolute path
 			Uri uri;
 			if (!string.IsNullOrEmpty(returnUrl)) {
@@ -176,7 +178,7 @@ namespace DotNetOpenAuth.AspNet {
 			this.requestContext.Response.Cookies.Add(xsrfCookie);
 
 			// issue the redirect to the external auth provider
-			this.authenticationProvider.RequestAuthentication(this.requestContext, uri);
+			await this.authenticationProvider.RequestAuthenticationAsync(this.requestContext, uri, cancellationToken);
 		}
 
 		/// <summary>
@@ -189,7 +191,7 @@ namespace DotNetOpenAuth.AspNet {
 		/// <returns>
 		/// The result of the authentication.
 		/// </returns>
-		public AuthenticationResult VerifyAuthentication(string returnUrl) {
+		public async Task<AuthenticationResult> VerifyAuthenticationAsync(string returnUrl, CancellationToken cancellationToken = default(CancellationToken)) {
 			// check for XSRF attack
 			string sessionId;
 			bool successful = this.ValidateRequestAgainstXsrfAttack(out sessionId);
@@ -223,7 +225,7 @@ namespace DotNetOpenAuth.AspNet {
 				uri = uri.AttachQueryStringParameter(SessionIdQueryStringName, sessionId);
 
 				try {
-					AuthenticationResult result = oauth2Client.VerifyAuthentication(this.requestContext, uri);
+					AuthenticationResult result = await oauth2Client.VerifyAuthenticationAsync(this.requestContext, uri, cancellationToken);
 					if (!result.IsSuccessful) {
 						// if the result is a Failed result, creates a new Failed response which has providerName info.
 						result = new AuthenticationResult(
@@ -241,7 +243,7 @@ namespace DotNetOpenAuth.AspNet {
 				}
 			}
 			else {
-				return this.authenticationProvider.VerifyAuthentication(this.requestContext);
+				return await this.authenticationProvider.VerifyAuthenticationAsync(this.requestContext, cancellationToken);
 			}
 		}
 

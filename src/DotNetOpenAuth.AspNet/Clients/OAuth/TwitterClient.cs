@@ -10,6 +10,9 @@ namespace DotNetOpenAuth.AspNet.Clients {
 	using System.Diagnostics.CodeAnalysis;
 	using System.IO;
 	using System.Net;
+	using System.Net.Http;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Xml.Linq;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth;
@@ -87,7 +90,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// </returns>
 		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes",
 			Justification = "We don't care if the request for additional data fails.")]
-		protected override AuthenticationResult VerifyAuthenticationCore(AuthorizedTokenResponse response) {
+		protected override async Task<AuthenticationResult> VerifyAuthenticationCoreAsync(AuthorizedTokenResponse response, CancellationToken cancellationToken) {
 			string accessToken = response.AccessToken;
 			string userId = response.ExtraData["user_id"];
 			string userName = response.ExtraData["screen_name"];
@@ -95,18 +98,20 @@ namespace DotNetOpenAuth.AspNet.Clients {
 			var profileRequestUrl = new Uri("https://api.twitter.com/1/users/show.xml?user_id="
 									   + MessagingUtilities.EscapeUriDataStringRfc3986(userId));
 			var profileEndpoint = new MessageReceivingEndpoint(profileRequestUrl, HttpDeliveryMethods.GetRequest);
-			HttpWebRequest request = this.WebWorker.PrepareAuthorizedRequest(profileEndpoint, accessToken);
+			HttpRequestMessage request = await this.WebWorker.PrepareAuthorizedRequestAsync(profileEndpoint, accessToken, cancellationToken);
 
 			var extraData = new Dictionary<string, string>();
 			extraData.Add("accesstoken", accessToken);
 			try {
-				using (WebResponse profileResponse = request.GetResponse()) {
-					using (Stream responseStream = profileResponse.GetResponseStream()) {
-						XDocument document = LoadXDocumentFromStream(responseStream);
-						extraData.AddDataIfNotEmpty(document, "name");
-						extraData.AddDataIfNotEmpty(document, "location");
-						extraData.AddDataIfNotEmpty(document, "description");
-						extraData.AddDataIfNotEmpty(document, "url");
+				using (var httpClient = new HttpClient()) {
+					using (HttpResponseMessage profileResponse = await httpClient.SendAsync(request)) {
+						using (Stream responseStream = await profileResponse.Content.ReadAsStreamAsync()) {
+							XDocument document = LoadXDocumentFromStream(responseStream);
+							extraData.AddDataIfNotEmpty(document, "name");
+							extraData.AddDataIfNotEmpty(document, "location");
+							extraData.AddDataIfNotEmpty(document, "description");
+							extraData.AddDataIfNotEmpty(document, "url");
+						}
 					}
 				}
 			}

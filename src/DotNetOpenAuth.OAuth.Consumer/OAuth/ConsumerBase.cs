@@ -10,6 +10,9 @@ namespace DotNetOpenAuth.OAuth {
 	using System.Diagnostics.CodeAnalysis;
 	using System.Linq;
 	using System.Net;
+	using System.Net.Http;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
@@ -83,7 +86,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// <remarks>
 		/// The token secret is stored in the <see cref="TokenManager"/>.
 		/// </remarks>
-		public string RequestNewClientAccount(IDictionary<string, string> requestParameters = null) {
+		public async Task<string> RequestNewClientAccountAsync(IDictionary<string, string> requestParameters = null, CancellationToken cancellationToken = default(CancellationToken)) {
 			// Obtain an unauthorized request token.  Force use of OAuth 1.0 (not 1.0a) so that 
 			// we are not expected to provide an oauth_verifier which doesn't apply in 2-legged OAuth.
 			var token = new UnauthorizedTokenRequest(this.ServiceProvider.RequestTokenEndpoint, Protocol.V10.Version) {
@@ -91,14 +94,14 @@ namespace DotNetOpenAuth.OAuth {
 			};
 			var tokenAccessor = this.Channel.MessageDescriptions.GetAccessor(token);
 			tokenAccessor.AddExtraParameters(requestParameters);
-			var requestTokenResponse = this.Channel.Request<UnauthorizedTokenResponse>(token);
+			var requestTokenResponse = await this.Channel.RequestAsync<UnauthorizedTokenResponse>(token, cancellationToken);
 			this.TokenManager.StoreNewRequestToken(token, requestTokenResponse);
 
 			var requestAccess = new AuthorizedTokenRequest(this.ServiceProvider.AccessTokenEndpoint, Protocol.V10.Version) {
 				RequestToken = requestTokenResponse.RequestToken,
 				ConsumerKey = this.ConsumerKey,
 			};
-			var grantAccess = this.Channel.Request<AuthorizedTokenResponse>(requestAccess);
+			var grantAccess = await this.Channel.RequestAsync<AuthorizedTokenResponse>(requestAccess, cancellationToken);
 			this.TokenManager.ExpireRequestTokenAndStoreNewAccessToken(this.ConsumerKey, requestTokenResponse.RequestToken, grantAccess.AccessToken, grantAccess.TokenSecret);
 			return grantAccess.AccessToken;
 		}
@@ -110,11 +113,11 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="endpoint">The URL and method on the Service Provider to send the request to.</param>
 		/// <param name="accessToken">The access token that permits access to the protected resource.</param>
 		/// <returns>The initialized WebRequest object.</returns>
-		public HttpWebRequest PrepareAuthorizedRequest(MessageReceivingEndpoint endpoint, string accessToken) {
+		public Task<HttpRequestMessage> PrepareAuthorizedRequestAsync(MessageReceivingEndpoint endpoint, string accessToken, CancellationToken cancellationToken = default(CancellationToken)) {
 			Requires.NotNull(endpoint, "endpoint");
 			Requires.NotNullOrEmpty(accessToken, "accessToken");
 
-			return this.PrepareAuthorizedRequest(endpoint, accessToken, EmptyDictionary<string, string>.Instance);
+			return this.PrepareAuthorizedRequestAsync(endpoint, accessToken, EmptyDictionary<string, string>.Instance, cancellationToken);
 		}
 
 		/// <summary>
@@ -125,7 +128,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="accessToken">The access token that permits access to the protected resource.</param>
 		/// <param name="extraData">Extra parameters to include in the message.  Must not be null, but may be empty.</param>
 		/// <returns>The initialized WebRequest object.</returns>
-		public HttpWebRequest PrepareAuthorizedRequest(MessageReceivingEndpoint endpoint, string accessToken, IDictionary<string, string> extraData) {
+		public Task<HttpRequestMessage> PrepareAuthorizedRequestAsync(MessageReceivingEndpoint endpoint, string accessToken, IDictionary<string, string> extraData, CancellationToken cancellationToken = default(CancellationToken)) {
 			Requires.NotNull(endpoint, "endpoint");
 			Requires.NotNullOrEmpty(accessToken, "accessToken");
 			Requires.NotNull(extraData, "extraData");
@@ -135,8 +138,7 @@ namespace DotNetOpenAuth.OAuth {
 				message.ExtraData.Add(pair);
 			}
 
-			HttpWebRequest wr = this.OAuthChannel.InitializeRequest(message);
-			return wr;
+			return this.OAuthChannel.InitializeRequestAsync(message, cancellationToken);
 		}
 
 		/// <summary>
@@ -146,18 +148,17 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="accessToken">The access token that permits access to the protected resource.</param>
 		/// <param name="binaryData">Extra parameters to include in the message.  Must not be null, but may be empty.</param>
 		/// <returns>The initialized WebRequest object.</returns>
-		public HttpWebRequest PrepareAuthorizedRequest(MessageReceivingEndpoint endpoint, string accessToken, IEnumerable<MultipartPostPart> binaryData) {
+		public Task<HttpRequestMessage> PrepareAuthorizedRequestAsync(MessageReceivingEndpoint endpoint, string accessToken, IDictionary<string, HttpContent> binaryData, CancellationToken cancellationToken = default(CancellationToken)) {
 			Requires.NotNull(endpoint, "endpoint");
 			Requires.NotNullOrEmpty(accessToken, "accessToken");
 			Requires.NotNull(binaryData, "binaryData");
 
 			AccessProtectedResourceRequest message = this.CreateAuthorizingMessage(endpoint, accessToken);
-			foreach (MultipartPostPart part in binaryData) {
+			foreach (var part in binaryData) {
 				message.BinaryData.Add(part);
 			}
 
-			HttpWebRequest wr = this.OAuthChannel.InitializeRequest(message);
-			return wr;
+			return this.OAuthChannel.InitializeRequestAsync(message, cancellationToken);
 		}
 
 		/// <summary>
@@ -176,23 +177,9 @@ namespace DotNetOpenAuth.OAuth {
 		/// if and only if the <see cref="IMessage.ExtraData"/> dictionary is non-empty.
 		/// </remarks>
 		[SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Justification = "Type of parameter forces the method to apply only to specific scenario.")]
-		public HttpWebRequest PrepareAuthorizedRequest(AccessProtectedResourceRequest message) {
+		public Task<HttpRequestMessage> PrepareAuthorizedRequestAsync(AccessProtectedResourceRequest message, CancellationToken cancellationToken = default(CancellationToken)) {
 			Requires.NotNull(message, "message");
-			return this.OAuthChannel.InitializeRequest(message);
-		}
-
-		/// <summary>
-		/// Creates a web request prepared with OAuth authorization 
-		/// that may be further tailored by adding parameters by the caller.
-		/// </summary>
-		/// <param name="endpoint">The URL and method on the Service Provider to send the request to.</param>
-		/// <param name="accessToken">The access token that permits access to the protected resource.</param>
-		/// <returns>The initialized WebRequest object.</returns>
-		/// <exception cref="WebException">Thrown if the request fails for any reason after it is sent to the Service Provider.</exception>
-		public IncomingWebResponse PrepareAuthorizedRequestAndSend(MessageReceivingEndpoint endpoint, string accessToken) {
-			IDirectedProtocolMessage message = this.CreateAuthorizingMessage(endpoint, accessToken);
-			HttpWebRequest wr = this.OAuthChannel.InitializeRequest(message);
-			return this.Channel.WebRequestHandler.GetResponse(wr);
+			return this.OAuthChannel.InitializeRequestAsync(message, cancellationToken);
 		}
 
 		#region IDisposable Members
@@ -239,7 +226,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="requestToken">The request token that must be exchanged for an access token after the user has provided authorization.</param>
 		/// <returns>The pending user agent redirect based message to be sent as an HttpResponse.</returns>
 		[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "3#", Justification = "Two results")]
-		protected internal UserAuthorizationRequest PrepareRequestUserAuthorization(Uri callback, IDictionary<string, string> requestParameters, IDictionary<string, string> redirectParameters, out string requestToken) {
+		protected internal async Task<UserAuthorizationRequest> PrepareRequestUserAuthorizationAsync(Uri callback, IDictionary<string, string> requestParameters, IDictionary<string, string> redirectParameters, CancellationToken cancellationToken = default(CancellationToken)) {
 			// Obtain an unauthorized request token.  Assume the OAuth version given in the service description.
 			var token = new UnauthorizedTokenRequest(this.ServiceProvider.RequestTokenEndpoint, this.ServiceProvider.Version) {
 				ConsumerKey = this.ConsumerKey,
@@ -247,7 +234,7 @@ namespace DotNetOpenAuth.OAuth {
 			};
 			var tokenAccessor = this.Channel.MessageDescriptions.GetAccessor(token);
 			tokenAccessor.AddExtraParameters(requestParameters);
-			var requestTokenResponse = this.Channel.Request<UnauthorizedTokenResponse>(token);
+			var requestTokenResponse = await this.Channel.RequestAsync<UnauthorizedTokenResponse>(token, cancellationToken);
 			this.TokenManager.StoreNewRequestToken(token, requestTokenResponse);
 
 			// Fine-tune our understanding of the SP's supported OAuth version if it's wrong.
@@ -264,7 +251,6 @@ namespace DotNetOpenAuth.OAuth {
 			};
 			var requestAuthorizationAccessor = this.Channel.MessageDescriptions.GetAccessor(requestAuthorization);
 			requestAuthorizationAccessor.AddExtraParameters(redirectParameters);
-			requestToken = requestAuthorization.RequestToken;
 			return requestAuthorization;
 		}
 
@@ -276,7 +262,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// <returns>
 		/// The access token assigned by the Service Provider.
 		/// </returns>
-		protected AuthorizedTokenResponse ProcessUserAuthorization(string requestToken, string verifier) {
+		protected async Task<AuthorizedTokenResponse> ProcessUserAuthorizationAsync(string requestToken, string verifier, CancellationToken cancellationToken = default(CancellationToken)) {
 			Requires.NotNullOrEmpty(requestToken, "requestToken");
 
 			var requestAccess = new AuthorizedTokenRequest(this.ServiceProvider.AccessTokenEndpoint, this.ServiceProvider.Version) {
@@ -284,7 +270,7 @@ namespace DotNetOpenAuth.OAuth {
 				VerificationCode = verifier,
 				ConsumerKey = this.ConsumerKey,
 			};
-			var grantAccess = this.Channel.Request<AuthorizedTokenResponse>(requestAccess);
+			var grantAccess = await this.Channel.RequestAsync<AuthorizedTokenResponse>(requestAccess, cancellationToken);
 			this.TokenManager.ExpireRequestTokenAndStoreNewAccessToken(this.ConsumerKey, requestToken, grantAccess.AccessToken, grantAccess.TokenSecret);
 			return grantAccess;
 		}

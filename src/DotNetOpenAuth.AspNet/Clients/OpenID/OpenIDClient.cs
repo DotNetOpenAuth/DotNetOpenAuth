@@ -8,6 +8,8 @@ namespace DotNetOpenAuth.AspNet.Clients {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
@@ -87,16 +89,16 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// </param>
 		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings",
 			Justification = "We don't have a Uri object handy.")]
-		public virtual void RequestAuthentication(HttpContextBase context, Uri returnUrl) {
+		public virtual async Task RequestAuthenticationAsync(HttpContextBase context, Uri returnUrl, CancellationToken cancellationToken = default(CancellationToken)) {
 			Requires.NotNull(returnUrl, "returnUrl");
 
 			var realm = new Realm(returnUrl.GetComponents(UriComponents.SchemeAndServer, UriFormat.Unescaped));
-			IAuthenticationRequest request = RelyingParty.CreateRequest(this.providerIdentifier, realm, returnUrl);
+			IAuthenticationRequest request = await RelyingParty.CreateRequestAsync(this.providerIdentifier, realm, returnUrl, cancellationToken);
 
 			// give subclasses a chance to modify request message, e.g. add extension attributes, etc.
 			this.OnBeforeSendingAuthenticationRequest(request);
 
-			request.RedirectToProvider();
+			await request.RedirectToProviderAsync(context);
 		}
 
 		/// <summary>
@@ -108,8 +110,8 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <returns>
 		/// An instance of <see cref="AuthenticationResult"/> containing authentication result. 
 		/// </returns>
-		public virtual AuthenticationResult VerifyAuthentication(HttpContextBase context) {
-			IAuthenticationResponse response = RelyingParty.GetResponse();
+		public virtual async Task<AuthenticationResult> VerifyAuthenticationAsync(HttpContextBase context, CancellationToken cancellationToken = default(CancellationToken)) {
+			IAuthenticationResponse response = await RelyingParty.GetResponseAsync(context.Request, cancellationToken);
 			if (response == null) {
 				throw new InvalidOperationException(WebResources.OpenIDFailedToGetResponse);
 			}
