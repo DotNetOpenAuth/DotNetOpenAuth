@@ -554,6 +554,28 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Adds just the binary data part of a message to a multipart form content object.
+		/// </summary>
+		/// <param name="requestMessageWithBinaryData">The request message with binary data.</param>
+		/// <returns>The initialized HttpContent.</returns>
+		protected static MultipartFormDataContent InitializeMultipartFormDataContent(IMessageWithBinaryData requestMessageWithBinaryData) {
+			Requires.NotNull(requestMessageWithBinaryData, "requestMessageWithBinaryData");
+
+			var content = new MultipartFormDataContent();
+			foreach (var part in requestMessageWithBinaryData.BinaryData) {
+				if (string.IsNullOrEmpty(part.Name)) {
+					content.Add(part.Content);
+				} else if (string.IsNullOrEmpty(part.FileName)) {
+					content.Add(part.Content, part.Name);
+				} else {
+					content.Add(part.Content, part.Name, part.FileName);
+				}
+			}
+
+			return content;
+		}
+
+		/// <summary>
 		/// Checks whether a given HTTP method is expected to include an entity body in its request.
 		/// </summary>
 		/// <param name="httpMethod">The HTTP method.</param>
@@ -1041,10 +1063,7 @@ namespace DotNetOpenAuth.Messaging {
 
 			var requestMessageWithBinaryData = requestMessage as IMessageWithBinaryData;
 			if (requestMessageWithBinaryData != null && requestMessageWithBinaryData.SendAsMultipart) {
-				var content = new MultipartFormDataContent();
-				foreach (var part in requestMessageWithBinaryData.BinaryData) {
-					content.Add(part.Value, part.Key);
-				}
+				var content = InitializeMultipartFormDataContent(requestMessageWithBinaryData);
 
 				// When sending multi-part, all data gets send as multi-part -- even the non-binary data.
 				foreach (var field in fields) {

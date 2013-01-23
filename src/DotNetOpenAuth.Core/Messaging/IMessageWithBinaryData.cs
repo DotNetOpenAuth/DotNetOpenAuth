@@ -20,7 +20,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// Gets the parts of the message that carry binary data.
 		/// </summary>
 		/// <value>A list of parts.  Never null.</value>
-		IDictionary<string, HttpContent> BinaryData { get; }
+		IList<MultipartContentMember> BinaryData { get; }
 
 		/// <summary>
 		/// Gets a value indicating whether this message should be sent as multi-part POST.

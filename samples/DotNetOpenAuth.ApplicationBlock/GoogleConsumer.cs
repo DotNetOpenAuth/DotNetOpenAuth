@@ -4,7 +4,8 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.ApplicationBlock {
+namespace DotNetOpenAuth.ApplicationBlock
+{
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
@@ -12,9 +13,13 @@ namespace DotNetOpenAuth.ApplicationBlock {
 	using System.IO;
 	using System.Linq;
 	using System.Net;
+	using System.Net.Http;
+	using System.Net.Http.Headers;
 	using System.Security.Cryptography.X509Certificates;
 	using System.Text;
 	using System.Text.RegularExpressions;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Xml;
 	using System.Xml.Linq;
 	using DotNetOpenAuth.Messaging;
@@ -24,7 +29,8 @@ namespace DotNetOpenAuth.ApplicationBlock {
 	/// <summary>
 	/// A consumer capable of communicating with Google Data APIs.
 	/// </summary>
-	public static class GoogleConsumer {
+	public static class GoogleConsumer
+	{
 		/// <summary>
 		/// The Consumer to use for accessing Google data APIs.
 		/// </summary>
@@ -66,7 +72,8 @@ namespace DotNetOpenAuth.ApplicationBlock {
 		/// The many specific authorization scopes Google offers.
 		/// </summary>
 		[Flags]
-		public enum Applications : long {
+		public enum Applications : long
+		{
 			/// <summary>
 			/// The Gmail address book.
 			/// </summary>
@@ -172,7 +179,7 @@ namespace DotNetOpenAuth.ApplicationBlock {
 		/// </summary>
 		/// <param name="consumer">The Google consumer previously constructed using <see cref="CreateWebConsumer"/> or <see cref="CreateDesktopConsumer"/>.</param>
 		/// <param name="requestedAccessScope">The requested access scope.</param>
-		public static void RequestAuthorization(WebConsumer consumer, Applications requestedAccessScope) {
+		public static async Task RequestAuthorizationAsync(WebConsumer consumer, Applications requestedAccessScope, CancellationToken cancellationToken = default(CancellationToken)) {
 			if (consumer == null) {
 				throw new ArgumentNullException("consumer");
 			}
@@ -181,8 +188,9 @@ namespace DotNetOpenAuth.ApplicationBlock {
 				{ "scope", GetScopeUri(requestedAccessScope) },
 			};
 			Uri callback = Util.GetCallbackUrlFromContext();
-			var request = consumer.PrepareRequestUserAuthorization(callback, extraParameters, null);
-			consumer.Channel.Send(request);
+			var request = await consumer.PrepareRequestUserAuthorizationAsync(callback, extraParameters, null, cancellationToken);
+			var redirectingResponse = await consumer.Channel.PrepareResponseAsync(request, cancellationToken);
+			redirectingResponse.Send();
 		}
 
 		/// <summary>
@@ -191,8 +199,8 @@ namespace DotNetOpenAuth.ApplicationBlock {
 		/// <param name="consumer">The Google consumer previously constructed using <see cref="CreateWebConsumer"/> or <see cref="CreateDesktopConsumer"/>.</param>
 		/// <param name="requestedAccessScope">The requested access scope.</param>
 		/// <param name="requestToken">The unauthorized request token assigned by Google.</param>
-		/// <returns>The request token</returns>
-		public static Uri RequestAuthorization(DesktopConsumer consumer, Applications requestedAccessScope, out string requestToken) {
+		/// <returns>The URI to redirect to and the request token.</returns>
+		public static Task<Tuple<Uri, string>> RequestAuthorization(DesktopConsumer consumer, Applications requestedAccessScope, CancellationToken cancellationToken = default(CancellationToken)) {
 			if (consumer == null) {
 				throw new ArgumentNullException("consumer");
 			}
@@ -201,7 +209,7 @@ namespace DotNetOpenAuth.ApplicationBlock {
 				{ "scope", GetScopeUri(requestedAccessScope) },
 			};
 
-			return consumer.RequestUserAuthorization(extraParameters, null, out requestToken);
+			return consumer.RequestUserAuthorizationAsync(extraParameters, null, cancellationToken);
 		}
 
 		/// <summary>
@@ -212,7 +220,7 @@ namespace DotNetOpenAuth.ApplicationBlock {
 		/// <param name="maxResults">The maximum number of entries to return. If you want to receive all of the contacts, rather than only the default maximum, you can specify a very large number here.</param>
 		/// <param name="startIndex">The 1-based index of the first result to be retrieved (for paging).</param>
 		/// <returns>An XML document returned by Google.</returns>
-		public static XDocument GetContacts(ConsumerBase consumer, string accessToken, int maxResults/* = 25*/, int startIndex/* = 1*/) {
+		public static async Task<XDocument> GetContactsAsync(ConsumerBase consumer, string accessToken, int maxResults = 25, int startIndex = 1, CancellationToken cancellationToken = default(CancellationToken)) {
 			if (consumer == null) {
 				throw new ArgumentNullException("consumer");
 			}
@@ -221,19 +229,22 @@ namespace DotNetOpenAuth.ApplicationBlock {
 				{ "start-index", startIndex.ToString(CultureInfo.InvariantCulture) },
 				{ "max-results", maxResults.ToString(CultureInfo.InvariantCulture) },
 			};
-			var request = consumer.PrepareAuthorizedRequest(GetContactsEndpoint, accessToken, extraData);
+			var request = await consumer.PrepareAuthorizedRequestAsync(GetContactsEndpoint, accessToken, extraData, cancellationToken);
 
 			// Enable gzip compression.  Google only compresses the response for recognized user agent headers. - Mike Lim
-			request.AutomaticDecompression = DecompressionMethods.GZip;
-			request.UserAgent = "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/534.16 (KHTML, like Gecko) Chrome/10.0.648.151 Safari/534.16";
+			var handler = new HttpClientHandler { AutomaticDecompression = DecompressionMethods.GZip };
+			request.Headers.UserAgent.Add(ProductInfoHeaderValue.Parse("Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/534.16 (KHTML, like Gecko) Chrome/10.0.648.151 Safari/534.16"));
 
-			var response = consumer.Channel.WebRequestHandler.GetResponse(request);
-			string body = response.GetResponseReader().ReadToEnd();
-			XDocument result = XDocument.Parse(body);
-			return result;
+			using (var httpClient = consumer.Channel.HostFactories.CreateHttpClient(handler)) {
+				using (var response = await httpClient.SendAsync(request, cancellationToken)) {
+					string body = await response.Content.ReadAsStringAsync();
+					XDocument result = XDocument.Parse(body);
+					return result;
+				}
+			}
 		}
 
-		public static void PostBlogEntry(ConsumerBase consumer, string accessToken, string blogUrl, string title, XElement body) {
+		public static async Task PostBlogEntryAsync(ConsumerBase consumer, string accessToken, string blogUrl, string title, XElement body, CancellationToken cancellationToken) {
 			string feedUrl;
 			var getBlogHome = WebRequest.Create(blogUrl);
 			using (var blogHomeResponse = getBlogHome.GetResponse()) {
@@ -258,20 +269,20 @@ namespace DotNetOpenAuth.ApplicationBlock {
 			XmlWriter xw = XmlWriter.Create(ms, xws);
 			entry.WriteTo(xw);
 			xw.Flush();
-
-			WebRequest request = consumer.PrepareAuthorizedRequest(new MessageReceivingEndpoint(feedUrl, HttpDeliveryMethods.PostRequest | HttpDeliveryMethods.AuthorizationHeaderRequest), accessToken);
-			request.ContentType = "application/atom+xml";
-			request.Method = "POST";
-			request.ContentLength = ms.Length;
 			ms.Seek(0, SeekOrigin.Begin);
-			using (Stream requestStream = request.GetRequestStream()) {
-				ms.CopyTo(requestStream);
-			}
-			using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
-				if (response.StatusCode == HttpStatusCode.Created) {
-					// Success
-				} else {
-					// Error!
+
+			var request = await consumer.PrepareAuthorizedRequestAsync(new MessageReceivingEndpoint(feedUrl, HttpDeliveryMethods.PostRequest | HttpDeliveryMethods.AuthorizationHeaderRequest), accessToken, cancellationToken);
+			request.Content = new StreamContent(ms);
+			request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/atom+xml");
+			request.Method = HttpMethod.Post;
+			using (var httpClient = consumer.Channel.HostFactories.CreateHttpClient()) {
+				using (var response = await httpClient.SendAsync(request, cancellationToken)) {
+					if (response.StatusCode == HttpStatusCode.Created) {
+						// Success
+					} else {
+						// Error!
+						response.EnsureSuccessStatusCode(); // throw some meaningful exception.
+					}
 				}
 			}
 		}

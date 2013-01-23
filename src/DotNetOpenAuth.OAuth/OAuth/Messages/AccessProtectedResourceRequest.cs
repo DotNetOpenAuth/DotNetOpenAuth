@@ -20,7 +20,7 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// <summary>
 		/// A store for the binary data that is carried in the message.
 		/// </summary>
-		private Dictionary<string, HttpContent> binaryData = new Dictionary<string, HttpContent>();
+		private List<MultipartContentMember> binaryData = new List<MultipartContentMember>();
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AccessProtectedResourceRequest"/> class.
@@ -58,7 +58,7 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// Gets the parts of the message that carry binary data.
 		/// </summary>
 		/// <value>A list of parts.  Never null.</value>
-		public IDictionary<string, HttpContent> BinaryData {
+		public IList<MultipartContentMember> BinaryData {
 			get { return this.binaryData; }
 		}
 

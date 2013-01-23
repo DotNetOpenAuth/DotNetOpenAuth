@@ -148,15 +148,13 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="accessToken">The access token that permits access to the protected resource.</param>
 		/// <param name="binaryData">Extra parameters to include in the message.  Must not be null, but may be empty.</param>
 		/// <returns>The initialized WebRequest object.</returns>
-		public Task<HttpRequestMessage> PrepareAuthorizedRequestAsync(MessageReceivingEndpoint endpoint, string accessToken, IDictionary<string, HttpContent> binaryData, CancellationToken cancellationToken = default(CancellationToken)) {
+		public Task<HttpRequestMessage> PrepareAuthorizedRequestAsync(MessageReceivingEndpoint endpoint, string accessToken, IEnumerable<MultipartContentMember> binaryData, CancellationToken cancellationToken = default(CancellationToken)) {
 			Requires.NotNull(endpoint, "endpoint");
 			Requires.NotNullOrEmpty(accessToken, "accessToken");
 			Requires.NotNull(binaryData, "binaryData");
 
 			AccessProtectedResourceRequest message = this.CreateAuthorizingMessage(endpoint, accessToken);
-			foreach (var part in binaryData) {
-				message.BinaryData.Add(part);
-			}
+			message.BinaryData.AddRange(binaryData);
 
 			return this.OAuthChannel.InitializeRequestAsync(message, cancellationToken);
 		}

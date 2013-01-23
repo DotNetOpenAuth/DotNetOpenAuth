@@ -309,11 +309,8 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 				if (requestMessageWithBinaryData != null && requestMessageWithBinaryData.SendAsMultipart) {
 					// Include the binary data in the multipart entity, and any standard text extra message data.
 					// The standard declared message parts are included in the authorization header.
-					var content = new MultipartFormDataContent();
+					var content = InitializeMultipartFormDataContent(requestMessageWithBinaryData);
 					httpRequest.Content = content;
-					foreach (var contentPart in requestMessageWithBinaryData.BinaryData) {
-						content.Add(contentPart.Value, contentPart.Key);
-					}
 
 					foreach (var extraData in requestMessage.ExtraData) {
 						content.Add(new StringContent(extraData.Value), extraData.Key);

@@ -4,18 +4,22 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.ApplicationBlock {
+namespace DotNetOpenAuth.ApplicationBlock
+{
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Net;
 	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.OAuth.Messages;
 
-	public static class YammerConsumer {
+	public static class YammerConsumer
+	{
 		/// <summary>
 		/// The Consumer to use for accessing Google data APIs.
 		/// </summary>
@@ -31,16 +35,15 @@ namespace DotNetOpenAuth.ApplicationBlock {
 			return new DesktopConsumer(ServiceDescription, tokenManager);
 		}
 
-		public static Uri PrepareRequestAuthorization(DesktopConsumer consumer, out string requestToken) {
+		public static Task<Tuple<Uri, string>> PrepareRequestAuthorizationAsync(DesktopConsumer consumer, CancellationToken cancellationToken = default(CancellationToken)) {
 			if (consumer == null) {
 				throw new ArgumentNullException("consumer");
 			}
 
-			Uri authorizationUrl = consumer.RequestUserAuthorization(null, null, out requestToken);
-			return authorizationUrl;
+			return consumer.RequestUserAuthorizationAsync(null, null, cancellationToken);
 		}
 
-		public static AuthorizedTokenResponse CompleteAuthorization(DesktopConsumer consumer, string requestToken, string userCode) {
+		public static async Task<AuthorizedTokenResponse> CompleteAuthorizationAsync(DesktopConsumer consumer, string requestToken, string userCode, CancellationToken cancellationToken = default(CancellationToken)) {
 			// Because Yammer has a proprietary callback_token parameter, and it's passed
 			// with the message that specifically bans extra arguments being passed, we have
 			// to cheat by adding the data to the URL itself here.
@@ -54,7 +57,7 @@ namespace DotNetOpenAuth.ApplicationBlock {
 
 			// To use a custom service description we also must create a new WebConsumer.
 			var customConsumer = new DesktopConsumer(customServiceDescription, consumer.TokenManager);
-			var response = customConsumer.ProcessUserAuthorization(requestToken, userCode);
+			var response = await customConsumer.ProcessUserAuthorizationAsync(requestToken, userCode, cancellationToken);
 			return response;
 		}
 	}

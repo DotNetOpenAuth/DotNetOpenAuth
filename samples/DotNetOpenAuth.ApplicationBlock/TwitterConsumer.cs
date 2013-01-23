@@ -11,11 +11,16 @@ namespace DotNetOpenAuth.ApplicationBlock {
 	using System.Globalization;
 	using System.IO;
 	using System.Net;
+	using System.Net.Http;
+	using System.Net.Http.Headers;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
 	using System.Xml;
 	using System.Xml.Linq;
 	using System.Xml.XPath;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 
@@ -125,50 +130,78 @@ namespace DotNetOpenAuth.ApplicationBlock {
 			}
 		}
 
-		public static XDocument GetUpdates(ConsumerBase twitter, string accessToken) {
-			IncomingWebResponse response = twitter.PrepareAuthorizedRequestAndSend(GetFriendTimelineStatusEndpoint, accessToken);
-			return XDocument.Load(XmlReader.Create(response.GetResponseReader()));
+		public static async Task<XDocument> GetUpdatesAsync(
+			ConsumerBase twitter, string accessToken, CancellationToken cancellationToken = default(CancellationToken)) {
+			var request = await twitter.PrepareAuthorizedRequestAsync(GetFriendTimelineStatusEndpoint, accessToken, cancellationToken);
+			using (var httpClient = twitter.Channel.HostFactories.CreateHttpClient()) {
+				using (var response = await httpClient.SendAsync(request)) {
+					using (var stream = await response.Content.ReadAsStreamAsync()) {
+						return XDocument.Load(XmlReader.Create(stream));
+					}
+				}
+			}
 		}
 
-		public static XDocument GetFavorites(ConsumerBase twitter, string accessToken) {
-			IncomingWebResponse response = twitter.PrepareAuthorizedRequestAndSend(GetFavoritesEndpoint, accessToken);
-			return XDocument.Load(XmlReader.Create(response.GetResponseReader()));
+		public static async Task<XDocument> GetFavorites(ConsumerBase twitter, string accessToken, CancellationToken cancellationToken = default(CancellationToken)) {
+			var request = await twitter.PrepareAuthorizedRequestAsync(GetFavoritesEndpoint, accessToken, cancellationToken);
+			using (var httpClient = twitter.Channel.HostFactories.CreateHttpClient()) {
+				using (HttpResponseMessage response = await httpClient.SendAsync(request)) {
+					return XDocument.Parse(await response.Content.ReadAsStringAsync());
+				}
+			}
 		}
 
-		public static XDocument UpdateProfileBackgroundImage(ConsumerBase twitter, string accessToken, string image, bool tile) {
-			var parts = new[] {
-				MultipartPostPart.CreateFormFilePart("image", image, "image/" + Path.GetExtension(image).Substring(1).ToLowerInvariant()),
-				MultipartPostPart.CreateFormPart("tile", tile.ToString().ToLowerInvariant()),
+		public static async Task<XDocument> UpdateProfileBackgroundImageAsync(ConsumerBase twitter, string accessToken, string image, bool tile, CancellationToken cancellationToken) {
+			var imageAttachment = new StreamContent(File.OpenRead(image));
+			imageAttachment.Headers.ContentType = new MediaTypeHeaderValue("image/" + Path.GetExtension(image).Substring(1).ToLowerInvariant());
+			var parts = new List<MultipartContentMember> {
+				new MultipartContentMember(imageAttachment , "image"),
+				new MultipartContentMember(new StringContent(tile.ToString().ToLowerInvariant()) , "tile"),
 			};
-			HttpWebRequest request = twitter.PrepareAuthorizedRequest(UpdateProfileBackgroundImageEndpoint, accessToken, parts);
-			request.ServicePoint.Expect100Continue = false;
-			IncomingWebResponse response = twitter.Channel.WebRequestHandler.GetResponse(request);
-			string responseString = response.GetResponseReader().ReadToEnd();
-			return XDocument.Parse(responseString);
+			HttpRequestMessage request = await twitter.PrepareAuthorizedRequestAsync(UpdateProfileBackgroundImageEndpoint, accessToken, parts, cancellationToken);
+			request.Headers.ExpectContinue = false;
+			using (var httpClient = twitter.Channel.HostFactories.CreateHttpClient()) {
+				using (HttpResponseMessage response = await httpClient.SendAsync(request)) {
+					string responseString = await response.Content.ReadAsStringAsync();
+					return XDocument.Parse(responseString);
+				}
+			}
 		}
 
-		public static XDocument UpdateProfileImage(ConsumerBase twitter, string accessToken, string pathToImage) {
+		public static Task<XDocument> UpdateProfileImageAsync(ConsumerBase twitter, string accessToken, string pathToImage, CancellationToken cancellationToken = default(CancellationToken)) {
 			string contentType = "image/" + Path.GetExtension(pathToImage).Substring(1).ToLowerInvariant();
-			return UpdateProfileImage(twitter, accessToken, File.OpenRead(pathToImage), contentType);
+			return UpdateProfileImageAsync(twitter, accessToken, File.OpenRead(pathToImage), contentType, cancellationToken);
 		}
 
-		public static XDocument UpdateProfileImage(ConsumerBase twitter, string accessToken, Stream image, string contentType) {
-			var parts = new[] {
-				MultipartPostPart.CreateFormFilePart("image", "twitterPhoto", contentType, image),
+		public static async Task<XDocument> UpdateProfileImageAsync(ConsumerBase twitter, string accessToken, Stream image, string contentType, CancellationToken cancellationToken = default(CancellationToken)) {
+			var imageAttachment = new StreamContent(image);
+			imageAttachment.Headers.ContentType = new MediaTypeHeaderValue(contentType);
+			var parts = new List<MultipartContentMember> {
+				new MultipartContentMember(imageAttachment,"image", "twitterPhoto"),
 			};
-			HttpWebRequest request = twitter.PrepareAuthorizedRequest(UpdateProfileImageEndpoint, accessToken, parts);
-			IncomingWebResponse response = twitter.Channel.WebRequestHandler.GetResponse(request);
-			string responseString = response.GetResponseReader().ReadToEnd();
-			return XDocument.Parse(responseString);
+
+			HttpRequestMessage request = await twitter.PrepareAuthorizedRequestAsync(UpdateProfileImageEndpoint, accessToken, parts, cancellationToken);
+			using (var httpClient = twitter.Channel.HostFactories.CreateHttpClient()) {
+				using (HttpResponseMessage response = await httpClient.SendAsync(request)) {
+					string responseString = await response.Content.ReadAsStringAsync();
+					return XDocument.Parse(responseString);
+				}
+			}
 		}
 
-		public static XDocument VerifyCredentials(ConsumerBase twitter, string accessToken) {
-			IncomingWebResponse response = twitter.PrepareAuthorizedRequestAndSend(VerifyCredentialsEndpoint, accessToken);
-			return XDocument.Load(XmlReader.Create(response.GetResponseReader()));
+		public static async Task<XDocument> VerifyCredentialsAsync(ConsumerBase twitter, string accessToken, CancellationToken cancellationToken = default(CancellationToken)) {
+			var request = await twitter.PrepareAuthorizedRequestAsync(VerifyCredentialsEndpoint, accessToken, cancellationToken);
+			using (var httpClient = twitter.Channel.HostFactories.CreateHttpClient()) {
+				using (var response = await httpClient.SendAsync(request)) {
+					using (var stream = await response.Content.ReadAsStreamAsync()) {
+						return XDocument.Load(XmlReader.Create(stream));
+					}
+				}
+			}
 		}
 
-		public static string GetUsername(ConsumerBase twitter, string accessToken) {
-			XDocument xml = VerifyCredentials(twitter, accessToken);
+		public static async Task<string> GetUsername(ConsumerBase twitter, string accessToken, CancellationToken cancellationToken = default(CancellationToken)) {
+			XDocument xml = await VerifyCredentialsAsync(twitter, accessToken, cancellationToken);
 			XPathNavigator nav = xml.CreateNavigator();
 			return nav.SelectSingleNode("/user/screen_name").Value;
 		}
@@ -183,42 +216,37 @@ namespace DotNetOpenAuth.ApplicationBlock {
 		/// <c>return StartSignInWithTwitter().<see cref="MessagingUtilities.AsActionResult">AsActionResult()</see></c>
 		/// to actually perform the redirect.
 		/// </remarks>
-		public static OutgoingWebResponse StartSignInWithTwitter(bool forceNewLogin) {
+		public static async Task<HttpResponseMessage> StartSignInWithTwitterAsync(bool forceNewLogin, CancellationToken cancellationToken) {
 			var redirectParameters = new Dictionary<string, string>();
 			if (forceNewLogin) {
 				redirectParameters["force_login"] = "true";
 			}
 			Uri callback = MessagingUtilities.GetRequestUrlFromContext().StripQueryArgumentsWithPrefix("oauth_");
-			var request = TwitterSignIn.PrepareRequestUserAuthorization(callback, null, redirectParameters);
-			return TwitterSignIn.Channel.PrepareResponse(request);
+			var request = await TwitterSignIn.PrepareRequestUserAuthorizationAsync(callback, null, redirectParameters, cancellationToken);
+			return await TwitterSignIn.Channel.PrepareResponseAsync(request, cancellationToken);
 		}
 
 		/// <summary>
 		/// Checks the incoming web request to see if it carries a Twitter authentication response,
 		/// and provides the user's Twitter screen name and unique id if available.
 		/// </summary>
-		/// <param name="screenName">The user's Twitter screen name.</param>
-		/// <param name="userId">The user's Twitter unique user ID.</param>
 		/// <returns>
-		/// A value indicating whether Twitter authentication was successful;
-		/// otherwise <c>false</c> to indicate that no Twitter response was present.
+		/// A tuple with the screen name and Twitter unique user ID if successful; otherwise <c>null</c>.
 		/// </returns>
-		public static bool TryFinishSignInWithTwitter(out string screenName, out int userId) {
-			screenName = null;
-			userId = 0;
-			var response = TwitterSignIn.ProcessUserAuthorization();
+		public static async Task<Tuple<string, int>> TryFinishSignInWithTwitterAsync(CancellationToken cancellationToken = default(CancellationToken)) {
+			var response = await TwitterSignIn.ProcessUserAuthorizationAsync(cancellationToken: cancellationToken);
 			if (response == null) {
-				return false;
+				return null;
 			}
 
-			screenName = response.ExtraData["screen_name"];
-			userId = int.Parse(response.ExtraData["user_id"]);
+			string screenName = response.ExtraData["screen_name"];
+			int userId = int.Parse(response.ExtraData["user_id"]);
 
 			// If we were going to make this LOOK like OpenID even though it isn't,
 			// this seems like a reasonable, secure claimed id to allow the user to assume.
-			OpenId.Identifier fake_claimed_id = string.Format(CultureInfo.InvariantCulture, "http://twitter.com/{0}#{1}", screenName, userId);
+			////OpenId.Identifier fake_claimed_id = string.Format(CultureInfo.InvariantCulture, "http://twitter.com/{0}#{1}", screenName, userId);
 
-			return true;
+			return Tuple.Create(screenName, userId);
 		}
 	}
 }

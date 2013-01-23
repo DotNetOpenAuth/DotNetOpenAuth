@@ -38,7 +38,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="requestParameters">Extra parameters to add to the request token message.  Optional.</param>
 		/// <param name="redirectParameters">Extra parameters to add to the redirect to Service Provider message.  Optional.</param>
 		/// <param name="requestToken">The request token that must be exchanged for an access token after the user has provided authorization.</param>
-		/// <returns>The URL to open a browser window to allow the user to provide authorization.</returns>
+		/// <returns>The URL to open a browser window to allow the user to provide authorization and the request token.</returns>
 		[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "2#", Justification = "Two results")]
 		public async Task<Tuple<Uri, string>> RequestUserAuthorizationAsync(IDictionary<string, string> requestParameters, IDictionary<string, string> redirectParameters, CancellationToken cancellationToken = default(CancellationToken)) {
 			var message = await this.PrepareRequestUserAuthorizationAsync(null, requestParameters, redirectParameters, cancellationToken);
