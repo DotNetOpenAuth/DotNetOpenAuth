@@ -4,6 +4,7 @@
 	using System.Linq;
 	using System.Text;
 	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Windows;
 	using System.Windows.Controls;
 	using System.Windows.Data;
@@ -23,14 +24,16 @@
 		private DesktopConsumer consumer;
 		private string requestToken;
 
-		internal Authorize(DesktopConsumer consumer, FetchUri fetchUriCallback) {
+		internal Authorize(DesktopConsumer consumer, Func<DesktopConsumer, Task<Tuple<Uri, string>>> fetchUriCallback) {
 			this.InitializeComponent();
 
 			this.consumer = consumer;
 			Cursor original = this.Cursor;
 			this.Cursor = Cursors.Wait;
-			ThreadPool.QueueUserWorkItem(delegate(object state) {
-				Uri browserAuthorizationLocation = fetchUriCallback(this.consumer, out this.requestToken);
+			Task.Run(async delegate {
+				var tuple = await fetchUriCallback(this.consumer);
+				Uri browserAuthorizationLocation = tuple.Item1;
+				this.requestToken = tuple.Item2;
 				System.Diagnostics.Process.Start(browserAuthorizationLocation.AbsoluteUri);
 				this.Dispatcher.BeginInvoke(new Action(() => {
 					this.Cursor = original;
@@ -43,8 +46,8 @@
 
 		internal string AccessToken { get; set; }
 
-		private void finishButton_Click(object sender, RoutedEventArgs e) {
-			var grantedAccess = this.consumer.ProcessUserAuthorization(this.requestToken, this.verifierBox.Text);
+		private async void finishButton_Click(object sender, RoutedEventArgs e) {
+			var grantedAccess = await this.consumer.ProcessUserAuthorizationAsync(this.requestToken, this.verifierBox.Text);
 			this.AccessToken = grantedAccess.AccessToken;
 			DialogResult = true;
 			Close();

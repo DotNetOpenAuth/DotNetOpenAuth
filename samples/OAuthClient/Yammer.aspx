@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" MasterPageFile="~/MasterPage.master"
+﻿<%@ Page Language="C#" AutoEventWireup="true" MasterPageFile="~/MasterPage.master" Async="true"
 	CodeBehind="Yammer.aspx.cs" Inherits="OAuthClient.Yammer" %>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="Body" runat="Server">

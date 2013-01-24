@@ -200,7 +200,7 @@ namespace DotNetOpenAuth.ApplicationBlock
 		/// <param name="requestedAccessScope">The requested access scope.</param>
 		/// <param name="requestToken">The unauthorized request token assigned by Google.</param>
 		/// <returns>The URI to redirect to and the request token.</returns>
-		public static Task<Tuple<Uri, string>> RequestAuthorization(DesktopConsumer consumer, Applications requestedAccessScope, CancellationToken cancellationToken = default(CancellationToken)) {
+		public static Task<Tuple<Uri, string>> RequestAuthorizationAsync(DesktopConsumer consumer, Applications requestedAccessScope, CancellationToken cancellationToken = default(CancellationToken)) {
 			if (consumer == null) {
 				throw new ArgumentNullException("consumer");
 			}

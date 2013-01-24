@@ -60,7 +60,7 @@ namespace RelyingPartyLogic {
 					return true;
 				} catch (ProtocolFaultResponseException ex) {
 					// Return the appropriate unauthorized response to the client.
-					ex.CreateErrorResponse().Send();
+					ex.CreateErrorResponseAsync().Send();
 				} catch (DotNetOpenAuth.Messaging.ProtocolException/* ex*/) {
 					////Logger.Error("Error processing OAuth messages.", ex);
 				}

@@ -47,23 +47,23 @@
 			var yammer = new WebConsumer(YammerConsumer.ServiceDescription, this.TokenManager);
 		}
 
-		protected void obtainAuthorizationButton_Click(object sender, EventArgs e) {
+		protected async void obtainAuthorizationButton_Click(object sender, EventArgs e) {
 			var yammer = YammerConsumer.CreateConsumer(this.TokenManager);
-			string requestToken;
-			Uri popupWindowLocation = YammerConsumer.PrepareRequestAuthorization(yammer, out requestToken);
-			this.RequestToken = requestToken;
+			var tuple = await YammerConsumer.PrepareRequestAuthorizationAsync(yammer, Response.ClientDisconnectedToken);
+			Uri popupWindowLocation = tuple.Item1;
+			this.RequestToken = tuple.Item2;
 			string javascript = "window.open('" + popupWindowLocation.AbsoluteUri + "');";
 			this.Page.ClientScript.RegisterStartupScript(GetType(), "YammerPopup", javascript, true);
 			this.MultiView1.SetActiveView(this.CompleteAuthorizationView);
 		}
 
-		protected void finishAuthorizationButton_Click(object sender, EventArgs e) {
+		protected async void finishAuthorizationButton_Click(object sender, EventArgs e) {
 			if (!Page.IsValid) {
 				return;
 			}
 
 			var yammer = YammerConsumer.CreateConsumer(this.TokenManager);
-			var authorizationResponse = YammerConsumer.CompleteAuthorization(yammer, this.RequestToken, this.yammerUserCode.Text);
+			var authorizationResponse = await YammerConsumer.CompleteAuthorizationAsync(yammer, this.RequestToken, this.yammerUserCode.Text, Response.ClientDisconnectedToken);
 			if (authorizationResponse != null) {
 				this.accessTokenLabel.Text = HttpUtility.HtmlEncode(authorizationResponse.AccessToken);
 				this.MultiView1.SetActiveView(this.AuthorizationCompleteView);

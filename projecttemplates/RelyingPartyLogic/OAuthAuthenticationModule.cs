@@ -57,7 +57,7 @@ namespace RelyingPartyLogic {
 					IPrincipal principal = resourceServer.GetPrincipal(new HttpRequestWrapper(this.application.Context.Request));
 					this.application.Context.User = principal;
 				} catch (ProtocolFaultResponseException ex) {
-					ex.CreateErrorResponse().Send();
+					ex.CreateErrorResponseAsync().Send();
 				}
 			}
 		}
