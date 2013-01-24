@@ -1,6 +1,7 @@
 ﻿namespace OpenIdRelyingPartyWebForms {
 	using System;
 	using System.Net;
+	using System.Web;
 	using System.Web.Security;
 	using System.Web.UI;
 	using System.Web.UI.WebControls;
@@ -15,13 +16,13 @@
 			args.IsValid = Identifier.IsValid(args.Value);
 		}
 
-		protected void loginButton_Click(object sender, EventArgs e) {
+		protected async void loginButton_Click(object sender, EventArgs e) {
 			if (!this.Page.IsValid) {
 				return; // don't login if custom validation failed.
 			}
 			try {
 				using (OpenIdRelyingParty openid = this.createRelyingParty()) {
-					IAuthenticationRequest request = openid.CreateRequest(this.openIdBox.Text);
+					IAuthenticationRequest request = await openid.CreateRequestAsync(this.openIdBox.Text, new HttpRequestWrapper(Request), Response.ClientDisconnectedToken);
 
 					// This is where you would add any OpenID extensions you wanted
 					// to include in the authentication request.
@@ -34,7 +35,7 @@
 					});
 
 					// Send your visitor to their Provider for authentication.
-					request.RedirectToProvider();
+					await request.RedirectToProviderAsync(new HttpContextWrapper(Context), Response.ClientDisconnectedToken);
 				}
 			} catch (ProtocolException ex) {
 				// The user probably entered an Identifier that 
@@ -44,7 +45,7 @@
 			}
 		}
 
-		protected void Page_Load(object sender, EventArgs e) {
+		protected async void Page_Load(object sender, EventArgs e) {
 			this.openIdBox.Focus();
 
 			// For debugging/testing, we allow remote clearing of all associations...
@@ -60,7 +61,7 @@
 			}
 
 			OpenIdRelyingParty openid = this.createRelyingParty();
-			var response = openid.GetResponse();
+			var response = await openid.GetResponseAsync(new HttpRequestWrapper(Request), Response.ClientDisconnectedToken);
 			if (response != null) {
 				switch (response.Status) {
 					case AuthenticationStatus.Authenticated:

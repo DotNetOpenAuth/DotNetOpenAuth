@@ -14,12 +14,12 @@
 		protected void Page_Load(object sender, EventArgs e) {
 		}
 
-		protected void beginButton_Click(object sender, EventArgs e) {
+		protected async void beginButton_Click(object sender, EventArgs e) {
 			if (!Page.IsValid) {
 				return;
 			}
 
-			this.identifierBox.LogOn();
+			await this.identifierBox.LogOnAsync(Response.ClientDisconnectedToken);
 		}
 
 		protected void identifierBox_LoggingIn(object sender, OpenIdEventArgs e) {
@@ -31,7 +31,7 @@
 			consumer.AttachAuthorizationRequest(e.Request, "http://tempuri.org/IDataApi/GetName");
 		}
 
-		protected void identifierBox_LoggedIn(object sender, OpenIdEventArgs e) {
+		protected async void identifierBox_LoggedIn(object sender, OpenIdEventArgs e) {
 			State.FetchResponse = e.Response.GetExtension<FetchResponse>();
 
 			ServiceProviderDescription serviceDescription = new ServiceProviderDescription {
@@ -40,7 +40,7 @@
 			};
 			var consumer = new WebConsumerOpenIdRelyingParty(serviceDescription, Global.OwnSampleOPHybridTokenManager);
 
-			AuthorizedTokenResponse accessToken = consumer.ProcessUserAuthorization(e.Response);
+			AuthorizedTokenResponse accessToken = await consumer.ProcessUserAuthorizationAsync(e.Response);
 			if (accessToken != null) {
 				this.MultiView1.SetActiveView(this.AuthorizationGiven);
 

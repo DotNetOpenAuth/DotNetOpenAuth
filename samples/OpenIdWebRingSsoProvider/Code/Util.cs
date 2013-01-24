@@ -7,6 +7,8 @@
 namespace OpenIdWebRingSsoProvider.Code {
 	using System;
 	using System.Configuration;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Extensions.AttributeExchange;
@@ -50,9 +52,9 @@ namespace OpenIdWebRingSsoProvider.Code {
 			return new Uri(HttpContext.Current.Request.Url, HttpContext.Current.Response.ApplyAppPathModifier("~/user.aspx/" + username));
 		}
 
-		internal static void ProcessAuthenticationChallenge(IAuthenticationRequest idrequest) {
+		internal static async Task ProcessAuthenticationChallengeAsync(IAuthenticationRequest idrequest, CancellationToken cancellationToken) {
 			// Verify that RP discovery is successful.
-			if (idrequest.IsReturnUrlDiscoverable(ProviderEndpoint.Provider.Channel.WebRequestHandler) != RelyingPartyDiscoveryResult.Success) {
+			if (await idrequest.IsReturnUrlDiscoverableAsync(ProviderEndpoint.Provider.Channel.HostFactories, cancellationToken) != RelyingPartyDiscoveryResult.Success) {
 				idrequest.IsAuthenticated = false;
 				return;
 			}

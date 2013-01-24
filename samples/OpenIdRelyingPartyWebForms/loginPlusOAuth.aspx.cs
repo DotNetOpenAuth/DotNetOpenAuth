@@ -1,5 +1,7 @@
 ﻿namespace OpenIdRelyingPartyWebForms {
 	using System;
+	using System.Threading.Tasks;
+	using System.Web;
 	using System.Web.Security;
 	using DotNetOpenAuth.ApplicationBlock;
 	using DotNetOpenAuth.OAuth.Messages;
@@ -11,19 +13,19 @@
 		private const string GoogleOPIdentifier = "https://www.google.com/accounts/o8/id";
 		private static readonly OpenIdRelyingParty relyingParty = new OpenIdRelyingParty();
 
-		protected void Page_Load(object sender, EventArgs e) {
+		protected async void Page_Load(object sender, EventArgs e) {
 			if (!IsPostBack && string.Equals(Request.Url.Host, "localhost", StringComparison.OrdinalIgnoreCase)) {
 				// Disable the button since the scenario won't work under localhost,
 				// and this will help encourage the user to read the the text above the button.
 				this.beginButton.Enabled = false;
 			}
 
-			IAuthenticationResponse authResponse = relyingParty.GetResponse();
+			IAuthenticationResponse authResponse = await relyingParty.GetResponseAsync(new HttpRequestWrapper(Request), Response.ClientDisconnectedToken);
 			if (authResponse != null) {
 				switch (authResponse.Status) {
 					case AuthenticationStatus.Authenticated:
 						State.FetchResponse = authResponse.GetExtension<FetchResponse>();
-						AuthorizedTokenResponse accessToken = Global.GoogleWebConsumer.ProcessUserAuthorization(authResponse);
+						AuthorizedTokenResponse accessToken = await Global.GoogleWebConsumer.ProcessUserAuthorizationAsync(authResponse, Response.ClientDisconnectedToken);
 						if (accessToken != null) {
 							State.GoogleAccessToken = accessToken.AccessToken;
 							FormsAuthentication.SetAuthCookie(authResponse.ClaimedIdentifier, false);
@@ -41,11 +43,12 @@
 			}
 		}
 
-		protected void beginButton_Click(object sender, EventArgs e) {
-			this.GetGoogleRequest().RedirectToProvider();
+		protected async void beginButton_Click(object sender, EventArgs e) {
+			var request = await this.GetGoogleRequestAsync();
+			await request.RedirectToProviderAsync();
 		}
 
-		private IAuthenticationRequest GetGoogleRequest() {
+		private async Task<IAuthenticationRequest> GetGoogleRequestAsync() {
 			// Google requires that the realm and consumer key be equal,
 			// so we constrain the realm to match the realm in the web.config file.
 			// This does mean that the return_to URL must also fall under the key,
@@ -54,7 +57,7 @@
 			// We will customize the realm to use http or https based on what the
 			// return_to URL will be (which will be this page).
 			Realm realm = Request.Url.Scheme + Uri.SchemeDelimiter + Global.GoogleTokenManager.ConsumerKey + "/";
-			IAuthenticationRequest authReq = relyingParty.CreateRequest(GoogleOPIdentifier, realm);
+			IAuthenticationRequest authReq = await relyingParty.CreateRequestAsync(GoogleOPIdentifier, realm, cancellationToken: Response.ClientDisconnectedToken);
 
 			// Prepare the OAuth extension
 			string scope = GoogleConsumer.GetScopeUri(GoogleConsumer.Applications.Contacts);

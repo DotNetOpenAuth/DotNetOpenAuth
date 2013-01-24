@@ -1,5 +1,7 @@
 ﻿namespace OpenIdRelyingPartyWebForms {
 	using System;
+	using System.Threading;
+	using System.Web;
 	using System.Web.UI.WebControls;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
@@ -7,10 +9,10 @@
 	using DotNetOpenAuth.OpenId.RelyingParty;
 
 	public partial class NoIdentityOpenId : System.Web.UI.Page {
-		protected void Page_Load(object sender, EventArgs e) {
+		protected async void Page_Load(object sender, EventArgs e) {
 			this.openIdBox.Focus();
 			using (OpenIdRelyingParty rp = new OpenIdRelyingParty()) {
-				IAuthenticationResponse response = rp.GetResponse();
+				IAuthenticationResponse response = await rp.GetResponseAsync(new HttpRequestWrapper(this.Request), this.Response.ClientDisconnectedToken);
 				if (response != null) {
 					switch (response.Status) {
 						case AuthenticationStatus.ExtensionsOnly:
@@ -44,13 +46,13 @@
 			}
 		}
 
-		protected void beginButton_Click(object sender, EventArgs e) {
+		protected async void beginButton_Click(object sender, EventArgs e) {
 			if (!this.Page.IsValid) {
 				return; // don't login if custom validation failed.
 			}
 			try {
 				using (OpenIdRelyingParty rp = new OpenIdRelyingParty()) {
-					var request = rp.CreateRequest(this.openIdBox.Text);
+					var request = await rp.CreateRequestAsync(this.openIdBox.Text, new HttpRequestWrapper(Request), Response.ClientDisconnectedToken);
 					request.IsExtensionOnly = true;
 
 					// This is where you would add any OpenID extensions you wanted
@@ -63,7 +65,7 @@
 						TimeZone = DemandLevel.Require,
 					});
 
-					request.RedirectToProvider();
+					await request.RedirectToProviderAsync(new HttpContextWrapper(Context), Response.ClientDisconnectedToken);
 				}
 			} catch (ProtocolException ex) {
 				// The user probably entered an Identifier that 

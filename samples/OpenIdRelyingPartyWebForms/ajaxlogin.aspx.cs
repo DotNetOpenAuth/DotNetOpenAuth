@@ -29,12 +29,14 @@
 			}
 		}
 
-		protected void submitButton_Click(object sender, EventArgs e) {
+		protected async void submitButton_Click(object sender, EventArgs e) {
 			if (!Page.IsValid) {
 				return;
 			}
-			if (this.OpenIdAjaxTextBox1.AuthenticationResponse != null) {
-				if (this.OpenIdAjaxTextBox1.AuthenticationResponse.Status == AuthenticationStatus.Authenticated) {
+
+			var response = await this.OpenIdAjaxTextBox1.GetAuthenticationResponseAsync(Response.ClientDisconnectedToken);
+			if (response != null) {
+				if (response.Status == AuthenticationStatus.Authenticated) {
 					// Save comment here!
 					this.multiView.ActiveViewIndex = 1;
 				} else {

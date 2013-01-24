@@ -317,18 +317,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Creates an authentication request to verify that a user controls
 		/// some given Identifier.
 		/// </summary>
-		/// <param name="userSuppliedIdentifier">
-		/// The Identifier supplied by the user.  This may be a URL, an XRI or i-name.
-		/// </param>
-		/// <param name="realm">
-		/// The shorest URL that describes this relying party web site's address.
+		/// <param name="userSuppliedIdentifier">The Identifier supplied by the user.  This may be a URL, an XRI or i-name.</param>
+		/// <param name="realm">The shorest URL that describes this relying party web site's address.
 		/// For example, if your login page is found at https://www.example.com/login.aspx,
-		/// your realm would typically be https://www.example.com/.
-		/// </param>
-		/// <param name="returnToUrl">
-		/// The URL of the login page, or the page prepared to receive authentication 
-		/// responses from the OpenID Provider.
-		/// </param>
+		/// your realm would typically be https://www.example.com/.</param>
+		/// <param name="returnToUrl">The URL of the login page, or the page prepared to receive authentication
+		/// responses from the OpenID Provider.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// An authentication request object to customize the request and generate
 		/// an object to send to the user agent to initiate the authentication.
@@ -349,28 +344,25 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Creates an authentication request to verify that a user controls
 		/// some given Identifier.
 		/// </summary>
-		/// <param name="userSuppliedIdentifier">
-		/// The Identifier supplied by the user.  This may be a URL, an XRI or i-name.
-		/// </param>
-		/// <param name="realm">
-		/// The shorest URL that describes this relying party web site's address.
+		/// <param name="userSuppliedIdentifier">The Identifier supplied by the user.  This may be a URL, an XRI or i-name.</param>
+		/// <param name="realm">The shorest URL that describes this relying party web site's address.
 		/// For example, if your login page is found at https://www.example.com/login.aspx,
-		/// your realm would typically be https://www.example.com/.
-		/// </param>
+		/// your realm would typically be https://www.example.com/.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// An authentication request object that describes the HTTP response to
 		/// send to the user agent to initiate the authentication.
 		/// </returns>
-		/// <remarks>
-		/// <para>Requires an <see cref="HttpContext.Current">HttpContext.Current</see> context.</para>
-		/// </remarks>
 		/// <exception cref="ProtocolException">Thrown if no OpenID endpoint could be found.</exception>
 		/// <exception cref="InvalidOperationException">Thrown if <see cref="HttpContext.Current">HttpContext.Current</see> == <c>null</c>.</exception>
-		public async Task<IAuthenticationRequest> CreateRequestAsync(Identifier userSuppliedIdentifier, Realm realm) {
+		/// <remarks>
+		/// Requires an <see cref="HttpContext.Current">HttpContext.Current</see> context.
+		/// </remarks>
+		public async Task<IAuthenticationRequest> CreateRequestAsync(Identifier userSuppliedIdentifier, Realm realm, CancellationToken cancellationToken = default(CancellationToken)) {
 			Requires.NotNull(userSuppliedIdentifier, "userSuppliedIdentifier");
 			Requires.NotNull(realm, "realm");
 			try {
-				var result = (await this.CreateRequestsAsync(userSuppliedIdentifier, realm)).First();
+				var result = (await this.CreateRequestsAsync(userSuppliedIdentifier, realm, cancellationToken: cancellationToken)).First();
 				Assumes.True(result != null);
 				return result;
 			} catch (InvalidOperationException ex) {
@@ -382,22 +374,22 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Creates an authentication request to verify that a user controls
 		/// some given Identifier.
 		/// </summary>
-		/// <param name="userSuppliedIdentifier">
-		/// The Identifier supplied by the user.  This may be a URL, an XRI or i-name.
-		/// </param>
+		/// <param name="userSuppliedIdentifier">The Identifier supplied by the user.  This may be a URL, an XRI or i-name.</param>
+		/// <param name="requestContext">The request context.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// An authentication request object that describes the HTTP response to
 		/// send to the user agent to initiate the authentication.
 		/// </returns>
-		/// <remarks>
-		/// <para>Requires an <see cref="HttpContext.Current">HttpContext.Current</see> context.</para>
-		/// </remarks>
 		/// <exception cref="ProtocolException">Thrown if no OpenID endpoint could be found.</exception>
 		/// <exception cref="InvalidOperationException">Thrown if <see cref="HttpContext.Current">HttpContext.Current</see> == <c>null</c>.</exception>
-		public async Task<IAuthenticationRequest> CreateRequestAsync(Identifier userSuppliedIdentifier, HttpRequestBase requestContext = null) {
+		/// <remarks>
+		/// Requires an <see cref="HttpContext.Current">HttpContext.Current</see> context.
+		/// </remarks>
+		public async Task<IAuthenticationRequest> CreateRequestAsync(Identifier userSuppliedIdentifier, HttpRequestBase requestContext = null, CancellationToken cancellationToken = default(CancellationToken)) {
 			Requires.NotNull(userSuppliedIdentifier, "userSuppliedIdentifier");
 			try {
-				return (await this.CreateRequestsAsync(userSuppliedIdentifier, requestContext)).First();
+				return (await this.CreateRequestsAsync(userSuppliedIdentifier, requestContext, cancellationToken)).First();
 			} catch (InvalidOperationException ex) {
 				throw ErrorUtilities.Wrap(ex, OpenIdStrings.OpenIdEndpointNotFound);
 			}
@@ -406,28 +398,23 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Generates the authentication requests that can satisfy the requirements of some OpenID Identifier.
 		/// </summary>
-		/// <param name="userSuppliedIdentifier">
-		/// The Identifier supplied by the user.  This may be a URL, an XRI or i-name.
-		/// </param>
-		/// <param name="realm">
-		/// The shorest URL that describes this relying party web site's address.
+		/// <param name="userSuppliedIdentifier">The Identifier supplied by the user.  This may be a URL, an XRI or i-name.</param>
+		/// <param name="realm">The shorest URL that describes this relying party web site's address.
 		/// For example, if your login page is found at https://www.example.com/login.aspx,
-		/// your realm would typically be https://www.example.com/.
-		/// </param>
-		/// <param name="returnToUrl">
-		/// The URL of the login page, or the page prepared to receive authentication 
-		/// responses from the OpenID Provider.
-		/// </param>
+		/// your realm would typically be https://www.example.com/.</param>
+		/// <param name="returnToUrl">The URL of the login page, or the page prepared to receive authentication
+		/// responses from the OpenID Provider.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// A sequence of authentication requests, any of which constitutes a valid identity assertion on the Claimed Identifier.
 		/// Never null, but may be empty.
 		/// </returns>
 		/// <remarks>
-		/// <para>Any individual generated request can satisfy the authentication.  
+		///   <para>Any individual generated request can satisfy the authentication.
 		/// The generated requests are sorted in preferred order.
 		/// Each request is generated as it is enumerated to.  Associations are created only as
-		/// <see cref="IAuthenticationRequest.RedirectingResponse"/> is called.</para>
-		/// <para>No exception is thrown if no OpenID endpoints were discovered.  
+		///   <see cref="IAuthenticationRequest.RedirectingResponse" /> is called.</para>
+		///   <para>No exception is thrown if no OpenID endpoints were discovered.
 		/// An empty enumerable is returned instead.</para>
 		/// </remarks>
 		public virtual async Task<IEnumerable<IAuthenticationRequest>> CreateRequestsAsync(Identifier userSuppliedIdentifier, Realm realm, Uri returnToUrl, CancellationToken cancellationToken = default(CancellationToken)) {
@@ -442,28 +429,26 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Generates the authentication requests that can satisfy the requirements of some OpenID Identifier.
 		/// </summary>
-		/// <param name="userSuppliedIdentifier">
-		/// The Identifier supplied by the user.  This may be a URL, an XRI or i-name.
-		/// </param>
-		/// <param name="realm">
-		/// The shorest URL that describes this relying party web site's address.
+		/// <param name="userSuppliedIdentifier">The Identifier supplied by the user.  This may be a URL, an XRI or i-name.</param>
+		/// <param name="realm">The shorest URL that describes this relying party web site's address.
 		/// For example, if your login page is found at https://www.example.com/login.aspx,
-		/// your realm would typically be https://www.example.com/.
-		/// </param>
+		/// your realm would typically be https://www.example.com/.</param>
+		/// <param name="requestContext">The request context.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// A sequence of authentication requests, any of which constitutes a valid identity assertion on the Claimed Identifier.
 		/// Never null, but may be empty.
 		/// </returns>
+		/// <exception cref="InvalidOperationException">Thrown if <see cref="HttpContext.Current">HttpContext.Current</see> == <c>null</c>.</exception>
 		/// <remarks>
-		/// <para>Any individual generated request can satisfy the authentication.  
+		///   <para>Any individual generated request can satisfy the authentication.
 		/// The generated requests are sorted in preferred order.
 		/// Each request is generated as it is enumerated to.  Associations are created only as
-		/// <see cref="IAuthenticationRequest.RedirectingResponse"/> is called.</para>
-		/// <para>No exception is thrown if no OpenID endpoints were discovered.  
+		///   <see cref="IAuthenticationRequest.RedirectingResponse" /> is called.</para>
+		///   <para>No exception is thrown if no OpenID endpoints were discovered.
 		/// An empty enumerable is returned instead.</para>
-		/// <para>Requires an <see cref="HttpContext.Current">HttpContext.Current</see> context.</para>
+		///   <para>Requires an <see cref="HttpContext.Current">HttpContext.Current</see> context.</para>
 		/// </remarks>
-		/// <exception cref="InvalidOperationException">Thrown if <see cref="HttpContext.Current">HttpContext.Current</see> == <c>null</c>.</exception>
 		public async Task<IEnumerable<IAuthenticationRequest>> CreateRequestsAsync(Identifier userSuppliedIdentifier, Realm realm, HttpRequestBase requestContext = null, CancellationToken cancellationToken = default(CancellationToken)) {
 			RequiresEx.ValidState(requestContext != null || (HttpContext.Current != null && HttpContext.Current.Request != null), MessagingStrings.HttpContextRequired);
 			Requires.NotNull(userSuppliedIdentifier, "userSuppliedIdentifier");
@@ -496,23 +481,23 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Generates the authentication requests that can satisfy the requirements of some OpenID Identifier.
 		/// </summary>
-		/// <param name="userSuppliedIdentifier">
-		/// The Identifier supplied by the user.  This may be a URL, an XRI or i-name.
-		/// </param>
+		/// <param name="userSuppliedIdentifier">The Identifier supplied by the user.  This may be a URL, an XRI or i-name.</param>
+		/// <param name="requestContext">The request context.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// A sequence of authentication requests, any of which constitutes a valid identity assertion on the Claimed Identifier.
 		/// Never null, but may be empty.
 		/// </returns>
+		/// <exception cref="InvalidOperationException">Thrown if <see cref="HttpContext.Current">HttpContext.Current</see> == <c>null</c>.</exception>
 		/// <remarks>
-		/// <para>Any individual generated request can satisfy the authentication.  
+		///   <para>Any individual generated request can satisfy the authentication.
 		/// The generated requests are sorted in preferred order.
 		/// Each request is generated as it is enumerated to.  Associations are created only as
-		/// <see cref="IAuthenticationRequest.RedirectingResponse"/> is called.</para>
-		/// <para>No exception is thrown if no OpenID endpoints were discovered.  
+		///   <see cref="IAuthenticationRequest.RedirectingResponse" /> is called.</para>
+		///   <para>No exception is thrown if no OpenID endpoints were discovered.
 		/// An empty enumerable is returned instead.</para>
-		/// <para>Requires an <see cref="HttpContext.Current">HttpContext.Current</see> context.</para>
+		///   <para>Requires an <see cref="HttpContext.Current">HttpContext.Current</see> context.</para>
 		/// </remarks>
-		/// <exception cref="InvalidOperationException">Thrown if <see cref="HttpContext.Current">HttpContext.Current</see> == <c>null</c>.</exception>
 		public async Task<IEnumerable<IAuthenticationRequest>> CreateRequestsAsync(Identifier userSuppliedIdentifier, HttpRequestBase requestContext = null, CancellationToken cancellationToken = default(CancellationToken)) {
 			Requires.NotNull(userSuppliedIdentifier, "userSuppliedIdentifier");
 

@@ -5,6 +5,7 @@
 	using System.Web;
 	using System.Web.UI;
 	using System.Web.UI.WebControls;
+	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Provider;
 	using OpenIdWebRingSsoProvider.Code;
 
@@ -34,11 +35,12 @@
 			}
 		}
 
-		protected void cancelButton_Click(object sender, EventArgs e) {
+		protected async void cancelButton_Click(object sender, EventArgs e) {
 			var req = ProviderEndpoint.PendingAuthenticationRequest;
 			if (req != null) {
 				req.IsAuthenticated = false;
-				ProviderEndpoint.SendResponse();
+				var response = await ProviderEndpoint.PrepareResponseAsync(Response.ClientDisconnectedToken);
+				await response.SendAsync(new HttpResponseWrapper(Response), Response.ClientDisconnectedToken);
 			}
 		}
 	}

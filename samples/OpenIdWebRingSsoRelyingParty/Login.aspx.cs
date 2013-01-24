@@ -21,7 +21,7 @@
 			relyingParty.EndpointFilter = ep => ep.Uri.AbsoluteUri == ConfigurationManager.AppSettings["SsoProviderOPEndpoint"];
 		}
 
-		protected void Page_Load(object sender, EventArgs e) {
+		protected async void Page_Load(object sender, EventArgs e) {
 			UriBuilder returnToBuilder = new UriBuilder(Request.Url);
 			returnToBuilder.Path = "/login.aspx";
 			returnToBuilder.Query = null;
@@ -30,7 +30,7 @@
 			returnToBuilder.Path = "/";
 			Realm realm = returnToBuilder.Uri;
 
-			var response = relyingParty.GetResponse();
+			var response = await relyingParty.GetResponseAsync(new HttpRequestWrapper(Request), Response.ClientDisconnectedToken);
 			if (response == null) {
 				if (Request.QueryString["ReturnUrl"] != null && User.Identity.IsAuthenticated) {
 					// The user must have been directed here because he has insufficient
@@ -40,14 +40,15 @@
 					// Because this is a sample of a controlled SSO environment,
 					// we don't ask the user which Provider to use... we just send
 					// them straight off to the one Provider we trust.
-					var request = relyingParty.CreateRequest(
+					var request = await relyingParty.CreateRequestAsync(
 						ConfigurationManager.AppSettings["SsoProviderOPIdentifier"],
 						realm,
-						returnTo);
+						returnTo,
+						Response.ClientDisconnectedToken);
 					var fetchRequest = new FetchRequest();
 					fetchRequest.Attributes.AddOptional(RolesAttribute);
 					request.AddExtension(fetchRequest);
-					request.RedirectToProvider();
+					await request.RedirectToProviderAsync(new HttpContextWrapper(Context), Response.ClientDisconnectedToken);
 				}
 			} else {
 				switch (response.Status) {

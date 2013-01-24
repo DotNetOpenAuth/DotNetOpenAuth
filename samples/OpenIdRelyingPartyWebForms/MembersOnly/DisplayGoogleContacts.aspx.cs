@@ -9,7 +9,7 @@
 	using DotNetOpenAuth.OpenId.Extensions.AttributeExchange;
 
 	public partial class DisplayGoogleContacts : System.Web.UI.Page {
-		protected void Page_Load(object sender, EventArgs e) {
+		protected async void Page_Load(object sender, EventArgs e) {
 			if (!string.IsNullOrEmpty(State.GoogleAccessToken)) {
 				this.MultiView1.ActiveViewIndex = 1;
 				if (State.FetchResponse != null && State.FetchResponse.Attributes.Contains(WellKnownAttributes.Contact.Email)) {
@@ -18,7 +18,7 @@
 					this.emailLabel.Text = "unavailable";
 				}
 				this.claimedIdLabel.Text = this.User.Identity.Name;
-				var contactsDocument = GoogleConsumer.GetContacts(Global.GoogleWebConsumer, State.GoogleAccessToken, 25, 1);
+				var contactsDocument = await GoogleConsumer.GetContactsAsync(Global.GoogleWebConsumer, State.GoogleAccessToken, cancellationToken: Response.ClientDisconnectedToken);
 				this.RenderContacts(contactsDocument);
 			}
 		}
