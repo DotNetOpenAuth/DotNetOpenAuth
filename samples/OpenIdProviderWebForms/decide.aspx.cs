@@ -3,6 +3,7 @@ namespace OpenIdProviderWebForms {
 	using System.Diagnostics;
 	using System.Web.Security;
 	using System.Web.UI;
+	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.Provider;
@@ -12,13 +13,13 @@ namespace OpenIdProviderWebForms {
 	/// Page for giving the user the option to continue or cancel out of authentication with a consumer.
 	/// </summary>
 	public partial class decide : Page {
-		protected void Page_Load(object src, EventArgs e) {
+		protected async void Page_Load(object src, EventArgs e) {
 			if (ProviderEndpoint.PendingRequest == null) {
 				Response.Redirect("~/");
 			}
 
 			this.relyingPartyVerificationResultLabel.Text =
-				ProviderEndpoint.PendingRequest.IsReturnUrlDiscoverable(ProviderEndpoint.Provider.Channel.WebRequestHandler) == RelyingPartyDiscoveryResult.Success ? "passed" : "failed";
+				await ProviderEndpoint.PendingRequest.IsReturnUrlDiscoverableAsync() == RelyingPartyDiscoveryResult.Success ? "passed" : "failed";
 
 			this.realmLabel.Text = ProviderEndpoint.PendingRequest.Realm.ToString();
 
@@ -61,7 +62,7 @@ namespace OpenIdProviderWebForms {
 			}
 		}
 
-		protected void Yes_Click(object sender, EventArgs e) {
+		protected async void Yes_Click(object sender, EventArgs e) {
 			if (!Page.IsValid) {
 				return;
 			}
@@ -98,17 +99,19 @@ namespace OpenIdProviderWebForms {
 				ProviderEndpoint.PendingAnonymousRequest.IsApproved = true;
 			}
 			Debug.Assert(ProviderEndpoint.PendingRequest.IsResponseReady, "Setting authentication should be all that's necessary.");
-			ProviderEndpoint.SendResponse();
+			var response = await ProviderEndpoint.PrepareResponseAsync(this.Response.ClientDisconnectedToken);
+			await response.SendAsync();
 		}
 
-		protected void No_Click(object sender, EventArgs e) {
+		protected async void No_Click(object sender, EventArgs e) {
 			if (ProviderEndpoint.PendingAuthenticationRequest != null) {
 				ProviderEndpoint.PendingAuthenticationRequest.IsAuthenticated = false;
 			} else {
 				ProviderEndpoint.PendingAnonymousRequest.IsApproved = false;
 			}
 			Debug.Assert(ProviderEndpoint.PendingRequest.IsResponseReady, "Setting authentication should be all that's necessary.");
-			ProviderEndpoint.SendResponse();
+			var response = await ProviderEndpoint.PrepareResponseAsync(this.Response.ClientDisconnectedToken);
+			await response.SendAsync();
 		}
 	}
 }

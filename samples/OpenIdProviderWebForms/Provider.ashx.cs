@@ -1,7 +1,13 @@
 ﻿namespace OpenIdProviderWebForms {
+	using System;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
 	using System.Web.SessionState;
+	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Provider;
+
+	using OpenIdProviderWebForms.Code;
 
 	/// <summary>
 	/// A fast OpenID message handler that responds to OpenID messages
@@ -12,13 +18,13 @@
 	/// control to reduce the amount of source code in the web site.  A typical Provider
 	/// site will have EITHER this .ashx handler OR the .aspx page -- NOT both.
 	/// </remarks>
-	public class Provider : IHttpHandler, IRequiresSessionState {
+	public class Provider : IHttpAsyncHandler, IRequiresSessionState {
 		public bool IsReusable {
 			get { return true; }
 		}
 
-		public void ProcessRequest(HttpContext context) {
-			IRequest request = ProviderEndpoint.Provider.GetRequest();
+		private async Task ProcessRequestAsync(HttpContext context) {
+			IRequest request = await ProviderEndpoint.Provider.GetRequestAsync(new HttpRequestWrapper(context.Request), context.Response.ClientDisconnectedToken);
 			if (request != null) {
 				// Some OpenID requests are automatable and can be responded to immediately.
 				// But authentication requests cannot be responded to until something on
@@ -51,12 +57,26 @@
 					// We DON'T use ProviderEndpoint.SendResponse because
 					// that only sends responses to requests in PendingAuthenticationRequest,
 					// but we don't set that for associate and other non-checkid requests.
-					ProviderEndpoint.Provider.Respond(request);
+					var response = await ProviderEndpoint.Provider.PrepareResponseAsync(request, context.Response.ClientDisconnectedToken);
 
 					// Make sure that any PendingAuthenticationRequest that MAY be set is cleared.
 					ProviderEndpoint.PendingRequest = null;
+
+					await response.SendAsync(new HttpResponseWrapper(context.Response));
 				}
 			}
+		}
+
+		public IAsyncResult BeginProcessRequest(HttpContext context, System.AsyncCallback cb, object extraData) {
+			return this.ProcessRequestAsync(context).ToApm(cb, extraData);
+		}
+
+		public void EndProcessRequest(IAsyncResult result) {
+			((Task)result).Wait(); // rethrows exceptions
+		}
+
+		public void ProcessRequest(HttpContext context) {
+			this.ProcessRequestAsync(context).GetAwaiter().GetResult();
 		}
 	}
 }

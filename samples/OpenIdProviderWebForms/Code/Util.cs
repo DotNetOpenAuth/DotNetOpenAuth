@@ -6,11 +6,13 @@
 
 namespace OpenIdProviderWebForms.Code {
 	using System;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Provider;
 
-	public class Util {
+	public static class Util {
 		public static string ExtractUserName(Uri url) {
 			return url.Segments[url.Segments.Length - 1];
 		}
@@ -71,5 +73,33 @@ namespace OpenIdProviderWebForms.Code {
 				HttpContext.Current.Response.Redirect("~/decide.aspx", true);
 			}
 		}
+
+		internal static Task ToApm(this Task task, AsyncCallback callback, object state) {
+			if (task == null) {
+				throw new ArgumentNullException("task");
+			}
+
+			var tcs = new TaskCompletionSource<object>(state);
+			task.ContinueWith(
+				t => {
+					if (t.IsFaulted) {
+						tcs.TrySetException(t.Exception.InnerExceptions);
+					} else if (t.IsCanceled) {
+						tcs.TrySetCanceled();
+					} else {
+						tcs.TrySetResult(null);
+					}
+
+					if (callback != null) {
+						callback(tcs.Task);
+					}
+				},
+				CancellationToken.None,
+				TaskContinuationOptions.None,
+				TaskScheduler.Default);
+
+			return tcs.Task;
+		}
+
 	}
 }

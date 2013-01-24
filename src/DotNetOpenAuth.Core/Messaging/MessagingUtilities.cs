@@ -385,22 +385,38 @@ namespace DotNetOpenAuth.Messaging {
 			return new HttpResponseMessageActionResult(response);
 		}
 
-		public static void Send(this HttpResponseMessage response, HttpContextBase context = null) {
+		public static async Task SendAsync(this HttpResponseMessage response, HttpResponseBase responseContext = null, CancellationToken cancellationToken = default(CancellationToken)) {
 			Requires.NotNull(response, "response");
-			context = context ?? new HttpContextWrapper(HttpContext.Current);
-			Verify.Operation(context != null, MessagingStrings.HttpContextRequired);
+			if (responseContext == null) {
+				ErrorUtilities.VerifyHttpContext();
+				responseContext = new HttpResponseWrapper(HttpContext.Current.Response);
+			}
 
-			context.Response.StatusCode = (int)response.StatusCode;
-			context.Response.StatusDescription = response.ReasonPhrase;
+			if (!cancellationToken.CanBeCanceled) {
+				cancellationToken = responseContext.ClientDisconnectedToken;
+			}
+
+			responseContext.StatusCode = (int)response.StatusCode;
+			responseContext.StatusDescription = response.ReasonPhrase;
 			foreach (var header in response.Headers) {
 				foreach (var value in header.Value) {
-					context.Response.AddHeader(header.Key, value);
+					responseContext.AddHeader(header.Key, value);
 				}
 			}
 
 			if (response.Content != null) {
-				response.Content.CopyToAsync(context.Response.OutputStream).Wait();
+				await response.Content.CopyToAsync(responseContext.OutputStream).ConfigureAwait(false);
 			}
+		}
+
+		public static void Send(this HttpResponseMessage response, HttpContextBase context = null) {
+			Requires.NotNull(response, "response");
+			if (context == null) {
+				ErrorUtilities.VerifyHttpContext();
+				context = new HttpContextWrapper(HttpContext.Current);
+			}
+
+			SendAsync(response, context.Response).GetAwaiter().GetResult();
 		}
 
 		internal static void DisposeIfNotNull(this IDisposable disposable) {
