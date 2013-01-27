@@ -13,8 +13,7 @@
 		<summary>OpenID, OAuth, &amp; InfoCard library for web and desktop applications.</summary>
 		<description>
 			A single assembly that adds OpenID 1.1/2.0, OAuth 1.0(a)/2.0, &amp; InfoCard authentication and authorization functionality for client and server applications.
-			This allows your (web) application to issue identities or accept issued identites from other web applications, and even access your users'
-			data on other services.
+			This allows your (web) application to issue identities or accept issued identites from other web applications, and even access your users' data on other services.
 		</description>
 		<language>en-US</language>
 	</metadata>
