@@ -12,6 +12,8 @@
 	using DotNetOpenAuth.ApplicationBlock;
 	using DotNetOpenAuth.OAuth;
 
+	using DotNetOpenAuth.Messaging;
+
 	public partial class Twitter : System.Web.UI.Page {
 		private string AccessToken {
 			get { return (string)Session["TwitterAccessToken"]; }
@@ -34,7 +36,7 @@
 			}
 		}
 
-		protected void Page_Load(object sender, EventArgs e) {
+		protected async void Page_Load(object sender, EventArgs e) {
 			if (this.TokenManager != null) {
 				this.MultiView1.ActiveViewIndex = 1;
 
@@ -42,20 +44,22 @@
 					var twitter = new WebConsumer(TwitterConsumer.ServiceDescription, this.TokenManager);
 
 					// Is Twitter calling back with authorization?
-					var accessTokenResponse = twitter.ProcessUserAuthorization();
+					var accessTokenResponse = await twitter.ProcessUserAuthorizationAsync(new HttpRequestWrapper(Request), Response.ClientDisconnectedToken);
 					if (accessTokenResponse != null) {
 						this.AccessToken = accessTokenResponse.AccessToken;
 					} else if (this.AccessToken == null) {
 						// If we don't yet have access, immediately request it.
-						twitter.Channel.Send(twitter.PrepareRequestUserAuthorization());
+						var message = await twitter.PrepareRequestUserAuthorizationAsync(Response.ClientDisconnectedToken);
+						var response = await twitter.Channel.PrepareResponseAsync(message, Response.ClientDisconnectedToken);
+						await response.SendAsync();
 					}
 				}
 			}
 		}
 
-		protected void downloadUpdates_Click(object sender, EventArgs e) {
+		protected async void downloadUpdates_Click(object sender, EventArgs e) {
 			var twitter = new WebConsumer(TwitterConsumer.ServiceDescription, this.TokenManager);
-			XPathDocument updates = new XPathDocument(TwitterConsumer.GetUpdates(twitter, this.AccessToken).CreateReader());
+			XPathDocument updates = new XPathDocument((await TwitterConsumer.GetUpdatesAsync(twitter, this.AccessToken, Response.ClientDisconnectedToken)).CreateReader());
 			XPathNavigator nav = updates.CreateNavigator();
 			var parsedUpdates = from status in nav.Select("/statuses/status").OfType<XPathNavigator>()
 								where !status.SelectSingleNode("user/protected").ValueAsBoolean
@@ -77,7 +81,7 @@
 			this.resultsPlaceholder.Controls.Add(new Literal { Text = tableBuilder.ToString() });
 		}
 
-		protected void uploadProfilePhotoButton_Click(object sender, EventArgs e) {
+		protected async void uploadProfilePhotoButton_Click(object sender, EventArgs e) {
 			if (this.profilePhoto.PostedFile.ContentType == null) {
 				this.photoUploadedLabel.Visible = true;
 				this.photoUploadedLabel.Text = "Select a file first.";
@@ -85,11 +89,12 @@
 			}
 
 			var twitter = new WebConsumer(TwitterConsumer.ServiceDescription, this.TokenManager);
-			XDocument imageResult = TwitterConsumer.UpdateProfileImage(
+			XDocument imageResult = await TwitterConsumer.UpdateProfileImageAsync(
 				twitter,
 				this.AccessToken,
 				this.profilePhoto.PostedFile.InputStream,
-				this.profilePhoto.PostedFile.ContentType);
+				this.profilePhoto.PostedFile.ContentType,
+				Response.ClientDisconnectedToken);
 			this.photoUploadedLabel.Visible = true;
 		}
 	}

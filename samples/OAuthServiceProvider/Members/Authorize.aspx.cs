@@ -11,6 +11,8 @@
 	using DotNetOpenAuth.OAuth.Messages;
 	using OAuthServiceProvider.Code;
 
+	using DotNetOpenAuth.Messaging;
+
 	/// <summary>
 	/// Conducts the user through a Consumer authorization process.
 	/// </summary>
@@ -45,7 +47,7 @@
 			}
 		}
 
-		protected void allowAccessButton_Click(object sender, EventArgs e) {
+		protected async void allowAccessButton_Click(object sender, EventArgs e) {
 			if (this.AuthorizationSecret != this.OAuthAuthorizationSecToken.Value) {
 				throw new ArgumentException(); // probably someone trying to hack in.
 			}
@@ -57,7 +59,8 @@
 			ServiceProvider sp = new ServiceProvider(Constants.SelfDescription, Global.TokenManager);
 			var response = sp.PrepareAuthorizationResponse(pending);
 			if (response != null) {
-				sp.Channel.Send(response);
+				var responseMessage = await sp.Channel.PrepareResponseAsync(response, Response.ClientDisconnectedToken);
+				await responseMessage.SendAsync();
 			} else {
 				if (pending.IsUnsafeRequest) {
 					this.verifierMultiView.ActiveViewIndex = 1;

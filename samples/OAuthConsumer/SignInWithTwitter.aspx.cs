@@ -9,18 +9,20 @@
 	using System.Web.UI.WebControls;
 	using System.Xml.Linq;
 	using System.Xml.XPath;
+	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.ApplicationBlock;
 	using DotNetOpenAuth.OAuth;
 
 	public partial class SignInWithTwitter : System.Web.UI.Page {
-		protected void Page_Load(object sender, EventArgs e) {
+		protected async void Page_Load(object sender, EventArgs e) {
 			if (TwitterConsumer.IsTwitterConsumerConfigured) {
 				this.MultiView1.ActiveViewIndex = 1;
 
 				if (!IsPostBack) {
-					string screenName;
-					int userId;
-					if (TwitterConsumer.TryFinishSignInWithTwitter(out screenName, out userId)) {
+					var tuple = await TwitterConsumer.TryFinishSignInWithTwitterAsync(Response.ClientDisconnectedToken);
+					if (tuple != null) {
+						string screenName = tuple.Item1;
+						int userId = tuple.Item2;
 						this.loggedInPanel.Visible = true;
 						this.loggedInName.Text = screenName;
 
@@ -32,8 +34,9 @@
 			}
 		}
 
-		protected void signInButton_Click(object sender, ImageClickEventArgs e) {
-			TwitterConsumer.StartSignInWithTwitter(this.forceLoginCheckbox.Checked).Send();
+		protected async void signInButton_Click(object sender, ImageClickEventArgs e) {
+			var response = await TwitterConsumer.StartSignInWithTwitterAsync(this.forceLoginCheckbox.Checked, Response.ClientDisconnectedToken);
+			await response.SendAsync();
 		}
 	}
 }

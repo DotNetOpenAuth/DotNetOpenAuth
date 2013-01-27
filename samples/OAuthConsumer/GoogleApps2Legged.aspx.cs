@@ -28,12 +28,15 @@
 			}
 		}
 
-		protected void Page_Load(object sender, EventArgs e) {
+		protected async void Page_Load(object sender, EventArgs e) {
 			var google = new WebConsumer(GoogleConsumer.ServiceDescription, this.TokenManager);
-			string accessToken = google.RequestNewClientAccount();
+			string accessToken = await google.RequestNewClientAccountAsync(cancellationToken: Response.ClientDisconnectedToken);
 			////string tokenSecret = google.TokenManager.GetTokenSecret(accessToken);
 			MessageReceivingEndpoint ep = null; // set up your authorized call here.
-			google.PrepareAuthorizedRequestAndSend(ep, accessToken);
+			var request = await google.PrepareAuthorizedRequestAsync(ep, accessToken, Response.ClientDisconnectedToken);
+			using (var httpClient = google.Channel.HostFactories.CreateHttpClient()) {
+				await httpClient.SendAsync(request);
+			}
 		}
 	}
 }

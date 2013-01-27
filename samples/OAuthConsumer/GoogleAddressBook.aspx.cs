@@ -35,7 +35,7 @@
 			}
 		}
 
-		protected void Page_Load(object sender, EventArgs e) {
+		protected async void Page_Load(object sender, EventArgs e) {
 			if (this.TokenManager != null) {
 				this.MultiView1.ActiveViewIndex = 1;
 
@@ -43,21 +43,21 @@
 					var google = new WebConsumer(GoogleConsumer.ServiceDescription, this.TokenManager);
 
 					// Is Google calling back with authorization?
-					var accessTokenResponse = google.ProcessUserAuthorization();
+					var accessTokenResponse = await google.ProcessUserAuthorizationAsync(new HttpRequestWrapper(Request), Response.ClientDisconnectedToken);
 					if (accessTokenResponse != null) {
 						this.AccessToken = accessTokenResponse.AccessToken;
 					} else if (this.AccessToken == null) {
 						// If we don't yet have access, immediately request it.
-						GoogleConsumer.RequestAuthorization(google, GoogleConsumer.Applications.Contacts);
+						await GoogleConsumer.RequestAuthorizationAsync(google, GoogleConsumer.Applications.Contacts);
 					}
 				}
 			}
 		}
 
-		protected void getAddressBookButton_Click(object sender, EventArgs e) {
+		protected async void getAddressBookButton_Click(object sender, EventArgs e) {
 			var google = new WebConsumer(GoogleConsumer.ServiceDescription, this.TokenManager);
 
-			XDocument contactsDocument = GoogleConsumer.GetContacts(google, this.AccessToken, 5, 1);
+			XDocument contactsDocument = await GoogleConsumer.GetContactsAsync(google, this.AccessToken, 5, 1, Response.ClientDisconnectedToken);
 			var contacts = from entry in contactsDocument.Root.Elements(XName.Get("entry", "http://www.w3.org/2005/Atom"))
 						   select new { Name = entry.Element(XName.Get("title", "http://www.w3.org/2005/Atom")).Value, Email = entry.Element(XName.Get("email", "http://schemas.google.com/g/2005")).Attribute("address").Value };
 			StringBuilder tableBuilder = new StringBuilder();

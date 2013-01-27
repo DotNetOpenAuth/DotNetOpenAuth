@@ -216,7 +216,7 @@ namespace DotNetOpenAuth.ApplicationBlock {
 		/// <c>return StartSignInWithTwitter().<see cref="MessagingUtilities.AsActionResult">AsActionResult()</see></c>
 		/// to actually perform the redirect.
 		/// </remarks>
-		public static async Task<HttpResponseMessage> StartSignInWithTwitterAsync(bool forceNewLogin, CancellationToken cancellationToken) {
+		public static async Task<HttpResponseMessage> StartSignInWithTwitterAsync(bool forceNewLogin = false, CancellationToken cancellationToken = default(CancellationToken)) {
 			var redirectParameters = new Dictionary<string, string>();
 			if (forceNewLogin) {
 				redirectParameters["force_login"] = "true";
