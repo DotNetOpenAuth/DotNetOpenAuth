@@ -9,3 +9,4 @@ _ReSharper.*
 bin
 obj
 Bin
+packages
