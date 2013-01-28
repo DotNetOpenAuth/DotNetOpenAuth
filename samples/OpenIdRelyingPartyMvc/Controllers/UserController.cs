@@ -55,7 +55,8 @@
 				switch (response.Status) {
 					case AuthenticationStatus.Authenticated:
 						Session["FriendlyIdentifier"] = response.FriendlyIdentifierForDisplay;
-						FormsAuthentication.SetAuthCookie(response.ClaimedIdentifier, false);
+						var cookie = FormsAuthentication.GetAuthCookie(response.ClaimedIdentifier, false);
+						Response.SetCookie(cookie);
 						if (!string.IsNullOrEmpty(returnUrl)) {
 							return Redirect(returnUrl);
 						} else {
