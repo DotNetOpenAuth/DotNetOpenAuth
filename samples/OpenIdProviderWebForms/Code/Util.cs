@@ -100,6 +100,5 @@ namespace OpenIdProviderWebForms.Code {
 
 			return tcs.Task;
 		}
-
 	}
 }

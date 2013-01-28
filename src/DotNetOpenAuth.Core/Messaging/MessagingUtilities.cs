@@ -1085,31 +1085,6 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
-		/// Adds a set of HTTP headers to an <see cref="HttpResponse"/> instance,
-		/// taking care to set some headers to the appropriate properties of
-		/// <see cref="HttpResponse" />
-		/// </summary>
-		/// <param name="headers">The headers to add.</param>
-		/// <param name="response">The <see cref="HttpListenerResponse"/> instance to set the appropriate values to.</param>
-		internal static void ApplyHeadersToResponse(WebHeaderCollection headers, HttpListenerResponse response) {
-			Requires.NotNull(headers, "headers");
-			Requires.NotNull(response, "response");
-
-			foreach (string headerName in headers) {
-				switch (headerName) {
-					case "Content-Type":
-						response.ContentType = headers[HttpResponseHeader.ContentType];
-						break;
-
-					// Add more special cases here as necessary.
-					default:
-						response.AddHeader(headerName, headers[headerName]);
-						break;
-				}
-			}
-		}
-
-		/// <summary>
 		/// Copies the contents of one stream to another.
 		/// </summary>
 		/// <param name="copyFrom">The stream to copy from, at the position where copying should begin.</param>

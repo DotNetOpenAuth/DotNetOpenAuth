@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
+	using System.Threading.Tasks;
 	using System.Windows;
 	using System.Windows.Controls;
 	using System.Windows.Data;
@@ -40,10 +41,6 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 			this.immediateModeLabel.Visibility = request.Immediate ? Visibility.Visible : Visibility.Collapsed;
 			this.setupModeLabel.Visibility = request.Immediate ? Visibility.Collapsed : Visibility.Visible;
 
-			bool isRPDiscoverable = request.IsReturnUrlDiscoverable(provider.Provider.Channel.WebRequestHandler) == RelyingPartyDiscoveryResult.Success;
-			this.discoverableYesLabel.Visibility = isRPDiscoverable ? Visibility.Visible : Visibility.Collapsed;
-			this.discoverableNoLabel.Visibility = isRPDiscoverable ? Visibility.Collapsed : Visibility.Visible;
-
 			if (request.IsDirectedIdentity) {
 				this.claimedIdentifierBox.Text = provider.UserIdentityPageBase.AbsoluteUri;
 				this.localIdentifierBox.Text = provider.UserIdentityPageBase.AbsoluteUri;
@@ -58,11 +55,16 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// </summary>
 		/// <param name="provider">The OpenID Provider host.</param>
 		/// <param name="request">The incoming authentication request.</param>
-		internal static void ProcessAuthentication(HostedProvider provider, IAuthenticationRequest request) {
+		internal static async Task ProcessAuthenticationAsync(HostedProvider provider, IAuthenticationRequest request) {
 			Requires.NotNull(provider, "provider");
 			Requires.NotNull(request, "request");
 
 			var window = new CheckIdWindow(provider, request);
+
+			bool isRPDiscoverable = await request.IsReturnUrlDiscoverableAsync(provider.Provider.Channel.HostFactories) == RelyingPartyDiscoveryResult.Success;
+			window.discoverableYesLabel.Visibility = isRPDiscoverable ? Visibility.Visible : Visibility.Collapsed;
+			window.discoverableNoLabel.Visibility = isRPDiscoverable ? Visibility.Collapsed : Visibility.Visible;
+
 			bool? result = window.ShowDialog();
 
 			// If the user pressed Esc or cancel, just send a negative assertion.

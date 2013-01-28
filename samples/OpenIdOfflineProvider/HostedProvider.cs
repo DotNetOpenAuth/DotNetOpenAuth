@@ -10,8 +10,8 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 	using System.IO;
 	using System.Linq;
 	using System.Net;
+	using System.Threading.Tasks;
 	using System.Web;
-
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Provider;
 	using log4net;
@@ -72,7 +72,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// <summary>
 		/// Gets or sets the delegate that handles authentication requests.
 		/// </summary>
-		internal Action<HttpRequestBase, HttpListenerResponse> ProcessRequest { get; set; }
+		internal Func<HttpRequestBase, HttpListenerResponse, Task> ProcessRequestAsync { get; set; }
 
 		/// <summary>
 		/// Gets the provider endpoint.
@@ -115,7 +115,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// Starts the provider.
 		/// </summary>
 		internal void StartProvider() {
-			this.httpHost = HttpHost.CreateHost(this.RequestHandler);
+			this.httpHost = HttpHost.CreateHost(this.RequestHandlerAsync);
 		}
 
 		/// <summary>
@@ -210,10 +210,10 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// Handles incoming HTTP requests.
 		/// </summary>
 		/// <param name="context">The HttpListener context.</param>
-		private void RequestHandler(HttpListenerContext context) {
+		private async Task RequestHandlerAsync(HttpListenerContext context) {
 			Requires.NotNull(context, "context");
 			Requires.NotNull(context.Response.OutputStream, "context.Response.OutputStream");
-			Requires.NotNull(this.ProcessRequest, "this.ProcessRequest");
+			Requires.NotNull(this.ProcessRequestAsync, "this.ProcessRequestAsync");
 
 			Stream outputStream = context.Response.OutputStream;
 			Assumes.True(outputStream != null); // CC static verification shortcoming.
@@ -227,7 +227,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 
 			if (context.Request.Url.AbsolutePath == ProviderPath) {
 				HttpRequestBase requestInfo = HttpRequestInfo.Create(context.Request);
-				this.ProcessRequest(requestInfo, context.Response);
+				await this.ProcessRequestAsync(requestInfo, context.Response);
 			} else if (context.Request.Url.AbsolutePath.StartsWith(UserIdentifierPath, StringComparison.Ordinal)) {
 				using (StreamWriter sw = new StreamWriter(outputStream)) {
 					context.Response.StatusCode = (int)HttpStatusCode.OK;

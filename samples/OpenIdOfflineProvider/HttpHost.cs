@@ -10,6 +10,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 	using System.IO;
 	using System.Net;
 	using System.Threading;
+	using System.Threading.Tasks;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Provider;
 	using Validation;
@@ -32,13 +33,13 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// <summary>
 		/// The handler for incoming HTTP requests.
 		/// </summary>
-		private RequestHandler handler;
+		private RequestHandlerAsync handler;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="HttpHost"/> class.
 		/// </summary>
 		/// <param name="handler">The handler for incoming HTTP requests.</param>
-		private HttpHost(RequestHandler handler) {
+		private HttpHost(RequestHandlerAsync handler) {
 			Requires.NotNull(handler, "handler");
 
 			this.Port = 45235;
@@ -57,15 +58,14 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 				throw;
 			}
 
-			this.listenerThread = new Thread(this.ProcessRequests);
-			this.listenerThread.Start();
+			this.ProcessRequestsAsync();
 		}
 
 		/// <summary>
 		/// The request handler delegate.
 		/// </summary>
 		/// <param name="context">Information on the incoming HTTP request.</param>
-		internal delegate void RequestHandler(HttpListenerContext context);
+		internal delegate Task RequestHandlerAsync(HttpListenerContext context);
 
 		/// <summary>
 		/// Gets the port that HTTP requests are being listened for on.
@@ -84,7 +84,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// </summary>
 		/// <param name="handler">The handler for incoming HTTP requests.</param>
 		/// <returns>The instantiated host.</returns>
-		public static HttpHost CreateHost(RequestHandler handler) {
+		public static HttpHost CreateHost(RequestHandlerAsync handler) {
 			Requires.NotNull(handler, "handler");
 
 			return new HttpHost(handler);
@@ -117,13 +117,13 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// <summary>
 		/// The HTTP listener thread body.
 		/// </summary>
-		private void ProcessRequests() {
+		private async Task ProcessRequestsAsync() {
 			Assumes.True(this.listener != null);
 
 			while (true) {
 				try {
-					HttpListenerContext context = this.listener.GetContext();
-					this.handler(context);
+					HttpListenerContext context = await this.listener.GetContextAsync();
+					await this.handler(context);
 				} catch (HttpListenerException ex) {
 					if (this.listener.IsListening) {
 						App.Logger.Error("Unexpected exception.", ex);

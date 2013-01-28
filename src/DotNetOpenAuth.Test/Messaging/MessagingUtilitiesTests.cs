@@ -142,11 +142,6 @@ namespace DotNetOpenAuth.Test.Messaging {
 		}
 
 		[Test, ExpectedException(typeof(ArgumentNullException))]
-		public void ApplyHeadersToResponseNullListenerResponse() {
-			MessagingUtilities.ApplyHeadersToResponse(new WebHeaderCollection(), (HttpListenerResponse)null);
-		}
-
-		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void ApplyHeadersToResponseNullHeaders() {
 			MessagingUtilities.ApplyHeadersToResponse(null, new HttpResponseWrapper(new HttpResponse(new StringWriter())));
 		}
