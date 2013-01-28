@@ -11,7 +11,7 @@
 	using OAuthAuthorizationServer.Models;
 
 	[HandleError]
-	public class AccountController : AsyncController {
+	public class AccountController : Controller {
 		// **************************************
 		// URL: /Account/LogOn
 		// **************************************

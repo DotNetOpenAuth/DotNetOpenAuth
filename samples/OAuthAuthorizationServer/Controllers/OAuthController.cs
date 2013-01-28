@@ -12,7 +12,7 @@
 	using OAuthAuthorizationServer.Code;
 	using OAuthAuthorizationServer.Models;
 
-	public class OAuthController : AsyncController {
+	public class OAuthController : Controller {
 		private readonly AuthorizationServer authorizationServer = new AuthorizationServer(new OAuth2AuthorizationServer());
 
 		/// <summary>

@@ -20,7 +20,7 @@
 	using RelyingPartyLogic;
 
 	[HandleError]
-	public class AccountController : AsyncController {
+	public class AccountController : Controller {
 		[Authorize]
 		public ActionResult Edit() {
 			return View(GetAccountInfoModel());

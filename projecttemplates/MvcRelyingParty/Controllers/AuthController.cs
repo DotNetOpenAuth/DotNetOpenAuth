@@ -17,7 +17,7 @@ namespace MvcRelyingParty.Controllers {
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using RelyingPartyLogic;
 
-	public class AuthController : AsyncController {
+	public class AuthController : Controller {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AuthController"/> class.
 		/// </summary>
