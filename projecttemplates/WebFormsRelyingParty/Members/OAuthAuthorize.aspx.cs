@@ -23,9 +23,9 @@ namespace WebFormsRelyingParty.Members {
 	public partial class OAuthAuthorize : System.Web.UI.Page {
 		private EndUserAuthorizationRequest pendingRequest;
 
-		protected void Page_Load(object sender, EventArgs e) {
+		protected async void Page_Load(object sender, EventArgs e) {
 			if (!IsPostBack) {
-				this.pendingRequest = OAuthServiceProvider.AuthorizationServer.ReadAuthorizationRequest();
+				this.pendingRequest = await OAuthServiceProvider.AuthorizationServer.ReadAuthorizationRequestAsync(new HttpRequestWrapper(Request), Response.ClientDisconnectedToken);
 				if (this.pendingRequest == null) {
 					throw new HttpException((int)HttpStatusCode.BadRequest, "Missing authorization request.");
 				}
@@ -37,7 +37,9 @@ namespace WebFormsRelyingParty.Members {
 
 				// Consider auto-approving if safe to do so.
 				if (((OAuthAuthorizationServer)OAuthServiceProvider.AuthorizationServer.AuthorizationServerServices).CanBeAutoApproved(this.pendingRequest)) {
-					OAuthServiceProvider.AuthorizationServer.ApproveAuthorizationRequest(this.pendingRequest, HttpContext.Current.User.Identity.Name);
+					var response = OAuthServiceProvider.AuthorizationServer.PrepareApproveAuthorizationRequest(this.pendingRequest, HttpContext.Current.User.Identity.Name);
+					var responseMessage = await OAuthServiceProvider.AuthorizationServer.Channel.PrepareResponseAsync(response, Response.ClientDisconnectedToken);
+					await responseMessage.SendAsync(new HttpResponseWrapper(Response), Response.ClientDisconnectedToken);
 				}
 				this.ViewState["AuthRequest"] = this.pendingRequest;
 			} else {
@@ -46,7 +48,7 @@ namespace WebFormsRelyingParty.Members {
 			}
 		}
 
-		protected void yesButton_Click(object sender, EventArgs e) {
+		protected async void yesButton_Click(object sender, EventArgs e) {
 			var requestingClient = Database.DataContext.Clients.First(c => c.ClientIdentifier == this.pendingRequest.ClientIdentifier);
 			Database.LoggedInUser.ClientAuthorizations.Add(
 				new ClientAuthorization {
@@ -55,11 +57,15 @@ namespace WebFormsRelyingParty.Members {
 					User = Database.LoggedInUser,
 					CreatedOnUtc = DateTime.UtcNow.CutToSecond(),
 				});
-			OAuthServiceProvider.AuthorizationServer.ApproveAuthorizationRequest(this.pendingRequest, HttpContext.Current.User.Identity.Name);
+			var response = OAuthServiceProvider.AuthorizationServer.PrepareApproveAuthorizationRequest(this.pendingRequest, HttpContext.Current.User.Identity.Name);
+			var responseMessage = await OAuthServiceProvider.AuthorizationServer.Channel.PrepareResponseAsync(response, Response.ClientDisconnectedToken);
+			await responseMessage.SendAsync(new HttpResponseWrapper(Response), Response.ClientDisconnectedToken);
 		}
 
-		protected void noButton_Click(object sender, EventArgs e) {
-			OAuthServiceProvider.AuthorizationServer.RejectAuthorizationRequest(this.pendingRequest);
+		protected async void noButton_Click(object sender, EventArgs e) {
+			var response = OAuthServiceProvider.AuthorizationServer.PrepareRejectAuthorizationRequest(this.pendingRequest);
+			var responseMessage = await OAuthServiceProvider.AuthorizationServer.Channel.PrepareResponseAsync(response, Response.ClientDisconnectedToken);
+			await responseMessage.SendAsync(new HttpResponseWrapper(Response), Response.ClientDisconnectedToken);
 		}
 	}
 }

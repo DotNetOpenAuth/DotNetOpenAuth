@@ -9,6 +9,8 @@ namespace RelyingPartyLogic {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Security.Principal;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
 	using System.Web.Security;
 	using DotNetOpenAuth.Messaging;
@@ -52,13 +54,21 @@ namespace RelyingPartyLogic {
 			using (var crypto = OAuthResourceServer.CreateRSA()) {
 				var tokenAnalyzer = new SpecialAccessTokenAnalyzer(crypto, crypto);
 				var resourceServer = new ResourceServer(tokenAnalyzer);
+				var context = this.application.Context;
+				Task.Run(
+					async delegate {
+						ProtocolFaultResponseException exception = null;
+						try {
+							IPrincipal principal = await resourceServer.GetPrincipalAsync(new HttpRequestWrapper(context.Request));
+							context.User = principal;
+							return;
+						} catch (ProtocolFaultResponseException ex) {
+							exception = ex;
+						}
 
-				try {
-					IPrincipal principal = resourceServer.GetPrincipal(new HttpRequestWrapper(this.application.Context.Request));
-					this.application.Context.User = principal;
-				} catch (ProtocolFaultResponseException ex) {
-					ex.CreateErrorResponseAsync().Send();
-				}
+						var errorResponse = await exception.CreateErrorResponseAsync(CancellationToken.None);
+						await errorResponse.SendAsync();
+					}).Wait();
 			}
 		}
 
