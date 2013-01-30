@@ -267,8 +267,12 @@ namespace OpenIdProviderMvc.Controllers {
 			}
 
 			Uri userLocalIdentifier = Models.User.GetClaimedIdentifierForUser(User.Identity.Name);
-			return authReq.LocalIdentifier == userLocalIdentifier ||
-				authReq.LocalIdentifier == PpidGeneration.PpidIdentifierProvider.GetIdentifier(userLocalIdentifier, authReq.Realm);
+			
+			 return authReq.LocalIdentifier.ToString().ToLowerInvariant() == userLocalIdentifier.ToString().ToLowerInvariant() 
+                            			||
+                   		authReq.LocalIdentifier.ToString().ToLowerInvariant() == PpidGeneration.PpidIdentifierProvider
+                                                                            .GetIdentifier(userLocalIdentifier, authReq.Realm)
+                                                                            .ToString().ToLowerInvariant();
 		}
 	}
 }
