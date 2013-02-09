@@ -1,5 +1,5 @@
 <%@ Page Language="C#" AutoEventWireup="True" CodeBehind="login.aspx.cs" Inherits="OpenIdRelyingPartyWebForms.login"
-	ValidateRequest="false" MasterPageFile="~/Site.Master" %>
+	ValidateRequest="false" MasterPageFile="~/Site.Master" Async="true" %>
 
 <%@ Register Assembly="DotNetOpenAuth.OpenId.RelyingParty.UI" Namespace="DotNetOpenAuth.OpenId.RelyingParty" TagPrefix="rp" %>
 <%@ Register Assembly="DotNetOpenAuth.OpenId" Namespace="DotNetOpenAuth.OpenId.Extensions.SimpleRegistration" TagPrefix="sreg" %>

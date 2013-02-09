@@ -529,7 +529,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			if (this.IsPopupAppropriate(request)) {
 				await this.ScriptPopupWindowAsync(request, cancellationToken);
 			} else {
-				await request.RedirectToProviderAsync(cancellationToken: cancellationToken);
+				await request.RedirectToProviderAsync(new HttpContextWrapper(this.Context), cancellationToken);
 			}
 		}
 
