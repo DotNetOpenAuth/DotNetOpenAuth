@@ -20,6 +20,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Net.Http;
 	using System.Net.Http.Headers;
 	using System.Net.Mime;
+	using System.Net.Sockets;
 	using System.Runtime.Serialization.Json;
 	using System.Text;
 	using System.Threading;
@@ -667,23 +668,27 @@ namespace DotNetOpenAuth.Messaging {
 			IDirectResponseProtocolMessage responseMessage;
 
 			using (var httpClient = this.HostFactories.CreateHttpClient()) {
-				using (HttpResponseMessage response = await httpClient.SendAsync(webRequest, cancellationToken)) {
-					response.EnsureSuccessStatusCode();
-					if (response.Content == null) {
-						return null;
-					}
+				try {
+					using (HttpResponseMessage response = await httpClient.SendAsync(webRequest, cancellationToken)) {
+						response.EnsureSuccessStatusCode();
+						if (response.Content == null) {
+							return null;
+						}
 
-					responseFields = await this.ReadFromResponseCoreAsync(response);
-					if (responseFields == null) {
-						return null;
-					}
+						responseFields = await this.ReadFromResponseCoreAsync(response);
+						if (responseFields == null) {
+							return null;
+						}
 
-					responseMessage = this.MessageFactory.GetNewResponseMessage(request, responseFields);
-					if (responseMessage == null) {
-						return null;
-					}
+						responseMessage = this.MessageFactory.GetNewResponseMessage(request, responseFields);
+						if (responseMessage == null) {
+							return null;
+						}
 
-					this.OnReceivingDirectResponse(response, responseMessage);
+						this.OnReceivingDirectResponse(response, responseMessage);
+					}
+				} catch (HttpRequestException ex) {
+					throw ErrorUtilities.Wrap(ex, "Error sending HTTP request or receiving response.");
 				}
 			}
 
