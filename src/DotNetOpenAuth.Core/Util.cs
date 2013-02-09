@@ -7,10 +7,12 @@ namespace DotNetOpenAuth {
 	using System;
 	using System.Collections.Generic;
 	using System.Globalization;
+	using System.Linq;
 	using System.Net;
 	using System.Net.Http.Headers;
 	using System.Reflection;
 	using System.Text;
+	using System.Threading.Tasks;
 	using System.Web;
 	using System.Web.UI;
 	using DotNetOpenAuth.Configuration;
@@ -223,6 +225,22 @@ namespace DotNetOpenAuth {
 						Strings.EmbeddedResourceUrlProviderRequired,
 						string.Join(", ", new string[] { typeof(Page).FullName, typeof(IEmbeddedResourceRetrieval).FullName })));
 			}
+		}
+
+		/// <summary>
+		/// Creates a dictionary of a sequence of elements and the result of an asynchronous transform,
+		/// allowing the async work to proceed concurrently.
+		/// </summary>
+		/// <typeparam name="TSource">The type of the source.</typeparam>
+		/// <typeparam name="TResult">The type of the result.</typeparam>
+		/// <param name="source">The source.</param>
+		/// <param name="transform">The transform.</param>
+		/// <returns></returns>
+		internal static async Task<Dictionary<TSource, TResult>> ToDictionaryAsync<TSource, TResult>(
+			this IEnumerable<TSource> source, Func<TSource, Task<TResult>> transform) {
+			var taskResults = source.ToDictionary(s => s, transform);
+			await Task.WhenAll(taskResults.Values);
+			return taskResults.ToDictionary(p => p.Key, p => p.Value.Result);
 		}
 
 		/// <summary>

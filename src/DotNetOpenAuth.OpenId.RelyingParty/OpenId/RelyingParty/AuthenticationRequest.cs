@@ -424,14 +424,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			Logger.Yadis.InfoFormat("Performing discovery on user-supplied identifier: {0}", userSuppliedIdentifier);
 			IEnumerable<IdentifierDiscoveryResult> endpoints = FilterAndSortEndpoints(serviceEndpoints, relyingParty);
-			var results = new List<AuthenticationRequest>();
 
-			// Maintain a list of endpoints that we could not form an association with.
-			// We'll fallback to generating requests to these if the ones we CAN create
-			// an association with run out.
-			var failedAssociationEndpoints = new List<IdentifierDiscoveryResult>(0);
-
-			foreach (var endpoint in endpoints) {
+			var authRequestResults = await endpoints.ToDictionaryAsync(async endpoint => {
 				Logger.OpenId.DebugFormat("Creating authentication request for user supplied Identifier: {0}", userSuppliedIdentifier);
 
 				// The strategy here is to prefer endpoints with whom we can create associations.
@@ -446,13 +440,19 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 						// No association could be created.  Add it to the list of failed association
 						// endpoints and skip to the next available endpoint.
-						failedAssociationEndpoints.Add(endpoint);
-						continue;
+						return null;
 					}
 				}
 
-				results.Add(new AuthenticationRequest(endpoint, realm, returnToUrl, relyingParty));
-			}
+				return new AuthenticationRequest(endpoint, realm, returnToUrl, relyingParty);
+			});
+
+			var results = (from pair in authRequestResults where pair.Value != null select pair.Value).ToList();
+
+			// Maintain a list of endpoints that we could not form an association with.
+			// We'll fallback to generating requests to these if the ones we CAN create
+			// an association with run out.
+			var failedAssociationEndpoints = (from pair in authRequestResults where pair.Value == null select pair.Key).ToList();
 
 			// Now that we've run out of endpoints that respond to association requests,
 			// since we apparently are still running, the caller must want another request.
