@@ -1542,18 +1542,14 @@ namespace DotNetOpenAuth.Messaging {
 				|| response.StatusCode == HttpStatusCode.RedirectMethod || response.StatusCode == HttpStatusCode.TemporaryRedirect,
 				"response",
 				"Redirecting response expected.");
-			Requires.Argument(response.Headers.Location != null, "response", "Redirect URL header expected.");
-			Requires.Argument(response.Content == null || response.Content is FormUrlEncodedContent, "response", "FormUrlEncodedContent expected");
 
-			var builder = new UriBuilder(response.Headers.Location);
-			if (response.Content != null) {
-				var content = response.Content.ReadAsStringAsync();
-				Assumes.True(content.IsCompleted); // cached in memory, so it should never complete asynchronously.
-				var formFields = HttpUtility.ParseQueryString(content.Result).ToDictionary();
-				MessagingUtilities.AppendQueryArgs(builder, formFields);
+			if (response.Headers.Location != null) {
+				return response.Headers.Location;
+			} else {
+				// Some responses are so large that they're HTML/JS self-posting pages.
+				// We can't create long URLs for those, at present.
+				throw new NotSupportedException();
 			}
-
-			return builder.Uri;
 		}
 
 		/// <summary>

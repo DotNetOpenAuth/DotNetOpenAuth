@@ -289,11 +289,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			this.Identifier = userSuppliedIdentifier;
 
-			var serializer = new JavaScriptSerializer();
-			this.discoveryResult = Task.Run(async delegate {
-				IEnumerable<IAuthenticationRequest> requests = await this.CreateRequestsAsync(this.Identifier, CancellationToken.None);
-				return serializer.Serialize(await this.AjaxRelyingParty.AsJsonDiscoveryResultAsync(requests, CancellationToken.None));
-			}).GetAwaiter().GetResult();
+			this.Page.RegisterAsyncTask(new PageAsyncTask(async ct => {
+				var serializer = new JavaScriptSerializer();
+				IEnumerable<IAuthenticationRequest> requests = await this.CreateRequestsAsync(this.Identifier, ct);
+				this.discoveryResult = serializer.Serialize(await this.AjaxRelyingParty.AsJsonDiscoveryResultAsync(requests, ct));
+			}));
 		}
 
 		/// <summary>
@@ -346,16 +346,18 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			// but our AJAX controls hide an old OpenID message in a postback payload,
 			// so we deserialize it and process it when appropriate.
 			if (this.Page.IsPostBack) {
-				var response = Task.Run(() => this.GetAuthenticationResponseAsync(CancellationToken.None)).GetAwaiter().GetResult();
-				if (response != null && !this.AuthenticationProcessedAlready) {
-					// Only process messages targeted at this control.
-					// Note that Stateless mode causes no receiver to be indicated.
-					string receiver = response.GetUntrustedCallbackArgument(ReturnToReceivingControlId);
-					if (receiver == null || receiver == this.ClientID) {
-						this.ProcessResponse(response);
-						this.AuthenticationProcessedAlready = true;
+				this.Page.RegisterAsyncTask(new PageAsyncTask(async ct => {
+					var response = await this.GetAuthenticationResponseAsync(ct);
+					if (response != null && !this.AuthenticationProcessedAlready) {
+						// Only process messages targeted at this control.
+						// Note that Stateless mode causes no receiver to be indicated.
+						string receiver = response.GetUntrustedCallbackArgument(ReturnToReceivingControlId);
+						if (receiver == null || receiver == this.ClientID) {
+							this.ProcessResponse(response);
+							this.AuthenticationProcessedAlready = true;
+						}
 					}
-				}
+				}));
 			}
 		}
 

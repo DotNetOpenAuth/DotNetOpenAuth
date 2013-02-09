@@ -15,6 +15,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Drawing.Design;
 	using System.Globalization;
 	using System.Linq;
+	using System.Net.Http;
 	using System.Text;
 	using System.Text.RegularExpressions;
 	using System.Threading;
@@ -643,12 +644,16 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			string receiver = this.Page.Request.QueryString[ReturnToReceivingControlId]
 							  ?? this.Page.Request.Form[ReturnToReceivingControlId];
 			if (receiver == this.ClientID || (receiver == null && !this.IsEmbeddedInParentOpenIdControl)) {
-				var response = Task.Run(() => this.RelyingParty.GetResponseAsync(new HttpRequestWrapper(this.Context.Request), CancellationToken.None)).GetAwaiter().GetResult();
-				Logger.Controls.DebugFormat(
-					"The {0} control checked for an authentication response and found: {1}",
-					this.ID,
-					response != null ? response.Status.ToString() : "nothing");
-				this.ProcessResponse(response);
+				this.Page.RegisterAsyncTask(new PageAsyncTask(
+					async ct => {
+						var response =
+							await this.RelyingParty.GetResponseAsync(new HttpRequestWrapper(this.Context.Request), ct);
+						Logger.Controls.DebugFormat(
+							"The {0} control checked for an authentication response and found: {1}",
+							this.ID,
+							response != null ? response.Status.ToString() : "nothing");
+						this.ProcessResponse(response);
+					}));
 			}
 		}
 
@@ -853,16 +858,15 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="writer">The HTML writer.</param>
 		/// <param name="request">The outgoing authentication request.</param>
 		/// <param name="windowStatus">The text to try to display in the status bar on mouse hover.</param>
-		protected async Task RenderOpenIdMessageTransmissionAsAnchorAttributesAsync(HtmlTextWriter writer, IAuthenticationRequest request, string windowStatus, CancellationToken cancellationToken) {
+		protected void RenderOpenIdMessageTransmissionAsAnchorAttributes(HtmlTextWriter writer, HttpResponseMessage response, string windowStatus) {
 			Requires.NotNull(writer, "writer");
-			Requires.NotNull(request, "request");
+			Requires.NotNull(response, "response");
 
 			// We render a standard HREF attribute for non-javascript browsers.
-			var response = await request.GetRedirectingResponseAsync(cancellationToken);
 			writer.AddAttribute(HtmlTextWriterAttribute.Href, response.GetDirectUriRequest().AbsoluteUri);
 
 			// And for the Javascript ones we do the extra work to use form POST where necessary.
-			writer.AddAttribute(HtmlTextWriterAttribute.Onclick, await this.CreateGetOrPostAHrefValueAsync(request, cancellationToken) + " return false;");
+			writer.AddAttribute(HtmlTextWriterAttribute.Onclick, this.CreateGetOrPostAHrefValue(response) + " return false;");
 
 			writer.AddStyleAttribute(HtmlTextWriterStyle.Cursor, "pointer");
 			if (!string.IsNullOrEmpty(windowStatus)) {
@@ -1012,11 +1016,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="request">The authentication request to send.</param>
 		/// <returns>The javascript that should execute.</returns>
-		private async Task<string> CreateGetOrPostAHrefValueAsync(IAuthenticationRequest request, CancellationToken cancellationToken) {
-			Requires.NotNull(request, "request");
+		private string CreateGetOrPostAHrefValue(HttpResponseMessage requestRedirectingResponse) {
+			Requires.NotNull(requestRedirectingResponse, "requestRedirectingResponse");
 
-			var response = await request.GetRedirectingResponseAsync(cancellationToken);
-			Uri directUri = response.GetDirectUriRequest();
+			Uri directUri = requestRedirectingResponse.GetDirectUriRequest();
 			return "window.dnoa_internal.GetOrPost(" + MessagingUtilities.GetSafeJavascriptValue(directUri.AbsoluteUri) + ");";
 		}
 

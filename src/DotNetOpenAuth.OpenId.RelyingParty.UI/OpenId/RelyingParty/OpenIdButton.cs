@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Drawing.Design;
 	using System.Globalization;
 	using System.Linq;
+	using System.Net.Http;
 	using System.Text;
 	using System.Threading;
 	using System.Threading.Tasks;
@@ -56,6 +57,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private const string PrecreateRequestViewStateKey = "PrecreateRequest";
 
 		#endregion
+
+		private HttpResponseMessage authenticationRequestRedirect;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenIdButton"/> class.
@@ -119,17 +122,15 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="eventArgument">A <see cref="T:System.String"/> that represents an optional event argument to be passed to the event handler.</param>
 		protected override void RaisePostBackEvent(string eventArgument) {
 			if (!this.PrecreateRequest) {
-				try {
-					// We have to use Task.Run here to escape our SynchronizationContext
-					Task.Run(
-						async delegate {
-							var requests = await this.CreateRequestsAsync(CancellationToken.None);
-							var request = requests.First();
-							await request.RedirectToProviderAsync(new HttpContextWrapper(this.Context));
-						}).GetAwaiter().GetResult();
-				} catch (InvalidOperationException ex) {
-					throw ErrorUtilities.Wrap(ex, OpenIdStrings.OpenIdEndpointNotFound);
-				}
+				this.Page.RegisterAsyncTask(new PageAsyncTask(async ct => {
+					try {
+						var requests = await this.CreateRequestsAsync(ct);
+						var request = requests.First();
+						await request.RedirectToProviderAsync(new HttpContextWrapper(this.Context), ct);
+					} catch (InvalidOperationException ex) {
+						throw ErrorUtilities.Wrap(ex, OpenIdStrings.OpenIdEndpointNotFound);
+					}
+				}));
 			}
 		}
 
@@ -142,6 +143,15 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 			if (!this.DesignMode) {
 				ErrorUtilities.VerifyOperation(this.Identifier != null, OpenIdStrings.NoIdentifierSet);
+
+				if (this.PrecreateRequest) {
+					this.Page.RegisterAsyncTask(
+						new PageAsyncTask(
+							async ct => {
+								var requests = await this.CreateRequestsAsync(ct);
+								this.authenticationRequestRedirect = await requests.FirstOrDefault().GetRedirectingResponseAsync(ct);
+							}));
+				}
 			}
 		}
 
@@ -156,9 +166,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			} else {
 				string tooltip = this.Text;
 				if (this.PrecreateRequest && !this.DesignMode) {
-					IAuthenticationRequest request = Task.Run(() => this.CreateRequestsAsync(CancellationToken.None)).GetAwaiter().GetResult().FirstOrDefault();
-					if (request != null) {
-						this.RenderOpenIdMessageTransmissionAsAnchorAttributesAsync(writer, request, tooltip, CancellationToken.None).Wait();
+					if (this.authenticationRequestRedirect != null) {
+						this.RenderOpenIdMessageTransmissionAsAnchorAttributes(writer, this.authenticationRequestRedirect, tooltip);
 					} else {
 						tooltip = OpenIdStrings.OpenIdEndpointNotFound;
 					}

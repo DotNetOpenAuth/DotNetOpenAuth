@@ -740,10 +740,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			// If an Identifier is preset on this control, preload discovery on that identifier,
 			// but only if we're not already persisting an authentication result since that would
 			// be redundant.
-			var response = Task.Run(() => this.GetAuthenticationResponseAsync(CancellationToken.None)).GetAwaiter().GetResult();
-			if (this.Identifier != null && response == null) {
-				this.PreloadDiscoveryAsync(this.Identifier, CancellationToken.None).Wait();
-			}
+			this.Page.RegisterAsyncTask(new PageAsyncTask(async ct => {
+				var response = await this.GetAuthenticationResponseAsync(ct);
+				if (this.Identifier != null && response == null) {
+					await this.PreloadDiscoveryAsync(this.Identifier, ct);
+				}
+			}));
 		}
 
 		/// <summary>
