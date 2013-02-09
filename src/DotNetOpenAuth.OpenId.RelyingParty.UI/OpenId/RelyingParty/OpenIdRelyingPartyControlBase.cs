@@ -630,30 +630,31 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			// Take an unreliable sneek peek to see if we're in a popup and an OpenID
 			// assertion is coming in.  We shouldn't process assertions in a popup window.
 			if (this.Page.Request.QueryString[UIPopupCallbackKey] == "1"
-				&& this.Page.Request.QueryString[UIPopupCallbackParentKey] == null) {
+			    && this.Page.Request.QueryString[UIPopupCallbackParentKey] == null) {
 				// We're in a popup window.  We need to close it and pass the
 				// message back to the parent window for processing.
-				this.ScriptClosingPopupOrIFrameAsync(CancellationToken.None).Wait();
-				return; // don't do any more processing on it now
-			}
-
-			// Only sniff for an OpenID response if it is targeted at this control.
-			// Note that Stateless mode causes no receiver to be indicated, and
-			// we want to handle that, but only if there isn't a parent control that
-			// will be handling that.
-			string receiver = this.Page.Request.QueryString[ReturnToReceivingControlId]
-							  ?? this.Page.Request.Form[ReturnToReceivingControlId];
-			if (receiver == this.ClientID || (receiver == null && !this.IsEmbeddedInParentOpenIdControl)) {
-				this.Page.RegisterAsyncTask(new PageAsyncTask(
-					async ct => {
-						var response =
-							await this.RelyingParty.GetResponseAsync(new HttpRequestWrapper(this.Context.Request), ct);
-						Logger.Controls.DebugFormat(
-							"The {0} control checked for an authentication response and found: {1}",
-							this.ID,
-							response != null ? response.Status.ToString() : "nothing");
-						this.ProcessResponse(response);
-					}));
+				this.Page.RegisterAsyncTask(new PageAsyncTask(async ct => {
+					await this.ScriptClosingPopupOrIFrameAsync(ct);
+				}));
+			} else {
+				// Only sniff for an OpenID response if it is targeted at this control.
+				// Note that Stateless mode causes no receiver to be indicated, and
+				// we want to handle that, but only if there isn't a parent control that
+				// will be handling that.
+				string receiver = this.Page.Request.QueryString[ReturnToReceivingControlId]
+				                  ?? this.Page.Request.Form[ReturnToReceivingControlId];
+				if (receiver == this.ClientID || (receiver == null && !this.IsEmbeddedInParentOpenIdControl)) {
+					this.Page.RegisterAsyncTask(
+						new PageAsyncTask(
+							async ct => {
+								var response = await this.RelyingParty.GetResponseAsync(new HttpRequestWrapper(this.Context.Request), ct);
+								Logger.Controls.DebugFormat(
+									"The {0} control checked for an authentication response and found: {1}",
+									this.ID,
+									response != null ? response.Status.ToString() : "nothing");
+								this.ProcessResponse(response);
+							}));
+				}
 			}
 		}
 
