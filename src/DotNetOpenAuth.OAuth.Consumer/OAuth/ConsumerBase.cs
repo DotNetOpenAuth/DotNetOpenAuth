@@ -79,6 +79,14 @@ namespace DotNetOpenAuth.OAuth {
 		internal OAuthChannel OAuthChannel { get; set; }
 
 		/// <summary>
+		/// Creates a message handler that signs outbound requests with a previously obtained authorization.
+		/// </summary>
+		/// <returns>A message handler.</returns>
+		public OAuth1HttpMessageHandler CreateMessageHandler() {
+			return new OAuth1HttpMessageHandler(this);
+		}
+
+		/// <summary>
 		/// Obtains an access token for a new account at the Service Provider via 2-legged OAuth.
 		/// </summary>
 		/// <param name="requestParameters">Any applicable parameters to include in the query string of the token request.</param>
