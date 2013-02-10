@@ -176,6 +176,10 @@
     <Content Include="Views\Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\samples\DotNetOpenAuth.ApplicationBlock\DotNetOpenAuth.ApplicationBlock.csproj">
+      <Project>{aa78d112-d889-414b-a7d4-467b34c7b663}</Project>
+      <Name>DotNetOpenAuth.ApplicationBlock</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\src\DotNetOpenAuth.InfoCard.UI\DotNetOpenAuth.InfoCard.UI.csproj">
       <Project>{E040EB58-B4D2-457B-A023-AE6EF3BD34DE}</Project>
       <Name>DotNetOpenAuth.InfoCard.UI</Name>

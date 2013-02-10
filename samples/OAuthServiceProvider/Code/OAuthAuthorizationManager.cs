@@ -26,6 +26,7 @@
 			HttpRequestMessageProperty httpDetails = operationContext.RequestContext.RequestMessage.Properties[HttpRequestMessageProperty.Name] as HttpRequestMessageProperty;
 			Uri requestUri = operationContext.RequestContext.RequestMessage.Properties.Via;
 			ServiceProvider sp = Constants.CreateServiceProvider();
+			((DatabaseTokenManager)sp.TokenManager).OperationContext = operationContext; // artificially preserve this across thread changes.
 			return Task.Run(
 				async delegate {
 					try {

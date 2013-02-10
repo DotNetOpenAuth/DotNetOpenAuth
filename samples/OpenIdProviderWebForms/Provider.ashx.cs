@@ -4,9 +4,9 @@
 	using System.Threading.Tasks;
 	using System.Web;
 	using System.Web.SessionState;
+	using DotNetOpenAuth.ApplicationBlock;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Provider;
-
 	using OpenIdProviderWebForms.Code;
 
 	/// <summary>
@@ -18,12 +18,12 @@
 	/// control to reduce the amount of source code in the web site.  A typical Provider
 	/// site will have EITHER this .ashx handler OR the .aspx page -- NOT both.
 	/// </remarks>
-	public class Provider : IHttpAsyncHandler, IRequiresSessionState {
-		public bool IsReusable {
+	public class Provider : HttpAsyncHandlerBase, IRequiresSessionState {
+		public override bool IsReusable {
 			get { return true; }
 		}
 
-		private async Task ProcessRequestAsync(HttpContext context) {
+		protected override async Task ProcessRequestAsync(HttpContext context) {
 			IRequest request = await ProviderEndpoint.Provider.GetRequestAsync(new HttpRequestWrapper(context.Request), context.Response.ClientDisconnectedToken);
 			if (request != null) {
 				// Some OpenID requests are automatable and can be responded to immediately.
@@ -65,18 +65,6 @@
 					await response.SendAsync(new HttpResponseWrapper(context.Response));
 				}
 			}
-		}
-
-		public IAsyncResult BeginProcessRequest(HttpContext context, System.AsyncCallback cb, object extraData) {
-			return this.ProcessRequestAsync(context).ToApm(cb, extraData);
-		}
-
-		public void EndProcessRequest(IAsyncResult result) {
-			((Task)result).Wait(); // rethrows exceptions
-		}
-
-		public void ProcessRequest(HttpContext context) {
-			this.ProcessRequestAsync(context).GetAwaiter().GetResult();
 		}
 	}
 }
