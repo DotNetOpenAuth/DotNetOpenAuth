@@ -280,7 +280,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="message">The one-way message to send</param>
 		/// <returns>The pending user agent redirect based message to be sent as an HttpResponse.</returns>
-		public async Task<HttpResponseMessage> PrepareResponseAsync(IProtocolMessage message, CancellationToken cancellationToken) {
+		public async Task<HttpResponseMessage> PrepareResponseAsync(IProtocolMessage message, CancellationToken cancellationToken = default(CancellationToken)) {
 			Requires.NotNull(message, "message");
 
 			await this.ProcessOutgoingMessageAsync(message, cancellationToken);
@@ -664,38 +664,42 @@ namespace DotNetOpenAuth.Messaging {
 				}
 			}
 
-			IDictionary<string, string> responseFields;
-			IDirectResponseProtocolMessage responseMessage;
+			try {
+				using (var httpClient = this.HostFactories.CreateHttpClient()) {
+					using (var response = await httpClient.SendAsync(webRequest, cancellationToken)) {
+						if (response.IsSuccessStatusCode) {
+							if (response.Content == null) {
+								return null;
+							}
 
-			using (var httpClient = this.HostFactories.CreateHttpClient()) {
-				try {
-					using (HttpResponseMessage response = await httpClient.SendAsync(webRequest, cancellationToken)) {
-						response.EnsureSuccessStatusCode();
-						if (response.Content == null) {
-							return null;
+							var responseFields = await this.ReadFromResponseCoreAsync(response);
+							if (responseFields == null) {
+								return null;
+							}
+
+							var responseMessage = this.MessageFactory.GetNewResponseMessage(request, responseFields);
+							if (responseMessage == null) {
+								return null;
+							}
+
+							this.OnReceivingDirectResponse(response, responseMessage);
+
+							var messageAccessor = this.MessageDescriptions.GetAccessor(responseMessage);
+							messageAccessor.Deserialize(responseFields);
+
+							return responseMessage;
+						} else {
+							var errorContent = await response.Content.ReadAsStringAsync();
+							Logger.Http.ErrorFormat(
+								"Error received in HTTP response: {0} {1}\n{2}", (int)response.StatusCode, response.ReasonPhrase, errorContent);
+							response.EnsureSuccessStatusCode(); // throw so we can wrap it in our catch block.
+							throw Assumes.NotReachable();
 						}
-
-						responseFields = await this.ReadFromResponseCoreAsync(response);
-						if (responseFields == null) {
-							return null;
-						}
-
-						responseMessage = this.MessageFactory.GetNewResponseMessage(request, responseFields);
-						if (responseMessage == null) {
-							return null;
-						}
-
-						this.OnReceivingDirectResponse(response, responseMessage);
 					}
-				} catch (HttpRequestException ex) {
-					throw ErrorUtilities.Wrap(ex, "Error sending HTTP request or receiving response.");
 				}
+			} catch (HttpRequestException requestException) {
+				throw ErrorUtilities.Wrap(requestException, "Error sending HTTP request or receiving response.");
 			}
-
-			var messageAccessor = this.MessageDescriptions.GetAccessor(responseMessage);
-			messageAccessor.Deserialize(responseFields);
-
-			return responseMessage;
 		}
 
 		protected virtual HttpMessageHandler WrapMessageHandler(HttpMessageHandler innerHandler) {

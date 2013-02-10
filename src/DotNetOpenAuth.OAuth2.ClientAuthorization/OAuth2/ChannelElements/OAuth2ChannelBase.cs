@@ -33,7 +33,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// The order they are provided is used for outgoing messgaes, and reversed for incoming messages.
 		/// </param>
 		internal OAuth2ChannelBase(Type[] messageTypes, IChannelBindingElement[] channelBindingElements = null, IHostFactories hostFactories = null)
-			: base(Requires.NotNull(messageTypes, "messageTypes"), Versions, hostFactories ?? new DefaultOAuth2HostFactories(), channelBindingElements ?? new IChannelBindingElement[0]) {
+			: base(Requires.NotNull(messageTypes, "messageTypes"), Versions, hostFactories ?? new OAuth.DefaultOAuthHostFactories(), channelBindingElements ?? new IChannelBindingElement[0]) {
 		}
 
 		/// <summary>

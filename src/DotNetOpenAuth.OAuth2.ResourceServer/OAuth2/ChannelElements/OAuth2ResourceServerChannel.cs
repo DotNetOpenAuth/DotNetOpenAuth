@@ -42,7 +42,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// Initializes a new instance of the <see cref="OAuth2ResourceServerChannel"/> class.
 		/// </summary>
 		protected internal OAuth2ResourceServerChannel(IHostFactories hostFactories = null)
-			: base(MessageTypes, Versions, hostFactories ?? new DefaultOAuth2HostFactories()) {
+			: base(MessageTypes, Versions, hostFactories ?? new OAuth.DefaultOAuthHostFactories()) {
 			// TODO: add signing (authenticated request) binding element.
 		}
 

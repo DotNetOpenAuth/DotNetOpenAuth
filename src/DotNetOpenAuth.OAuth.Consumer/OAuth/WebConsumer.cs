@@ -58,7 +58,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="redirectParameters">Extra parameters to add to the redirect to Service Provider message.  Optional.</param>
 		/// <returns>The pending user agent redirect based message to be sent as an HttpResponse.</returns>
 		public Task<UserAuthorizationRequest> PrepareRequestUserAuthorizationAsync(Uri callback, IDictionary<string, string> requestParameters, IDictionary<string, string> redirectParameters, CancellationToken cancellationToken = default(CancellationToken)) {
-			return this.PrepareRequestUserAuthorizationAsync(callback, requestParameters, redirectParameters, cancellationToken);
+			return base.PrepareRequestUserAuthorizationAsync(callback, requestParameters, redirectParameters, cancellationToken);
 		}
 
 		/// <summary>

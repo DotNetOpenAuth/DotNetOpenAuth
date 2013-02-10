@@ -392,10 +392,6 @@ namespace DotNetOpenAuth.Messaging {
 				responseContext = new HttpResponseWrapper(HttpContext.Current.Response);
 			}
 
-			if (!cancellationToken.CanBeCanceled) {
-				cancellationToken = responseContext.ClientDisconnectedToken;
-			}
-
 			responseContext.StatusCode = (int)response.StatusCode;
 			responseContext.StatusDescription = response.ReasonPhrase;
 			foreach (var header in response.Headers) {

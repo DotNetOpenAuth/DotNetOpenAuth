@@ -14,6 +14,7 @@
 		<description>This package contains shared code for other NuGet packages, and contains no public API in and of itself.</description>
 		<dependencies>
 			<dependency id="DotNetOpenAuth.Core" version="[$version$]" />
+			<dependency id="DotNetOpenAuth.OAuth.Common" version="[$version$]" />
 		</dependencies>
 	</metadata>
 	<files>

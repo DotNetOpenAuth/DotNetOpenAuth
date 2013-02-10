@@ -13,6 +13,7 @@ namespace DotNetOpenAuth.ApplicationBlock {
 	using System.Net;
 	using System.Net.Http;
 	using System.Net.Http.Headers;
+	using System.Runtime.Serialization.Json;
 	using System.Threading;
 	using System.Threading.Tasks;
 	using System.Web;
@@ -23,6 +24,8 @@ namespace DotNetOpenAuth.ApplicationBlock {
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.ChannelElements;
+
+	using Newtonsoft.Json.Linq;
 
 	/// <summary>
 	/// A consumer capable of communicating with Twitter.
@@ -57,7 +60,7 @@ namespace DotNetOpenAuth.ApplicationBlock {
 		/// <summary>
 		/// The URI to get the data on the user's home page.
 		/// </summary>
-		private static readonly MessageReceivingEndpoint GetFriendTimelineStatusEndpoint = new MessageReceivingEndpoint("http://twitter.com/statuses/friends_timeline.xml", HttpDeliveryMethods.GetRequest);
+		private static readonly MessageReceivingEndpoint GetFriendTimelineStatusEndpoint = new MessageReceivingEndpoint("https://api.twitter.com/1.1/statuses/home_timeline.json", HttpDeliveryMethods.GetRequest);
 
 		private static readonly MessageReceivingEndpoint UpdateProfileBackgroundImageEndpoint = new MessageReceivingEndpoint("http://twitter.com/account/update_profile_background_image.xml", HttpDeliveryMethods.PostRequest | HttpDeliveryMethods.AuthorizationHeaderRequest);
 
@@ -130,14 +133,15 @@ namespace DotNetOpenAuth.ApplicationBlock {
 			}
 		}
 
-		public static async Task<XDocument> GetUpdatesAsync(
+		public static async Task<JArray> GetUpdatesAsync(
 			ConsumerBase twitter, string accessToken, CancellationToken cancellationToken = default(CancellationToken)) {
 			var request = await twitter.PrepareAuthorizedRequestAsync(GetFriendTimelineStatusEndpoint, accessToken, cancellationToken);
 			using (var httpClient = twitter.Channel.HostFactories.CreateHttpClient()) {
 				using (var response = await httpClient.SendAsync(request)) {
-					using (var stream = await response.Content.ReadAsStreamAsync()) {
-						return XDocument.Load(XmlReader.Create(stream));
-					}
+					response.EnsureSuccessStatusCode();
+					string jsonString = await response.Content.ReadAsStringAsync();
+					var json = JArray.Parse(jsonString);
+					return json;
 				}
 			}
 		}

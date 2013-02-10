@@ -27,13 +27,14 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <param name="securitySettings">The security settings.</param>
 		/// <param name="messageTypeProvider">The message type provider.</param>
 		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Diagnostics.Contracts.__ContractsRuntime.Requires<System.ArgumentNullException>(System.Boolean,System.String,System.String)", Justification = "Code contracts"), SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "securitySettings", Justification = "Code contracts")]
-		internal OAuthServiceProviderChannel(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, IServiceProviderTokenManager tokenManager, ServiceProviderSecuritySettings securitySettings, IMessageFactory messageTypeProvider = null)
+		internal OAuthServiceProviderChannel(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, IServiceProviderTokenManager tokenManager, ServiceProviderSecuritySettings securitySettings, IMessageFactory messageTypeProvider = null, IHostFactories hostFactories = null)
 			: base(
 			signingBindingElement,
 			tokenManager,
 			securitySettings,
 			messageTypeProvider ?? new OAuthServiceProviderMessageFactory(tokenManager),
-			InitializeBindingElements(signingBindingElement, store, tokenManager, securitySettings)) {
+			InitializeBindingElements(signingBindingElement, store, tokenManager, securitySettings),
+			hostFactories) {
 			Requires.NotNull(tokenManager, "tokenManager");
 			Requires.NotNull(securitySettings, "securitySettings");
 			Requires.NotNull(signingBindingElement, "signingBindingElement");

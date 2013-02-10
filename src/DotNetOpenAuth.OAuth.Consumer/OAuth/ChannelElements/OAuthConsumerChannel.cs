@@ -27,13 +27,14 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <param name="securitySettings">The security settings.</param>
 		/// <param name="messageFactory">The message factory.</param>
 		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Diagnostics.Contracts.__ContractsRuntime.Requires<System.ArgumentNullException>(System.Boolean,System.String,System.String)", Justification = "Code contracts"), SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "securitySettings", Justification = "Code contracts")]
-		internal OAuthConsumerChannel(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, IConsumerTokenManager tokenManager, ConsumerSecuritySettings securitySettings, IMessageFactory messageFactory = null)
+		internal OAuthConsumerChannel(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, IConsumerTokenManager tokenManager, ConsumerSecuritySettings securitySettings, IMessageFactory messageFactory = null, IHostFactories hostFactories = null)
 			: base(
 			signingBindingElement,
 			tokenManager,
 			securitySettings,
 			messageFactory ?? new OAuthConsumerMessageFactory(),
-			InitializeBindingElements(signingBindingElement, store)) {
+			InitializeBindingElements(signingBindingElement, store),
+			hostFactories) {
 			Requires.NotNull(tokenManager, "tokenManager");
 			Requires.NotNull(securitySettings, "securitySettings");
 			Requires.NotNull(signingBindingElement, "signingBindingElement");

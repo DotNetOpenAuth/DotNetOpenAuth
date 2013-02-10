@@ -59,24 +59,20 @@
 
 		protected async void downloadUpdates_Click(object sender, EventArgs e) {
 			var twitter = new WebConsumer(TwitterConsumer.ServiceDescription, this.TokenManager);
-			XPathDocument updates = new XPathDocument((await TwitterConsumer.GetUpdatesAsync(twitter, this.AccessToken, Response.ClientDisconnectedToken)).CreateReader());
-			XPathNavigator nav = updates.CreateNavigator();
-			var parsedUpdates = from status in nav.Select("/statuses/status").OfType<XPathNavigator>()
-								where !status.SelectSingleNode("user/protected").ValueAsBoolean
-								select new {
-									User = status.SelectSingleNode("user/name").InnerXml,
-									Status = status.SelectSingleNode("text").InnerXml,
-								};
+			var statusesJson = await TwitterConsumer.GetUpdatesAsync(twitter, this.AccessToken, Response.ClientDisconnectedToken);
 
 			StringBuilder tableBuilder = new StringBuilder();
 			tableBuilder.Append("<table><tr><td>Name</td><td>Update</td></tr>");
 
-			foreach (var update in parsedUpdates) {
-				tableBuilder.AppendFormat(
-					"<tr><td>{0}</td><td>{1}</td></tr>",
-					HttpUtility.HtmlEncode(update.User),
-					HttpUtility.HtmlEncode(update.Status));
+			foreach (dynamic update in statusesJson) {
+				if (!update.user.@protected.Value) {
+					tableBuilder.AppendFormat(
+						"<tr><td>{0}</td><td>{1}</td></tr>",
+						HttpUtility.HtmlEncode(update.user.screen_name),
+						HttpUtility.HtmlEncode(update.text));
+				}
 			}
+
 			tableBuilder.Append("</table>");
 			this.resultsPlaceholder.Controls.Add(new Literal { Text = tableBuilder.ToString() });
 		}

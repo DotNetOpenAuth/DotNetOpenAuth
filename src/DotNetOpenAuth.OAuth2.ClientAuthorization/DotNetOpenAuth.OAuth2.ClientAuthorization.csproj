@@ -59,6 +59,10 @@
       <Project>{60426312-6AE5-4835-8667-37EDEA670222}</Project>
       <Name>DotNetOpenAuth.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\DotNetOpenAuth.OAuth.Common\DotNetOpenAuth.OAuth.Common.csproj">
+      <Project>{115217c5-22cd-415c-a292-0dd0238cdd89}</Project>
+      <Name>DotNetOpenAuth.OAuth.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DotNetOpenAuth.OAuth2\DotNetOpenAuth.OAuth2.csproj">
       <Project>{56459A6C-6BA2-4BAC-A9C0-27E3BD961FA6}</Project>
       <Name>DotNetOpenAuth.OAuth2</Name>

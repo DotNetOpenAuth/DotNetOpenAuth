@@ -1,10 +1,10 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="DefaultOAuth2HostFactories.cs" company="Andrew Arnott">
+// <copyright file="DefaultOAuthHostFactories.cs" company="Andrew Arnott">
 //     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.OAuth2 {
+namespace DotNetOpenAuth.OAuth {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
@@ -16,7 +16,7 @@ namespace DotNetOpenAuth.OAuth2 {
 	/// <summary>
 	/// Creates default instances of required dependencies.
 	/// </summary>
-	public class DefaultOAuth2HostFactories : IHostFactories {
+	public class DefaultOAuthHostFactories : IHostFactories {
 		/// <summary>
 		/// Initializes a new instance of a concrete derivation of <see cref="HttpMessageHandler" />
 		/// to be used for outbound HTTP traffic.
