@@ -101,6 +101,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// succeeded.
 		/// </summary>
 		/// <param name="hostFactories">The host factories.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// Result of realm discovery.
 		/// </returns>
@@ -123,6 +124,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// succeeded.
 		/// </summary>
 		/// <param name="hostFactories">The host factories.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// Result of realm discovery.
 		/// </returns>

@@ -77,6 +77,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <param name="message">The message.</param>
 		/// <param name="signedMessage">The signed message.</param>
 		/// <param name="protectionsApplied">The protections applied.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The applied protections.
 		/// </returns>

@@ -105,12 +105,9 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <summary>
 		/// Attempts to authenticate users by forwarding them to an external website, and upon succcess or failure, redirect users back to the specified url.
 		/// </summary>
-		/// <param name="context">
-		/// The context.
-		/// </param>
-		/// <param name="returnUrl">
-		/// The return url after users have completed authenticating against external website. 
-		/// </param>
+		/// <param name="context">The context.</param>
+		/// <param name="returnUrl">The return url after users have completed authenticating against external website.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		public virtual Task RequestAuthenticationAsync(HttpContextBase context, Uri returnUrl, CancellationToken cancellationToken = default(CancellationToken)) {
 			Requires.NotNull(returnUrl, "returnUrl");
 			Requires.NotNull(context, "context");
@@ -122,11 +119,10 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <summary>
 		/// Check if authentication succeeded after user is redirected back from the service provider.
 		/// </summary>
-		/// <param name="context">
-		/// The context.
-		/// </param>
+		/// <param name="context">The context.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
-		/// An instance of <see cref="AuthenticationResult"/> containing authentication result. 
+		/// An instance of <see cref="AuthenticationResult" /> containing authentication result.
 		/// </returns>
 		public virtual async Task<AuthenticationResult> VerifyAuthenticationAsync(HttpContextBase context, CancellationToken cancellationToken = default(CancellationToken)) {
 			AuthorizedTokenResponse response = await this.WebWorker.ProcessUserAuthorizationAsync(cancellationToken);
@@ -178,6 +174,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <param name="response">
 		/// The response token returned from service provider 
 		/// </param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// Authentication result 
 		/// </returns>

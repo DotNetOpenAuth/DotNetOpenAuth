@@ -75,7 +75,10 @@ namespace DotNetOpenAuth.Configuration {
 		/// Creates an instance of the type described in the .config file.
 		/// </summary>
 		/// <param name="defaultValue">The value to return if no type is given in the .config file.</param>
-		/// <returns>The newly instantiated type.</returns>
+		/// <param name="hostFactories">The host factories.</param>
+		/// <returns>
+		/// The newly instantiated type.
+		/// </returns>
 		public T CreateInstance(T defaultValue, IHostFactories hostFactories) {
 			return this.CreateInstance(defaultValue, false, hostFactories);
 		}

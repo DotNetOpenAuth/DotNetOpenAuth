@@ -159,8 +159,8 @@ namespace DotNetOpenAuth.ApplicationBlock {
 			var imageAttachment = new StreamContent(File.OpenRead(image));
 			imageAttachment.Headers.ContentType = new MediaTypeHeaderValue("image/" + Path.GetExtension(image).Substring(1).ToLowerInvariant());
 			var parts = new List<MultipartContentMember> {
-				new MultipartContentMember(imageAttachment , "image"),
-				new MultipartContentMember(new StringContent(tile.ToString().ToLowerInvariant()) , "tile"),
+				new MultipartContentMember(imageAttachment, "image"),
+				new MultipartContentMember(new StringContent(tile.ToString().ToLowerInvariant()), "tile"),
 			};
 			HttpRequestMessage request = await twitter.PrepareAuthorizedRequestAsync(UpdateProfileBackgroundImageEndpoint, accessToken, parts, cancellationToken);
 			request.Headers.ExpectContinue = false;
@@ -181,7 +181,7 @@ namespace DotNetOpenAuth.ApplicationBlock {
 			var imageAttachment = new StreamContent(image);
 			imageAttachment.Headers.ContentType = new MediaTypeHeaderValue(contentType);
 			var parts = new List<MultipartContentMember> {
-				new MultipartContentMember(imageAttachment,"image", "twitterPhoto"),
+				new MultipartContentMember(imageAttachment, "image", "twitterPhoto"),
 			};
 
 			HttpRequestMessage request = await twitter.PrepareAuthorizedRequestAsync(UpdateProfileImageEndpoint, accessToken, parts, cancellationToken);
@@ -214,9 +214,12 @@ namespace DotNetOpenAuth.ApplicationBlock {
 		/// Prepares a redirect that will send the user to Twitter to sign in.
 		/// </summary>
 		/// <param name="forceNewLogin">if set to <c>true</c> the user will be required to re-enter their Twitter credentials even if already logged in to Twitter.</param>
-		/// <returns>The redirect message.</returns>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The redirect message.
+		/// </returns>
 		/// <remarks>
-		/// Call <see cref="OutgoingWebResponse.Send"/> or
+		/// Call <see cref="OutgoingWebResponse.Send" /> or
 		/// <c>return StartSignInWithTwitter().<see cref="MessagingUtilities.AsActionResult">AsActionResult()</see></c>
 		/// to actually perform the redirect.
 		/// </remarks>
@@ -234,6 +237,7 @@ namespace DotNetOpenAuth.ApplicationBlock {
 		/// Checks the incoming web request to see if it carries a Twitter authentication response,
 		/// and provides the user's Twitter screen name and unique id if available.
 		/// </summary>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// A tuple with the screen name and Twitter unique user ID if successful; otherwise <c>null</c>.
 		/// </returns>

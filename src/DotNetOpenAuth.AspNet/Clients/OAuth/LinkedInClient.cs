@@ -100,7 +100,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 			HttpRequestMessage request = await this.WebWorker.PrepareAuthorizedRequestAsync(profileEndpoint, accessToken, cancellationToken);
 
 			try {
-				using(var httpClient = new HttpClient()) {
+				using (var httpClient = new HttpClient()) {
 					using (HttpResponseMessage profileResponse = await httpClient.SendAsync(request, cancellationToken)) {
 						using (Stream responseStream = await profileResponse.Content.ReadAsStreamAsync()) {
 							XDocument document = LoadXDocumentFromStream(responseStream);

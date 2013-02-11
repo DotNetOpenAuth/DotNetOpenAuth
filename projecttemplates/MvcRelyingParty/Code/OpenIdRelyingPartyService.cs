@@ -82,7 +82,7 @@
 
 		public async Task<ActionResult> AjaxDiscoveryAsync(Identifier userSuppliedIdentifier, Realm realm, Uri returnTo, Uri privacyPolicy, CancellationToken cancellationToken = default(CancellationToken)) {
 			return (await relyingParty.AsAjaxDiscoveryResultAsync(
-				await this.CreateRequestsAsync(userSuppliedIdentifier, realm, returnTo, privacyPolicy, cancellationToken), 
+				await this.CreateRequestsAsync(userSuppliedIdentifier, realm, returnTo, privacyPolicy, cancellationToken),
 				cancellationToken)).AsActionResult();
 		}
 

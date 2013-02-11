@@ -99,6 +99,31 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		}
 
 		/// <summary>
+		/// Adds a set of HTTP headers to an <see cref="HttpResponse"/> instance,
+		/// taking care to set some headers to the appropriate properties of
+		/// <see cref="HttpResponse" />
+		/// </summary>
+		/// <param name="headers">The headers to add.</param>
+		/// <param name="response">The <see cref="HttpListenerResponse"/> instance to set the appropriate values to.</param>
+		private static void ApplyHeadersToResponse(HttpResponseHeaders headers, HttpListenerResponse response) {
+			Requires.NotNull(headers, "headers");
+			Requires.NotNull(response, "response");
+
+			foreach (var header in headers) {
+				switch (header.Key) {
+					case "Content-Type":
+						response.ContentType = header.Value.First();
+						break;
+
+					// Add more special cases here as necessary.
+					default:
+						response.AddHeader(header.Key, header.Value.First());
+						break;
+				}
+			}
+		}
+
+		/// <summary>
 		/// Processes an incoming request at the OpenID Provider endpoint.
 		/// </summary>
 		/// <param name="requestInfo">The request info.</param>
@@ -153,31 +178,6 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 
 			var responseMessage = await this.hostedProvider.Provider.PrepareResponseAsync(request, CancellationToken.None);
 			ApplyHeadersToResponse(responseMessage.Headers, response);
-		}
-
-		/// <summary>
-		/// Adds a set of HTTP headers to an <see cref="HttpResponse"/> instance,
-		/// taking care to set some headers to the appropriate properties of
-		/// <see cref="HttpResponse" />
-		/// </summary>
-		/// <param name="headers">The headers to add.</param>
-		/// <param name="response">The <see cref="HttpListenerResponse"/> instance to set the appropriate values to.</param>
-		private static void ApplyHeadersToResponse(HttpResponseHeaders headers, HttpListenerResponse response) {
-			Requires.NotNull(headers, "headers");
-			Requires.NotNull(response, "response");
-
-			foreach (var header in headers) {
-				switch (header.Key) {
-					case "Content-Type":
-						response.ContentType = header.Value.First();
-						break;
-
-					// Add more special cases here as necessary.
-					default:
-						response.AddHeader(header.Key, header.Value.First());
-						break;
-				}
-			}
 		}
 
 		/// <summary>

@@ -76,6 +76,7 @@ namespace DotNetOpenAuth.OpenId.Provider.Extensions {
 		/// attribute request extension came in.
 		/// </summary>
 		/// <param name="request">The authentication request with the response extensions already added.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <remarks>
 		/// If the original attribute request came in as AX, the Simple Registration extension is converted
 		/// to an AX response and then the Simple Registration extension is removed from the response.

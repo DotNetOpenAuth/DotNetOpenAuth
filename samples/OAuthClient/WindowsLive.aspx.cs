@@ -9,9 +9,8 @@
 	using System.Web.UI.WebControls;
 	using DotNetOpenAuth.ApplicationBlock;
 	using DotNetOpenAuth.ApplicationBlock.Facebook;
-	using DotNetOpenAuth.OAuth2;
-
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OAuth2;
 
 	public partial class WindowsLive : System.Web.UI.Page {
 		private static readonly WindowsLiveClient client = new WindowsLiveClient {

@@ -170,8 +170,31 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
+		/// Gets the relying party as its AJAX type.
+		/// </summary>
+		protected OpenIdAjaxRelyingParty AjaxRelyingParty {
+			get { return (OpenIdAjaxRelyingParty)this.RelyingParty; }
+		}
+
+		/// <summary>
+		/// Gets the name of the open id auth data form key (for the value as stored at the user agent as a FORM field).
+		/// </summary>
+		/// <value>Usually a concatenation of the control's name and <c>"_openidAuthData"</c>.</value>
+		protected abstract string OpenIdAuthDataFormKey { get; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether an authentication in the page's view state
+		/// has already been processed and appropriate events fired.
+		/// </summary>
+		private bool AuthenticationProcessedAlready {
+			get { return (bool)(ViewState[AuthenticationProcessedAlreadyViewStateKey] ?? false); }
+			set { ViewState[AuthenticationProcessedAlreadyViewStateKey] = value; }
+		}
+
+		/// <summary>
 		/// Gets the completed authentication response.
 		/// </summary>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		public async Task<IAuthenticationResponse> GetAuthenticationResponseAsync(CancellationToken cancellationToken) {
 			if (this.authenticationResponse == null) {
 				// We will either validate a new response and return a live AuthenticationResponse
@@ -202,28 +225,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			return this.authenticationResponse;
-		}
-
-		/// <summary>
-		/// Gets the relying party as its AJAX type.
-		/// </summary>
-		protected OpenIdAjaxRelyingParty AjaxRelyingParty {
-			get { return (OpenIdAjaxRelyingParty)this.RelyingParty; }
-		}
-
-		/// <summary>
-		/// Gets the name of the open id auth data form key (for the value as stored at the user agent as a FORM field).
-		/// </summary>
-		/// <value>Usually a concatenation of the control's name and <c>"_openidAuthData"</c>.</value>
-		protected abstract string OpenIdAuthDataFormKey { get; }
-
-		/// <summary>
-		/// Gets or sets a value indicating whether an authentication in the page's view state
-		/// has already been processed and appropriate events fired.
-		/// </summary>
-		private bool AuthenticationProcessedAlready {
-			get { return (bool)(ViewState[AuthenticationProcessedAlreadyViewStateKey] ?? false); }
-			set { ViewState[AuthenticationProcessedAlreadyViewStateKey] = value; }
 		}
 
 		/// <summary>
@@ -310,6 +311,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// user agent for javascript as soon as the page loads.
 		/// </summary>
 		/// <param name="identifier">The identifier.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns></returns>
 		protected Task PreloadDiscoveryAsync(Identifier identifier, CancellationToken cancellationToken) {
 			return this.PreloadDiscoveryAsync(new[] { identifier }, cancellationToken);
 		}
@@ -319,6 +322,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// user agent for javascript as soon as the page loads.
 		/// </summary>
 		/// <param name="identifiers">The identifiers to perform discovery on.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns></returns>
 		protected async Task PreloadDiscoveryAsync(IEnumerable<Identifier> identifiers, CancellationToken cancellationToken) {
 			var requests = await Task.WhenAll(identifiers.Select(id => this.CreateRequestsAsync(id, cancellationToken)));
 			string script = await this.AjaxRelyingParty.AsAjaxPreloadedDiscoveryResultAsync(requests.SelectMany(r => r), cancellationToken);
@@ -420,6 +425,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Notifies the user agent via an AJAX response of a completed authentication attempt.
 		/// </summary>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		protected override async Task ScriptClosingPopupOrIFrameAsync(CancellationToken cancellationToken) {
 			Action<AuthenticationStatus> callback = status => {
 				if (status == AuthenticationStatus.Authenticated) {

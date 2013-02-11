@@ -22,13 +22,12 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <summary>
 		/// The prepare authorized request.
 		/// </summary>
-		/// <param name="profileEndpoint">
-		/// The profile endpoint.
-		/// </param>
-		/// <param name="accessToken">
-		/// The access token.
-		/// </param>
-		/// <returns>An HTTP request.</returns>
+		/// <param name="profileEndpoint">The profile endpoint.</param>
+		/// <param name="accessToken">The access token.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// An HTTP request.
+		/// </returns>
 		Task<HttpRequestMessage> PrepareAuthorizedRequestAsync(MessageReceivingEndpoint profileEndpoint, string accessToken, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
@@ -40,9 +39,8 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <summary>
 		/// The request authentication.
 		/// </summary>
-		/// <param name="callback">
-		/// The callback.
-		/// </param>
+		/// <param name="callback">The callback.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		Task<HttpResponseMessage> RequestAuthenticationAsync(Uri callback, CancellationToken cancellationToken = default(CancellationToken));
 
 		#endregion

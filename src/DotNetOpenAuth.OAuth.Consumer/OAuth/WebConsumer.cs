@@ -37,6 +37,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// to provide that authorization.  Upon successful authorization, the user is redirected
 		/// back to the current page.
 		/// </summary>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>The pending user agent redirect based message to be sent as an HttpResponse.</returns>
 		/// <remarks>
 		/// Requires HttpContext.Current.
@@ -56,6 +57,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// </param>
 		/// <param name="requestParameters">Extra parameters to add to the request token message.  Optional.</param>
 		/// <param name="redirectParameters">Extra parameters to add to the redirect to Service Provider message.  Optional.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>The pending user agent redirect based message to be sent as an HttpResponse.</returns>
 		public Task<UserAuthorizationRequest> PrepareRequestUserAuthorizationAsync(Uri callback, IDictionary<string, string> requestParameters, IDictionary<string, string> redirectParameters, CancellationToken cancellationToken = default(CancellationToken)) {
 			return base.PrepareRequestUserAuthorizationAsync(callback, requestParameters, redirectParameters, cancellationToken);
@@ -65,7 +67,10 @@ namespace DotNetOpenAuth.OAuth {
 		/// Processes an incoming authorization-granted message from an SP and obtains an access token.
 		/// </summary>
 		/// <param name="request">The incoming HTTP request.</param>
-		/// <returns>The access token, or null if no incoming authorization message was recognized.</returns>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The access token, or null if no incoming authorization message was recognized.
+		/// </returns>
 		public async Task<AuthorizedTokenResponse> ProcessUserAuthorizationAsync(HttpRequestBase request = null, CancellationToken cancellationToken = default(CancellationToken)) {
 			request = request ?? this.Channel.GetRequestFromContext();
 

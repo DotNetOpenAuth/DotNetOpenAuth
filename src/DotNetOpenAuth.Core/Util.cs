@@ -29,11 +29,6 @@ namespace DotNetOpenAuth {
 		/// </summary>
 		internal const string DefaultNamespace = "DotNetOpenAuth";
 
-		/// <summary>
-		/// The web.config file-specified provider of web resource URLs.
-		/// </summary>
-		private static IEmbeddedResourceRetrieval embeddedResourceRetrieval = MessagingElement.Configuration.EmbeddedResourceRetrievalProvider.CreateInstance(null, false, null);
-
 		private static readonly Lazy<string> libraryVersionLazy = new Lazy<string>(delegate {
 			var assembly = Assembly.GetExecutingAssembly();
 			string assemblyFullName = assembly.FullName;
@@ -43,6 +38,11 @@ namespace DotNetOpenAuth {
 			// We use InvariantCulture since this is used for logging.
 			return string.Format(CultureInfo.InvariantCulture, "{0} ({1})", assemblyFullName, official ? "official" : "private");
 		});
+
+		/// <summary>
+		/// The web.config file-specified provider of web resource URLs.
+		/// </summary>
+		private static IEmbeddedResourceRetrieval embeddedResourceRetrieval = MessagingElement.Configuration.EmbeddedResourceRetrievalProvider.CreateInstance(null, false, null);
 
 		private static readonly Lazy<ProductInfoHeaderValue> libraryVersionHeaderLazy = new Lazy<ProductInfoHeaderValue>(delegate {
 			var assemblyName = Assembly.GetExecutingAssembly().GetName();

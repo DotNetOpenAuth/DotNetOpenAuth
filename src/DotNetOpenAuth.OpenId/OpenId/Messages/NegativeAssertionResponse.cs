@@ -39,24 +39,6 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="NegativeAssertionResponse"/> class.
-		/// </summary>
-		/// <param name="request">The request that the relying party sent.</param>
-		/// <param name="channel">The channel to use to simulate construction of the user_setup_url, if applicable.  May be null, but the user_setup_url will not be constructed.</param>
-		internal static async Task<NegativeAssertionResponse> CreateAsync(SignedResponseRequest request, CancellationToken cancellationToken, Channel channel = null) {
-			var result = new NegativeAssertionResponse(request);
-			
-			// If appropriate, and when we're provided with a channel to do it,
-			// go ahead and construct the user_setup_url
-			if (result.Version.Major < 2 && request.Immediate && channel != null) {
-				// All requests are CheckIdRequests in OpenID 1.x, so this cast should be safe.
-				result.UserSetupUrl = await ConstructUserSetupUrlAsync((CheckIdRequest)request, channel, cancellationToken);
-			}
-
-			return result;
-		}
-
-		/// <summary>
 		/// Gets or sets the URL the relying party can use to upgrade their authentication
 		/// request from an immediate to a setup message.
 		/// </summary>
@@ -112,11 +94,31 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		}
 
 		/// <summary>
+		/// Initializes a new instance of the <see cref="NegativeAssertionResponse" /> class.
+		/// </summary>
+		/// <param name="request">The request that the relying party sent.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <param name="channel">The channel to use to simulate construction of the user_setup_url, if applicable.  May be null, but the user_setup_url will not be constructed.</param>
+		internal static async Task<NegativeAssertionResponse> CreateAsync(SignedResponseRequest request, CancellationToken cancellationToken, Channel channel = null) {
+			var result = new NegativeAssertionResponse(request);
+
+			// If appropriate, and when we're provided with a channel to do it,
+			// go ahead and construct the user_setup_url
+			if (result.Version.Major < 2 && request.Immediate && channel != null) {
+				// All requests are CheckIdRequests in OpenID 1.x, so this cast should be safe.
+				result.UserSetupUrl = await ConstructUserSetupUrlAsync((CheckIdRequest)request, channel, cancellationToken);
+			}
+
+			return result;
+		}
+
+		/// <summary>
 		/// Constructs the value for the user_setup_url parameter to be sent back
 		/// in negative assertions in response to OpenID 1.x RP's checkid_immediate requests.
 		/// </summary>
 		/// <param name="immediateRequest">The immediate request.</param>
 		/// <param name="channel">The channel to use to simulate construction of the message.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>The value to use for the user_setup_url parameter.</returns>
 		private static async Task<Uri> ConstructUserSetupUrlAsync(CheckIdRequest immediateRequest, Channel channel, CancellationToken cancellationToken) {
 			Requires.NotNull(immediateRequest, "immediateRequest");

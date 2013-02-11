@@ -279,6 +279,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// or direct message response for transmission to a remote party.
 		/// </summary>
 		/// <param name="message">The one-way message to send</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>The pending user agent redirect based message to be sent as an HttpResponse.</returns>
 		public async Task<HttpResponseMessage> PrepareResponseAsync(IProtocolMessage message, CancellationToken cancellationToken = default(CancellationToken)) {
 			Requires.NotNull(message, "message");
@@ -342,10 +343,12 @@ namespace DotNetOpenAuth.Messaging {
 		/// Gets the protocol message embedded in the given HTTP request, if present.
 		/// </summary>
 		/// <typeparam name="TRequest">The expected type of the message to be received.</typeparam>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <param name="httpRequest">The request to search for an embedded message.</param>
-		/// <param name="request">The deserialized message, if one is found.  Null otherwise.</param>
-		/// <returns>True if the expected message was recognized and deserialized.  False otherwise.</returns>
-		/// <exception cref="InvalidOperationException">Thrown when <see cref="HttpContext.Current"/> is null.</exception>
+		/// <returns>
+		/// True if the expected message was recognized and deserialized.  False otherwise.
+		/// </returns>
+		/// <exception cref="InvalidOperationException">Thrown when <see cref="HttpContext.Current" /> is null.</exception>
 		/// <exception cref="ProtocolException">Thrown when a request message of an unexpected type is received.</exception>
 		public async Task<TRequest> TryReadFromRequestAsync<TRequest>(CancellationToken cancellationToken, HttpRequestBase httpRequest = null)
 			where TRequest : class, IProtocolMessage {
@@ -365,8 +368,11 @@ namespace DotNetOpenAuth.Messaging {
 		/// Gets the protocol message embedded in the given HTTP request.
 		/// </summary>
 		/// <typeparam name="TRequest">The expected type of the message to be received.</typeparam>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <param name="httpRequest">The request to search for an embedded message.</param>
-		/// <returns>The deserialized message.  Never null.</returns>
+		/// <returns>
+		/// The deserialized message.  Never null.
+		/// </returns>
 		/// <exception cref="ProtocolException">Thrown if the expected message was not recognized in the response.</exception>
 		[SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "This returns and verifies the appropriate message type.")]
 		public async Task<TRequest> ReadFromRequestAsync<TRequest>(CancellationToken cancellationToken, HttpRequestBase httpRequest = null)
@@ -469,6 +475,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// Verifies the integrity and applicability of an incoming message.
 		/// </summary>
 		/// <param name="message">The message just received.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <exception cref="ProtocolException">
 		/// Thrown when the message is somehow invalid.
 		/// This can be due to tampering, replay attack or expiration, among other things.
@@ -646,6 +653,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// Submits a direct request message to some remote party and blocks waiting for an immediately reply.
 		/// </summary>
 		/// <param name="request">The request message.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>The response message, or null if the response did not carry a message.</returns>
 		/// <remarks>
 		/// Typically a deriving channel will override <see cref="CreateHttpRequest"/> to customize this method's
@@ -719,6 +727,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// Gets the protocol message that may be embedded in the given HTTP request.
 		/// </summary>
 		/// <param name="request">The request to search for an embedded message.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
 		protected virtual IDirectedProtocolMessage ReadFromRequestCore(HttpRequestBase request, CancellationToken cancellationToken) {
 			Requires.NotNull(request, "request");
@@ -1124,6 +1133,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// Verifies the integrity and applicability of an incoming message.
 		/// </summary>
 		/// <param name="message">The message just received.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <exception cref="ProtocolException">
 		/// Thrown when the message is somehow invalid.
 		/// This can be due to tampering, replay attack or expiration, among other things.

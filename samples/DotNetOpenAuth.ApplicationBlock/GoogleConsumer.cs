@@ -179,6 +179,7 @@ namespace DotNetOpenAuth.ApplicationBlock
 		/// </summary>
 		/// <param name="consumer">The Google consumer previously constructed using <see cref="CreateWebConsumer"/> or <see cref="CreateDesktopConsumer"/>.</param>
 		/// <param name="requestedAccessScope">The requested access scope.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		public static async Task RequestAuthorizationAsync(WebConsumer consumer, Applications requestedAccessScope, CancellationToken cancellationToken = default(CancellationToken)) {
 			if (consumer == null) {
 				throw new ArgumentNullException("consumer");
@@ -196,10 +197,13 @@ namespace DotNetOpenAuth.ApplicationBlock
 		/// <summary>
 		/// Requests authorization from Google to access data from a set of Google applications.
 		/// </summary>
-		/// <param name="consumer">The Google consumer previously constructed using <see cref="CreateWebConsumer"/> or <see cref="CreateDesktopConsumer"/>.</param>
+		/// <param name="consumer">The Google consumer previously constructed using <see cref="CreateWebConsumer" /> or <see cref="CreateDesktopConsumer" />.</param>
 		/// <param name="requestedAccessScope">The requested access scope.</param>
-		/// <param name="requestToken">The unauthorized request token assigned by Google.</param>
-		/// <returns>The URI to redirect to and the request token.</returns>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The URI to redirect to and the request token.
+		/// </returns>
+		/// <exception cref="System.ArgumentNullException">consumer</exception>
 		public static Task<Tuple<Uri, string>> RequestAuthorizationAsync(DesktopConsumer consumer, Applications requestedAccessScope, CancellationToken cancellationToken = default(CancellationToken)) {
 			if (consumer == null) {
 				throw new ArgumentNullException("consumer");
@@ -219,7 +223,11 @@ namespace DotNetOpenAuth.ApplicationBlock
 		/// <param name="accessToken">The access token previously retrieved.</param>
 		/// <param name="maxResults">The maximum number of entries to return. If you want to receive all of the contacts, rather than only the default maximum, you can specify a very large number here.</param>
 		/// <param name="startIndex">The 1-based index of the first result to be retrieved (for paging).</param>
-		/// <returns>An XML document returned by Google.</returns>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// An XML document returned by Google.
+		/// </returns>
+		/// <exception cref="System.ArgumentNullException">consumer</exception>
 		public static async Task<XDocument> GetContactsAsync(ConsumerBase consumer, string accessToken, int maxResults = 25, int startIndex = 1, CancellationToken cancellationToken = default(CancellationToken)) {
 			if (consumer == null) {
 				throw new ArgumentNullException("consumer");

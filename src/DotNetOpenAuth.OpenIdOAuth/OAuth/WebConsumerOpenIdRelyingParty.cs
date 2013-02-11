@@ -56,12 +56,13 @@ namespace DotNetOpenAuth.OAuth {
 		/// Processes an incoming authorization-granted message from an SP and obtains an access token.
 		/// </summary>
 		/// <param name="openIdAuthenticationResponse">The OpenID authentication response that may be carrying an authorized request token.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The access token, or null if OAuth authorization was denied by the user or service provider.
 		/// </returns>
 		/// <remarks>
-		/// The access token, if granted, is automatically stored in the <see cref="ConsumerBase.TokenManager"/>.
-		/// The token manager instance must implement <see cref="IOpenIdOAuthTokenManager"/>.
+		/// The access token, if granted, is automatically stored in the <see cref="ConsumerBase.TokenManager" />.
+		/// The token manager instance must implement <see cref="IOpenIdOAuthTokenManager" />.
 		/// </remarks>
 		public async Task<AuthorizedTokenResponse> ProcessUserAuthorizationAsync(IAuthenticationResponse openIdAuthenticationResponse, CancellationToken cancellationToken = default(CancellationToken)) {
 			Requires.NotNull(openIdAuthenticationResponse, "openIdAuthenticationResponse");

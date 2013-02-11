@@ -50,6 +50,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// Performs discovery on the specified identifier.
 		/// </summary>
 		/// <param name="identifier">The identifier to discover services for.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>A non-null sequence of services discovered for the identifier.</returns>
 		public async Task<IEnumerable<IdentifierDiscoveryResult>> DiscoverAsync(Identifier identifier, CancellationToken cancellationToken) {
 			Requires.NotNull(identifier, "identifier");

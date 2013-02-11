@@ -87,6 +87,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <param name="returnUrl">
 		/// The return url after users have completed authenticating against external website. 
 		/// </param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings",
 			Justification = "We don't have a Uri object handy.")]
 		public virtual async Task RequestAuthenticationAsync(HttpContextBase context, Uri returnUrl, CancellationToken cancellationToken = default(CancellationToken)) {
@@ -104,12 +105,12 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <summary>
 		/// Check if authentication succeeded after user is redirected back from the service provider.
 		/// </summary>
-		/// <param name="context">
-		/// The context of the current request. 
-		/// </param>
+		/// <param name="context">The context of the current request.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
-		/// An instance of <see cref="AuthenticationResult"/> containing authentication result. 
+		/// An instance of <see cref="AuthenticationResult" /> containing authentication result.
 		/// </returns>
+		/// <exception cref="System.InvalidOperationException"></exception>
 		public virtual async Task<AuthenticationResult> VerifyAuthenticationAsync(HttpContextBase context, CancellationToken cancellationToken = default(CancellationToken)) {
 			IAuthenticationResponse response = await RelyingParty.GetResponseAsync(context.Request, cancellationToken);
 			if (response == null) {

@@ -53,13 +53,14 @@ namespace DotNetOpenAuth.OpenId.Provider.Behaviors {
 		/// Called when a request is received by the Provider.
 		/// </summary>
 		/// <param name="request">The incoming request.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
-		/// 	<c>true</c> if this behavior owns this request and wants to stop other behaviors
+		///   <c>true</c> if this behavior owns this request and wants to stop other behaviors
 		/// from handling it; <c>false</c> to allow other behaviors to process this request.
 		/// </returns>
 		/// <remarks>
-		/// Implementations may set a new value to <see cref="IRequest.SecuritySettings"/> but
-		/// should not change the properties on the instance of <see cref="ProviderSecuritySettings"/>
+		/// Implementations may set a new value to <see cref="IRequest.SecuritySettings" /> but
+		/// should not change the properties on the instance of <see cref="ProviderSecuritySettings" />
 		/// itself as that instance may be shared across many requests.
 		/// </remarks>
 		Task<bool> IProviderBehavior.OnIncomingRequestAsync(IRequest request, CancellationToken cancellationToken) {
@@ -75,8 +76,9 @@ namespace DotNetOpenAuth.OpenId.Provider.Behaviors {
 		/// Called when the Provider is preparing to send a response to an authentication request.
 		/// </summary>
 		/// <param name="request">The request that is configured to generate the outgoing response.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
-		/// 	<c>true</c> if this behavior owns this request and wants to stop other behaviors
+		///   <c>true</c> if this behavior owns this request and wants to stop other behaviors
 		/// from handling it; <c>false</c> to allow other behaviors to process this request.
 		/// </returns>
 		async Task<bool> IProviderBehavior.OnOutgoingResponseAsync(Provider.IAuthenticationRequest request, CancellationToken cancellationToken) {

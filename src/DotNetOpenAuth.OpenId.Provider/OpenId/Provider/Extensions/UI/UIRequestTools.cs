@@ -37,8 +37,8 @@ namespace DotNetOpenAuth.OpenId.Provider.Extensions.UI {
 		/// Gets the URL of the RP icon for the OP to display.
 		/// </summary>
 		/// <param name="realm">The realm of the RP where the authentication request originated.</param>
-		/// <param name="webRequestHandler">The web request handler to use for discovery.
-		/// Usually available via <see cref="Channel.WebRequestHandler">OpenIdProvider.Channel.WebRequestHandler</see>.</param>
+		/// <param name="hostFactories">The host factories.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// A sequence of the RP's icons it has available for the Provider to display, in decreasing preferred order.
 		/// </returns>

@@ -59,12 +59,9 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <summary>
 		/// Attempts to authenticate users by forwarding them to an external website, and upon succcess or failure, redirect users back to the specified url.
 		/// </summary>
-		/// <param name="context">
-		/// The context.
-		/// </param>
-		/// <param name="returnUrl">
-		/// The return url after users have completed authenticating against external website. 
-		/// </param>
+		/// <param name="context">The context.</param>
+		/// <param name="returnUrl">The return url after users have completed authenticating against external website.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		public virtual async Task RequestAuthenticationAsync(HttpContextBase context, Uri returnUrl, CancellationToken cancellationToken = default(CancellationToken)) {
 			Requires.NotNull(context, "context");
 			Requires.NotNull(returnUrl, "returnUrl");
@@ -76,12 +73,12 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <summary>
 		/// Check if authentication succeeded after user is redirected back from the service provider.
 		/// </summary>
-		/// <param name="context">
-		/// The context.
-		/// </param>
+		/// <param name="context">The context.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
-		/// An instance of <see cref="AuthenticationResult"/> containing authentication result. 
+		/// An instance of <see cref="AuthenticationResult" /> containing authentication result.
 		/// </returns>
+		/// <exception cref="System.InvalidOperationException"></exception>
 		public Task<AuthenticationResult> VerifyAuthenticationAsync(HttpContextBase context, CancellationToken cancellationToken = default(CancellationToken)) {
 			throw new InvalidOperationException(WebResources.OAuthRequireReturnUrl);
 		}
@@ -91,6 +88,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// </summary>
 		/// <param name="context">The context.</param>
 		/// <param name="returnPageUrl">The return URL which should match the value passed to RequestAuthentication() method.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// An instance of <see cref="AuthenticationResult"/> containing authentication result.
 		/// </returns>

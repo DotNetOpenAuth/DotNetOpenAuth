@@ -78,6 +78,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="scope">The scope of authorized access requested.</param>
 		/// <param name="state">The client state that should be returned with the authorization response.</param>
 		/// <param name="returnTo">The URL that the authorization response should be sent to via a user-agent redirect.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// A fully-qualified URL suitable to initiate the authorization flow.
 		/// </returns>
@@ -94,11 +95,10 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// this client to access protected data at some resource server.
 		/// </summary>
 		/// <param name="authorization">The authorization state that is tracking this particular request.  Optional.</param>
-		/// <param name="implicitResponseType">
-		/// <c>true</c> to request an access token in the fragment of the response's URL;
-		/// <c>false</c> to authenticate to the authorization server and acquire the access token (and possibly a refresh token) via a private channel.
-		/// </param>
+		/// <param name="implicitResponseType"><c>true</c> to request an access token in the fragment of the response's URL;
+		/// <c>false</c> to authenticate to the authorization server and acquire the access token (and possibly a refresh token) via a private channel.</param>
 		/// <param name="state">The client state that should be returned with the authorization response.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// A fully-qualified URL suitable to initiate the authorization flow.
 		/// </returns>
@@ -116,7 +116,10 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <param name="actualRedirectUrl">The actual URL of the incoming HTTP request.</param>
 		/// <param name="authorizationState">The authorization.</param>
-		/// <returns>The granted authorization, or <c>null</c> if the incoming HTTP request did not contain an authorization server response or authorization was rejected.</returns>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The granted authorization, or <c>null</c> if the incoming HTTP request did not contain an authorization server response or authorization was rejected.
+		/// </returns>
 		public async Task<IAuthorizationState> ProcessUserAuthorizationAsync(Uri actualRedirectUrl, IAuthorizationState authorizationState = null, CancellationToken cancellationToken = default(CancellationToken)) {
 			Requires.NotNull(actualRedirectUrl, "actualRedirectUrl");
 
@@ -138,6 +141,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <param name="authorizationState">The authorization.</param>
 		/// <param name="response">The incoming authorization response message.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The granted authorization, or <c>null</c> if the incoming HTTP request did not contain an authorization server response or authorization was rejected.
 		/// </returns>

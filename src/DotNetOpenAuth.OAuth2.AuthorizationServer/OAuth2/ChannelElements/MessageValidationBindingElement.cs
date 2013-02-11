@@ -54,6 +54,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// Prepares a message for sending based on the rules of this channel binding element.
 		/// </summary>
 		/// <param name="message">The message to prepare for sending.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The protections (if any) that this binding element applied to the message.
 		/// Null if this binding element did not even apply to this binding element.
@@ -78,17 +79,17 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// validates an incoming message based on the rules of this channel binding element.
 		/// </summary>
 		/// <param name="message">The incoming message to process.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The protections (if any) that this binding element applied to the message.
 		/// Null if this binding element did not even apply to this binding element.
 		/// </returns>
-		/// <exception cref="ProtocolException">
-		/// Thrown when the binding element rules indicate that this message is invalid and should
-		/// NOT be processed.
-		/// </exception>
+		/// <exception cref="TokenEndpointProtocolException"></exception>
+		/// <exception cref="ProtocolException">Thrown when the binding element rules indicate that this message is invalid and should
+		/// NOT be processed.</exception>
 		/// <remarks>
 		/// Implementations that provide message protection must honor the
-		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
+		/// <see cref="MessagePartAttribute.RequiredProtection" /> properties where applicable.
 		/// </remarks>
 		public override async Task<MessageProtections?> ProcessIncomingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
 			bool applied = false;

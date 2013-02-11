@@ -37,8 +37,10 @@ namespace DotNetOpenAuth.OAuth {
 		/// </summary>
 		/// <param name="requestParameters">Extra parameters to add to the request token message.  Optional.</param>
 		/// <param name="redirectParameters">Extra parameters to add to the redirect to Service Provider message.  Optional.</param>
-		/// <param name="requestToken">The request token that must be exchanged for an access token after the user has provided authorization.</param>
-		/// <returns>The URL to open a browser window to allow the user to provide authorization and the request token.</returns>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The URL to open a browser window to allow the user to provide authorization and the request token.
+		/// </returns>
 		[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "2#", Justification = "Two results")]
 		public async Task<Tuple<Uri, string>> RequestUserAuthorizationAsync(IDictionary<string, string> requestParameters, IDictionary<string, string> redirectParameters, CancellationToken cancellationToken = default(CancellationToken)) {
 			var message = await this.PrepareRequestUserAuthorizationAsync(null, requestParameters, redirectParameters, cancellationToken);
@@ -50,6 +52,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// Exchanges a given request token for access token.
 		/// </summary>
 		/// <param name="requestToken">The request token that the user has authorized.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>The access token assigned by the Service Provider.</returns>
 		[Obsolete("Use the ProcessUserAuthorization method that takes a verifier parameter instead.")]
 		public Task<AuthorizedTokenResponse> ProcessUserAuthorizationAsync(string requestToken, CancellationToken cancellationToken = default(CancellationToken)) {
@@ -61,6 +64,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// </summary>
 		/// <param name="requestToken">The request token that the user has authorized.</param>
 		/// <param name="verifier">The verifier code typed in by the user.  Must not be <c>Null</c> for OAuth 1.0a service providers and later.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The access token assigned by the Service Provider.
 		/// </returns>

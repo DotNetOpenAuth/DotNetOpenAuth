@@ -33,7 +33,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	/// </summary>
 	internal abstract class OAuthChannel : Channel {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="OAuthChannel"/> class.
+		/// Initializes a new instance of the <see cref="OAuthChannel" /> class.
 		/// </summary>
 		/// <param name="signingBindingElement">The binding element to use for signing.</param>
 		/// <param name="tokenManager">The ITokenManager instance to use.</param>
@@ -42,6 +42,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// Except for mock testing, this should always be one of
 		/// OAuthConsumerMessageFactory or OAuthServiceProviderMessageFactory.</param>
 		/// <param name="bindingElements">The binding elements.</param>
+		/// <param name="hostFactories">The host factories.</param>
 		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Diagnostics.Contracts.__ContractsRuntime.Requires<System.ArgumentNullException>(System.Boolean,System.String,System.String)", Justification = "Code contracts"), SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "securitySettings", Justification = "Code contracts")]
 		protected OAuthChannel(ITamperProtectionChannelBindingElement signingBindingElement, ITokenManager tokenManager, SecuritySettings securitySettings, IMessageFactory messageTypeProvider, IChannelBindingElement[] bindingElements, IHostFactories hostFactories = null)
 			: base(messageTypeProvider, bindingElements, hostFactories ?? new DefaultOAuthHostFactories()) {
@@ -82,6 +83,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// expect an OAuth message response to.
 		/// </summary>
 		/// <param name="request">The message to attach.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>The initialized web request.</returns>
 		internal async Task<HttpRequestMessage> InitializeRequestAsync(IDirectedProtocolMessage request, CancellationToken cancellationToken) {
 			Requires.NotNull(request, "request");
@@ -114,6 +116,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// a protocol request message.
 		/// </summary>
 		/// <param name="request">The HTTP request to search.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
 		protected override IDirectedProtocolMessage ReadFromRequestCore(HttpRequestBase request, CancellationToken cancellationToken) {
 			// First search the Authorization header.

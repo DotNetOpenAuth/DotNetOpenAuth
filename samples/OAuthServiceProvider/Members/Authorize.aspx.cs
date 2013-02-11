@@ -7,11 +7,10 @@
 	using System.Web.UI;
 	using System.Web.UI.WebControls;
 	using DotNetOpenAuth;
+	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.Messages;
 	using OAuthServiceProvider.Code;
-
-	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
 	/// Conducts the user through a Consumer authorization process.

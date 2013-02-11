@@ -548,9 +548,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Creates the authentication requests for a given user-supplied Identifier.
 		/// </summary>
 		/// <param name="identifier">The identifier to create a request for.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// A sequence of authentication requests, any one of which may be
-		/// used to determine the user's control of the <see cref="IAuthenticationRequest.ClaimedIdentifier"/>.
+		/// used to determine the user's control of the <see cref="IAuthenticationRequest.ClaimedIdentifier" />.
 		/// </returns>
 		protected internal override async Task<IEnumerable<IAuthenticationRequest>> CreateRequestsAsync(Identifier identifier, CancellationToken cancellationToken) {
 			ErrorUtilities.VerifyArgumentNotNull(identifier, "identifier");

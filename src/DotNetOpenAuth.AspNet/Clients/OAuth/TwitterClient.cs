@@ -82,11 +82,10 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <summary>
 		/// Check if authentication succeeded after user is redirected back from the service provider.
 		/// </summary>
-		/// <param name="response">
-		/// The response token returned from service provider 
-		/// </param>
+		/// <param name="response">The response token returned from service provider</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
-		/// Authentication result 
+		/// Authentication result
 		/// </returns>
 		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes",
 			Justification = "We don't care if the request for additional data fails.")]

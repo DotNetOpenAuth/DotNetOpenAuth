@@ -64,7 +64,10 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <param name="scopes">The scope of authorized access requested.</param>
 		/// <param name="returnTo">The URL the authorization server should redirect the browser (typically on this site) to when the authorization is completed.  If null, the current request's URL will be used.</param>
-		/// <returns>The authorization request.</returns>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The authorization request.
+		/// </returns>
 		public Task<HttpResponseMessage> PrepareRequestUserAuthorizationAsync(IEnumerable<string> scopes = null, Uri returnTo = null, CancellationToken cancellationToken = default(CancellationToken)) {
 			var authorizationState = new AuthorizationState(scopes) {
 				Callback = returnTo,
@@ -76,7 +79,10 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// Prepares a request for user authorization from an authorization server.
 		/// </summary>
 		/// <param name="authorization">The authorization state to associate with this particular request.</param>
-		/// <returns>The authorization request.</returns>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The authorization request.
+		/// </returns>
 		public async Task<HttpResponseMessage> PrepareRequestUserAuthorizationAsync(IAuthorizationState authorization, CancellationToken cancellationToken) {
 			Requires.NotNull(authorization, "authorization");
 			RequiresEx.ValidState(authorization.Callback != null || (HttpContext.Current != null && HttpContext.Current.Request != null), MessagingStrings.HttpContextRequired);
@@ -123,6 +129,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// Processes the authorization response from an authorization server, if available.
 		/// </summary>
 		/// <param name="request">The incoming HTTP request that may carry an authorization response.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>The authorization state that contains the details of the authorization.</returns>
 		public async Task<IAuthorizationState> ProcessUserAuthorizationAsync(HttpRequestBase request = null, CancellationToken cancellationToken = default(CancellationToken)) {
 			RequiresEx.ValidState(!string.IsNullOrEmpty(this.ClientIdentifier), Strings.RequiredPropertyNotYetPreset, "ClientIdentifier");

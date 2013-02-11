@@ -132,6 +132,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// a new association of one does not already exist.
 		/// </summary>
 		/// <param name="provider">The provider to get an association for.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>The existing or new association; <c>null</c> if none existed and one could not be created.</returns>
 		internal async Task<Association> GetOrCreateAssociationAsync(IProviderEndpoint provider, CancellationToken cancellationToken) {
 			return this.GetExistingAssociation(provider) ?? await this.CreateNewAssociationAsync(provider, cancellationToken);
@@ -141,6 +142,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Creates a new association with a given Provider.
 		/// </summary>
 		/// <param name="provider">The provider to create an association with.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The newly created association, or null if no association can be created with
 		/// the given Provider given the current security settings.
@@ -148,7 +150,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <remarks>
 		/// A new association is created and returned even if one already exists in the
 		/// association store.
-		/// Any new association is automatically added to the <see cref="associationStore"/>.
+		/// Any new association is automatically added to the <see cref="associationStore" />.
 		/// </remarks>
 		private async Task<Association> CreateNewAssociationAsync(IProviderEndpoint provider, CancellationToken cancellationToken) {
 			Requires.NotNull(provider, "provider");
@@ -180,10 +182,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="provider">The provider to create an association with.</param>
 		/// <param name="associateRequest">The associate request.  May be <c>null</c>, which will always result in a <c>null</c> return value..</param>
 		/// <param name="retriesRemaining">The number of times to try the associate request again if the Provider suggests it.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The newly created association, or null if no association can be created with
 		/// the given Provider given the current security settings.
 		/// </returns>
+		/// <exception cref="ProtocolException"></exception>
 		private async Task<Association> CreateNewAssociationAsync(IProviderEndpoint provider, AssociateRequest associateRequest, int retriesRemaining, CancellationToken cancellationToken) {
 			Requires.NotNull(provider, "provider");
 

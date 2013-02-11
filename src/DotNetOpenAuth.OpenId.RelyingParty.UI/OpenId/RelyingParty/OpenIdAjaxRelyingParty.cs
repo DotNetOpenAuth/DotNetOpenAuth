@@ -54,16 +54,17 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// your realm would typically be https://www.example.com/.</param>
 		/// <param name="returnToUrl">The URL of the login page, or the page prepared to receive authentication
 		/// responses from the OpenID Provider.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// A sequence of authentication requests, any of which constitutes a valid identity assertion on the Claimed Identifier.
 		/// Never null, but may be empty.
 		/// </returns>
 		/// <remarks>
-		/// 	<para>Any individual generated request can satisfy the authentication.
+		///   <para>Any individual generated request can satisfy the authentication.
 		/// The generated requests are sorted in preferred order.
 		/// Each request is generated as it is enumerated to.  Associations are created only as
-		/// <see cref="IAuthenticationRequest.RedirectingResponse"/> is called.</para>
-		/// 	<para>No exception is thrown if no OpenID endpoints were discovered.
+		///   <see cref="IAuthenticationRequest.RedirectingResponse" /> is called.</para>
+		///   <para>No exception is thrown if no OpenID endpoints were discovered.
 		/// An empty enumerable is returned instead.</para>
 		/// </remarks>
 		public override async Task<IEnumerable<IAuthenticationRequest>> CreateRequestsAsync(Identifier userSuppliedIdentifier, Realm realm, Uri returnToUrl, CancellationToken cancellationToken) {
@@ -127,6 +128,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Serializes discovery results on some <i>single</i> identifier on behalf of Javascript running on the browser.
 		/// </summary>
 		/// <param name="requests">The discovery results from just <i>one</i> identifier to serialize as a JSON response.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The JSON result to return to the user agent.
 		/// </returns>
@@ -164,6 +166,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// an AJAX-aware OpenID control.
 		/// </summary>
 		/// <param name="requests">The discovery results to serialize as a JSON response.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The JSON result to return to the user agent.
 		/// </returns>
@@ -181,6 +184,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Converts a sequence of authentication requests to a JSON object for seeding an AJAX-enabled login page.
 		/// </summary>
 		/// <param name="requests">The discovery results from just <i>one</i> identifier to serialize as a JSON response.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>A JSON object, not yet serialized.</returns>
 		internal async Task<object> AsJsonDiscoveryResultAsync(IEnumerable<IAuthenticationRequest> requests, CancellationToken cancellationToken) {
 			Requires.NotNull(requests, "requests");
@@ -218,6 +222,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// an AJAX-aware OpenID control.
 		/// </summary>
 		/// <param name="requests">The discovery results to serialize as a JSON response.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// A JSON object, not yet serialized to a string.
 		/// </returns>

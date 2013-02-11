@@ -47,11 +47,12 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		private KeyValueFormEncoding keyValueForm = new KeyValueFormEncoding();
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="OpenIdChannel"/> class.
+		/// Initializes a new instance of the <see cref="OpenIdChannel" /> class.
 		/// </summary>
 		/// <param name="messageTypeProvider">A class prepared to analyze incoming messages and indicate what concrete
 		/// message types can deserialize from it.</param>
 		/// <param name="bindingElements">The binding elements to use in sending and receiving messages.</param>
+		/// <param name="hostFactories">The host factories.</param>
 		protected OpenIdChannel(IMessageFactory messageTypeProvider, IChannelBindingElement[] bindingElements, IHostFactories hostFactories = null)
 			: base(messageTypeProvider, bindingElements, hostFactories ?? new DefaultOpenIdHostFactories()) {
 			Requires.NotNull(messageTypeProvider, "messageTypeProvider");
@@ -81,10 +82,9 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// Verifies the integrity and applicability of an incoming message.
 		/// </summary>
 		/// <param name="message">The message just received.</param>
-		/// <exception cref="ProtocolException">
-		/// Thrown when the message is somehow invalid, except for check_authentication messages.
-		/// This can be due to tampering, replay attack or expiration, among other things.
-		/// </exception>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <exception cref="ProtocolException">Thrown when the message is somehow invalid, except for check_authentication messages.
+		/// This can be due to tampering, replay attack or expiration, among other things.</exception>
 		protected override async Task ProcessIncomingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
 			var checkAuthRequest = message as CheckAuthenticationRequest;
 			if (checkAuthRequest != null) {

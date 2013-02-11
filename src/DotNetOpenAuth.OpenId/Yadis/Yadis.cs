@@ -6,7 +6,9 @@
 
 namespace DotNetOpenAuth.Yadis {
 	using System;
+	using System.Collections.Generic;
 	using System.IO;
+	using System.Linq;
 	using System.Net;
 	using System.Net.Cache;
 	using System.Net.Http;
@@ -20,9 +22,6 @@ namespace DotNetOpenAuth.Yadis {
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.Xrds;
 	using Validation;
-
-	using System.Linq;
-	using System.Collections.Generic;
 
 	/// <summary>
 	/// YADIS discovery manager.
@@ -51,13 +50,14 @@ namespace DotNetOpenAuth.Yadis {
 		/// <summary>
 		/// Performs YADIS discovery on some identifier.
 		/// </summary>
-		/// <param name="requestHandler">The mechanism to use for sending HTTP requests.</param>
+		/// <param name="hostFactories">The host factories.</param>
 		/// <param name="uri">The URI to perform discovery on.</param>
 		/// <param name="requireSsl">Whether discovery should fail if any step of it is not encrypted.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The result of discovery on the given URL.
 		/// Null may be returned if an error occurs,
-		/// or if <paramref name="requireSsl"/> is true but part of discovery
+		/// or if <paramref name="requireSsl" /> is true but part of discovery
 		/// is not protected by SSL.
 		/// </returns>
 		public static async Task<DiscoveryResult> DiscoverAsync(IHostFactories hostFactories, UriIdentifier uri, bool requireSsl, CancellationToken cancellationToken) {

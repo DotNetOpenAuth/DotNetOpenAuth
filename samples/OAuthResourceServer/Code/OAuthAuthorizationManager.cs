@@ -88,6 +88,7 @@
 		/// Submits this response to a WCF response context.  Only available when no response body is included.
 		/// </summary>
 		/// <param name="responseContext">The response context to apply the response to.</param>
+		/// <param name="responseMessage">The response message.</param>
 		private void Respond(OutgoingWebResponseContext responseContext, HttpResponseMessage responseMessage) {
 			responseContext.StatusCode = responseMessage.StatusCode;
 			responseContext.SuppressEntityBody = true;

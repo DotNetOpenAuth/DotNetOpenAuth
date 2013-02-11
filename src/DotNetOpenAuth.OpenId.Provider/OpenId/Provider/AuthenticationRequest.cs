@@ -176,17 +176,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			get { return (CheckIdRequest)base.RequestMessage; }
 		}
 
-		/// <summary>
-		/// Gets the response message, once <see cref="IsResponseReady"/> is <c>true</c>.
-		/// </summary>
-		protected override async Task<IProtocolMessage> GetResponseMessageAsync(CancellationToken cancellationToken) {
-			if (this.IsAuthenticated.HasValue) {
-				return this.IsAuthenticated.Value ? (IProtocolMessage)this.positiveResponse : (await this.GetNegativeResponseAsync());
-			} else {
-				return null;
-			}
-		}
-
 		#region IAuthenticationRequest Methods
 
 		/// <summary>
@@ -211,6 +200,8 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			this.positiveResponse.ClaimedIdentifier = builder.Uri;
 		}
 
+		#endregion
+
 		/// <summary>
 		/// Sets the Claimed and Local identifiers even after they have been initially set.
 		/// </summary>
@@ -222,6 +213,15 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			this.positiveResponse.LocalIdentifier = identifier;
 		}
 
-		#endregion
+		/// <summary>
+		/// Gets the response message, once <see cref="IsResponseReady"/> is <c>true</c>.
+		/// </summary>
+		protected override async Task<IProtocolMessage> GetResponseMessageAsync(CancellationToken cancellationToken) {
+			if (this.IsAuthenticated.HasValue) {
+				return this.IsAuthenticated.Value ? (IProtocolMessage)this.positiveResponse : (await this.GetNegativeResponseAsync());
+			} else {
+				return null;
+			}
+		}
 	}
 }

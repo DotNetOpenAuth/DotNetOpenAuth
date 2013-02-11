@@ -12,10 +12,9 @@
 	using System.Web;
 	using System.Web.UI;
 	using System.Web.UI.WebControls;
+	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2;
 	using SampleResourceServer;
-
-	using DotNetOpenAuth.Messaging;
 
 	public partial class SampleWcf2 : System.Web.UI.Page {
 		/// <summary>

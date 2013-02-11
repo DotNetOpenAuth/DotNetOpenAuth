@@ -157,31 +157,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
-		/// Gets the standard state storage mechanism that uses ASP.NET's
-		/// HttpApplication state dictionary to store associations and nonces.
-		/// </summary>
-		public static IOpenIdApplicationStore GetHttpApplicationStore(HttpContextBase context = null) {
-			if (context == null) {
-				ErrorUtilities.VerifyOperation(HttpContext.Current != null, Strings.StoreRequiredWhenNoHttpContextAvailable, typeof(IOpenIdApplicationStore).Name);
-				context = new HttpContextWrapper(HttpContext.Current);
-			}
-
-			var store = (IOpenIdApplicationStore)context.Application[ApplicationStoreKey];
-			if (store == null) {
-				context.Application.Lock();
-				try {
-					if ((store = (IOpenIdApplicationStore)context.Application[ApplicationStoreKey]) == null) {
-						context.Application[ApplicationStoreKey] = store = new StandardRelyingPartyApplicationStore();
-					}
-				} finally {
-					context.Application.UnLock();
-				}
-			}
-
-			return store;
-		}
-
-		/// <summary>
 		/// Gets or sets the channel to use for sending/receiving messages.
 		/// </summary>
 		public Channel Channel {
@@ -311,6 +286,33 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 				return this.nonVerifyingRelyingParty;
 			}
+		}
+
+		/// <summary>
+		/// Gets the standard state storage mechanism that uses ASP.NET's
+		/// HttpApplication state dictionary to store associations and nonces.
+		/// </summary>
+		/// <param name="context">The context.</param>
+		/// <returns>The application store.</returns>
+		public static IOpenIdApplicationStore GetHttpApplicationStore(HttpContextBase context = null) {
+			if (context == null) {
+				ErrorUtilities.VerifyOperation(HttpContext.Current != null, Strings.StoreRequiredWhenNoHttpContextAvailable, typeof(IOpenIdApplicationStore).Name);
+				context = new HttpContextWrapper(HttpContext.Current);
+			}
+
+			var store = (IOpenIdApplicationStore)context.Application[ApplicationStoreKey];
+			if (store == null) {
+				context.Application.Lock();
+				try {
+					if ((store = (IOpenIdApplicationStore)context.Application[ApplicationStoreKey]) == null) {
+						context.Application[ApplicationStoreKey] = store = new StandardRelyingPartyApplicationStore();
+					}
+				} finally {
+					context.Application.UnLock();
+				}
+			}
+
+			return store;
 		}
 
 		/// <summary>
@@ -520,7 +522,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Gets an authentication response from a Provider.
 		/// </summary>
 		/// <param name="httpRequestInfo">The HTTP request that may be carrying an authentication response from the Provider.</param>
-		/// <returns>The processed authentication response if there is any; <c>null</c> otherwise.</returns>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The processed authentication response if there is any; <c>null</c> otherwise.
+		/// </returns>
 		public async Task<IAuthenticationResponse> GetResponseAsync(HttpRequestBase httpRequestInfo, CancellationToken cancellationToken) {
 			Requires.NotNull(httpRequestInfo, "httpRequestInfo");
 			try {
@@ -574,7 +579,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Processes the response received in a popup window or iframe to an AJAX-directed OpenID authentication.
 		/// </summary>
 		/// <param name="request">The incoming HTTP request that is expected to carry an OpenID authentication response.</param>
-		/// <returns>The HTTP response to send to this HTTP request.</returns>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The HTTP response to send to this HTTP request.
+		/// </returns>
 		public Task<HttpResponseMessage> ProcessResponseFromPopupAsync(HttpRequestBase request, CancellationToken cancellationToken) {
 			Requires.NotNull(request, "request");
 
@@ -657,6 +665,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="request">The incoming HTTP request that is expected to carry an OpenID authentication response.</param>
 		/// <param name="callback">The callback fired after the response status has been determined but before the Javascript response is formulated.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The HTTP response to send to this HTTP request.
 		/// </returns>
@@ -716,7 +725,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Performs discovery on the specified identifier.
 		/// </summary>
 		/// <param name="identifier">The identifier to discover services for.</param>
-		/// <returns>A non-null sequence of services discovered for the identifier.</returns>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// A non-null sequence of services discovered for the identifier.
+		/// </returns>
 		internal Task<IEnumerable<IdentifierDiscoveryResult>> DiscoverAsync(Identifier identifier, CancellationToken cancellationToken) {
 			return this.discoveryServices.DiscoverAsync(identifier, cancellationToken);
 		}

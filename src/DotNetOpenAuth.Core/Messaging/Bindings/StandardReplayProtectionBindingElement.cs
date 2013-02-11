@@ -101,6 +101,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// Applies a nonce to the message.
 		/// </summary>
 		/// <param name="message">The message to apply replay protection to.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The protections (if any) that this binding element applied to the message.
 		/// Null if this binding element did not even apply to this binding element.
@@ -119,11 +120,16 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// Verifies that the nonce in an incoming message has not been seen before.
 		/// </summary>
 		/// <param name="message">The incoming message.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The protections (if any) that this binding element applied to the message.
 		/// Null if this binding element did not even apply to this binding element.
 		/// </returns>
 		/// <exception cref="ReplayedMessageException">Thrown when the nonce check revealed a replayed message.</exception>
+		/// <remarks>
+		/// Implementations that provide message protection must honor the
+		/// <see cref="MessagePartAttribute.RequiredProtection" /> properties where applicable.
+		/// </remarks>
 		public Task<MessageProtections?> ProcessIncomingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
 			IReplayProtectedProtocolMessage nonceMessage = message as IReplayProtectedProtocolMessage;
 			if (nonceMessage != null && nonceMessage.Nonce != null) {

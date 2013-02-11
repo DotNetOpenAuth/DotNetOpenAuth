@@ -24,7 +24,10 @@ using Validation;
 		/// <param name="relyingParty">The relying party.</param>
 		/// <param name="request">The authentication request to place in the window.</param>
 		/// <param name="windowName">The name to assign to the popup window.</param>
-		/// <returns>A string starting with 'window.open' and forming just that one method call.</returns>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// A string starting with 'window.open' and forming just that one method call.
+		/// </returns>
 		internal static async Task<string> GetWindowPopupScriptAsync(OpenIdRelyingParty relyingParty, IAuthenticationRequest request, string windowName, CancellationToken cancellationToken) {
 			Requires.NotNull(relyingParty, "relyingParty");
 			Requires.NotNull(request, "request");

@@ -39,8 +39,9 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		private static readonly Version[] Versions = Protocol.AllVersions.Select(v => v.Version).ToArray();
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="OAuth2ResourceServerChannel"/> class.
+		/// Initializes a new instance of the <see cref="OAuth2ResourceServerChannel" /> class.
 		/// </summary>
+		/// <param name="hostFactories">The host factories.</param>
 		protected internal OAuth2ResourceServerChannel(IHostFactories hostFactories = null)
 			: base(MessageTypes, Versions, hostFactories ?? new OAuth.DefaultOAuthHostFactories()) {
 			// TODO: add signing (authenticated request) binding element.
@@ -50,6 +51,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// Gets the protocol message that may be embedded in the given HTTP request.
 		/// </summary>
 		/// <param name="request">The request to search for an embedded message.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The deserialized message, if one is found.  Null otherwise.
 		/// </returns>

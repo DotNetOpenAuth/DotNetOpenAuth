@@ -41,7 +41,10 @@ namespace DotNetOpenAuth.Configuration {
 		/// Creates instances of all the types listed in the collection.
 		/// </summary>
 		/// <param name="allowInternals">if set to <c>true</c> then internal types may be instantiated.</param>
-		/// <returns>A sequence of instances generated from types in this collection.  May be empty, but never null.</returns>
+		/// <param name="hostFactories">The host factories.</param>
+		/// <returns>
+		/// A sequence of instances generated from types in this collection.  May be empty, but never null.
+		/// </returns>
 		internal IEnumerable<T> CreateInstances(bool allowInternals, IHostFactories hostFactories) {
 			return from element in this.Cast<TypeConfigurationElement<T>>()
 			       where !element.IsEmpty

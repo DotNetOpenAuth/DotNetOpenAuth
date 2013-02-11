@@ -227,7 +227,6 @@ namespace DotNetOpenAuth.OpenId {
 			}
 			while (true);
 
-
 			return hostFactories.CreateHttpClient(rootHandler);
 		}
 

@@ -48,7 +48,8 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <summary>
 		/// Attempts to perform relying party discovery of the return URL claimed by the Relying Party.
 		/// </summary>
-		/// <param name="webRequestHandler">The web request handler.</param>
+		/// <param name="hostFactories">The host factories.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The details of how successful the relying party discovery was.
 		/// </returns>

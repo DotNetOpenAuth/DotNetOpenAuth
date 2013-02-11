@@ -86,10 +86,13 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// the user to authorize the Client's access of some protected resource(s).
 		/// </summary>
 		/// <param name="request">The HTTP request to read from.</param>
-		/// <returns>The incoming request, or null if no OAuth message was attached.</returns>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The incoming request, or null if no OAuth message was attached.
+		/// </returns>
 		/// <exception cref="ProtocolException">Thrown if an unexpected OAuth message is attached to the incoming request.</exception>
 		[SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "unauthorizedclient", Justification = "Protocol required.")]
-		public async Task<EndUserAuthorizationRequest> ReadAuthorizationRequestAsync(HttpRequestBase request = null, CancellationToken cancellationToken = default (CancellationToken)) {
+		public async Task<EndUserAuthorizationRequest> ReadAuthorizationRequestAsync(HttpRequestBase request = null, CancellationToken cancellationToken = default(CancellationToken)) {
 			if (request == null) {
 				request = this.Channel.GetRequestFromContext();
 			}
@@ -119,7 +122,10 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// Handles an incoming request to the authorization server's token endpoint.
 		/// </summary>
 		/// <param name="request">The HTTP request.</param>
-		/// <returns>The HTTP response to send to the client.</returns>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The HTTP response to send to the client.
+		/// </returns>
 		public async Task<HttpResponseMessage> HandleTokenRequestAsync(HttpRequestBase request = null, CancellationToken cancellationToken = default(CancellationToken)) {
 			if (request == null) {
 				request = this.Channel.GetRequestFromContext();

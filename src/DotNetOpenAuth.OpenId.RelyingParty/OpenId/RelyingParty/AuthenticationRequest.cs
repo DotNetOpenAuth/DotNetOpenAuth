@@ -93,20 +93,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		public AuthenticationRequestMode Mode { get; set; }
 
 		/// <summary>
-		/// Gets the HTTP response the relying party should send to the user agent
-		/// to redirect it to the OpenID Provider to start the OpenID authentication process.
-		/// </summary>
-		/// <value></value>
-		public async Task<HttpResponseMessage> GetRedirectingResponseAsync(CancellationToken cancellationToken) {
-			foreach (var behavior in this.RelyingParty.Behaviors) {
-				behavior.OnOutgoingAuthenticationRequest(this);
-			}
-
-			var request = await this.CreateRequestMessageAsync(cancellationToken);
-			return await this.RelyingParty.Channel.PrepareResponseAsync(request, cancellationToken);
-		}
-
-		/// <summary>
 		/// Gets the URL that the user agent will return to after authentication
 		/// completes or fails at the Provider.
 		/// </summary>
@@ -197,6 +183,20 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		#region IAuthenticationRequest methods
+
+		/// <summary>
+		/// Gets the HTTP response the relying party should send to the user agent
+		/// to redirect it to the OpenID Provider to start the OpenID authentication process.
+		/// </summary>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		public async Task<HttpResponseMessage> GetRedirectingResponseAsync(CancellationToken cancellationToken) {
+			foreach (var behavior in this.RelyingParty.Behaviors) {
+				behavior.OnOutgoingAuthenticationRequest(this);
+			}
+
+			var request = await this.CreateRequestMessageAsync(cancellationToken);
+			return await this.RelyingParty.Channel.PrepareResponseAsync(request, cancellationToken);
+		}
 
 		/// <summary>
 		/// Makes a dictionary of key/value pairs available when the authentication is completed.
@@ -305,6 +305,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="realm">The realm.</param>
 		/// <param name="returnToUrl">The return_to base URL.</param>
 		/// <param name="createNewAssociationsAsNeeded">if set to <c>true</c>, associations that do not exist between this Relying Party and the asserting Providers are created before the authentication request is created.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// A sequence of authentication requests, any of which constitutes a valid identity assertion on the Claimed Identifier.
 		/// Never null, but may be empty.
@@ -391,13 +392,16 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Creates the request message to send to the Provider,
 		/// based on the properties in this instance.
 		/// </summary>
-		/// <returns>The message to send to the Provider.</returns>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The message to send to the Provider.
+		/// </returns>
 		internal Task<SignedResponseRequest> CreateRequestMessageTestHookAsync(CancellationToken cancellationToken) {
 			return this.CreateRequestMessageAsync(cancellationToken);
 		}
 
 		/// <summary>
-		/// Performs deferred request generation for the <see cref="Create"/> method.
+		/// Performs deferred request generation for the <see cref="Create" /> method.
 		/// </summary>
 		/// <param name="userSuppliedIdentifier">The user supplied identifier.</param>
 		/// <param name="relyingParty">The relying party.</param>
@@ -405,6 +409,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="returnToUrl">The return_to base URL.</param>
 		/// <param name="serviceEndpoints">The discovered service endpoints on the Claimed Identifier.</param>
 		/// <param name="createNewAssociationsAsNeeded">if set to <c>true</c>, associations that do not exist between this Relying Party and the asserting Providers are created before the authentication request is created.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// A sequence of authentication requests, any of which constitutes a valid identity assertion on the Claimed Identifier.
 		/// Never null, but may be empty.

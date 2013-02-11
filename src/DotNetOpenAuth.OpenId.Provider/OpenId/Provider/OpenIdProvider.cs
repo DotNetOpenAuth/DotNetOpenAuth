@@ -91,31 +91,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		}
 
 		/// <summary>
-		/// Gets the standard state storage mechanism that uses ASP.NET's
-		/// HttpApplication state dictionary to store associations and nonces.
-		/// </summary>
-		public static IOpenIdApplicationStore GetHttpApplicationStore(HttpContextBase context = null) {
-			if (context == null) {
-				ErrorUtilities.VerifyOperation(HttpContext.Current != null, Strings.StoreRequiredWhenNoHttpContextAvailable, typeof(IOpenIdApplicationStore).Name);
-				context = new HttpContextWrapper(HttpContext.Current);
-			}
-
-			var store = (IOpenIdApplicationStore)context.Application[ApplicationStoreKey];
-			if (store == null) {
-				context.Application.Lock();
-				try {
-					if ((store = (IOpenIdApplicationStore)context.Application[ApplicationStoreKey]) == null) {
-						context.Application[ApplicationStoreKey] = store = new StandardProviderApplicationStore();
-					}
-				} finally {
-					context.Application.UnLock();
-				}
-			}
-
-			return store;
-		}
-
-		/// <summary>
 		/// Gets the channel to use for sending/receiving messages.
 		/// </summary>
 		public Channel Channel { get; internal set; }
@@ -198,6 +173,31 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		}
 
 		/// <summary>
+		/// Gets the standard state storage mechanism that uses ASP.NET's
+		/// HttpApplication state dictionary to store associations and nonces.
+		/// </summary>
+		public static IOpenIdApplicationStore GetHttpApplicationStore(HttpContextBase context = null) {
+			if (context == null) {
+				ErrorUtilities.VerifyOperation(HttpContext.Current != null, Strings.StoreRequiredWhenNoHttpContextAvailable, typeof(IOpenIdApplicationStore).Name);
+				context = new HttpContextWrapper(HttpContext.Current);
+			}
+
+			var store = (IOpenIdApplicationStore)context.Application[ApplicationStoreKey];
+			if (store == null) {
+				context.Application.Lock();
+				try {
+					if ((store = (IOpenIdApplicationStore)context.Application[ApplicationStoreKey]) == null) {
+						context.Application[ApplicationStoreKey] = store = new StandardProviderApplicationStore();
+					}
+				} finally {
+					context.Application.UnLock();
+				}
+			}
+
+			return store;
+		}
+
+		/// <summary>
 		/// Gets the incoming OpenID request if there is one, or null if none was detected.
 		/// </summary>
 		/// <returns>The request that the hosting Provider should possibly process and then transmit the response for.</returns>
@@ -217,17 +217,18 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// Gets the incoming OpenID request if there is one, or null if none was detected.
 		/// </summary>
 		/// <param name="httpRequestInfo">The incoming HTTP request to extract the message from.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The request that the hosting Provider should process and then transmit the response for.
 		/// Null if no valid OpenID request was detected in the given HTTP request.
 		/// </returns>
+		/// <exception cref="ProtocolException">Thrown if the incoming message is recognized
+		/// but deviates from the protocol specification irrecoverably.</exception>
 		/// <remarks>
 		/// Requests may be infrastructural to OpenID and allow auto-responses, or they may
 		/// be authentication requests where the Provider site has to make decisions based
 		/// on its own user database and policies.
 		/// </remarks>
-		/// <exception cref="ProtocolException">Thrown if the incoming message is recognized
-		/// but deviates from the protocol specification irrecoverably.</exception>
 		public async Task<IRequest> GetRequestAsync(HttpRequestBase httpRequestInfo, CancellationToken cancellationToken) {
 			Requires.NotNull(httpRequestInfo, "httpRequestInfo");
 			IDirectedProtocolMessage incomingMessage = null;
@@ -299,8 +300,11 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// Gets the response to a received request.
 		/// </summary>
 		/// <param name="request">The request.</param>
-		/// <returns>The response that should be sent to the client.</returns>
-		/// <exception cref="InvalidOperationException">Thrown if <see cref="IRequest.IsResponseReady"/> is <c>false</c>.</exception>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The response that should be sent to the client.
+		/// </returns>
+		/// <exception cref="InvalidOperationException">Thrown if <see cref="IRequest.IsResponseReady" /> is <c>false</c>.</exception>
 		[SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily", Justification = "Code Contract requires that we cast early.")]
 		public async Task<HttpResponseMessage> PrepareResponseAsync(IRequest request, CancellationToken cancellationToken) {
 			Requires.NotNull(request, "request");
@@ -325,10 +329,11 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// XRDS document that advertises its OpenID RP endpoint.</param>
 		/// <param name="claimedIdentifier">The Identifier you are asserting your member controls.</param>
 		/// <param name="localIdentifier">The Identifier you know your user by internally.  This will typically
-		/// be the same as <paramref name="claimedIdentifier"/>.</param>
+		/// be the same as <paramref name="claimedIdentifier" />.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <param name="extensions">The extensions.</param>
 		/// <returns>
-		/// A <see cref="OutgoingWebResponse"/> object describing the HTTP response to send
+		/// A <see cref="OutgoingWebResponse" /> object describing the HTTP response to send
 		/// the user agent to allow the redirect with assertion to happen.
 		/// </returns>
 		public async Task<HttpResponseMessage> PrepareUnsolicitedAssertionAsync(Uri providerEndpoint, Realm relyingPartyRealm, Identifier claimedIdentifier, Identifier localIdentifier, CancellationToken cancellationToken = default(CancellationToken), params IExtensionMessage[] extensions) {
@@ -415,6 +420,8 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// Applies all behaviors to the response message.
 		/// </summary>
 		/// <param name="request">The request.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns></returns>
 		private async Task ApplyBehaviorsToResponseAsync(IRequest request, CancellationToken cancellationToken) {
 			var authRequest = request as IAuthenticationRequest;
 			if (authRequest != null) {

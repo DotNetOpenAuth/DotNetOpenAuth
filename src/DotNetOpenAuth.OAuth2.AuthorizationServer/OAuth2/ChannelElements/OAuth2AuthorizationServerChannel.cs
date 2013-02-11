@@ -92,6 +92,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// Gets the protocol message that may be embedded in the given HTTP request.
 		/// </summary>
 		/// <param name="request">The request to search for an embedded message.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The deserialized message, if one is found.  Null otherwise.
 		/// </returns>

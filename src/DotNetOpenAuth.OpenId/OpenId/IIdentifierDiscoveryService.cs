@@ -27,7 +27,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// Performs discovery on the specified identifier.
 		/// </summary>
 		/// <param name="identifier">The identifier to perform discovery on.</param>
-		/// <param name="abortDiscoveryChain">if set to <c>true</c>, no further discovery services will be called for this identifier.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// A sequence of service endpoints yielded by discovery.  Must not be null, but may be empty.
 		/// </returns>

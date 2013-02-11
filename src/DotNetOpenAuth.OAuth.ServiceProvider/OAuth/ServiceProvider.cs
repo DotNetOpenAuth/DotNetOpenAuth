@@ -105,31 +105,6 @@ namespace DotNetOpenAuth.OAuth {
 		}
 
 		/// <summary>
-		/// Gets the standard state storage mechanism that uses ASP.NET's
-		/// HttpApplication state dictionary to store associations and nonces.
-		/// </summary>
-		public static INonceStore GetHttpApplicationStore(HttpContextBase context = null) {
-			if (context == null) {
-				ErrorUtilities.VerifyOperation(HttpContext.Current != null, Strings.StoreRequiredWhenNoHttpContextAvailable, typeof(INonceStore).Name);
-				context = new HttpContextWrapper(HttpContext.Current);
-			}
-
-			var store = (INonceStore)context.Application[ApplicationStoreKey];
-			if (store == null) {
-				context.Application.Lock();
-				try {
-					if ((store = (INonceStore)context.Application[ApplicationStoreKey]) == null) {
-						context.Application[ApplicationStoreKey] = store = new NonceMemoryStore(StandardExpirationBindingElement.MaximumMessageAge);
-					}
-				} finally {
-					context.Application.UnLock();
-				}
-			}
-
-			return store;
-		}
-
-		/// <summary>
 		/// Gets the description of this Service Provider.
 		/// </summary>
 		public ServiceProviderDescription ServiceDescription { get; private set; }
@@ -170,6 +145,31 @@ namespace DotNetOpenAuth.OAuth {
 				Requires.NotNull(value, "value");
 				this.channel = value;
 			}
+		}
+
+		/// <summary>
+		/// Gets the standard state storage mechanism that uses ASP.NET's
+		/// HttpApplication state dictionary to store associations and nonces.
+		/// </summary>
+		public static INonceStore GetHttpApplicationStore(HttpContextBase context = null) {
+			if (context == null) {
+				ErrorUtilities.VerifyOperation(HttpContext.Current != null, Strings.StoreRequiredWhenNoHttpContextAvailable, typeof(INonceStore).Name);
+				context = new HttpContextWrapper(HttpContext.Current);
+			}
+
+			var store = (INonceStore)context.Application[ApplicationStoreKey];
+			if (store == null) {
+				context.Application.Lock();
+				try {
+					if ((store = (INonceStore)context.Application[ApplicationStoreKey]) == null) {
+						context.Application[ApplicationStoreKey] = store = new NonceMemoryStore(StandardExpirationBindingElement.MaximumMessageAge);
+					}
+				} finally {
+					context.Application.UnLock();
+				}
+			}
+
+			return store;
 		}
 
 		/// <summary>
@@ -215,7 +215,10 @@ namespace DotNetOpenAuth.OAuth {
 		/// Reads a request for an unauthorized token from the incoming HTTP request.
 		/// </summary>
 		/// <param name="request">The HTTP request to read from.</param>
-		/// <returns>The incoming request, or null if no OAuth message was attached.</returns>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The incoming request, or null if no OAuth message was attached.
+		/// </returns>
 		/// <exception cref="ProtocolException">Thrown if an unexpected OAuth message is attached to the incoming request.</exception>
 		public async Task<UnauthorizedTokenRequest> ReadTokenRequestAsync(HttpRequestBase request = null, CancellationToken cancellationToken = default(CancellationToken)) {
 			var message = await this.Channel.TryReadFromRequestAsync<UnauthorizedTokenRequest>(cancellationToken, request);
@@ -247,9 +250,12 @@ namespace DotNetOpenAuth.OAuth {
 		/// the user to authorize the Consumer's access of some protected resource(s).
 		/// </summary>
 		/// <param name="request">The HTTP request to read from.</param>
-		/// <returns>The incoming request, or null if no OAuth message was attached.</returns>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The incoming request, or null if no OAuth message was attached.
+		/// </returns>
 		/// <exception cref="ProtocolException">Thrown if an unexpected OAuth message is attached to the incoming request.</exception>
-		public Task<UserAuthorizationRequest> ReadAuthorizationRequestAsync(HttpRequestBase request, CancellationToken cancellationToken = default (CancellationToken)) {
+		public Task<UserAuthorizationRequest> ReadAuthorizationRequestAsync(HttpRequestBase request, CancellationToken cancellationToken = default(CancellationToken)) {
 			return this.Channel.TryReadFromRequestAsync<UserAuthorizationRequest>(cancellationToken, request);
 		}
 
@@ -319,7 +325,10 @@ namespace DotNetOpenAuth.OAuth {
 		/// Reads in a Consumer's request to exchange an authorized request token for an access token.
 		/// </summary>
 		/// <param name="request">The HTTP request to read from.</param>
-		/// <returns>The incoming request, or null if no OAuth message was attached.</returns>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The incoming request, or null if no OAuth message was attached.
+		/// </returns>
 		/// <exception cref="ProtocolException">Thrown if an unexpected OAuth message is attached to the incoming request.</exception>
 		public Task<AuthorizedTokenRequest> ReadAccessTokenRequestAsync(HttpRequestBase request = null, CancellationToken cancellationToken = default(CancellationToken)) {
 			return this.Channel.TryReadFromRequestAsync<AuthorizedTokenRequest>(cancellationToken, request);
@@ -351,6 +360,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// </summary>
 		/// <param name="request">HTTP details from an incoming WCF message.</param>
 		/// <param name="requestUri">The URI of the WCF service endpoint.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>The authorization message sent by the Consumer, or null if no authorization message is attached.</returns>
 		/// <remarks>
 		/// This method verifies that the access token and token secret are valid.
@@ -366,6 +376,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// Gets the authorization (access token) for accessing some protected resource.
 		/// </summary>
 		/// <param name="request">The incoming HTTP request.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>The authorization message sent by the Consumer, or null if no authorization message is attached.</returns>
 		/// <remarks>
 		/// This method verifies that the access token and token secret are valid.

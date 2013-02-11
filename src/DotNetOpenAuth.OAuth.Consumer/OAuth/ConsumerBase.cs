@@ -90,6 +90,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// Obtains an access token for a new account at the Service Provider via 2-legged OAuth.
 		/// </summary>
 		/// <param name="requestParameters">Any applicable parameters to include in the query string of the token request.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>The access token.</returns>
 		/// <remarks>
 		/// The token secret is stored in the <see cref="TokenManager"/>.
@@ -120,6 +121,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// </summary>
 		/// <param name="endpoint">The URL and method on the Service Provider to send the request to.</param>
 		/// <param name="accessToken">The access token that permits access to the protected resource.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>The initialized WebRequest object.</returns>
 		public Task<HttpRequestMessage> PrepareAuthorizedRequestAsync(MessageReceivingEndpoint endpoint, string accessToken, CancellationToken cancellationToken = default(CancellationToken)) {
 			Requires.NotNull(endpoint, "endpoint");
@@ -135,6 +137,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="endpoint">The URL and method on the Service Provider to send the request to.</param>
 		/// <param name="accessToken">The access token that permits access to the protected resource.</param>
 		/// <param name="extraData">Extra parameters to include in the message.  Must not be null, but may be empty.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>The initialized WebRequest object.</returns>
 		public Task<HttpRequestMessage> PrepareAuthorizedRequestAsync(MessageReceivingEndpoint endpoint, string accessToken, IDictionary<string, string> extraData, CancellationToken cancellationToken = default(CancellationToken)) {
 			Requires.NotNull(endpoint, "endpoint");
@@ -155,6 +158,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="endpoint">The URL and method on the Service Provider to send the request to.</param>
 		/// <param name="accessToken">The access token that permits access to the protected resource.</param>
 		/// <param name="binaryData">Extra parameters to include in the message.  Must not be null, but may be empty.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>The initialized WebRequest object.</returns>
 		public Task<HttpRequestMessage> PrepareAuthorizedRequestAsync(MessageReceivingEndpoint endpoint, string accessToken, IEnumerable<MultipartContentMember> binaryData, CancellationToken cancellationToken = default(CancellationToken)) {
 			Requires.NotNull(endpoint, "endpoint");
@@ -171,6 +175,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// Prepares an HTTP request that has OAuth authorization already attached to it.
 		/// </summary>
 		/// <param name="message">The OAuth authorization message to attach to the HTTP request.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The HttpWebRequest that can be used to send the HTTP request to the remote service provider.
 		/// </returns>
@@ -230,6 +235,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="requestParameters">Extra parameters to add to the request token message.  Optional.</param>
 		/// <param name="redirectParameters">Extra parameters to add to the redirect to Service Provider message.  Optional.</param>
 		/// <param name="requestToken">The request token that must be exchanged for an access token after the user has provided authorization.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>The pending user agent redirect based message to be sent as an HttpResponse.</returns>
 		[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "3#", Justification = "Two results")]
 		protected internal async Task<UserAuthorizationRequest> PrepareRequestUserAuthorizationAsync(Uri callback, IDictionary<string, string> requestParameters, IDictionary<string, string> redirectParameters, CancellationToken cancellationToken = default(CancellationToken)) {
@@ -265,6 +271,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// </summary>
 		/// <param name="requestToken">The request token that the user has authorized.</param>
 		/// <param name="verifier">The verifier code.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The access token assigned by the Service Provider.
 		/// </returns>

@@ -513,6 +513,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Immediately redirects to the OpenID Provider to verify the Identifier
 		/// provided in the text box.
 		/// </summary>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns></returns>
 		public async Task LogOnAsync(CancellationToken cancellationToken) {
 			IAuthenticationRequest request = (await this.CreateRequestsAsync(cancellationToken)).FirstOrDefault();
 			ErrorUtilities.VerifyProtocol(request != null, OpenIdStrings.OpenIdEndpointNotFound);
@@ -524,6 +526,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// provided in the text box.
 		/// </summary>
 		/// <param name="request">The request.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// A task that completes with the asynchronous operation.
+		/// </returns>
 		public async Task LogOnAsync(IAuthenticationRequest request, CancellationToken cancellationToken) {
 			Requires.NotNull(request, "request");
 
@@ -560,9 +566,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Creates the authentication requests for a given user-supplied Identifier.
 		/// </summary>
 		/// <param name="identifier">The identifier to create a request for.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// A sequence of authentication requests, any one of which may be
-		/// used to determine the user's control of the <see cref="IAuthenticationRequest.ClaimedIdentifier"/>.
+		/// used to determine the user's control of the <see cref="IAuthenticationRequest.ClaimedIdentifier" />.
 		/// </returns>
 		protected internal virtual Task<IEnumerable<IAuthenticationRequest>> CreateRequestsAsync(Identifier identifier, CancellationToken cancellationToken) {
 			Requires.NotNull(identifier, "identifier");
@@ -853,11 +860,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
-		/// Adds attributes to an HTML &lt;A&gt; tag that will be written by the caller using 
-		/// <see cref="HtmlTextWriter.RenderBeginTag(HtmlTextWriterTag)"/> after this method.
+		/// Adds attributes to an HTML &lt;A&gt; tag that will be written by the caller using
+		/// <see cref="HtmlTextWriter.RenderBeginTag(HtmlTextWriterTag)" /> after this method.
 		/// </summary>
 		/// <param name="writer">The HTML writer.</param>
-		/// <param name="request">The outgoing authentication request.</param>
+		/// <param name="response">The response.</param>
 		/// <param name="windowStatus">The text to try to display in the status bar on mouse hover.</param>
 		protected void RenderOpenIdMessageTransmissionAsAnchorAttributes(HtmlTextWriter writer, HttpResponseMessage response, string windowStatus) {
 			Requires.NotNull(writer, "writer");
@@ -916,9 +923,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Creates the authentication requests for a given user-supplied Identifier.
 		/// </summary>
 		/// <param name="identifier">The identifier to create a request for.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// A sequence of authentication requests, any one of which may be
-		/// used to determine the user's control of the <see cref="IAuthenticationRequest.ClaimedIdentifier"/>.
+		/// used to determine the user's control of the <see cref="IAuthenticationRequest.ClaimedIdentifier" />.
 		/// </returns>
 		private async Task<IEnumerable<IAuthenticationRequest>> CreateRequestsCoreAsync(Identifier identifier, CancellationToken cancellationToken) {
 			ErrorUtilities.VerifyArgumentNotNull(identifier, "identifier"); // NO CODE CONTRACTS! (yield return used here)
@@ -1015,8 +1023,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Gets the javascript to executee to redirect or POST an OpenID message to a remote party.
 		/// </summary>
-		/// <param name="request">The authentication request to send.</param>
-		/// <returns>The javascript that should execute.</returns>
+		/// <param name="requestRedirectingResponse">The request redirecting response.</param>
+		/// <returns>
+		/// The javascript that should execute.
+		/// </returns>
 		private string CreateGetOrPostAHrefValue(HttpResponseMessage requestRedirectingResponse) {
 			Requires.NotNull(requestRedirectingResponse, "requestRedirectingResponse");
 
@@ -1028,6 +1038,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Wires the return page to immediately display a popup window with the Provider in it.
 		/// </summary>
 		/// <param name="request">The request.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// A task that completes with the asynchronous operation.
+		/// </returns>
 		private async Task ScriptPopupWindowAsync(IAuthenticationRequest request, CancellationToken cancellationToken) {
 			Requires.NotNull(request, "request");
 			RequiresEx.ValidState(this.RelyingParty != null);

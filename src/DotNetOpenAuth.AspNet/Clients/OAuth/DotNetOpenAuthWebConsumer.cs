@@ -55,13 +55,12 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <summary>
 		/// The prepare authorized request.
 		/// </summary>
-		/// <param name="profileEndpoint">
-		/// The profile endpoint.
-		/// </param>
-		/// <param name="accessToken">
-		/// The access token.
-		/// </param>
-		/// <returns>An HTTP request.</returns>
+		/// <param name="profileEndpoint">The profile endpoint.</param>
+		/// <param name="accessToken">The access token.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// An HTTP request.
+		/// </returns>
 		public Task<HttpRequestMessage> PrepareAuthorizedRequestAsync(MessageReceivingEndpoint profileEndpoint, string accessToken, CancellationToken cancellationToken = default(CancellationToken)) {
 			return this.webConsumer.PrepareAuthorizedRequestAsync(profileEndpoint, accessToken, cancellationToken);
 		}

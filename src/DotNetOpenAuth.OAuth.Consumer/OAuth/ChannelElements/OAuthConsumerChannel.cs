@@ -19,13 +19,14 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	/// </summary>
 	internal class OAuthConsumerChannel : OAuthChannel {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="OAuthConsumerChannel"/> class.
+		/// Initializes a new instance of the <see cref="OAuthConsumerChannel" /> class.
 		/// </summary>
 		/// <param name="signingBindingElement">The binding element to use for signing.</param>
 		/// <param name="store">The web application store to use for nonces.</param>
 		/// <param name="tokenManager">The token manager instance to use.</param>
 		/// <param name="securitySettings">The security settings.</param>
 		/// <param name="messageFactory">The message factory.</param>
+		/// <param name="hostFactories">The host factories.</param>
 		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Diagnostics.Contracts.__ContractsRuntime.Requires<System.ArgumentNullException>(System.Boolean,System.String,System.String)", Justification = "Code contracts"), SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "securitySettings", Justification = "Code contracts")]
 		internal OAuthConsumerChannel(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, IConsumerTokenManager tokenManager, ConsumerSecuritySettings securitySettings, IMessageFactory messageFactory = null, IHostFactories hostFactories = null)
 			: base(

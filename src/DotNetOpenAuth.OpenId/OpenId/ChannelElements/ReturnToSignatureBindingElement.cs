@@ -37,7 +37,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 
 		private static readonly Task<MessageProtections?> NoneTask =
 			Task.FromResult<MessageProtections?>(MessageProtections.None);
-		
+
 		/// <summary>
 		/// The name of the callback parameter we'll tack onto the return_to value
 		/// to store our signature on the return_to parameter.
@@ -97,6 +97,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// Prepares a message for sending based on the rules of this channel binding element.
 		/// </summary>
 		/// <param name="message">The message to prepare for sending.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The protections (if any) that this binding element applied to the message.
 		/// Null if this binding element did not even apply to this binding element.
@@ -125,6 +126,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// validates an incoming message based on the rules of this channel binding element.
 		/// </summary>
 		/// <param name="message">The incoming message to process.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The protections (if any) that this binding element applied to the message.
 		/// Null if this binding element did not even apply to this binding element.

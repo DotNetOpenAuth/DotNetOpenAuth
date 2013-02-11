@@ -71,6 +71,7 @@ namespace DotNetOpenAuth.OpenId.Provider.Behaviors {
 		/// Called when a request is received by the Provider.
 		/// </summary>
 		/// <param name="request">The incoming request.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// 	<c>true</c> if this behavior owns this request and wants to stop other behaviors
 		/// from handling it; <c>false</c> to allow other behaviors to process this request.
@@ -105,6 +106,7 @@ namespace DotNetOpenAuth.OpenId.Provider.Behaviors {
 		/// Called when the Provider is preparing to send a response to an authentication request.
 		/// </summary>
 		/// <param name="request">The request that is configured to generate the outgoing response.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// 	<c>true</c> if this behavior owns this request and wants to stop other behaviors
 		/// from handling it; <c>false</c> to allow other behaviors to process this request.

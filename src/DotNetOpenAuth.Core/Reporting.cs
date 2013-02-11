@@ -328,7 +328,7 @@ namespace DotNetOpenAuth {
 			lock (publishingConsiderationLock) {
 				if (DateTime.Now - lastPublished > Configuration.MinimumReportingInterval) {
 					lastPublished = DateTime.Now;
-					SendStatsAsync();
+					var fireAndForget = SendStatsAsync();
 				}
 			}
 		}

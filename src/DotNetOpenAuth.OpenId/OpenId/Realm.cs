@@ -438,10 +438,12 @@ namespace DotNetOpenAuth.OpenId {
 		/// <summary>
 		/// Searches for an XRDS document at the realm URL.
 		/// </summary>
-		/// <param name="requestHandler">The mechanism to use for sending HTTP requests.</param>
+		/// <param name="hostFactories">The host factories.</param>
 		/// <param name="allowRedirects">Whether redirects may be followed when discovering the Realm.
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// This may be true when creating an unsolicited assertion, but must be
 		/// false when performing return URL verification per 2.0 spec section 9.2.1.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The XRDS document if found; or <c>null</c> if no service document was discovered.
 		/// </returns>
