@@ -235,7 +235,7 @@ namespace DotNetOpenAuth {
 		/// <typeparam name="TResult">The type of the result.</typeparam>
 		/// <param name="source">The source.</param>
 		/// <param name="transform">The transform.</param>
-		/// <returns></returns>
+		/// <returns>A dictionary populated with the results of the transforms.</returns>
 		internal static async Task<Dictionary<TSource, TResult>> ToDictionaryAsync<TSource, TResult>(
 			this IEnumerable<TSource> source, Func<TSource, Task<TResult>> transform) {
 			var taskResults = source.ToDictionary(s => s, transform);

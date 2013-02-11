@@ -65,6 +65,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// The request handler delegate.
 		/// </summary>
 		/// <param name="context">Information on the incoming HTTP request.</param>
+		/// <returns>A task that completes with the async operation.</returns>
 		internal delegate Task RequestHandlerAsync(HttpListenerContext context);
 
 		/// <summary>
@@ -117,6 +118,9 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// <summary>
 		/// The HTTP listener thread body.
 		/// </summary>
+		/// <returns>
+		/// A task that completes with the asynchronous operation.
+		/// </returns>
 		private async Task ProcessRequestsAsync() {
 			Assumes.True(this.listener != null);
 

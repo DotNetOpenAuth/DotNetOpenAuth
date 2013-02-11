@@ -175,8 +175,12 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		}
 
 		/// <summary>
-		/// Sends the response for the <see cref="PendingAuthenticationRequest"/> and clears the property.
+		/// Sends the response for the <see cref="PendingAuthenticationRequest" /> and clears the property.
 		/// </summary>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The response message.
+		/// </returns>
 		public static Task<HttpResponseMessage> PrepareResponseAsync(CancellationToken cancellationToken = default(CancellationToken)) {
 			var pendingRequest = PendingRequest;
 			PendingRequest = null;

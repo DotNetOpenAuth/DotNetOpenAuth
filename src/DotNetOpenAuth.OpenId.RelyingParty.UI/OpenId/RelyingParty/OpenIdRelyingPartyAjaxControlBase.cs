@@ -195,6 +195,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Gets the completed authentication response.
 		/// </summary>
 		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>The response message.</returns>
 		public async Task<IAuthenticationResponse> GetAuthenticationResponseAsync(CancellationToken cancellationToken) {
 			if (this.authenticationResponse == null) {
 				// We will either validate a new response and return a live AuthenticationResponse
@@ -312,7 +313,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="identifier">The identifier.</param>
 		/// <param name="cancellationToken">The cancellation token.</param>
-		/// <returns></returns>
+		/// <returns>
+		/// A task that completes with the asynchronous operation.
+		/// </returns>
 		protected Task PreloadDiscoveryAsync(Identifier identifier, CancellationToken cancellationToken) {
 			return this.PreloadDiscoveryAsync(new[] { identifier }, cancellationToken);
 		}
@@ -323,7 +326,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="identifiers">The identifiers to perform discovery on.</param>
 		/// <param name="cancellationToken">The cancellation token.</param>
-		/// <returns></returns>
+		/// <returns>
+		/// A task that completes with the asynchronous operation.
+		/// </returns>
 		protected async Task PreloadDiscoveryAsync(IEnumerable<Identifier> identifiers, CancellationToken cancellationToken) {
 			var requests = await Task.WhenAll(identifiers.Select(id => this.CreateRequestsAsync(id, cancellationToken)));
 			string script = await this.AjaxRelyingParty.AsAjaxPreloadedDiscoveryResultAsync(requests.SelectMany(r => r), cancellationToken);
@@ -426,6 +431,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Notifies the user agent via an AJAX response of a completed authentication attempt.
 		/// </summary>
 		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// A task that completes with the asynchronous operation.
+		/// </returns>
 		protected override async Task ScriptClosingPopupOrIFrameAsync(CancellationToken cancellationToken) {
 			Action<AuthenticationStatus> callback = status => {
 				if (status == AuthenticationStatus.Authenticated) {

@@ -177,9 +177,13 @@ namespace DotNetOpenAuth.ApplicationBlock
 		/// <summary>
 		/// Requests authorization from Google to access data from a set of Google applications.
 		/// </summary>
-		/// <param name="consumer">The Google consumer previously constructed using <see cref="CreateWebConsumer"/> or <see cref="CreateDesktopConsumer"/>.</param>
+		/// <param name="consumer">The Google consumer previously constructed using <see cref="CreateWebConsumer" /> or <see cref="CreateDesktopConsumer" />.</param>
 		/// <param name="requestedAccessScope">The requested access scope.</param>
 		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// A task that completes with the asynchronous operation.
+		/// </returns>
+		/// <exception cref="System.ArgumentNullException">consumer</exception>
 		public static async Task RequestAuthorizationAsync(WebConsumer consumer, Applications requestedAccessScope, CancellationToken cancellationToken = default(CancellationToken)) {
 			if (consumer == null) {
 				throw new ArgumentNullException("consumer");

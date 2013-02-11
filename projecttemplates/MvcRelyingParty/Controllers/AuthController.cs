@@ -210,6 +210,9 @@ namespace MvcRelyingParty.Controllers {
 		/// <summary>
 		/// Preloads discovery results for the OP buttons we display on the selector in the ViewData.
 		/// </summary>
+		/// <returns>
+		/// A task that completes with the asynchronous operation.
+		/// </returns>
 		private async Task PreloadDiscoveryResultsAsync() {
 			this.ViewData["PreloadedDiscoveryResults"] = this.RelyingParty.PreloadDiscoveryResultsAsync(
 				Realm.AutoDetect,

@@ -170,9 +170,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		void AddExtension(IOpenIdMessageExtension extension);
 
 		/// <summary>
-		/// Gets the HTTP response the relying party should send to the user agent 
+		/// Gets the HTTP response the relying party should send to the user agent
 		/// to redirect it to the OpenID Provider to start the OpenID authentication process.
 		/// </summary>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>The response message that will cause the client to redirect to the Provider.</returns>
 		Task<HttpResponseMessage> GetRedirectingResponseAsync(CancellationToken cancellationToken);
 	}
 }

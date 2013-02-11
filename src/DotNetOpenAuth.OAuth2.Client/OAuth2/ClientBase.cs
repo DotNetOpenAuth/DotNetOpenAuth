@@ -118,6 +118,9 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="request">The request for protected resources from the service provider.</param>
 		/// <param name="authorization">The authorization for this request previously obtained via OAuth.</param>
 		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// A task that completes with the asynchronous operation.
+		/// </returns>
 		public Task AuthorizeRequestAsync(HttpWebRequest request, IAuthorizationState authorization, CancellationToken cancellationToken) {
 			Requires.NotNull(request, "request");
 			Requires.NotNull(authorization, "authorization");
@@ -132,6 +135,9 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="requestHeaders">The headers on the request for protected resources from the service provider.</param>
 		/// <param name="authorization">The authorization for this request previously obtained via OAuth.</param>
 		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// A task that completes with the asynchronous operation.
+		/// </returns>
 		public async Task AuthorizeRequestAsync(WebHeaderCollection requestHeaders, IAuthorizationState authorization, CancellationToken cancellationToken) {
 			Requires.NotNull(requestHeaders, "requestHeaders");
 			Requires.NotNull(authorization, "authorization");
@@ -334,6 +340,9 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="authorizationState">The authorization state to update.</param>
 		/// <param name="authorizationSuccess">The authorization success message obtained from the authorization server.</param>
 		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// A task that completes with the asynchronous operation.
+		/// </returns>
 		internal async Task UpdateAuthorizationWithResponseAsync(IAuthorizationState authorizationState, EndUserAuthorizationSuccessAuthCodeResponse authorizationSuccess, CancellationToken cancellationToken) {
 			Requires.NotNull(authorizationState, "authorizationState");
 			Requires.NotNull(authorizationSuccess, "authorizationSuccess");

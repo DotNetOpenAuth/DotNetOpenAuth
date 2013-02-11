@@ -143,6 +143,9 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// Processes changes in the URL the browser has navigated to.
 		/// </summary>
 		/// <param name="location">The location.</param>
+		/// <returns>
+		/// A task that completes with the asynchronous operation.
+		/// </returns>
 		private async Task ProcessLocationChangedAsync(Uri location) {
 			if (SignificantlyEqual(location, this.Authorization.Callback, UriComponents.SchemeAndServer | UriComponents.Path)) {
 				try {

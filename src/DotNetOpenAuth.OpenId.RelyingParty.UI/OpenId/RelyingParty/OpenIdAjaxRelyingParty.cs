@@ -258,7 +258,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="request">The authentication request.</param>
 		/// <param name="immediate"><c>true</c>to create a checkid_immediate request;
 		/// <c>false</c> to create a checkid_setup request.</param>
-		/// <returns>The absolute URL that carries the entire OpenID message.</returns>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The absolute URL that carries the entire OpenID message.
+		/// </returns>
 		private async Task<Uri> GetRedirectUrlAsync(IAuthenticationRequest request, bool immediate, CancellationToken cancellationToken) {
 			Requires.NotNull(request, "request");
 

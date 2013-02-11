@@ -178,6 +178,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <summary>
 		/// Gets the negative response.
 		/// </summary>
+		/// <returns>The negative assertion message.</returns>
 		protected Task<NegativeAssertionResponse> GetNegativeResponseAsync() {
 			return this.negativeResponse.Value;
 		}

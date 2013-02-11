@@ -33,7 +33,10 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <summary>
 		/// The process user authorization.
 		/// </summary>
-		/// <returns>The response message.</returns>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The response message.
+		/// </returns>
 		Task<AuthorizedTokenResponse> ProcessUserAuthorizationAsync(CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
@@ -41,6 +44,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// </summary>
 		/// <param name="callback">The callback.</param>
 		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>The response message</returns>
 		Task<HttpResponseMessage> RequestAuthenticationAsync(Uri callback, CancellationToken cancellationToken = default(CancellationToken));
 
 		#endregion

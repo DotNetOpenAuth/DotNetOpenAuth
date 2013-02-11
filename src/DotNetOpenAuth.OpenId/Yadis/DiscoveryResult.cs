@@ -94,6 +94,9 @@ namespace DotNetOpenAuth.Yadis {
 		/// <summary>
 		/// Reverts to the HTML response after the XRDS response didn't work out.
 		/// </summary>
+		/// <returns>
+		/// A task that completes with the asynchronous operation.
+		/// </returns>
 		internal async Task TryRevertToHtmlResponseAsync() {
 			if (this.htmlFallback != null) {
 				await this.ApplyHtmlResponseAsync(this.htmlFallback);
@@ -105,6 +108,9 @@ namespace DotNetOpenAuth.Yadis {
 		/// Applies the HTML response to the object.
 		/// </summary>
 		/// <param name="response">The initial response.</param>
+		/// <returns>
+		/// A task that completes with the asynchronous operation.
+		/// </returns>
 		private async Task ApplyHtmlResponseAsync(HttpResponseMessage response) {
 			Requires.NotNull(response, "response");
 

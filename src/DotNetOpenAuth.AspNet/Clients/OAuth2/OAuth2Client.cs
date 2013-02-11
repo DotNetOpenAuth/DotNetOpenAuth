@@ -62,6 +62,9 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <param name="context">The context.</param>
 		/// <param name="returnUrl">The return url after users have completed authenticating against external website.</param>
 		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// A task that completes with the asynchronous operation.
+		/// </returns>
 		public virtual async Task RequestAuthenticationAsync(HttpContextBase context, Uri returnUrl, CancellationToken cancellationToken = default(CancellationToken)) {
 			Requires.NotNull(context, "context");
 			Requires.NotNull(returnUrl, "returnUrl");
@@ -90,7 +93,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <param name="returnPageUrl">The return URL which should match the value passed to RequestAuthentication() method.</param>
 		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
-		/// An instance of <see cref="AuthenticationResult"/> containing authentication result.
+		/// An instance of <see cref="AuthenticationResult" /> containing authentication result.
 		/// </returns>
 		public virtual async Task<AuthenticationResult> VerifyAuthenticationAsync(HttpContextBase context, Uri returnPageUrl, CancellationToken cancellationToken = default(CancellationToken)) {
 			Requires.NotNull(context, "context");

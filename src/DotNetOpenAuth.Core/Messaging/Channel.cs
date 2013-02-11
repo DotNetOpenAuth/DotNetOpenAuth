@@ -387,7 +387,10 @@ namespace DotNetOpenAuth.Messaging {
 		/// Gets the protocol message that may be embedded in the given HTTP request.
 		/// </summary>
 		/// <param name="httpRequest">The request to search for an embedded message.</param>
-		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The deserialized message, if one is found.  Null otherwise.
+		/// </returns>
 		public async Task<IDirectedProtocolMessage> ReadFromRequestAsync(HttpRequestBase httpRequest, CancellationToken cancellationToken) {
 			Requires.NotNull(httpRequest, "httpRequest");
 
@@ -476,10 +479,11 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="message">The message just received.</param>
 		/// <param name="cancellationToken">The cancellation token.</param>
-		/// <exception cref="ProtocolException">
-		/// Thrown when the message is somehow invalid.
-		/// This can be due to tampering, replay attack or expiration, among other things.
-		/// </exception>
+		/// <returns>
+		/// A task that completes with the asynchronous operation.
+		/// </returns>
+		/// <exception cref="ProtocolException">Thrown when the message is somehow invalid.
+		/// This can be due to tampering, replay attack or expiration, among other things.</exception>
 		internal Task ProcessIncomingMessageTestHookAsync(IProtocolMessage message, CancellationToken cancellationToken) {
 			return this.ProcessIncomingMessageAsync(message, cancellationToken);
 		}
@@ -525,7 +529,9 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="message">The message to prepare for sending.</param>
 		/// <param name="cancellationToken">The cancellation token.</param>
-		/// <returns></returns>
+		/// <returns>
+		/// A task that completes with the asynchronous operation.
+		/// </returns>
 		/// <remarks>
 		/// This method should NOT be called by derived types
 		/// except when sending ONE WAY request messages.
@@ -962,7 +968,9 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="message">The message to prepare for sending.</param>
 		/// <param name="cancellationToken">The cancellation token.</param>
-		/// <returns></returns>
+		/// <returns>
+		/// A task that completes with the asynchronous operation.
+		/// </returns>
 		/// <exception cref="UnprotectedMessageException"></exception>
 		/// <remarks>
 		/// This method should NOT be called by derived types
@@ -1134,10 +1142,12 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="message">The message just received.</param>
 		/// <param name="cancellationToken">The cancellation token.</param>
-		/// <exception cref="ProtocolException">
-		/// Thrown when the message is somehow invalid.
-		/// This can be due to tampering, replay attack or expiration, among other things.
-		/// </exception>
+		/// <returns>
+		/// A task that completes with the asynchronous operation.
+		/// </returns>
+		/// <exception cref="UnprotectedMessageException"></exception>
+		/// <exception cref="ProtocolException">Thrown when the message is somehow invalid.
+		/// This can be due to tampering, replay attack or expiration, among other things.</exception>
 		protected virtual async Task ProcessIncomingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
 			Requires.NotNull(message, "message");
 

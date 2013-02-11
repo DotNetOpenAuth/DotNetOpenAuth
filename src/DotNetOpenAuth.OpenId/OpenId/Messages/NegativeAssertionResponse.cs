@@ -99,6 +99,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <param name="request">The request that the relying party sent.</param>
 		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <param name="channel">The channel to use to simulate construction of the user_setup_url, if applicable.  May be null, but the user_setup_url will not be constructed.</param>
+		/// <returns>The negative assertion message that will indicate failure for the user to authenticate or an unwillingness to log into the relying party.</returns>
 		internal static async Task<NegativeAssertionResponse> CreateAsync(SignedResponseRequest request, CancellationToken cancellationToken, Channel channel = null) {
 			var result = new NegativeAssertionResponse(request);
 

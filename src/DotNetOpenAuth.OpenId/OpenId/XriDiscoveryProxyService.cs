@@ -78,8 +78,11 @@ namespace DotNetOpenAuth.OpenId {
 		/// Downloads the XRDS document for this XRI.
 		/// </summary>
 		/// <param name="identifier">The identifier.</param>
-		/// <param name="requestHandler">The request handler.</param>
-		/// <returns>The XRDS document.</returns>
+		/// <param name="hostFactories">The host factories.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The XRDS document.
+		/// </returns>
 		private static async Task<XrdsDocument> DownloadXrdsAsync(XriIdentifier identifier, IHostFactories hostFactories, CancellationToken cancellationToken) {
 			Requires.NotNull(identifier, "identifier");
 			Requires.NotNull(hostFactories, "hostFactories");

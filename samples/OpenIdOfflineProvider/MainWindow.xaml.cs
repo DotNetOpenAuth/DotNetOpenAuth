@@ -128,6 +128,9 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// </summary>
 		/// <param name="requestInfo">The request info.</param>
 		/// <param name="response">The response.</param>
+		/// <returns>
+		/// A task that completes with the asynchronous operation.
+		/// </returns>
 		private async Task ProcessRequestAsync(HttpRequestBase requestInfo, HttpListenerResponse response) {
 			IRequest request = await this.hostedProvider.Provider.GetRequestAsync(requestInfo, CancellationToken.None);
 			if (request == null) {

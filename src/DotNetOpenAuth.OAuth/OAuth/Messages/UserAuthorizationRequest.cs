@@ -62,7 +62,7 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		}
 
 		/// <summary>
-		/// Gets or sets the Request Token obtained in the previous step.
+		/// Gets the Request Token obtained in the previous step.
 		/// </summary>
 		/// <remarks>
 		/// The Service Provider MAY declare this parameter as REQUIRED, or 

@@ -143,9 +143,11 @@ namespace DotNetOpenAuth.AspNet {
 		/// <summary>
 		/// Requests the specified provider to start the authentication by directing users to an external website
 		/// </summary>
-		/// <param name="returnUrl">
-		/// The return url after user is authenticated. 
-		/// </param>
+		/// <param name="returnUrl">The return url after user is authenticated.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// A task that completes with the asynchronous operation.
+		/// </returns>
 		public async Task RequestAuthenticationAsync(string returnUrl, CancellationToken cancellationToken = default(CancellationToken)) {
 			// convert returnUrl to an absolute path
 			Uri uri;
@@ -185,12 +187,13 @@ namespace DotNetOpenAuth.AspNet {
 		/// Checks if user is successfully authenticated when user is redirected back to this user.
 		/// </summary>
 		/// <param name="returnUrl">The return Url which must match exactly the Url passed into RequestAuthentication() earlier.</param>
-		/// <remarks>
-		/// This returnUrl parameter only applies to OAuth2 providers. For other providers, it ignores the returnUrl parameter.
-		/// </remarks>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The result of the authentication.
 		/// </returns>
+		/// <remarks>
+		/// This returnUrl parameter only applies to OAuth2 providers. For other providers, it ignores the returnUrl parameter.
+		/// </remarks>
 		public async Task<AuthenticationResult> VerifyAuthenticationAsync(string returnUrl, CancellationToken cancellationToken = default(CancellationToken)) {
 			// check for XSRF attack
 			string sessionId;

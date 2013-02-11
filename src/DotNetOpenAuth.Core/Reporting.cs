@@ -370,6 +370,7 @@ namespace DotNetOpenAuth {
 		/// <summary>
 		/// Creates an HTTP client that can be used for outbound HTTP requests.
 		/// </summary>
+		/// <returns>The HTTP client to use.</returns>
 		private static HttpClient CreateHttpClient() {
 			var channel = new HttpClientHandler();
 			channel.AllowAutoRedirect = false;

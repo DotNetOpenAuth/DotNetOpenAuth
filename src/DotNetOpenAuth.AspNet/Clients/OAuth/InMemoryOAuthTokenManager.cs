@@ -92,9 +92,9 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// 	                                	useful in an ASP.NET web application within the implementation of this method.
 		/// 	                                	Alternatively you may store the access token here without associating with a user account,
 		/// 	                                	and wait until
-		/// 	                                	<see cref="WebConsumer.ProcessUserAuthorization()"/>
+		/// 	                                	<see cref="WebConsumer.ProcessUserAuthorizationAsync()"/>
 		/// 	                                	or
-		/// 	                                	<see cref="DesktopConsumer.ProcessUserAuthorization(string, string)"/>
+		/// 	                                	<see cref="DesktopConsumer.ProcessUserAuthorizationAsync(string, string)"/>
 		/// 	                                	return the access
 		/// 	                                	token to associate the access token with a user account at that point.
 		/// </para>

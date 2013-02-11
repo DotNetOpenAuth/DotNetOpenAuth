@@ -135,12 +135,14 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// discovery on the Claimed Identifier.
 		/// </summary>
 		/// <param name="relyingParty">The relying party.</param>
-		/// <exception cref="ProtocolException">
-		/// Thrown when the Provider is asserting that a user controls an Identifier
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// A task that completes with the asynchronous operation.
+		/// </returns>
+		/// <exception cref="ProtocolException">Thrown when the Provider is asserting that a user controls an Identifier
 		/// when discovery on that Identifier contradicts what the Provider says.
 		/// This would be an indication of either a misconfigured Provider or
-		/// an attempt by someone to spoof another user's identity with a rogue Provider.
-		/// </exception>
+		/// an attempt by someone to spoof another user's identity with a rogue Provider.</exception>
 		private async Task VerifyDiscoveryMatchesAssertionAsync(OpenIdRelyingParty relyingParty, CancellationToken cancellationToken) {
 			Logger.OpenId.Debug("Verifying assertion matches identifier discovery results...");
 

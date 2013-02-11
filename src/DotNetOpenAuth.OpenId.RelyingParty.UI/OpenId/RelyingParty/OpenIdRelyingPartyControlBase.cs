@@ -514,7 +514,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// provided in the text box.
 		/// </summary>
 		/// <param name="cancellationToken">The cancellation token.</param>
-		/// <returns></returns>
+		/// <returns>
+		/// A task that completes with the asynchronous operation.
+		/// </returns>
 		public async Task LogOnAsync(CancellationToken cancellationToken) {
 			IAuthenticationRequest request = (await this.CreateRequestsAsync(cancellationToken)).FirstOrDefault();
 			ErrorUtilities.VerifyProtocol(request != null, OpenIdStrings.OpenIdEndpointNotFound);

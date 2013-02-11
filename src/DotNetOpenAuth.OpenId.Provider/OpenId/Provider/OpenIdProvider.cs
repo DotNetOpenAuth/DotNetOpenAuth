@@ -176,6 +176,8 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// Gets the standard state storage mechanism that uses ASP.NET's
 		/// HttpApplication state dictionary to store associations and nonces.
 		/// </summary>
+		/// <param name="context">The context.</param>
+		/// <returns>The application store.</returns>
 		public static IOpenIdApplicationStore GetHttpApplicationStore(HttpContextBase context = null) {
 			if (context == null) {
 				ErrorUtilities.VerifyOperation(HttpContext.Current != null, Strings.StoreRequiredWhenNoHttpContextAvailable, typeof(IOpenIdApplicationStore).Name);
@@ -421,7 +423,9 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		/// <param name="request">The request.</param>
 		/// <param name="cancellationToken">The cancellation token.</param>
-		/// <returns></returns>
+		/// <returns>
+		/// A task that completes with the asynchronous operation.
+		/// </returns>
 		private async Task ApplyBehaviorsToResponseAsync(IRequest request, CancellationToken cancellationToken) {
 			var authRequest = request as IAuthenticationRequest;
 			if (authRequest != null) {

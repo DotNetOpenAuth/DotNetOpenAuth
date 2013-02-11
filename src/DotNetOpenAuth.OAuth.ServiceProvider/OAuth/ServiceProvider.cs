@@ -151,6 +151,8 @@ namespace DotNetOpenAuth.OAuth {
 		/// Gets the standard state storage mechanism that uses ASP.NET's
 		/// HttpApplication state dictionary to store associations and nonces.
 		/// </summary>
+		/// <param name="context">The HTTP context. If <c>null</c>, this method must be called while <see cref="HttpContext.Current"/> is non-null.</param>
+		/// <returns>The nonce store.</returns>
 		public static INonceStore GetHttpApplicationStore(HttpContextBase context = null) {
 			if (context == null) {
 				ErrorUtilities.VerifyOperation(HttpContext.Current != null, Strings.StoreRequiredWhenNoHttpContextAvailable, typeof(INonceStore).Name);
@@ -203,7 +205,11 @@ namespace DotNetOpenAuth.OAuth {
 		/// <summary>
 		/// Reads any incoming OAuth message.
 		/// </summary>
-		/// <returns>The deserialized message.</returns>
+		/// <param name="request">The request.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The deserialized message.
+		/// </returns>
 		/// <remarks>
 		/// Requires HttpContext.Current.
 		/// </remarks>

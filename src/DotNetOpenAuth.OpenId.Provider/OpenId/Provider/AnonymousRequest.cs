@@ -77,8 +77,10 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		}
 
 		/// <summary>
-		/// Gets the response message, once <see cref="IsResponseReady"/> is <c>true</c>.
+		/// Gets the response message, once <see cref="IsResponseReady" /> is <c>true</c>.
 		/// </summary>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>The response message.</returns>
 		protected override async Task<IProtocolMessage> GetResponseMessageAsync(CancellationToken cancellationToken) {
 				if (this.IsApproved.HasValue) {
 					return this.IsApproved.Value ? (IProtocolMessage)this.positiveResponse : (await this.GetNegativeResponseAsync());

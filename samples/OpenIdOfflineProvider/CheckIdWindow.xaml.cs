@@ -55,6 +55,9 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// </summary>
 		/// <param name="provider">The OpenID Provider host.</param>
 		/// <param name="request">The incoming authentication request.</param>
+		/// <returns>
+		/// A task that completes with the asynchronous operation.
+		/// </returns>
 		internal static async Task ProcessAuthenticationAsync(HostedProvider provider, IAuthenticationRequest request) {
 			Requires.NotNull(provider, "provider");
 			Requires.NotNull(request, "request");

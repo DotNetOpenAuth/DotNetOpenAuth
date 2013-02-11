@@ -210,6 +210,9 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// Handles incoming HTTP requests.
 		/// </summary>
 		/// <param name="context">The HttpListener context.</param>
+		/// <returns>
+		/// A task that completes with the asynchronous operation.
+		/// </returns>
 		private async Task RequestHandlerAsync(HttpListenerContext context) {
 			Requires.NotNull(context, "context");
 			Requires.NotNull(context.Response.OutputStream, "context.Response.OutputStream");

@@ -68,7 +68,10 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <summary>
 		/// The process user authorization.
 		/// </summary>
-		/// <returns>The response message.</returns>
+		/// <param name="cancellationToken"></param>
+		/// <returns>
+		/// The response message.
+		/// </returns>
 		public Task<AuthorizedTokenResponse> ProcessUserAuthorizationAsync(CancellationToken cancellationToken = default(CancellationToken)) {
 			return this.webConsumer.ProcessUserAuthorizationAsync(cancellationToken: cancellationToken);
 		}
@@ -76,9 +79,11 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <summary>
 		/// The request authentication.
 		/// </summary>
-		/// <param name="callback">
-		/// The callback.
-		/// </param>
+		/// <param name="callback">The callback.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The response message.
+		/// </returns>
 		public async Task<HttpResponseMessage> RequestAuthenticationAsync(Uri callback, CancellationToken cancellationToken = default(CancellationToken)) {
 			var redirectParameters = new Dictionary<string, string>();
 			UserAuthorizationRequest request = await this.webConsumer.PrepareRequestUserAuthorizationAsync(

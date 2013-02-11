@@ -81,13 +81,12 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <summary>
 		/// Attempts to authenticate users by forwarding them to an external website, and upon succcess or failure, redirect users back to the specified url.
 		/// </summary>
-		/// <param name="context">
-		/// The context of the current request. 
-		/// </param>
-		/// <param name="returnUrl">
-		/// The return url after users have completed authenticating against external website. 
-		/// </param>
+		/// <param name="context">The context of the current request.</param>
+		/// <param name="returnUrl">The return url after users have completed authenticating against external website.</param>
 		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// A task that completes with the asynchronous operation.
+		/// </returns>
 		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings",
 			Justification = "We don't have a Uri object handy.")]
 		public virtual async Task RequestAuthenticationAsync(HttpContextBase context, Uri returnUrl, CancellationToken cancellationToken = default(CancellationToken)) {

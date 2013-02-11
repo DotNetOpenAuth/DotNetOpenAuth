@@ -189,6 +189,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// to redirect it to the OpenID Provider to start the OpenID authentication process.
 		/// </summary>
 		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The response message that will cause the client to redirect to the Provider.
+		/// </returns>
 		public async Task<HttpResponseMessage> GetRedirectingResponseAsync(CancellationToken cancellationToken) {
 			foreach (var behavior in this.RelyingParty.Behaviors) {
 				behavior.OnOutgoingAuthenticationRequest(this);

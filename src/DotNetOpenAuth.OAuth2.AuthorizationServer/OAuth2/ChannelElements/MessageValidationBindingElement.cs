@@ -84,7 +84,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// The protections (if any) that this binding element applied to the message.
 		/// Null if this binding element did not even apply to this binding element.
 		/// </returns>
-		/// <exception cref="TokenEndpointProtocolException"></exception>
+		/// <exception cref="TokenEndpointProtocolException">Thrown when an authorization or protocol rule is violated.</exception>
 		/// <exception cref="ProtocolException">Thrown when the binding element rules indicate that this message is invalid and should
 		/// NOT be processed.</exception>
 		/// <remarks>

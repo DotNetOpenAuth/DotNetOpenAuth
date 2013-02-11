@@ -83,6 +83,9 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// </summary>
 		/// <param name="message">The message just received.</param>
 		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// A task that completes with the asynchronous operation.
+		/// </returns>
 		/// <exception cref="ProtocolException">Thrown when the message is somehow invalid, except for check_authentication messages.
 		/// This can be due to tampering, replay attack or expiration, among other things.</exception>
 		protected override async Task ProcessIncomingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {

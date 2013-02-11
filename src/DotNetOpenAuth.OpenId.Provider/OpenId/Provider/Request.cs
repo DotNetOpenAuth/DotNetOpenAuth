@@ -203,9 +203,10 @@ using Validation;
 		}
 
 		/// <summary>
-		/// Gets the response message, once <see cref="IsResponseReady"/> is <c>true</c>.
+		/// Gets the response message, once <see cref="IsResponseReady" /> is <c>true</c>.
 		/// </summary>
 		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>The response message.</returns>
 		protected abstract Task<IProtocolMessage> GetResponseMessageAsync(CancellationToken cancellationToken);
 	}
 }

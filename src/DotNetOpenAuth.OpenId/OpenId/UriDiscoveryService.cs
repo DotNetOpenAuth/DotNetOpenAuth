@@ -32,6 +32,12 @@ namespace DotNetOpenAuth.OpenId {
 		public UriDiscoveryService() {
 		}
 
+		/// <summary>
+		/// Gets or sets the host factories used by this instance.
+		/// </summary>
+		/// <value>
+		/// The host factories.
+		/// </value>
 		public IHostFactories HostFactories { get; set; }
 
 		#region IIdentifierDiscoveryService Members
@@ -40,8 +46,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// Performs discovery on the specified identifier.
 		/// </summary>
 		/// <param name="identifier">The identifier to perform discovery on.</param>
-		/// <param name="requestHandler">The means to place outgoing HTTP requests.</param>
-		/// <param name="abortDiscoveryChain">if set to <c>true</c>, no further discovery services will be called for this identifier.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// A sequence of service endpoints yielded by discovery.  Must not be null, but may be empty.
 		/// </returns>
