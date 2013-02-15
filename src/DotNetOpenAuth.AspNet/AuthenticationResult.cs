@@ -122,5 +122,10 @@ namespace DotNetOpenAuth.AspNet {
 		/// It is not guaranteed to be unique and certainly does not merit any trust in any suggested authenticity.
 		/// </remarks>
 		public string UserName { get; private set; }
+
+        /// <summary>
+        /// Gets or sets additional state associated with the <see cref="AuthenticationResult"/>.
+        /// </summary>
+	    public StateDictionary State { get; set; }
 	}
 }
