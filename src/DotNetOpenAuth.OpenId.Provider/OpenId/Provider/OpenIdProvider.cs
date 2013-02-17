@@ -338,7 +338,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <param name="extensions">The extensions.</param>
 		/// <returns>
-		/// A <see cref="OutgoingWebResponse" /> object describing the HTTP response to send
+		/// A <see cref="HttpResponseMessage" /> object describing the HTTP response to send
 		/// the user agent to allow the redirect with assertion to happen.
 		/// </returns>
 		public async Task<HttpResponseMessage> PrepareUnsolicitedAssertionAsync(Uri providerEndpoint, Realm relyingPartyRealm, Identifier claimedIdentifier, Identifier localIdentifier, CancellationToken cancellationToken = default(CancellationToken), params IExtensionMessage[] extensions) {

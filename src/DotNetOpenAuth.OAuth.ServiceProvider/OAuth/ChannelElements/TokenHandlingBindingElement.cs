@@ -79,13 +79,13 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// Implementations that provide message protection must honor the
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
-		public async Task<MessageProtections?> ProcessOutgoingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
+		public Task<MessageProtections?> ProcessOutgoingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
 			var userAuthResponse = message as UserAuthorizationResponse;
 			if (userAuthResponse != null && userAuthResponse.Version >= Protocol.V10a.Version) {
 				var requestToken = this.tokenManager.GetRequestToken(userAuthResponse.RequestToken);
 				requestToken.VerificationCode = userAuthResponse.VerificationCode;
 				this.tokenManager.UpdateToken(requestToken);
-				return MessageProtections.None;
+				return MessageProtectionTasks.None;
 			}
 
 			// Hook to store the token and secret on its way down to the Consumer.
@@ -101,10 +101,10 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 				}
 				this.tokenManager.UpdateToken(requestToken);
 
-				return MessageProtections.None;
+				return MessageProtectionTasks.None;
 			}
 
-			return null;
+			return MessageProtectionTasks.Null;
 		}
 
 		/// <summary>
@@ -125,13 +125,13 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// Implementations that provide message protection must honor the
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
-		public async Task<MessageProtections?> ProcessIncomingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
+		public Task<MessageProtections?> ProcessIncomingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
 			var authorizedTokenRequest = message as AuthorizedTokenRequest;
 			if (authorizedTokenRequest != null) {
 				if (authorizedTokenRequest.Version >= Protocol.V10a.Version) {
 					string expectedVerifier = this.tokenManager.GetRequestToken(authorizedTokenRequest.RequestToken).VerificationCode;
 					ErrorUtilities.VerifyProtocol(string.Equals(authorizedTokenRequest.VerificationCode, expectedVerifier, StringComparison.Ordinal), OAuthStrings.IncorrectVerifier);
-					return MessageProtections.None;
+					return MessageProtectionTasks.None;
 				}
 
 				this.VerifyThrowTokenTimeToLive(authorizedTokenRequest);
@@ -147,7 +147,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 				this.VerifyThrowTokenNotExpired(accessResourceRequest);
 			}
 
-			return null;
+			return MessageProtectionTasks.Null;
 		}
 
 		#endregion

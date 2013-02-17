@@ -88,6 +88,11 @@ namespace DotNetOpenAuth.Messaging {
 		private const int SymmetricSecretHandleLength = 4;
 
 		/// <summary>
+		/// A pre-completed task.
+		/// </summary>
+		private static readonly Task CompletedTaskField = Task.FromResult<object>(null);
+
+		/// <summary>
 		/// The default lifetime of a private secret.
 		/// </summary>
 		private static readonly TimeSpan SymmetricSecretKeyLifespan = Configuration.DotNetOpenAuthSection.Messaging.PrivateSecretMaximumAge;
@@ -148,6 +153,13 @@ namespace DotNetOpenAuth.Messaging {
 			/// The GZip algorithm.
 			/// </summary>
 			Gzip,
+		}
+
+		/// <summary>
+		/// Gets a pre-completed task.
+		/// </summary>
+		internal static Task CompletedTask {
+			get { return CompletedTaskField; }
 		}
 
 		/// <summary>

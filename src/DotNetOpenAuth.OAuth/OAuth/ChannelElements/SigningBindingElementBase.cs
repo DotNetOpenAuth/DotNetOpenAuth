@@ -86,7 +86,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// The protections (if any) that this binding element applied to the message.
 		/// Null if this binding element did not even apply to this binding element.
 		/// </returns>
-		public async Task<MessageProtections?> ProcessOutgoingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
+		public Task<MessageProtections?> ProcessOutgoingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
 			var signedMessage = message as ITamperResistantOAuthMessage;
 			if (signedMessage != null && this.IsMessageApplicable(signedMessage)) {
 				if (this.SignatureCallback != null) {
@@ -98,10 +98,10 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 				signedMessage.SignatureMethod = this.signatureMethod;
 				Logger.Bindings.DebugFormat("Signing {0} message using {1}.", message.GetType().Name, this.signatureMethod);
 				signedMessage.Signature = this.GetSignature(signedMessage);
-				return MessageProtections.TamperProtection;
+				return MessageProtectionTasks.TamperProtection;
 			}
 
-			return null;
+			return MessageProtectionTasks.Null;
 		}
 
 		/// <summary>
@@ -114,14 +114,14 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// Null if this binding element did not even apply to this binding element.
 		/// </returns>
 		/// <exception cref="InvalidSignatureException">Thrown if the signature is invalid.</exception>
-		public async Task<MessageProtections?> ProcessIncomingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
+		public Task<MessageProtections?> ProcessIncomingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
 			var signedMessage = message as ITamperResistantOAuthMessage;
 			if (signedMessage != null && this.IsMessageApplicable(signedMessage)) {
 				Logger.Bindings.DebugFormat("Verifying incoming {0} message signature of: {1}", message.GetType().Name, signedMessage.Signature);
 
 				if (!string.Equals(signedMessage.SignatureMethod, this.signatureMethod, StringComparison.Ordinal)) {
 					Logger.Bindings.WarnFormat("Expected signature method '{0}' but received message with a signature method of '{1}'.", this.signatureMethod, signedMessage.SignatureMethod);
-					return MessageProtections.None;
+					return MessageProtectionTasks.None;
 				}
 
 				if (this.SignatureCallback != null) {
@@ -135,10 +135,10 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 					throw new InvalidSignatureException(message);
 				}
 
-				return MessageProtections.TamperProtection;
+				return MessageProtectionTasks.TamperProtection;
 			}
 
-			return null;
+			return MessageProtectionTasks.Null;
 		}
 
 		#endregion

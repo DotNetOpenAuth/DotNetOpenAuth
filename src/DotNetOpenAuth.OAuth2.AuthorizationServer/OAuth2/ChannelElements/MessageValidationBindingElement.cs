@@ -91,7 +91,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// Implementations that provide message protection must honor the
 		/// <see cref="MessagePartAttribute.RequiredProtection" /> properties where applicable.
 		/// </remarks>
-		public override async Task<MessageProtections?> ProcessIncomingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
+		public override Task<MessageProtections?> ProcessIncomingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
 			bool applied = false;
 
 			// Check that the client secret is correct for client authenticated messages.
@@ -204,7 +204,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 				}
 			}
 
-			return applied ? (MessageProtections?)MessageProtections.None : null;
+			return applied ? MessageProtectionTasks.None : MessageProtectionTasks.Null;
 		}
 	}
 }

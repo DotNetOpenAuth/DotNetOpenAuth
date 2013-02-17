@@ -11,6 +11,9 @@ namespace DotNetOpenAuth.AspNet.Clients {
 	using System.Threading;
 	using System.Threading.Tasks;
 	using System.Web;
+
+	using DotNetOpenAuth.Messaging;
+
 	using Validation;
 
 	/// <summary>
@@ -65,12 +68,13 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <returns>
 		/// A task that completes with the asynchronous operation.
 		/// </returns>
-		public virtual async Task RequestAuthenticationAsync(HttpContextBase context, Uri returnUrl, CancellationToken cancellationToken = default(CancellationToken)) {
+		public virtual Task RequestAuthenticationAsync(HttpContextBase context, Uri returnUrl, CancellationToken cancellationToken = default(CancellationToken)) {
 			Requires.NotNull(context, "context");
 			Requires.NotNull(returnUrl, "returnUrl");
 
 			string redirectUrl = this.GetServiceLoginUrl(returnUrl).AbsoluteUri;
 			context.Response.Redirect(redirectUrl, endResponse: true);
+			return MessagingUtilities.CompletedTask;
 		}
 
 		/// <summary>

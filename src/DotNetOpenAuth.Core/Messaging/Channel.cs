@@ -140,11 +140,6 @@ namespace DotNetOpenAuth.Messaging {
 		private IMessageFactory messageTypeProvider;
 
 		/// <summary>
-		/// Backing store for the <see cref="CachePolicy"/> property.
-		/// </summary>
-		private RequestCachePolicy cachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.NoCacheNoStore);
-
-		/// <summary>
 		/// Backing field for the <see cref="MaximumIndirectMessageUrlLength"/> property.
 		/// </summary>
 		private int maximumIndirectMessageUrlLength = Configuration.DotNetOpenAuthSection.Messaging.MaximumIndirectMessageUrlLength;

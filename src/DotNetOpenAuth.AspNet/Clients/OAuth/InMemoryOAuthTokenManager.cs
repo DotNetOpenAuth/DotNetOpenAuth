@@ -7,6 +7,8 @@
 namespace DotNetOpenAuth.AspNet.Clients {
 	using System;
 	using System.Collections.Generic;
+	using System.Threading;
+	using System.Web;
 	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.OAuth.Messages;
@@ -92,9 +94,9 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// 	                                	useful in an ASP.NET web application within the implementation of this method.
 		/// 	                                	Alternatively you may store the access token here without associating with a user account,
 		/// 	                                	and wait until
-		/// 	                                	<see cref="WebConsumer.ProcessUserAuthorizationAsync()"/>
+		/// 	                                	<see cref="WebConsumer.ProcessUserAuthorizationAsync(HttpRequestBase, CancellationToken)"/>
 		/// 	                                	or
-		/// 	                                	<see cref="DesktopConsumer.ProcessUserAuthorizationAsync(string, string)"/>
+		/// 	                                	<see cref="DesktopConsumer.ProcessUserAuthorizationAsync(string, string, CancellationToken)"/>
 		/// 	                                	return the access
 		/// 	                                	token to associate the access token with a user account at that point.
 		/// </para>

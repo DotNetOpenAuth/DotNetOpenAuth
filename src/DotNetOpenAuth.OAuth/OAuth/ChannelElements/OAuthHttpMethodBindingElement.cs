@@ -17,17 +17,6 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	/// Sets the HTTP Method property on a signed message before the signing module gets to it.
 	/// </summary>
 	internal class OAuthHttpMethodBindingElement : IChannelBindingElement {
-		/// <summary>
-		/// A reusable pre-completed task that may be returned multiple times to reduce GC pressure.
-		/// </summary>
-		private static readonly Task<MessageProtections?> NullTask = Task.FromResult<MessageProtections?>(null);
-
-		/// <summary>
-		/// A reusable pre-completed task that may be returned multiple times to reduce GC pressure.
-		/// </summary>
-		private static readonly Task<MessageProtections?> NoneTask =
-			Task.FromResult<MessageProtections?>(MessageProtections.None);
-
 		#region IChannelBindingElement Members
 
 		/// <summary>
@@ -58,13 +47,13 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 				HttpDeliveryMethods transmissionMethod = oauthMessage.HttpMethods;
 				try {
 					oauthMessage.HttpMethod = MessagingUtilities.GetHttpVerb(transmissionMethod);
-					return NoneTask;
+					return MessageProtectionTasks.None;
 				} catch (ArgumentException ex) {
 					Logger.OAuth.Error("Unrecognized HttpDeliveryMethods value.", ex);
-					return NullTask;
+					return MessageProtectionTasks.Null;
 				}
 			} else {
-				return NullTask;
+				return MessageProtectionTasks.Null;
 			}
 		}
 
@@ -82,8 +71,8 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// Thrown when the binding element rules indicate that this message is invalid and should
 		/// NOT be processed.
 		/// </exception>
-		public async Task<MessageProtections?> ProcessIncomingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
-			return null;
+		public Task<MessageProtections?> ProcessIncomingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
+			return MessageProtectionTasks.Null;
 		}
 
 		#endregion
