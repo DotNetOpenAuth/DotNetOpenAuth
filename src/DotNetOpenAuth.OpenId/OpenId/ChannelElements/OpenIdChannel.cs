@@ -200,15 +200,38 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			return preparedResponse;
 		}
 
+		/// <summary>
+		/// Provides derived-types the opportunity to wrap an <see cref="HttpMessageHandler" /> with another one.
+		/// </summary>
+		/// <param name="innerHandler">The inner handler received from <see cref="IHostFactories" /></param>
+		/// <returns>
+		/// The handler to use in <see cref="HttpClient" /> instances.
+		/// </returns>
 		protected override HttpMessageHandler WrapMessageHandler(HttpMessageHandler innerHandler) {
 			return new ErrorFilteringMessageHandler(base.WrapMessageHandler(innerHandler));
 		}
 
+		/// <summary>
+		/// An HTTP handler that throws an exception if the response message's HTTP status code doesn't fall
+		/// within those allowed by the OpenID spec.
+		/// </summary>
 		private class ErrorFilteringMessageHandler : DelegatingHandler {
+			/// <summary>
+			/// Initializes a new instance of the <see cref="ErrorFilteringMessageHandler" /> class.
+			/// </summary>
+			/// <param name="innerHandler">The inner handler which is responsible for processing the HTTP response messages.</param>
 			internal ErrorFilteringMessageHandler(HttpMessageHandler innerHandler)
 				: base(innerHandler) {
 			}
 
+			/// <summary>
+			/// Sends an HTTP request to the inner handler to send to the server as an asynchronous operation.
+			/// </summary>
+			/// <param name="request">The HTTP request message to send to the server.</param>
+			/// <param name="cancellationToken">A cancellation token to cancel operation.</param>
+			/// <returns>
+			/// Returns <see cref="T:System.Threading.Tasks.Task`1" />. The task object representing the asynchronous operation.
+			/// </returns>
 			protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, System.Threading.CancellationToken cancellationToken) {
 				var response = await base.SendAsync(request, cancellationToken);
 

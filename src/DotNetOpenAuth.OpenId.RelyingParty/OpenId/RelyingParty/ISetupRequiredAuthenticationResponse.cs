@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
 	using System.Threading;
+	using System.Web;
 
 	/// <summary>
 	/// An interface to expose useful properties and functionality for handling

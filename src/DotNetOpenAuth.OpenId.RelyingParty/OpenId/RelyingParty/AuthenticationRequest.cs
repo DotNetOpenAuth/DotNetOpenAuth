@@ -355,7 +355,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			// Perform discovery right now (not deferred).
 			IEnumerable<IdentifierDiscoveryResult> serviceEndpoints;
 			try {
-				var results = (await relyingParty.DiscoverAsync(userSuppliedIdentifier, cancellationToken)).CacheGeneratedResults();
+				var identifierDiscoveryResults = await relyingParty.DiscoverAsync(userSuppliedIdentifier, cancellationToken);
+				var results = identifierDiscoveryResults.CacheGeneratedResults();
 
 				// If any OP Identifier service elements were found, we must not proceed
 				// to use any Claimed Identifier services, per OpenID 2.0 sections 7.3.2.2 and 11.2.
@@ -404,7 +405,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
-		/// Performs deferred request generation for the <see cref="Create" /> method.
+		/// Performs deferred request generation for the <see cref="CreateAsync" /> method.
 		/// </summary>
 		/// <param name="userSuppliedIdentifier">The user supplied identifier.</param>
 		/// <param name="relyingParty">The relying party.</param>
@@ -534,7 +535,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Creates the request message to send to the Provider,
 		/// based on the properties in this instance.
 		/// </summary>
-		/// <returns>The message to send to the Provider.</returns>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The message to send to the Provider.
+		/// </returns>
 		private async Task<SignedResponseRequest> CreateRequestMessageAsync(CancellationToken cancellationToken) {
 			Association association = await this.GetAssociationAsync(cancellationToken);
 
@@ -565,7 +569,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Gets the association to use for this authentication request.
 		/// </summary>
-		/// <returns>The association to use; <c>null</c> to use 'dumb mode'.</returns>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The association to use; <c>null</c> to use 'dumb mode'.
+		/// </returns>
 		private async Task<Association> GetAssociationAsync(CancellationToken cancellationToken) {
 			Association association = null;
 			switch (this.associationPreference) {

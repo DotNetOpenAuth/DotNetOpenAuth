@@ -220,7 +220,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <returns>The response message.</returns>
 		protected override async Task<IProtocolMessage> GetResponseMessageAsync(CancellationToken cancellationToken) {
 			if (this.IsAuthenticated.HasValue) {
-				return this.IsAuthenticated.Value ? (IProtocolMessage)this.positiveResponse : (await this.GetNegativeResponseAsync());
+				return this.IsAuthenticated.Value ? (IProtocolMessage)this.positiveResponse : await this.GetNegativeResponseAsync();
 			} else {
 				return null;
 			}

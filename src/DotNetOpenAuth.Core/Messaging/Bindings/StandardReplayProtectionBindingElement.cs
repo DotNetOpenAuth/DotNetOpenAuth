@@ -15,7 +15,14 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 	/// A binding element that checks/verifies a nonce message part.
 	/// </summary>
 	internal class StandardReplayProtectionBindingElement : IChannelBindingElement {
+		/// <summary>
+		/// A reusable, precompleted task that can be returned many times to reduce GC pressure.
+		/// </summary>
 		private static readonly Task<MessageProtections?> NullTask = Task.FromResult<MessageProtections?>(null);
+
+		/// <summary>
+		/// A reusable, precompleted task that can be returned many times to reduce GC pressure.
+		/// </summary>
 		private static readonly Task<MessageProtections?> CompletedReplayProtectionTask = Task.FromResult<MessageProtections?>(MessageProtections.ReplayProtection);
 
 		/// <summary>

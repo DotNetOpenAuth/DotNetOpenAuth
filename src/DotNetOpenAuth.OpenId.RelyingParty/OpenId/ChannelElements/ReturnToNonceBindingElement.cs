@@ -48,8 +48,14 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	/// only on the RP side and only on some messages.</para>
 	/// </remarks>
 	internal class ReturnToNonceBindingElement : IChannelBindingElement {
+		/// <summary>
+		/// A reusable, precompleted task that can be returned many times to reduce GC pressure.
+		/// </summary>
 		private static readonly Task<MessageProtections?> NullTask = Task.FromResult<MessageProtections?>(null);
 
+		/// <summary>
+		/// A reusable, precompleted task that can be returned many times to reduce GC pressure.
+		/// </summary>
 		private static readonly Task<MessageProtections?> ReplayProtectionTask =
 			Task.FromResult<MessageProtections?>(MessageProtections.ReplayProtection);
 

@@ -68,7 +68,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <summary>
 		/// The process user authorization.
 		/// </summary>
-		/// <param name="cancellationToken"></param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The response message.
 		/// </returns>

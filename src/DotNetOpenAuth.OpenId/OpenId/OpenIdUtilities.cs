@@ -82,13 +82,22 @@ namespace DotNetOpenAuth.OpenId {
 			return string.Format(CultureInfo.InvariantCulture, "{{{0}}}{{{1}}}", DateTime.UtcNow.Ticks, uniq);
 		}
 
+		/// <summary>
+		/// Immediately sends a redirect response to the browser to initiate an authentication request.
+		/// </summary>
+		/// <param name="authenticationRequest">The authentication request to send via redirect.</param>
+		/// <param name="context">The context.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// A task that completes with the asynchronous operation.
+		/// </returns>
 		public static async Task RedirectToProviderAsync(this IAuthenticationRequest authenticationRequest, HttpContextBase context = null, CancellationToken cancellationToken = default(CancellationToken)) {
 			Requires.NotNull(authenticationRequest, "authenticationRequest");
 			Verify.Operation(context != null || HttpContext.Current != null, MessagingStrings.HttpContextRequired);
 
 			context = context ?? new HttpContextWrapper(HttpContext.Current);
 			var response = await authenticationRequest.GetRedirectingResponseAsync(cancellationToken);
-			response.Send(context);
+			await response.SendAsync(context.Response);
 		}
 
 		/// <summary>
@@ -196,6 +205,13 @@ namespace DotNetOpenAuth.OpenId {
 			return fullyQualifiedRealm;
 		}
 
+		/// <summary>
+		/// Creates a new HTTP client for use by OpenID relying parties and providers.
+		/// </summary>
+		/// <param name="hostFactories">The host factories.</param>
+		/// <param name="requireSsl">if set to <c>true</c> [require SSL].</param>
+		/// <param name="cachePolicy">The cache policy.</param>
+		/// <returns>An HttpClient instance with appropriate caching policies set for OpenID operations.</returns>
 		internal static HttpClient CreateHttpClient(this IHostFactories hostFactories, bool requireSsl, RequestCachePolicy cachePolicy = null) {
 			Requires.NotNull(hostFactories, "hostFactories");
 

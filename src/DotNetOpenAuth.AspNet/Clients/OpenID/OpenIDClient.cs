@@ -109,7 +109,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <returns>
 		/// An instance of <see cref="AuthenticationResult" /> containing authentication result.
 		/// </returns>
-		/// <exception cref="System.InvalidOperationException"></exception>
+		/// <exception cref="System.InvalidOperationException">Thrown if no OpenID response was found in the incoming HTTP request.</exception>
 		public virtual async Task<AuthenticationResult> VerifyAuthenticationAsync(HttpContextBase context, CancellationToken cancellationToken = default(CancellationToken)) {
 			IAuthenticationResponse response = await RelyingParty.GetResponseAsync(context.Request, cancellationToken);
 			if (response == null) {

@@ -25,6 +25,9 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	/// Signs and verifies authentication assertions.
 	/// </summary>
 	internal abstract class SigningBindingElement : IChannelBindingElement {
+		/// <summary>
+		/// A reusable pre-completed task that may be returned multiple times to reduce GC pressure.
+		/// </summary>
 		private static readonly Task<MessageProtections?> NullTask = Task.FromResult<MessageProtections?>(null);
 
 		#region IChannelBindingElement Properties

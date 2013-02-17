@@ -16,7 +16,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using Validation;
 
 	/// <summary>
-	/// Wraps a positive assertion response in an <see cref="IAuthenticationResponse"/> instance
+	/// Wraps a positive assertion response in an <see cref="IAuthenticationResponse" /> instance
 	/// for public consumption by the host web site.
 	/// </summary>
 	[DebuggerDisplay("Status: {Status}, ClaimedIdentifier: {ClaimedIdentifier}")]
@@ -123,6 +123,14 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			get { return (PositiveAssertionResponse)base.Response; }
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="PositiveAuthenticationResponse"/> class
+		/// after verifying that discovery on the identifier matches the asserted data.
+		/// </summary>
+		/// <param name="response">The response.</param>
+		/// <param name="relyingParty">The relying party.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>The newly initialized instance.</returns>
 		internal static async Task<PositiveAuthenticationResponse> CreateAsync(
 			PositiveAssertionResponse response, OpenIdRelyingParty relyingParty, CancellationToken cancellationToken) {
 			var result = new PositiveAuthenticationResponse(response, relyingParty);

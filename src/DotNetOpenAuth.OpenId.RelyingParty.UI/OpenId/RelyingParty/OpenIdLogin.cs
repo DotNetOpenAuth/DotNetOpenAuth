@@ -939,7 +939,8 @@ idselector_input_id = '" + this.ClientID + @"';
 				return;
 			}
 
-			IAuthenticationRequest request = (await this.CreateRequestsAsync(CancellationToken.None)).FirstOrDefault();
+			var authenticationRequests = await this.CreateRequestsAsync(CancellationToken.None);
+			IAuthenticationRequest request = authenticationRequests.FirstOrDefault();
 			if (request != null) {
 				await this.LogOnAsync(request, CancellationToken.None);
 			} else {

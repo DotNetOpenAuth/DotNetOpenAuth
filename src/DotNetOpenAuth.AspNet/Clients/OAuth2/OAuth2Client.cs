@@ -81,7 +81,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <returns>
 		/// An instance of <see cref="AuthenticationResult" /> containing authentication result.
 		/// </returns>
-		/// <exception cref="System.InvalidOperationException"></exception>
+		/// <exception cref="System.InvalidOperationException">Always thrown.</exception>
 		public Task<AuthenticationResult> VerifyAuthenticationAsync(HttpContextBase context, CancellationToken cancellationToken = default(CancellationToken)) {
 			throw new InvalidOperationException(WebResources.OAuthRequireReturnUrl);
 		}

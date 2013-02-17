@@ -64,7 +64,10 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Creates the HTTP response to forward to the client to report the error.
 		/// </summary>
-		/// <returns>The HTTP response.</returns>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The HTTP response.
+		/// </returns>
 		public Task<HttpResponseMessage> CreateErrorResponseAsync(CancellationToken cancellationToken) {
 			return this.channel.PrepareResponseAsync(this.ErrorResponseMessage, cancellationToken);
 		}

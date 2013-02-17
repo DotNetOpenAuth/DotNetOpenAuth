@@ -380,11 +380,25 @@ namespace DotNetOpenAuth.Messaging {
 			return GetPublicFacingUrl(request, request.ServerVariables);
 		}
 
+		/// <summary>
+		/// Wraps a response message as an MVC <see cref="ActionResult"/> so it can be conveniently returned from an MVC controller's action method.
+		/// </summary>
+		/// <param name="response">The response message.</param>
+		/// <returns>An <see cref="ActionResult"/> instance.</returns>
 		public static ActionResult AsActionResult(this HttpResponseMessage response) {
 			Requires.NotNull(response, "response");
 			return new HttpResponseMessageActionResult(response);
 		}
 
+		/// <summary>
+		/// Sends a response message to the HTTP client.
+		/// </summary>
+		/// <param name="response">The response message.</param>
+		/// <param name="responseContext">The response context to send the response with.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// A task that completes with the asynchronous operation.
+		/// </returns>
 		public static async Task SendAsync(this HttpResponseMessage response, HttpResponseBase responseContext = null, CancellationToken cancellationToken = default(CancellationToken)) {
 			Requires.NotNull(response, "response");
 			if (responseContext == null) {
@@ -405,26 +419,41 @@ namespace DotNetOpenAuth.Messaging {
 			}
 		}
 
-		public static void Send(this HttpResponseMessage response, HttpContextBase context = null) {
-			Requires.NotNull(response, "response");
-			if (context == null) {
-				ErrorUtilities.VerifyHttpContext();
-				context = new HttpContextWrapper(HttpContext.Current);
-			}
-
-			SendAsync(response, context.Response).GetAwaiter().GetResult();
+		/// <summary>
+		/// Sends a response message to the HTTP client.
+		/// </summary>
+		/// <param name="response">The response message.</param>
+		/// <param name="responseContext">The response context to send the response with.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		public static void Send(this HttpResponseMessage response, HttpResponseBase responseContext = null, CancellationToken cancellationToken = default(CancellationToken)) {
+			SendAsync(response, responseContext, cancellationToken).GetAwaiter().GetResult();
 		}
 
+		/// <summary>
+		/// Disposes a value if it is not null.
+		/// </summary>
+		/// <param name="disposable">The disposable value.</param>
 		internal static void DisposeIfNotNull(this IDisposable disposable) {
 			if (disposable != null) {
 				disposable.Dispose();
 			}
 		}
 
-		internal static HttpRequestMessage Clone(this HttpRequestMessage original, Uri newRequestUri = null) {
+		/// <summary>
+		/// Clones the specified <see cref="HttpRequestMessage"/> so it can be re-sent.
+		/// </summary>
+		/// <param name="original">The original message.</param>
+		/// <returns>The cloned message</returns>
+		/// <remarks>
+		/// This is useful when an HTTP request fails, and after a little tweaking should be resent.
+		/// Since <see cref="HttpRequestMessage"/> remembers it was already sent, it will not permit being
+		/// sent a second time. This method clones the message so its contents are identical but allows
+		/// re-sending.
+		/// </remarks>
+		internal static HttpRequestMessage Clone(this HttpRequestMessage original) {
 			Requires.NotNull(original, "original");
 
-			var clone = new HttpRequestMessage(original.Method, newRequestUri ?? original.RequestUri);
+			var clone = new HttpRequestMessage(original.Method, original.RequestUri);
 			clone.Content = original.Content;
 			foreach (var header in original.Headers) {
 				clone.Headers.Add(header.Key, header.Value);
@@ -511,9 +540,10 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Assembles the content of the HTTP Authorization or WWW-Authenticate header.
 		/// </summary>
-		/// <param name="scheme">The scheme.</param>
 		/// <param name="fields">The fields to include.</param>
-		/// <returns>A value prepared for an HTTP header.</returns>
+		/// <returns>
+		/// A value prepared for an HTTP header.
+		/// </returns>
 		internal static string AssembleAuthorizationHeader(IEnumerable<KeyValuePair<string, string>> fields) {
 			Requires.NotNull(fields, "fields");
 
@@ -639,6 +669,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// Adds a Set-Cookie HTTP header for the specified cookie.
 		/// WARNING: support for cookie properties is currently VERY LIMITED.
 		/// </summary>
+		/// <param name="headers">The headers.</param>
+		/// <param name="cookie">The cookie.</param>
 		internal static void SetCookie(this HttpResponseHeaders headers, Cookie cookie) {
 			Requires.NotNull(headers, "headers");
 			Requires.NotNull(cookie, "cookie");
@@ -1531,6 +1563,12 @@ namespace DotNetOpenAuth.Messaging {
 			}
 		}
 
+		/// <summary>
+		/// Gets the URI that contains the entire payload that would be sent by the browser for the specified redirect-based request message.
+		/// </summary>
+		/// <param name="response">The redirecting response message.</param>
+		/// <returns>The absolute URI that could be retrieved to send the same message the browser would.</returns>
+		/// <exception cref="System.NotSupportedException">Thrown if the message is not a redirect message.</exception>
 		internal static Uri GetDirectUriRequest(this HttpResponseMessage response) {
 			Requires.NotNull(response, "response");
 			Requires.Argument(
@@ -2009,16 +2047,30 @@ namespace DotNetOpenAuth.Messaging {
 			#endregion
 		}
 
+		/// <summary>
+		/// An MVC <see cref="ActionResult"/> that wraps an <see cref="HttpResponseMessage"/>
+		/// </summary>
 		private class HttpResponseMessageActionResult : ActionResult {
+			/// <summary>
+			/// The wrapped response.
+			/// </summary>
 			private readonly HttpResponseMessage response;
 
+			/// <summary>
+			/// Initializes a new instance of the <see cref="HttpResponseMessageActionResult"/> class.
+			/// </summary>
+			/// <param name="response">The response.</param>
 			internal HttpResponseMessageActionResult(HttpResponseMessage response) {
 				Requires.NotNull(response, "response");
 				this.response = response;
 			}
 
+			/// <summary>
+			/// Enables processing of the result of an action method by a custom type that inherits from the <see cref="T:System.Web.Mvc.ActionResult" /> class.
+			/// </summary>
+			/// <param name="context">The context in which the result is executed. The context information includes the controller, HTTP content, request context, and route data.</param>
 			public override void ExecuteResult(ControllerContext context) {
-				this.response.Send(context.HttpContext);
+				this.response.Send(context.HttpContext.Response);
 			}
 		}
 	}

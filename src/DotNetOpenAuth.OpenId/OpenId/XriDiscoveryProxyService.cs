@@ -46,6 +46,9 @@ namespace DotNetOpenAuth.OpenId {
 		public XriDiscoveryProxyService() {
 		}
 
+		/// <summary>
+		/// Gets or sets the host factories used by this instance.
+		/// </summary>
 		public IHostFactories HostFactories { get; set; }
 
 		#region IDiscoveryService Members

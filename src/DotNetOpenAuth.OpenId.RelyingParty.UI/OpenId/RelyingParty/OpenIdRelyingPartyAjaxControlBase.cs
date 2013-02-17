@@ -68,7 +68,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private const string AuthDataViewStateKey = "AuthData";
 
 		/// <summary>
-		/// The viewstate key to use for storing the value of the <see cref="AuthenticationResponse"/> property.
+		/// The viewstate key to use for storing the value of the <see cref="GetAuthenticationResponseAsync"/> method.
 		/// </summary>
 		private const string AuthenticationResponseViewStateKey = "AuthenticationResponse";
 

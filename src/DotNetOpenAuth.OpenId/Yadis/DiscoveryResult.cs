@@ -28,7 +28,7 @@ namespace DotNetOpenAuth.Yadis {
 		private HttpResponseMessage htmlFallback;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="DiscoveryResult" /> class.
+		/// Prevents a default instance of the <see cref="DiscoveryResult" /> class from being created.
 		/// </summary>
 		private DiscoveryResult() {
 		}
@@ -70,6 +70,13 @@ namespace DotNetOpenAuth.Yadis {
 		/// </summary>
 		public bool IsXrds { get; private set; }
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="DiscoveryResult"/> class.
+		/// </summary>
+		/// <param name="requestUri">The request URI.</param>
+		/// <param name="initialResponse">The initial response.</param>
+		/// <param name="finalResponse">The final response.</param>
+		/// <returns>The newly initialized instance.</returns>
 		internal static async Task<DiscoveryResult> CreateAsync(Uri requestUri, HttpResponseMessage initialResponse, HttpResponseMessage finalResponse) {
 			var result = new DiscoveryResult();
 			result.RequestUri = requestUri;

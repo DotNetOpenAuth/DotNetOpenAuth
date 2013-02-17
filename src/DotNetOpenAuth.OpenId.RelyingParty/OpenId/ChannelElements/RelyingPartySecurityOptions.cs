@@ -15,8 +15,14 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	/// Helps ensure compliance to some properties in the <see cref="RelyingPartySecuritySettings"/>.
 	/// </summary>
 	internal class RelyingPartySecurityOptions : IChannelBindingElement {
+		/// <summary>
+		/// A reusable pre-completed task that may be returned multiple times to reduce GC pressure.
+		/// </summary>
 		private static readonly Task<MessageProtections?> NullTask = Task.FromResult<MessageProtections?>(null);
 
+		/// <summary>
+		/// A reusable pre-completed task that may be returned multiple times to reduce GC pressure.
+		/// </summary>
 		private static readonly Task<MessageProtections?> NoneTask =
 			Task.FromResult<MessageProtections?>(MessageProtections.None);
 

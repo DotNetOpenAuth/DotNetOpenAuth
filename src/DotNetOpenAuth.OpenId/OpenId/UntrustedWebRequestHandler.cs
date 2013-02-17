@@ -68,6 +68,9 @@ namespace DotNetOpenAuth.OpenId {
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private int maximumRedirections = Configuration.MaximumRedirections;
 
+		/// <summary>
+		/// The inner handler.
+		/// </summary>
 		private readonly InternalWebRequestHandler innerHandler;
 
 		/// <summary>
@@ -95,10 +98,6 @@ namespace DotNetOpenAuth.OpenId {
 			} else {
 				this.InnerWebRequestHandler.ReadWriteTimeout = (int)Configuration.ReadWriteTimeout.TotalMilliseconds;
 			}
-		}
-
-		protected WebRequestHandler InnerWebRequestHandler {
-			get { return (WebRequestHandler)this.innerHandler.InnerHandler; }
 		}
 
 		/// <summary>
@@ -186,12 +185,26 @@ namespace DotNetOpenAuth.OpenId {
 		}
 
 		/// <summary>
+		/// Gets the inner web request handler.
+		/// </summary>
+		/// <value>
+		/// The inner web request handler.
+		/// </value>
+		protected WebRequestHandler InnerWebRequestHandler {
+			get { return (WebRequestHandler)this.innerHandler.InnerHandler; }
+		}
+
+		/// <summary>
 		/// Gets the configuration for this class that is specified in the host's .config file.
 		/// </summary>
 		private static UntrustedWebRequestElement Configuration {
 			get { return DotNetOpenAuthSection.Messaging.UntrustedWebRequest; }
 		}
 
+		/// <summary>
+		/// Creates an HTTP client that uses this instance as an HTTP handler.
+		/// </summary>
+		/// <returns>The initialized instance.</returns>
 		public HttpClient CreateClient() {
 			var client = new HttpClient(this);
 			client.MaxResponseContentBufferSize = Configuration.MaximumBytesToRead;
@@ -232,6 +245,14 @@ namespace DotNetOpenAuth.OpenId {
 			return false;
 		}
 
+		/// <summary>
+		/// Send an HTTP request as an asynchronous operation.
+		/// </summary>
+		/// <param name="request">The HTTP request message to send.</param>
+		/// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+		/// <returns>
+		/// Returns <see cref="T:System.Threading.Tasks.Task`1" />.The task object representing the asynchronous operation.
+		/// </returns>
 		protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken) {
 			this.EnsureAllowableRequestUri(request.RequestUri);
 
@@ -250,7 +271,8 @@ namespace DotNetOpenAuth.OpenId {
 					// cloned HttpWebRequest, so we have to bail.
 					ErrorUtilities.VerifyProtocol(request.Method != HttpMethod.Post, MessagingStrings.UntrustedRedirectsOnPOSTNotSupported);
 					Uri redirectUri = new Uri(request.RequestUri, response.Headers.Location);
-					request = request.Clone(redirectUri);
+					request = request.Clone();
+					request.RequestUri = redirectUri;
 					continue;
 				}
 
@@ -347,7 +369,6 @@ namespace DotNetOpenAuth.OpenId {
 		/// Verify that the request qualifies under our security policies
 		/// </summary>
 		/// <param name="requestUri">The request URI.</param>
-		/// <param name="requireSsl">If set to <c>true</c>, only web requests that can be made entirely over SSL will succeed.</param>
 		/// <exception cref="ProtocolException">Thrown when the URI is disallowed for security reasons.</exception>
 		private void EnsureAllowableRequestUri(Uri requestUri) {
 			ErrorUtilities.VerifyProtocol(
@@ -422,9 +443,13 @@ namespace DotNetOpenAuth.OpenId {
 		}
 
 		/// <summary>
-		/// A <see cref="DelegatingHandler"/> derived type that makes its SendAsync method available internally.
+		/// A <see cref="DelegatingHandler" /> derived type that makes its SendAsync method available internally.
 		/// </summary>
 		private class InternalWebRequestHandler : DelegatingHandler {
+			/// <summary>
+			/// Initializes a new instance of the <see cref="InternalWebRequestHandler"/> class.
+			/// </summary>
+			/// <param name="innerHandler">The inner handler which is responsible for processing the HTTP response messages.</param>
 			internal InternalWebRequestHandler(HttpMessageHandler innerHandler)
 				: base(innerHandler) {
 			}

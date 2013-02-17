@@ -29,6 +29,9 @@ namespace DotNetOpenAuth {
 		/// </summary>
 		internal const string DefaultNamespace = "DotNetOpenAuth";
 
+		/// <summary>
+		/// A lazily-assembled string that describes the version of the library.
+		/// </summary>
 		private static readonly Lazy<string> libraryVersionLazy = new Lazy<string>(delegate {
 			var assembly = Assembly.GetExecutingAssembly();
 			string assemblyFullName = assembly.FullName;
@@ -40,14 +43,17 @@ namespace DotNetOpenAuth {
 		});
 
 		/// <summary>
-		/// The web.config file-specified provider of web resource URLs.
+		/// A lazily-assembled string that describes the version of the library.
 		/// </summary>
-		private static IEmbeddedResourceRetrieval embeddedResourceRetrieval = MessagingElement.Configuration.EmbeddedResourceRetrievalProvider.CreateInstance(null, false, null);
-
 		private static readonly Lazy<ProductInfoHeaderValue> libraryVersionHeaderLazy = new Lazy<ProductInfoHeaderValue>(delegate {
 			var assemblyName = Assembly.GetExecutingAssembly().GetName();
 			return new ProductInfoHeaderValue(assemblyName.Name, AssemblyFileVersion);
 		});
+
+		/// <summary>
+		/// The web.config file-specified provider of web resource URLs.
+		/// </summary>
+		private static IEmbeddedResourceRetrieval embeddedResourceRetrieval = MessagingElement.Configuration.EmbeddedResourceRetrievalProvider.CreateInstance(null, false, null);
 
 		/// <summary>
 		/// Gets a human-readable description of the library name and version, including

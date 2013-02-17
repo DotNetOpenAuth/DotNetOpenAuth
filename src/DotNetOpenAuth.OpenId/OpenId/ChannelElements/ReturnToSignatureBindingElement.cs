@@ -33,8 +33,14 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	/// anything except a particular message part.</para>
 	/// </remarks>
 	internal class ReturnToSignatureBindingElement : IChannelBindingElement {
+		/// <summary>
+		/// A reusable pre-completed task that may be returned multiple times to reduce GC pressure.
+		/// </summary>
 		private static readonly Task<MessageProtections?> NullTask = Task.FromResult<MessageProtections?>(null);
 
+		/// <summary>
+		/// A reusable pre-completed task that may be returned multiple times to reduce GC pressure.
+		/// </summary>
 		private static readonly Task<MessageProtections?> NoneTask =
 			Task.FromResult<MessageProtections?>(MessageProtections.None);
 

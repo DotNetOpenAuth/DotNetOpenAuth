@@ -23,19 +23,19 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="NegativeAssertionResponse"/> class.
 		/// </summary>
-		/// <param name="request">The request.</param>
-		private NegativeAssertionResponse(SignedResponseRequest request)
-			: base(request, GetMode(request)) {
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="NegativeAssertionResponse"/> class.
-		/// </summary>
 		/// <param name="version">The version.</param>
 		/// <param name="relyingPartyReturnTo">The relying party return to.</param>
 		/// <param name="mode">The value of the openid.mode parameter.</param>
 		internal NegativeAssertionResponse(Version version, Uri relyingPartyReturnTo, string mode)
 			: base(version, relyingPartyReturnTo, mode) {
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="NegativeAssertionResponse"/> class.
+		/// </summary>
+		/// <param name="request">The request.</param>
+		private NegativeAssertionResponse(SignedResponseRequest request)
+			: base(request, GetMode(request)) {
 		}
 
 		/// <summary>

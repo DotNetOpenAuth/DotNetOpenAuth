@@ -202,15 +202,18 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <summary>
 		/// Gets the incoming OpenID request if there is one, or null if none was detected.
 		/// </summary>
-		/// <returns>The request that the hosting Provider should possibly process and then transmit the response for.</returns>
-		/// <remarks>
-		/// <para>Requests may be infrastructural to OpenID and allow auto-responses, or they may
-		/// be authentication requests where the Provider site has to make decisions based
-		/// on its own user database and policies.</para>
-		/// <para>Requires an <see cref="HttpContext.Current">HttpContext.Current</see> context.</para>
-		/// </remarks>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The request that the hosting Provider should possibly process and then transmit the response for.
+		/// </returns>
 		/// <exception cref="InvalidOperationException">Thrown if <see cref="HttpContext.Current">HttpContext.Current</see> == <c>null</c>.</exception>
 		/// <exception cref="ProtocolException">Thrown if the incoming message is recognized but deviates from the protocol specification irrecoverably.</exception>
+		/// <remarks>
+		///   <para>Requests may be infrastructural to OpenID and allow auto-responses, or they may
+		/// be authentication requests where the Provider site has to make decisions based
+		/// on its own user database and policies.</para>
+		///   <para>Requires an <see cref="HttpContext.Current">HttpContext.Current</see> context.</para>
+		/// </remarks>
 		public Task<IRequest> GetRequestAsync(CancellationToken cancellationToken) {
 			return this.GetRequestAsync(this.Channel.GetRequestFromContext(), cancellationToken);
 		}

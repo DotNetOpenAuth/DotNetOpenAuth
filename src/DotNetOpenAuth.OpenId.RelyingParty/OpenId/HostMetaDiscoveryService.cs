@@ -193,6 +193,9 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="identifier">The identifier under discovery.</param>
 		/// <param name="response">The response.</param>
 		/// <param name="signingHost">The host name on the certificate that should be used to verify the signature in the XRDS.</param>
+		/// <returns>
+		/// A task that completes with the asynchronous operation.
+		/// </returns>
 		/// <exception cref="ProtocolException">Thrown if the XRDS document has an invalid or a missing signature.</exception>
 		[SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "XmlDSig", Justification = "xml")]
 		private static async Task ValidateXmlDSigAsync(XrdsDocument document, UriIdentifier identifier, HttpResponseMessage response, string signingHost) {
@@ -255,6 +258,47 @@ namespace DotNetOpenAuth.OpenId {
 						CultureInfo.CurrentCulture,
 						OpenIdStrings.X509CertificateNotTrusted + " {0}",
 						string.Join(", ", chain.ChainStatus.Select(status => status.StatusInformation).ToArray())));
+			}
+		}
+
+		/// <summary>
+		/// Verifies that a certificate chain is trusted.
+		/// </summary>
+		/// <param name="certificates">The chain of certificates to verify.</param>
+		private static void VerifyCertificateChain(IList<X509Certificate2> certificates) {
+			Requires.NotNullEmptyOrNullElements(certificates, "certificates");
+
+			// Before calling into the OS to validate the certificate, since that can for some bizzare reason hang for 5 seconds
+			// on some systems, check a cache of previously verified certificates first.
+			if (OpenIdElement.Configuration.RelyingParty.HostMetaDiscovery.EnableCertificateValidationCache) {
+				lock (ApprovedCertificateThumbprintCache) {
+					// HashSet<T> isn't thread-safe.
+					if (ApprovedCertificateThumbprintCache.Contains(certificates[0].Thumbprint)) {
+						return;
+					}
+				}
+			}
+
+			// Verify that we trust the signer of the certificates.
+			// Start by trying to validate just the certificate used to sign the XRDS document,
+			// since we can do that with partial trust.
+			Logger.OpenId.Debug("Verifying that we trust the certificate used to sign the discovery document.");
+			if (!certificates[0].Verify()) {
+				// We couldn't verify just the signing certificate, so try to verify the whole certificate chain.
+				try {
+					Logger.OpenId.Debug("Verifying the whole certificate chain.");
+					VerifyCertChain(certificates);
+					Logger.OpenId.Debug("Certificate chain verified.");
+				} catch (SecurityException) {
+					Logger.Yadis.Warn("Signing certificate verification failed and we have insufficient code access security permissions to perform certificate chain validation.");
+					ErrorUtilities.ThrowProtocol(OpenIdStrings.X509CertificateNotTrusted);
+				}
+			}
+
+			if (OpenIdElement.Configuration.RelyingParty.HostMetaDiscovery.EnableCertificateValidationCache) {
+				lock (ApprovedCertificateThumbprintCache) {
+					ApprovedCertificateThumbprintCache.Add(certificates[0].Thumbprint);
+				}
 			}
 		}
 
@@ -327,47 +371,6 @@ namespace DotNetOpenAuth.OpenId {
 				} catch {
 					response.Dispose();
 					throw;
-				}
-			}
-		}
-
-		/// <summary>
-		/// Verifies that a certificate chain is trusted.
-		/// </summary>
-		/// <param name="certificates">The chain of certificates to verify.</param>
-		private static void VerifyCertificateChain(IList<X509Certificate2> certificates) {
-			Requires.NotNullEmptyOrNullElements(certificates, "certificates");
-
-			// Before calling into the OS to validate the certificate, since that can for some bizzare reason hang for 5 seconds
-			// on some systems, check a cache of previously verified certificates first.
-			if (OpenIdElement.Configuration.RelyingParty.HostMetaDiscovery.EnableCertificateValidationCache) {
-				lock (ApprovedCertificateThumbprintCache) {
-					// HashSet<T> isn't thread-safe.
-					if (ApprovedCertificateThumbprintCache.Contains(certificates[0].Thumbprint)) {
-						return;
-					}
-				}
-			}
-
-			// Verify that we trust the signer of the certificates.
-			// Start by trying to validate just the certificate used to sign the XRDS document,
-			// since we can do that with partial trust.
-			Logger.OpenId.Debug("Verifying that we trust the certificate used to sign the discovery document.");
-			if (!certificates[0].Verify()) {
-				// We couldn't verify just the signing certificate, so try to verify the whole certificate chain.
-				try {
-					Logger.OpenId.Debug("Verifying the whole certificate chain.");
-					VerifyCertChain(certificates);
-					Logger.OpenId.Debug("Certificate chain verified.");
-				} catch (SecurityException) {
-					Logger.Yadis.Warn("Signing certificate verification failed and we have insufficient code access security permissions to perform certificate chain validation.");
-					ErrorUtilities.ThrowProtocol(OpenIdStrings.X509CertificateNotTrusted);
-				}
-			}
-
-			if (OpenIdElement.Configuration.RelyingParty.HostMetaDiscovery.EnableCertificateValidationCache) {
-				lock (ApprovedCertificateThumbprintCache) {
-					ApprovedCertificateThumbprintCache.Add(certificates[0].Thumbprint);
 				}
 			}
 		}
@@ -479,17 +482,35 @@ namespace DotNetOpenAuth.OpenId {
 			return result;
 		}
 
+		/// <summary>
+		/// A compound result of some value with the signing host.
+		/// </summary>
+		/// <typeparam name="T">The type of the primary result.</typeparam>
 		private struct ResultWithSigningHost<T> : IDisposable {
+			/// <summary>
+			/// Initializes a new instance of the <see cref="ResultWithSigningHost{T}"/> struct.
+			/// </summary>
+			/// <param name="result">The result.</param>
+			/// <param name="signingHost">The signing host.</param>
 			internal ResultWithSigningHost(T result, string signingHost)
 				: this() {
 				this.Result = result;
 				this.SigningHost = signingHost;
 			}
 
+			/// <summary>
+			/// Gets the result.
+			/// </summary>
 			public T Result { get; private set; }
 
+			/// <summary>
+			/// Gets the signing host.
+			/// </summary>
 			public string SigningHost { get; private set; }
 
+			/// <summary>
+			/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+			/// </summary>
 			public void Dispose() {
 				var disposable = this.Result as IDisposable;
 				disposable.DisposeIfNotNull();

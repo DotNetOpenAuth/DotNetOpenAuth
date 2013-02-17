@@ -86,7 +86,8 @@ namespace DotNetOpenAuth.OpenId.Provider.Extensions {
 		/// </remarks>
 		internal static async Task ConvertSregToMatchRequestAsync(this Provider.IHostProcessedRequest request, CancellationToken cancellationToken) {
 			var req = (Provider.HostProcessedRequest)request;
-			var response = (await req.GetResponseAsync(cancellationToken)) as IProtocolMessageWithExtensions; // negative responses don't support extensions.
+			var protocolMessage = await req.GetResponseAsync(cancellationToken);
+			var response = protocolMessage as IProtocolMessageWithExtensions; // negative responses don't support extensions.
 			var sregRequest = request.GetExtension<ClaimsRequest>();
 			if (sregRequest != null && response != null) {
 				if (sregRequest.Synthesized) {

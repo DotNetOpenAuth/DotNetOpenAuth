@@ -225,18 +225,17 @@ namespace DotNetOpenAuth.OAuth {
 		}
 
 		/// <summary>
-		/// Prepares an OAuth message that begins an authorization request that will 
+		/// Prepares an OAuth message that begins an authorization request that will
 		/// redirect the user to the Service Provider to provide that authorization.
 		/// </summary>
-		/// <param name="callback">
-		/// An optional Consumer URL that the Service Provider should redirect the 
-		/// User Agent to upon successful authorization.
-		/// </param>
+		/// <param name="callback">An optional Consumer URL that the Service Provider should redirect the
+		/// User Agent to upon successful authorization.</param>
 		/// <param name="requestParameters">Extra parameters to add to the request token message.  Optional.</param>
 		/// <param name="redirectParameters">Extra parameters to add to the redirect to Service Provider message.  Optional.</param>
-		/// <param name="requestToken">The request token that must be exchanged for an access token after the user has provided authorization.</param>
 		/// <param name="cancellationToken">The cancellation token.</param>
-		/// <returns>The pending user agent redirect based message to be sent as an HttpResponse.</returns>
+		/// <returns>
+		/// The pending user agent redirect based message to be sent as an HttpResponse.
+		/// </returns>
 		[SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "3#", Justification = "Two results")]
 		protected internal async Task<UserAuthorizationRequest> PrepareRequestUserAuthorizationAsync(Uri callback, IDictionary<string, string> requestParameters, IDictionary<string, string> redirectParameters, CancellationToken cancellationToken = default(CancellationToken)) {
 			// Obtain an unauthorized request token.  Assume the OAuth version given in the service description.

@@ -58,6 +58,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 		#endregion
 
+		/// <summary>
+		/// Stores the asynchronously created message that can be used to initiate a redirection-based authentication request.
+		/// </summary>
 		private HttpResponseMessage authenticationRequestRedirect;
 
 		/// <summary>

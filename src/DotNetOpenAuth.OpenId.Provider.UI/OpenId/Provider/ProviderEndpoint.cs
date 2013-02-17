@@ -231,7 +231,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 							if (request.IsResponseReady) {
 								PendingAuthenticationRequest = null;
 								var response = await Provider.PrepareResponseAsync(request, CancellationToken.None);
-								response.Send(new HttpContextWrapper(this.Context));
+								response.Send(new HttpContextWrapper(this.Context).Response);
 							}
 						}
 					}

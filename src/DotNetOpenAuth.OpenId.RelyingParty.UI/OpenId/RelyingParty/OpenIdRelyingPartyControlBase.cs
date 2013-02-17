@@ -518,7 +518,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// A task that completes with the asynchronous operation.
 		/// </returns>
 		public async Task LogOnAsync(CancellationToken cancellationToken) {
-			IAuthenticationRequest request = (await this.CreateRequestsAsync(cancellationToken)).FirstOrDefault();
+			var authenticationRequests = await this.CreateRequestsAsync(cancellationToken);
+			IAuthenticationRequest request = authenticationRequests.FirstOrDefault();
 			ErrorUtilities.VerifyProtocol(request != null, OpenIdStrings.OpenIdEndpointNotFound);
 			await this.LogOnAsync(request, cancellationToken);
 		}
@@ -609,11 +610,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
-		/// Creates the authentication requests for the value set in the <see cref="Identifier"/> property.
+		/// Creates the authentication requests for the value set in the <see cref="Identifier" /> property.
 		/// </summary>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// A sequence of authentication requests, any one of which may be
-		/// used to determine the user's control of the <see cref="IAuthenticationRequest.ClaimedIdentifier"/>.
+		/// used to determine the user's control of the <see cref="IAuthenticationRequest.ClaimedIdentifier" />.
 		/// </returns>
 		protected Task<IEnumerable<IAuthenticationRequest>> CreateRequestsAsync(CancellationToken cancellationToken) {
 			RequiresEx.ValidState(this.Identifier != null, OpenIdStrings.NoIdentifierSet);
@@ -670,6 +672,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Notifies the user agent via an AJAX response of a completed authentication attempt.
 		/// </summary>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// A task that completes with the asynchronous operation.
+		/// </returns>
 		protected virtual Task ScriptClosingPopupOrIFrameAsync(CancellationToken cancellationToken) {
 			return this.RelyingParty.ProcessResponseFromPopupAsync(cancellationToken);
 		}

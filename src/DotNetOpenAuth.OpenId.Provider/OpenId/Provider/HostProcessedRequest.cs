@@ -119,6 +119,16 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			return this.realmDiscoveryResult.Value;
 		}
 
+		#endregion
+
+		/// <summary>
+		/// Gets the negative response.
+		/// </summary>
+		/// <returns>The negative assertion message.</returns>
+		protected Task<NegativeAssertionResponse> GetNegativeResponseAsync() {
+			return this.negativeResponse.Value;
+		}
+
 		/// <summary>
 		/// Gets a value indicating whether verification of the return URL claimed by the Relying Party
 		/// succeeded.
@@ -171,16 +181,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			}
 
 			return RelyingPartyDiscoveryResult.NoMatchingReturnTo;
-		}
-
-		#endregion
-
-		/// <summary>
-		/// Gets the negative response.
-		/// </summary>
-		/// <returns>The negative assertion message.</returns>
-		protected Task<NegativeAssertionResponse> GetNegativeResponseAsync() {
-			return this.negativeResponse.Value;
 		}
 	}
 }

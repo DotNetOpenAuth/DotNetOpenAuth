@@ -187,7 +187,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// The newly created association, or null if no association can be created with
 		/// the given Provider given the current security settings.
 		/// </returns>
-		/// <exception cref="ProtocolException"></exception>
+		/// <exception cref="ProtocolException">Create if an error occurs while creating the new association.</exception>
 		private async Task<Association> CreateNewAssociationAsync(IProviderEndpoint provider, AssociateRequest associateRequest, int retriesRemaining, CancellationToken cancellationToken) {
 			Requires.NotNull(provider, "provider");
 

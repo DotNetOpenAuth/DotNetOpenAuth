@@ -17,6 +17,17 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	/// Sets the HTTP Method property on a signed message before the signing module gets to it.
 	/// </summary>
 	internal class OAuthHttpMethodBindingElement : IChannelBindingElement {
+		/// <summary>
+		/// A reusable pre-completed task that may be returned multiple times to reduce GC pressure.
+		/// </summary>
+		private static readonly Task<MessageProtections?> NullTask = Task.FromResult<MessageProtections?>(null);
+
+		/// <summary>
+		/// A reusable pre-completed task that may be returned multiple times to reduce GC pressure.
+		/// </summary>
+		private static readonly Task<MessageProtections?> NoneTask =
+			Task.FromResult<MessageProtections?>(MessageProtections.None);
+
 		#region IChannelBindingElement Members
 
 		/// <summary>
@@ -40,20 +51,20 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// True if the <paramref name="message"/> applied to this binding element
 		/// and the operation was successful.  False otherwise.
 		/// </returns>
-		public async Task<MessageProtections?> ProcessOutgoingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
+		public Task<MessageProtections?> ProcessOutgoingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
 			var oauthMessage = message as ITamperResistantOAuthMessage;
 
 			if (oauthMessage != null) {
 				HttpDeliveryMethods transmissionMethod = oauthMessage.HttpMethods;
 				try {
 					oauthMessage.HttpMethod = MessagingUtilities.GetHttpVerb(transmissionMethod);
-					return MessageProtections.None;
+					return NoneTask;
 				} catch (ArgumentException ex) {
 					Logger.OAuth.Error("Unrecognized HttpDeliveryMethods value.", ex);
-					return null;
+					return NullTask;
 				}
 			} else {
-				return null;
+				return NullTask;
 			}
 		}
 

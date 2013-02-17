@@ -15,7 +15,14 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 	/// implementing the <see cref="IExpiringProtocolMessage"/> interface.
 	/// </summary>
 	internal class StandardExpirationBindingElement : IChannelBindingElement {
+		/// <summary>
+		/// A reusable pre-completed task that may be returned multiple times to reduce GC pressure.
+		/// </summary>
 		private static readonly Task<MessageProtections?> NullTask = Task.FromResult<MessageProtections?>(null);
+
+		/// <summary>
+		/// A reusable pre-completed task that may be returned multiple times to reduce GC pressure.
+		/// </summary>
 		private static readonly Task<MessageProtections?> CompletedExpirationTask = Task.FromResult<MessageProtections?>(MessageProtections.Expiration);
 
 		/// <summary>

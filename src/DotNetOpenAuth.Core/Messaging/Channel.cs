@@ -330,11 +330,14 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Gets the protocol message embedded in the given HTTP request, if present.
 		/// </summary>
-		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The deserialized message, if one is found.  Null otherwise.
+		/// </returns>
+		/// <exception cref="InvalidOperationException">Thrown when <see cref="HttpContext.Current" /> is null.</exception>
 		/// <remarks>
 		/// Requires an HttpContext.Current context.
 		/// </remarks>
-		/// <exception cref="InvalidOperationException">Thrown when <see cref="HttpContext.Current"/> is null.</exception>
 		public Task<IDirectedProtocolMessage> ReadFromRequestAsync(CancellationToken cancellationToken) {
 			return this.ReadFromRequestAsync(this.GetRequestFromContext(), cancellationToken);
 		}
@@ -716,7 +719,15 @@ namespace DotNetOpenAuth.Messaging {
 			}
 		}
 
+		/// <summary>
+		/// Provides derived-types the opportunity to wrap an <see cref="HttpMessageHandler"/> with another one.
+		/// </summary>
+		/// <param name="innerHandler">The inner handler received from <see cref="IHostFactories"/></param>
+		/// <returns>The handler to use in <see cref="HttpClient"/> instances.</returns>
 		protected virtual HttpMessageHandler WrapMessageHandler(HttpMessageHandler innerHandler) {
+			//TODO: make sure that everyone calls this to wrap their handlers rather than using the one directly returned
+			//from IHostFactories.
+
 			// No wrapping by default.
 			return innerHandler;
 		}
@@ -971,7 +982,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>
 		/// A task that completes with the asynchronous operation.
 		/// </returns>
-		/// <exception cref="UnprotectedMessageException"></exception>
+		/// <exception cref="UnprotectedMessageException">Thrown if the message does not have the minimal required protections applied.</exception>
 		/// <remarks>
 		/// This method should NOT be called by derived types
 		/// except when sending ONE WAY request messages.
@@ -1145,7 +1156,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>
 		/// A task that completes with the asynchronous operation.
 		/// </returns>
-		/// <exception cref="UnprotectedMessageException"></exception>
+		/// <exception cref="UnprotectedMessageException">Thrown if the message does not have the minimal required protections applied.</exception>
 		/// <exception cref="ProtocolException">Thrown when the message is somehow invalid.
 		/// This can be due to tampering, replay attack or expiration, among other things.</exception>
 		protected virtual async Task ProcessIncomingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
