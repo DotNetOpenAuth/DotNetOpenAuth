@@ -135,8 +135,7 @@ namespace DotNetOpenAuth.ApplicationBlock {
 
 		public static async Task<JArray> GetUpdatesAsync(
 			ConsumerBase twitter, string accessToken, CancellationToken cancellationToken = default(CancellationToken)) {
-			var authorizingHandler = new OAuth1HttpMessageHandler(twitter.Channel.HostFactories.CreateHttpMessageHandler(), twitter, accessToken);
-			using (var httpClient = twitter.Channel.HostFactories.CreateHttpClient(authorizingHandler)) {
+			using (var httpClient = twitter.CreateHttpClient(accessToken)) {
 				using (var response = await httpClient.GetAsync(GetFriendTimelineStatusEndpoint.Location, cancellationToken)) {
 					response.EnsureSuccessStatusCode();
 					string jsonString = await response.Content.ReadAsStringAsync();

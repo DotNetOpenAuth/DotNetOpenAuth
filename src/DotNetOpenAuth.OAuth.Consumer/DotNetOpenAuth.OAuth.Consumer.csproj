@@ -25,7 +25,8 @@
     <Compile Include="OAuth\ChannelElements\RsaSha1ConsumerSigningBindingElement.cs" />
     <Compile Include="OAuth\ConsumerBase.cs" />
     <Compile Include="OAuth\DesktopConsumer.cs" />
-    <Compile Include="OAuth\OAuth1HttpMessageHandler.cs" />
+    <Compile Include="OAuth\OAuth1HmacSha1HttpMessageHandler.cs" />
+    <Compile Include="OAuth\OAuth1HttpMessageHandlerBase.cs" />
     <Compile Include="OAuth\WebConsumer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>

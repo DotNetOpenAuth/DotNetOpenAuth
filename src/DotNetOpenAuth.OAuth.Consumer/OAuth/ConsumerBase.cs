@@ -81,9 +81,33 @@ namespace DotNetOpenAuth.OAuth {
 		/// <summary>
 		/// Creates a message handler that signs outbound requests with a previously obtained authorization.
 		/// </summary>
-		/// <returns>A message handler.</returns>
-		public OAuth1HttpMessageHandler CreateMessageHandler() {
-			return new OAuth1HttpMessageHandler(this);
+		/// <param name="accessToken">The access token to authorize outbound HTTP requests with.</param>
+		/// <param name="innerHandler">The inner handler that actually sends the HTTP message on the network.</param>
+		/// <returns>
+		/// A message handler.
+		/// </returns>
+		public OAuth1HttpMessageHandlerBase CreateMessageHandler(string accessToken = null, HttpMessageHandler innerHandler = null) {
+			return new OAuth1HmacSha1HttpMessageHandler() {
+				ConsumerKey = this.ConsumerKey,
+				ConsumerSecret = this.TokenManager.ConsumerSecret,
+				AccessToken = accessToken,
+				AccessTokenSecret = accessToken != null ? this.TokenManager.GetTokenSecret(accessToken) : null,
+				InnerHandler = innerHandler ?? this.Channel.HostFactories.CreateHttpMessageHandler(),
+			};
+		}
+
+		/// <summary>
+		/// Creates the HTTP client.
+		/// </summary>
+		/// <param name="accessToken">The access token to authorize outbound HTTP requests with.</param>
+		/// <param name="innerHandler">The inner handler that actually sends the HTTP message on the network.</param>
+		/// <returns>The HttpClient to use.</returns>
+		public HttpClient CreateHttpClient(string accessToken, HttpMessageHandler innerHandler = null) {
+			Requires.NotNullOrEmpty(accessToken, "accessToken");
+
+			var handler = this.CreateMessageHandler(accessToken, innerHandler);
+			var client = this.Channel.HostFactories.CreateHttpClient(handler);
+			return client;
 		}
 
 		/// <summary>

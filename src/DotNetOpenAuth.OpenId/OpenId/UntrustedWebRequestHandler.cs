@@ -38,6 +38,11 @@ namespace DotNetOpenAuth.OpenId {
 	/// </remarks>
 	public class UntrustedWebRequestHandler : HttpMessageHandler {
 		/// <summary>
+		/// The inner handler.
+		/// </summary>
+		private readonly InternalWebRequestHandler innerHandler;
+
+		/// <summary>
 		/// The set of URI schemes allowed in untrusted web requests.
 		/// </summary>
 		private ICollection<string> allowableSchemes = new List<string> { "http", "https" };
@@ -67,11 +72,6 @@ namespace DotNetOpenAuth.OpenId {
 		/// </summary>
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private int maximumRedirections = Configuration.MaximumRedirections;
-
-		/// <summary>
-		/// The inner handler.
-		/// </summary>
-		private readonly InternalWebRequestHandler innerHandler;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="UntrustedWebRequestHandler" /> class.

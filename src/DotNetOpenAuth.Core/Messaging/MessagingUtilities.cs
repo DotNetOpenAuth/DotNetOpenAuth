@@ -1611,6 +1611,19 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Enumerates all members of the collection as key=value pairs.
+		/// </summary>
+		internal static IEnumerable<KeyValuePair<string, string>> AsKeyValuePairs(this NameValueCollection nvc) {
+			Requires.NotNull(nvc, "nvc");
+
+			foreach (string key in nvc) {
+				foreach (string value in nvc.GetValues(key)) {
+					yield return new KeyValuePair<string, string>(key, value);
+				}
+			}
+		}
+
+		/// <summary>
 		/// Converts a <see cref="NameValueCollection"/> to an IDictionary&lt;string, string&gt;.
 		/// </summary>
 		/// <param name="nvc">The NameValueCollection to convert.  May be null.</param>
@@ -1880,6 +1893,11 @@ namespace DotNetOpenAuth.Messaging {
 		/// </remarks>
 		internal static string EscapeUriDataStringRfc3986(string value) {
 			Requires.NotNull(value, "value");
+
+			// fast path for empty values.
+			if (value.Length == 0) {
+				return value;
+			}
 
 			// Start with RFC 2396 escaping by calling the .NET method to do the work.
 			// This MAY sometimes exhibit RFC 3986 behavior (according to the documentation).

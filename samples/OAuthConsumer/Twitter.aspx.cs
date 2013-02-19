@@ -10,9 +10,8 @@
 	using System.Xml.Linq;
 	using System.Xml.XPath;
 	using DotNetOpenAuth.ApplicationBlock;
-	using DotNetOpenAuth.OAuth;
-
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OAuth;
 
 	public partial class Twitter : System.Web.UI.Page {
 		private string AccessToken {

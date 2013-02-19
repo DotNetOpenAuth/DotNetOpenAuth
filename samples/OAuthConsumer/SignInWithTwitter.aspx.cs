@@ -9,8 +9,8 @@
 	using System.Web.UI.WebControls;
 	using System.Xml.Linq;
 	using System.Xml.XPath;
-	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.ApplicationBlock;
+	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth;
 
 	public partial class SignInWithTwitter : System.Web.UI.Page {
