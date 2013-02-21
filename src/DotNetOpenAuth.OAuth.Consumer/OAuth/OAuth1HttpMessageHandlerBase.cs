@@ -132,7 +132,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// This method is applied automatically to outbound requests that use this message handler instance.
 		/// However this method may be useful for obtaining the OAuth 1.0 signature without actually sending the request.
 		/// </summary>
-		public void ApplyOAuthParameters(HttpRequestMessage request) {
+		public void ApplyAuthorization(HttpRequestMessage request) {
 			Requires.NotNull(request, "request");
 
 			var oauthParameters = this.GetOAuthParameters();
@@ -163,7 +163,7 @@ namespace DotNetOpenAuth.OAuth {
 		protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken) {
 			Requires.NotNull(request, "request");
 			cancellationToken.ThrowIfCancellationRequested();
-			this.ApplyOAuthParameters(request);
+			this.ApplyAuthorization(request);
 			return base.SendAsync(request, cancellationToken);
 		}
 

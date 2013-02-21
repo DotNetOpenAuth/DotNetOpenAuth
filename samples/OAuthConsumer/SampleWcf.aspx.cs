@@ -88,7 +88,7 @@
 			var httpRequest = new HttpRequestMessage(HttpMethod.Post, client.Endpoint.Address.Uri);
 			using (WebConsumer consumer = this.CreateConsumer()) {
 				using (var handler = consumer.CreateMessageHandler(accessToken)) {
-					handler.ApplyOAuthParameters(httpRequest);
+					handler.ApplyAuthorization(httpRequest);
 				}
 			}
 
