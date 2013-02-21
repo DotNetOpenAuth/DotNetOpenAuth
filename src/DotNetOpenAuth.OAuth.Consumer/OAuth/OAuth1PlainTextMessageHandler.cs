@@ -19,13 +19,23 @@ namespace DotNetOpenAuth.OAuth {
 	/// </summary>
 	public class OAuth1PlainTextMessageHandler : OAuth1HttpMessageHandlerBase {
 		/// <summary>
+		/// Gets the signature method to include in the oauth_signature_method parameter.
+		/// </summary>
+		/// <value>
+		/// The signature method.
+		/// </value>
+		protected override string SignatureMethod {
+			get { return "PLAINTEXT"; }
+		}
+
+		/// <summary>
 		/// Calculates the signature for the specified buffer.
 		/// </summary>
 		/// <param name="signedPayload">The payload to calculate the signature for.</param>
 		/// <returns>
 		/// The signature.
 		/// </returns>
-		/// <exception cref="System.NotImplementedException"></exception>
+		/// <exception cref="System.NotImplementedException">Always thrown.</exception>
 		protected override byte[] Sign(byte[] signedPayload) {
 			throw new NotImplementedException();
 		}
@@ -44,16 +54,6 @@ namespace DotNetOpenAuth.OAuth {
 			builder.Append("&");
 			builder.Append(MessagingUtilities.EscapeUriDataStringRfc3986(this.AccessTokenSecret));
 			return builder.ToString();
-		}
-
-		/// <summary>
-		/// Gets the signature method to include in the oauth_signature_method parameter.
-		/// </summary>
-		/// <value>
-		/// The signature method.
-		/// </value>
-		protected override string SignatureMethod {
-			get { return "PLAINTEXT"; }
 		}
 	}
 }

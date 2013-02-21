@@ -1613,6 +1613,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Enumerates all members of the collection as key=value pairs.
 		/// </summary>
+		/// <param name="nvc">The collection to enumerate.</param>
+		/// <returns>A sequence of pairs.</returns>
 		internal static IEnumerable<KeyValuePair<string, string>> AsKeyValuePairs(this NameValueCollection nvc) {
 			Requires.NotNull(nvc, "nvc");
 

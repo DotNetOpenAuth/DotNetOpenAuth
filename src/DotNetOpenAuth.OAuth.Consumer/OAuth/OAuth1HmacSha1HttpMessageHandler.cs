@@ -33,6 +33,16 @@ namespace DotNetOpenAuth.OAuth {
 		}
 
 		/// <summary>
+		/// Gets the signature method to include in the oauth_signature_method parameter.
+		/// </summary>
+		/// <value>
+		/// The signature method.
+		/// </value>
+		protected override string SignatureMethod {
+			get { return "HMAC-SHA1"; }
+		}
+
+		/// <summary>
 		/// Calculates the signature for the specified buffer.
 		/// </summary>
 		/// <param name="signedPayload">The payload to calculate the signature for.</param>
@@ -44,16 +54,6 @@ namespace DotNetOpenAuth.OAuth {
 				algorithm.Key = Encoding.ASCII.GetBytes(this.GetConsumerAndTokenSecretString());
 				return algorithm.ComputeHash(signedPayload);
 			}
-		}
-
-		/// <summary>
-		/// Gets the signature method to include in the oauth_signature_method parameter.
-		/// </summary>
-		/// <value>
-		/// The signature method.
-		/// </value>
-		protected override string SignatureMethod {
-			get { return "HMAC-SHA1"; }
 		}
 	}
 }

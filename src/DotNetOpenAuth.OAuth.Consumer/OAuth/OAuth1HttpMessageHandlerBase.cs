@@ -35,9 +35,12 @@ namespace DotNetOpenAuth.OAuth {
 		/// <summary>
 		/// The default nonce length.
 		/// </summary>
-		private const int defaultNonceLength = 8;
+		private const int DefaultNonceLength = 8;
 
-		private const OAuthParametersLocation defaultParametersLocation = OAuthParametersLocation.AuthorizationHttpHeader;
+		/// <summary>
+		/// The default parameters location.
+		/// </summary>
+		private const OAuthParametersLocation DefaultParametersLocation = OAuthParametersLocation.AuthorizationHttpHeader;
 
 		/// <summary>
 		/// The reference date and time for calculating time stamps.
@@ -53,8 +56,8 @@ namespace DotNetOpenAuth.OAuth {
 		/// Initializes a new instance of the <see cref="OAuth1HttpMessageHandlerBase"/> class.
 		/// </summary>
 		protected OAuth1HttpMessageHandlerBase() {
-			this.NonceLength = defaultNonceLength;
-			this.Location = defaultParametersLocation;
+			this.NonceLength = DefaultNonceLength;
+			this.Location = DefaultParametersLocation;
 		}
 
 		/// <summary>
@@ -63,8 +66,8 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="innerHandler">The inner handler which is responsible for processing the HTTP response messages.</param>
 		protected OAuth1HttpMessageHandlerBase(HttpMessageHandler innerHandler)
 			: base(innerHandler) {
-			this.NonceLength = defaultNonceLength;
-			this.Location = defaultParametersLocation;
+			this.NonceLength = DefaultNonceLength;
+			this.Location = DefaultParametersLocation;
 		}
 
 		/// <summary>
@@ -120,7 +123,7 @@ namespace DotNetOpenAuth.OAuth {
 		public string AccessTokenSecret { get; set; }
 
 		/// <summary>
-		/// Gets the length of the nonce.
+		/// Gets or sets the length of the nonce.
 		/// </summary>
 		/// <value>
 		/// The length of the nonce.
@@ -128,10 +131,19 @@ namespace DotNetOpenAuth.OAuth {
 		public int NonceLength { get; set; }
 
 		/// <summary>
+		/// Gets the signature method to include in the oauth_signature_method parameter.
+		/// </summary>
+		/// <value>
+		/// The signature method.
+		/// </value>
+		protected abstract string SignatureMethod { get; }
+
+		/// <summary>
 		/// Applies OAuth authorization to the specified request.
 		/// This method is applied automatically to outbound requests that use this message handler instance.
 		/// However this method may be useful for obtaining the OAuth 1.0 signature without actually sending the request.
 		/// </summary>
+		/// <param name="request">The request.</param>
 		public void ApplyAuthorization(HttpRequestMessage request) {
 			Requires.NotNull(request, "request");
 
@@ -173,14 +185,6 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="signedPayload">The payload to calculate the signature for.</param>
 		/// <returns>The signature.</returns>
 		protected abstract byte[] Sign(byte[] signedPayload);
-
-		/// <summary>
-		/// Gets the signature method to include in the oauth_signature_method parameter.
-		/// </summary>
-		/// <value>
-		/// The signature method.
-		/// </value>
-		protected abstract string SignatureMethod { get; }
 
 		/// <summary>
 		/// Gets the OAuth 1.0 signature to apply to the specified request.
@@ -228,6 +232,8 @@ namespace DotNetOpenAuth.OAuth {
 		/// <summary>
 		/// Returns the OAuth 1.0 timestamp for the current time.
 		/// </summary>
+		/// <param name="dateTime">The date time.</param>
+		/// <returns>A string representation of the number of seconds since "the epoch".</returns>
 		private static string ToTimeStamp(DateTime dateTime) {
 			Requires.Argument(dateTime.Kind == DateTimeKind.Utc, "dateTime", "UTC time required");
 			TimeSpan ts = dateTime - epoch;
@@ -239,7 +245,9 @@ namespace DotNetOpenAuth.OAuth {
 		/// Constructs the "Base String URI" as described in http://tools.ietf.org/html/rfc5849#section-3.4.1.2
 		/// </summary>
 		/// <param name="requestUri">The request URI.</param>
-		/// <returns>The string to include in the signature base string.</returns>
+		/// <returns>
+		/// The string to include in the signature base string.
+		/// </returns>
 		private static string GetBaseStringUri(Uri requestUri) {
 			Requires.NotNull(requestUri, "requestUri");
 
@@ -253,7 +261,10 @@ namespace DotNetOpenAuth.OAuth {
 		/// Constructs the "Signature Base String" as described in http://tools.ietf.org/html/rfc5849#section-3.4.1
 		/// </summary>
 		/// <param name="request">The HTTP request message.</param>
-		/// <returns>The signature base string.</returns>
+		/// <param name="oauthParameters">The oauth parameters.</param>
+		/// <returns>
+		/// The signature base string.
+		/// </returns>
 		private string ConstructSignatureBaseString(HttpRequestMessage request, NameValueCollection oauthParameters) {
 			Requires.NotNull(request, "request");
 			Requires.NotNull(oauthParameters, "oauthParameters");

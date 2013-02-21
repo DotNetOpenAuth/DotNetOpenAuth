@@ -25,6 +25,16 @@ namespace DotNetOpenAuth.OAuth {
 		public X509Certificate2 SigningCertificate { get; set; }
 
 		/// <summary>
+		/// Gets the signature method to include in the oauth_signature_method parameter.
+		/// </summary>
+		/// <value>
+		/// The signature method.
+		/// </value>
+		protected override string SignatureMethod {
+			get { return "RSA-SHA1"; }
+		}
+
+		/// <summary>
 		/// Calculates the signature for the specified buffer.
 		/// </summary>
 		/// <param name="signedPayload">The payload to calculate the signature for.</param>
@@ -36,16 +46,6 @@ namespace DotNetOpenAuth.OAuth {
 			var provider = (RSACryptoServiceProvider)this.SigningCertificate.PrivateKey;
 			byte[] binarySignature = provider.SignData(signedPayload, "SHA1");
 			return binarySignature;
-		}
-
-		/// <summary>
-		/// Gets the signature method to include in the oauth_signature_method parameter.
-		/// </summary>
-		/// <value>
-		/// The signature method.
-		/// </value>
-		protected override string SignatureMethod {
-			get { return "RSA-SHA1"; }
 		}
 	}
 }
