@@ -96,14 +96,13 @@ namespace DotNetOpenAuth.AspNet.Clients {
 
 			var profileRequestUrl = new Uri("https://api.twitter.com/1/users/show.xml?user_id="
 									   + MessagingUtilities.EscapeUriDataStringRfc3986(userId));
-			var profileEndpoint = new MessageReceivingEndpoint(profileRequestUrl, HttpDeliveryMethods.GetRequest);
-			HttpRequestMessage request = await this.WebWorker.PrepareAuthorizedRequestAsync(profileEndpoint, accessToken, cancellationToken);
+			var authorizingHandler = this.WebWorker.CreateMessageHandler(accessToken);
 
 			var extraData = new Dictionary<string, string>();
 			extraData.Add("accesstoken", accessToken);
 			try {
-				using (var httpClient = new HttpClient()) {
-					using (HttpResponseMessage profileResponse = await httpClient.SendAsync(request)) {
+				using (var httpClient = new HttpClient(authorizingHandler)) {
+					using (HttpResponseMessage profileResponse = await httpClient.GetAsync(profileRequestUrl, cancellationToken)) {
 						using (Stream responseStream = await profileResponse.Content.ReadAsStreamAsync()) {
 							XDocument document = LoadXDocumentFromStream(responseStream);
 							extraData.AddDataIfNotEmpty(document, "name");

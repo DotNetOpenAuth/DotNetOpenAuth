@@ -128,6 +128,31 @@ namespace DotNetOpenAuth.OAuth {
 		public int NonceLength { get; set; }
 
 		/// <summary>
+		/// Applies OAuth authorization to the specified request.
+		/// This method is applied automatically to outbound requests that use this message handler instance.
+		/// However this method may be useful for obtaining the OAuth 1.0 signature without actually sending the request.
+		/// </summary>
+		public void ApplyOAuthParameters(HttpRequestMessage request) {
+			Requires.NotNull(request, "request");
+
+			var oauthParameters = this.GetOAuthParameters();
+			string signature = this.GetSignature(request, oauthParameters);
+			oauthParameters.Add("oauth_signature", signature);
+
+			// Add parameters and signature to request.
+			switch (this.Location) {
+				case OAuthParametersLocation.AuthorizationHttpHeader:
+					request.Headers.Authorization = new AuthenticationHeaderValue(Protocol.AuthorizationHeaderScheme, MessagingUtilities.AssembleAuthorizationHeader(oauthParameters.AsKeyValuePairs()));
+					break;
+				case OAuthParametersLocation.QueryString:
+					var uriBuilder = new UriBuilder(request.RequestUri);
+					uriBuilder.AppendQueryArgs(oauthParameters.AsKeyValuePairs());
+					request.RequestUri = uriBuilder.Uri;
+					break;
+			}
+		}
+
+		/// <summary>
 		/// Sends an HTTP request to the inner handler to send to the server as an asynchronous operation.
 		/// </summary>
 		/// <param name="request">The HTTP request message to send to the server.</param>
@@ -308,29 +333,6 @@ namespace DotNetOpenAuth.OAuth {
 			}
 
 			return normalizedParameterString.ToString();
-		}
-
-		/// <summary>
-		/// Applies OAuth authorization to the specified request.
-		/// </summary>
-		private void ApplyOAuthParameters(HttpRequestMessage request) {
-			Requires.NotNull(request, "request");
-
-			var oauthParameters = this.GetOAuthParameters();
-			string signature = this.GetSignature(request, oauthParameters);
-			oauthParameters.Add("oauth_signature", signature);
-
-			// Add parameters and signature to request.
-			switch (this.Location) {
-				case OAuthParametersLocation.AuthorizationHttpHeader:
-					request.Headers.Authorization = new AuthenticationHeaderValue(Protocol.AuthorizationHeaderScheme, MessagingUtilities.AssembleAuthorizationHeader(oauthParameters.AsKeyValuePairs()));
-					break;
-				case OAuthParametersLocation.QueryString:
-					var uriBuilder = new UriBuilder(request.RequestUri);
-					uriBuilder.AppendQueryArgs(oauthParameters.AsKeyValuePairs());
-					request.RequestUri = uriBuilder.Uri;
-					break;
-			}
 		}
 
 		/// <summary>

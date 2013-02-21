@@ -95,12 +95,10 @@ namespace DotNetOpenAuth.AspNet.Clients {
 
 			string accessToken = response.AccessToken;
 
-			var profileEndpoint = new MessageReceivingEndpoint(ProfileRequestUrl, HttpDeliveryMethods.GetRequest);
-			HttpRequestMessage request = await this.WebWorker.PrepareAuthorizedRequestAsync(profileEndpoint, accessToken, cancellationToken);
-
+			var authorizingHandler = this.WebWorker.CreateMessageHandler(accessToken);
 			try {
-				using (var httpClient = new HttpClient()) {
-					using (HttpResponseMessage profileResponse = await httpClient.SendAsync(request, cancellationToken)) {
+				using (var httpClient = new HttpClient(authorizingHandler)) {
+					using (HttpResponseMessage profileResponse = await httpClient.GetAsync(ProfileRequestUrl, cancellationToken)) {
 						using (Stream responseStream = await profileResponse.Content.ReadAsStreamAsync()) {
 							XDocument document = LoadXDocumentFromStream(responseStream);
 							string userId = document.Root.Element("id").Value;

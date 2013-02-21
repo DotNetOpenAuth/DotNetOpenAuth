@@ -55,18 +55,18 @@ namespace DotNetOpenAuth.ApplicationBlock {
 		/// <summary>
 		/// The URI to get a user's favorites.
 		/// </summary>
-		private static readonly MessageReceivingEndpoint GetFavoritesEndpoint = new MessageReceivingEndpoint("http://twitter.com/favorites.xml", HttpDeliveryMethods.GetRequest);
+		private static readonly Uri GetFavoritesEndpoint = new Uri("http://twitter.com/favorites.xml");
 
 		/// <summary>
 		/// The URI to get the data on the user's home page.
 		/// </summary>
-		private static readonly MessageReceivingEndpoint GetFriendTimelineStatusEndpoint = new MessageReceivingEndpoint("https://api.twitter.com/1.1/statuses/home_timeline.json", HttpDeliveryMethods.GetRequest);
+		private static readonly Uri GetFriendTimelineStatusEndpoint = new Uri("https://api.twitter.com/1.1/statuses/home_timeline.json");
 
-		private static readonly MessageReceivingEndpoint UpdateProfileBackgroundImageEndpoint = new MessageReceivingEndpoint("http://twitter.com/account/update_profile_background_image.xml", HttpDeliveryMethods.PostRequest | HttpDeliveryMethods.AuthorizationHeaderRequest);
+		private static readonly Uri UpdateProfileBackgroundImageEndpoint = new Uri("http://twitter.com/account/update_profile_background_image.xml");
 
-		private static readonly MessageReceivingEndpoint UpdateProfileImageEndpoint = new MessageReceivingEndpoint("http://twitter.com/account/update_profile_image.xml", HttpDeliveryMethods.PostRequest | HttpDeliveryMethods.AuthorizationHeaderRequest);
+		private static readonly Uri UpdateProfileImageEndpoint = new Uri("http://twitter.com/account/update_profile_image.xml");
 
-		private static readonly MessageReceivingEndpoint VerifyCredentialsEndpoint = new MessageReceivingEndpoint("http://api.twitter.com/1/account/verify_credentials.xml", HttpDeliveryMethods.GetRequest | HttpDeliveryMethods.AuthorizationHeaderRequest);
+		private static readonly Uri VerifyCredentialsEndpoint = new Uri("http://api.twitter.com/1/account/verify_credentials.xml");
 
 		/// <summary>
 		/// The consumer used for the Sign in to Twitter feature.
@@ -83,7 +83,7 @@ namespace DotNetOpenAuth.ApplicationBlock {
 		/// </summary>
 		static TwitterConsumer() {
 			// Twitter can't handle the Expect 100 Continue HTTP header. 
-			ServicePointManager.FindServicePoint(GetFavoritesEndpoint.Location).Expect100Continue = false;
+			ServicePointManager.FindServicePoint(GetFavoritesEndpoint).Expect100Continue = false;
 		}
 
 		/// <summary>
@@ -136,7 +136,7 @@ namespace DotNetOpenAuth.ApplicationBlock {
 		public static async Task<JArray> GetUpdatesAsync(
 			ConsumerBase twitter, string accessToken, CancellationToken cancellationToken = default(CancellationToken)) {
 			using (var httpClient = twitter.CreateHttpClient(accessToken)) {
-				using (var response = await httpClient.GetAsync(GetFriendTimelineStatusEndpoint.Location, cancellationToken)) {
+				using (var response = await httpClient.GetAsync(GetFriendTimelineStatusEndpoint, cancellationToken)) {
 					response.EnsureSuccessStatusCode();
 					string jsonString = await response.Content.ReadAsStringAsync();
 					var json = JArray.Parse(jsonString);
@@ -146,9 +146,9 @@ namespace DotNetOpenAuth.ApplicationBlock {
 		}
 
 		public static async Task<XDocument> GetFavorites(ConsumerBase twitter, string accessToken, CancellationToken cancellationToken = default(CancellationToken)) {
-			var request = await twitter.PrepareAuthorizedRequestAsync(GetFavoritesEndpoint, accessToken, cancellationToken);
-			using (var httpClient = twitter.Channel.HostFactories.CreateHttpClient()) {
-				using (HttpResponseMessage response = await httpClient.SendAsync(request)) {
+			using (var httpClient = twitter.CreateHttpClient(accessToken)) {
+				using (HttpResponseMessage response = await httpClient.GetAsync(GetFavoritesEndpoint, cancellationToken)) {
+					response.EnsureSuccessStatusCode();
 					return XDocument.Parse(await response.Content.ReadAsStringAsync());
 				}
 			}
@@ -157,14 +157,15 @@ namespace DotNetOpenAuth.ApplicationBlock {
 		public static async Task<XDocument> UpdateProfileBackgroundImageAsync(ConsumerBase twitter, string accessToken, string image, bool tile, CancellationToken cancellationToken) {
 			var imageAttachment = new StreamContent(File.OpenRead(image));
 			imageAttachment.Headers.ContentType = new MediaTypeHeaderValue("image/" + Path.GetExtension(image).Substring(1).ToLowerInvariant());
-			var parts = new List<MultipartContentMember> {
-				new MultipartContentMember(imageAttachment, "image"),
-				new MultipartContentMember(new StringContent(tile.ToString().ToLowerInvariant()), "tile"),
-			};
-			HttpRequestMessage request = await twitter.PrepareAuthorizedRequestAsync(UpdateProfileBackgroundImageEndpoint, accessToken, parts, cancellationToken);
+			HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, UpdateProfileBackgroundImageEndpoint);
+			var content = new MultipartFormDataContent();
+			content.Add(imageAttachment, "image");
+			content.Add(new StringContent(tile.ToString().ToLowerInvariant()), "tile");
+			request.Content = content;
 			request.Headers.ExpectContinue = false;
-			using (var httpClient = twitter.Channel.HostFactories.CreateHttpClient()) {
-				using (HttpResponseMessage response = await httpClient.SendAsync(request)) {
+			using (var httpClient = twitter.CreateHttpClient(accessToken)) {
+				using (HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken)) {
+					response.EnsureSuccessStatusCode();
 					string responseString = await response.Content.ReadAsStringAsync();
 					return XDocument.Parse(responseString);
 				}
@@ -179,13 +180,13 @@ namespace DotNetOpenAuth.ApplicationBlock {
 		public static async Task<XDocument> UpdateProfileImageAsync(ConsumerBase twitter, string accessToken, Stream image, string contentType, CancellationToken cancellationToken = default(CancellationToken)) {
 			var imageAttachment = new StreamContent(image);
 			imageAttachment.Headers.ContentType = new MediaTypeHeaderValue(contentType);
-			var parts = new List<MultipartContentMember> {
-				new MultipartContentMember(imageAttachment, "image", "twitterPhoto"),
-			};
-
-			HttpRequestMessage request = await twitter.PrepareAuthorizedRequestAsync(UpdateProfileImageEndpoint, accessToken, parts, cancellationToken);
-			using (var httpClient = twitter.Channel.HostFactories.CreateHttpClient()) {
-				using (HttpResponseMessage response = await httpClient.SendAsync(request)) {
+			HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, UpdateProfileImageEndpoint);
+			var content = new MultipartFormDataContent();
+			content.Add(imageAttachment, "image", "twitterPhoto");
+			request.Content = content;
+			using (var httpClient = twitter.CreateHttpClient(accessToken)) {
+				using (HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken)) {
+					response.EnsureSuccessStatusCode();
 					string responseString = await response.Content.ReadAsStringAsync();
 					return XDocument.Parse(responseString);
 				}
@@ -193,9 +194,9 @@ namespace DotNetOpenAuth.ApplicationBlock {
 		}
 
 		public static async Task<XDocument> VerifyCredentialsAsync(ConsumerBase twitter, string accessToken, CancellationToken cancellationToken = default(CancellationToken)) {
-			var request = await twitter.PrepareAuthorizedRequestAsync(VerifyCredentialsEndpoint, accessToken, cancellationToken);
-			using (var httpClient = twitter.Channel.HostFactories.CreateHttpClient()) {
-				using (var response = await httpClient.SendAsync(request)) {
+			using (var httpClient = twitter.CreateHttpClient(accessToken)) {
+				using (var response = await httpClient.GetAsync(VerifyCredentialsEndpoint, cancellationToken)) {
+					response.EnsureSuccessStatusCode();
 					using (var stream = await response.Content.ReadAsStreamAsync()) {
 						return XDocument.Load(XmlReader.Create(stream));
 					}

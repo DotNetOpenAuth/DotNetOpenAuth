@@ -50,19 +50,23 @@ namespace DotNetOpenAuth.AspNet.Clients {
 
 		#endregion
 
+		/// <summary>
+		/// Gets the DotNetOpenAuth <see cref="WebConsumer"/> instance that can be used to make OAuth 1.0 authorized HTTP requests.
+		/// </summary>
+		public WebConsumer Consumer {
+			get { return this.webConsumer; }
+		}
+
 		#region Public Methods and Operators
 
 		/// <summary>
-		/// The prepare authorized request.
+		/// Creates an HTTP message handler that authorizes outgoing web requests.
 		/// </summary>
-		/// <param name="profileEndpoint">The profile endpoint.</param>
 		/// <param name="accessToken">The access token.</param>
-		/// <param name="cancellationToken">The cancellation token.</param>
-		/// <returns>
-		/// An HTTP request.
-		/// </returns>
-		public Task<HttpRequestMessage> PrepareAuthorizedRequestAsync(MessageReceivingEndpoint profileEndpoint, string accessToken, CancellationToken cancellationToken = default(CancellationToken)) {
-			return this.webConsumer.PrepareAuthorizedRequestAsync(profileEndpoint, accessToken, cancellationToken);
+		public HttpMessageHandler CreateMessageHandler(string accessToken) {
+			Requires.NotNullOrEmpty(accessToken, "accessToken");
+
+			return this.Consumer.CreateMessageHandler(accessToken);
 		}
 
 		/// <summary>

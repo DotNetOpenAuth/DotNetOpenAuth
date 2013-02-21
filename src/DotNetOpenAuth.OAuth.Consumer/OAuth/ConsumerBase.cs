@@ -111,6 +111,18 @@ namespace DotNetOpenAuth.OAuth {
 		}
 
 		/// <summary>
+		/// Creates the HTTP client.
+		/// </summary>
+		/// <param name="innerHandler">The inner handler that actually sends the HTTP message on the network.</param>
+		/// <returns>The HttpClient to use.</returns>
+		public HttpClient CreateHttpClient(OAuth1HttpMessageHandlerBase innerHandler) {
+			Requires.NotNull(innerHandler, "innerHandler");
+
+			var client = this.Channel.HostFactories.CreateHttpClient(innerHandler);
+			return client;
+		}
+
+		/// <summary>
 		/// Obtains an access token for a new account at the Service Provider via 2-legged OAuth.
 		/// </summary>
 		/// <param name="requestParameters">Any applicable parameters to include in the query string of the token request.</param>
@@ -137,84 +149,6 @@ namespace DotNetOpenAuth.OAuth {
 			var grantAccess = await this.Channel.RequestAsync<AuthorizedTokenResponse>(requestAccess, cancellationToken);
 			this.TokenManager.ExpireRequestTokenAndStoreNewAccessToken(this.ConsumerKey, requestTokenResponse.RequestToken, grantAccess.AccessToken, grantAccess.TokenSecret);
 			return grantAccess.AccessToken;
-		}
-
-		/// <summary>
-		/// Creates a web request prepared with OAuth authorization 
-		/// that may be further tailored by adding parameters by the caller.
-		/// </summary>
-		/// <param name="endpoint">The URL and method on the Service Provider to send the request to.</param>
-		/// <param name="accessToken">The access token that permits access to the protected resource.</param>
-		/// <param name="cancellationToken">The cancellation token.</param>
-		/// <returns>The initialized WebRequest object.</returns>
-		public Task<HttpRequestMessage> PrepareAuthorizedRequestAsync(MessageReceivingEndpoint endpoint, string accessToken, CancellationToken cancellationToken = default(CancellationToken)) {
-			Requires.NotNull(endpoint, "endpoint");
-			Requires.NotNullOrEmpty(accessToken, "accessToken");
-
-			return this.PrepareAuthorizedRequestAsync(endpoint, accessToken, EmptyDictionary<string, string>.Instance, cancellationToken);
-		}
-
-		/// <summary>
-		/// Creates a web request prepared with OAuth authorization
-		/// that may be further tailored by adding parameters by the caller.
-		/// </summary>
-		/// <param name="endpoint">The URL and method on the Service Provider to send the request to.</param>
-		/// <param name="accessToken">The access token that permits access to the protected resource.</param>
-		/// <param name="extraData">Extra parameters to include in the message.  Must not be null, but may be empty.</param>
-		/// <param name="cancellationToken">The cancellation token.</param>
-		/// <returns>The initialized WebRequest object.</returns>
-		public Task<HttpRequestMessage> PrepareAuthorizedRequestAsync(MessageReceivingEndpoint endpoint, string accessToken, IDictionary<string, string> extraData, CancellationToken cancellationToken = default(CancellationToken)) {
-			Requires.NotNull(endpoint, "endpoint");
-			Requires.NotNullOrEmpty(accessToken, "accessToken");
-			Requires.NotNull(extraData, "extraData");
-
-			IDirectedProtocolMessage message = this.CreateAuthorizingMessage(endpoint, accessToken);
-			foreach (var pair in extraData) {
-				message.ExtraData.Add(pair);
-			}
-
-			return this.OAuthChannel.InitializeRequestAsync(message, cancellationToken);
-		}
-
-		/// <summary>
-		/// Prepares an authorized request that carries an HTTP multi-part POST, allowing for binary data.
-		/// </summary>
-		/// <param name="endpoint">The URL and method on the Service Provider to send the request to.</param>
-		/// <param name="accessToken">The access token that permits access to the protected resource.</param>
-		/// <param name="binaryData">Extra parameters to include in the message.  Must not be null, but may be empty.</param>
-		/// <param name="cancellationToken">The cancellation token.</param>
-		/// <returns>The initialized WebRequest object.</returns>
-		public Task<HttpRequestMessage> PrepareAuthorizedRequestAsync(MessageReceivingEndpoint endpoint, string accessToken, IEnumerable<MultipartContentMember> binaryData, CancellationToken cancellationToken = default(CancellationToken)) {
-			Requires.NotNull(endpoint, "endpoint");
-			Requires.NotNullOrEmpty(accessToken, "accessToken");
-			Requires.NotNull(binaryData, "binaryData");
-
-			AccessProtectedResourceRequest message = this.CreateAuthorizingMessage(endpoint, accessToken);
-			message.BinaryData.AddRange(binaryData);
-
-			return this.OAuthChannel.InitializeRequestAsync(message, cancellationToken);
-		}
-
-		/// <summary>
-		/// Prepares an HTTP request that has OAuth authorization already attached to it.
-		/// </summary>
-		/// <param name="message">The OAuth authorization message to attach to the HTTP request.</param>
-		/// <param name="cancellationToken">The cancellation token.</param>
-		/// <returns>
-		/// The HttpWebRequest that can be used to send the HTTP request to the remote service provider.
-		/// </returns>
-		/// <remarks>
-		/// If <see cref="IDirectedProtocolMessage.HttpMethods"/> property on the
-		/// <paramref name="message"/> has the
-		/// <see cref="HttpDeliveryMethods.AuthorizationHeaderRequest"/> flag set and
-		/// <see cref="ITamperResistantOAuthMessage.HttpMethod"/> is set to an HTTP method
-		/// that includes an entity body, the request stream is automatically sent
-		/// if and only if the <see cref="IMessage.ExtraData"/> dictionary is non-empty.
-		/// </remarks>
-		[SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Justification = "Type of parameter forces the method to apply only to specific scenario.")]
-		public Task<HttpRequestMessage> PrepareAuthorizedRequestAsync(AccessProtectedResourceRequest message, CancellationToken cancellationToken = default(CancellationToken)) {
-			Requires.NotNull(message, "message");
-			return this.OAuthChannel.InitializeRequestAsync(message, cancellationToken);
 		}
 
 		#region IDisposable Members

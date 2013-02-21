@@ -4,6 +4,7 @@
 	using System.Globalization;
 	using System.Linq;
 	using System.Net;
+	using System.Net.Http;
 	using System.ServiceModel;
 	using System.ServiceModel.Channels;
 	using System.ServiceModel.Security;
@@ -83,8 +84,13 @@
 			if (accessToken == null) {
 				throw new InvalidOperationException("No access token!");
 			}
-			WebConsumer consumer = this.CreateConsumer();
-			var httpRequest = await consumer.PrepareAuthorizedRequestAsync(serviceEndpoint, accessToken, Response.ClientDisconnectedToken);
+
+			var httpRequest = new HttpRequestMessage(HttpMethod.Post, client.Endpoint.Address.Uri);
+			using (WebConsumer consumer = this.CreateConsumer()) {
+				using (var handler = consumer.CreateMessageHandler(accessToken)) {
+					handler.ApplyOAuthParameters(httpRequest);
+				}
+			}
 
 			HttpRequestMessageProperty httpDetails = new HttpRequestMessageProperty();
 			httpDetails.Headers[HttpRequestHeader.Authorization] = httpRequest.Headers.Authorization.ToString();

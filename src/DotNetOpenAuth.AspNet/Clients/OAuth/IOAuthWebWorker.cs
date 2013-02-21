@@ -14,21 +14,14 @@ namespace DotNetOpenAuth.AspNet.Clients {
 	using DotNetOpenAuth.OAuth.Messages;
 
 	/// <summary>
-	/// The io auth web worker.
+	/// The interface implemented by all OAuth web authentication modules in this assembly.
 	/// </summary>
 	public interface IOAuthWebWorker {
-		#region Public Methods and Operators
-
 		/// <summary>
-		/// The prepare authorized request.
+		/// Creates an HTTP message handler that authorizes outgoing web requests.
 		/// </summary>
-		/// <param name="profileEndpoint">The profile endpoint.</param>
 		/// <param name="accessToken">The access token.</param>
-		/// <param name="cancellationToken">The cancellation token.</param>
-		/// <returns>
-		/// An HTTP request.
-		/// </returns>
-		Task<HttpRequestMessage> PrepareAuthorizedRequestAsync(MessageReceivingEndpoint profileEndpoint, string accessToken, CancellationToken cancellationToken = default(CancellationToken));
+		HttpMessageHandler CreateMessageHandler(string accessToken);
 
 		/// <summary>
 		/// The process user authorization.
@@ -46,7 +39,5 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>The response message</returns>
 		Task<HttpResponseMessage> RequestAuthenticationAsync(Uri callback, CancellationToken cancellationToken = default(CancellationToken));
-
-		#endregion
 	}
 }

@@ -66,7 +66,7 @@ namespace DotNetOpenAuth.ApplicationBlock
 		/// <summary>
 		/// The URI to get contacts once authorization is granted.
 		/// </summary>
-		private static readonly MessageReceivingEndpoint GetContactsEndpoint = new MessageReceivingEndpoint("http://www.google.com/m8/feeds/contacts/default/full/", HttpDeliveryMethods.GetRequest);
+		private static readonly Uri GetContactsEndpoint = new Uri("http://www.google.com/m8/feeds/contacts/default/full/");
 
 		/// <summary>
 		/// The many specific authorization scopes Google offers.
@@ -237,17 +237,16 @@ namespace DotNetOpenAuth.ApplicationBlock
 				throw new ArgumentNullException("consumer");
 			}
 
-			var extraData = new Dictionary<string, string>() {
-				{ "start-index", startIndex.ToString(CultureInfo.InvariantCulture) },
-				{ "max-results", maxResults.ToString(CultureInfo.InvariantCulture) },
-			};
-			var request = await consumer.PrepareAuthorizedRequestAsync(GetContactsEndpoint, accessToken, extraData, cancellationToken);
-
 			// Enable gzip compression.  Google only compresses the response for recognized user agent headers. - Mike Lim
 			var handler = new HttpClientHandler { AutomaticDecompression = DecompressionMethods.GZip };
-			request.Headers.UserAgent.Add(ProductInfoHeaderValue.Parse("Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/534.16 (KHTML, like Gecko) Chrome/10.0.648.151 Safari/534.16"));
-
-			using (var httpClient = consumer.Channel.HostFactories.CreateHttpClient(handler)) {
+			using (var httpClient = consumer.CreateHttpClient(accessToken, handler)) {
+				var request = new HttpRequestMessage(HttpMethod.Get, GetContactsEndpoint);
+				request.Content = new FormUrlEncodedContent(
+					new Dictionary<string, string>() {
+						{ "start-index", startIndex.ToString(CultureInfo.InvariantCulture) },
+						{ "max-results", maxResults.ToString(CultureInfo.InvariantCulture) },
+					});
+				request.Headers.UserAgent.Add(ProductInfoHeaderValue.Parse("Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/534.16 (KHTML, like Gecko) Chrome/10.0.648.151 Safari/534.16"));
 				using (var response = await httpClient.SendAsync(request, cancellationToken)) {
 					string body = await response.Content.ReadAsStringAsync();
 					XDocument result = XDocument.Parse(body);
@@ -283,11 +282,10 @@ namespace DotNetOpenAuth.ApplicationBlock
 			xw.Flush();
 			ms.Seek(0, SeekOrigin.Begin);
 
-			var request = await consumer.PrepareAuthorizedRequestAsync(new MessageReceivingEndpoint(feedUrl, HttpDeliveryMethods.PostRequest | HttpDeliveryMethods.AuthorizationHeaderRequest), accessToken, cancellationToken);
+			var request = new HttpRequestMessage(HttpMethod.Post, feedUrl);
 			request.Content = new StreamContent(ms);
 			request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/atom+xml");
-			request.Method = HttpMethod.Post;
-			using (var httpClient = consumer.Channel.HostFactories.CreateHttpClient()) {
+			using (var httpClient = consumer.CreateHttpClient(accessToken)) {
 				using (var response = await httpClient.SendAsync(request, cancellationToken)) {
 					if (response.StatusCode == HttpStatusCode.Created) {
 						// Success

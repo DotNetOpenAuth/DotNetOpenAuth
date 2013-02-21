@@ -137,9 +137,15 @@
 		private async void beginButton_Click(object sender, RoutedEventArgs e) {
 			try {
 				var service = new ServiceProviderDescription {
-					RequestTokenEndpoint = new MessageReceivingEndpoint(this.requestTokenUrlBox.Text, this.requestTokenHttpMethod.SelectedIndex == 0 ? HttpDeliveryMethods.GetRequest : HttpDeliveryMethods.PostRequest),
+					RequestTokenEndpoint =
+						new MessageReceivingEndpoint(
+							this.requestTokenUrlBox.Text,
+							this.requestTokenHttpMethod.SelectedIndex == 0 ? HttpDeliveryMethods.GetRequest : HttpDeliveryMethods.PostRequest),
 					UserAuthorizationEndpoint = new MessageReceivingEndpoint(this.authorizeUrlBox.Text, HttpDeliveryMethods.GetRequest),
-					AccessTokenEndpoint = new MessageReceivingEndpoint(this.accessTokenUrlBox.Text, this.accessTokenHttpMethod.SelectedIndex == 0 ? HttpDeliveryMethods.GetRequest : HttpDeliveryMethods.PostRequest),
+					AccessTokenEndpoint =
+						new MessageReceivingEndpoint(
+							this.accessTokenUrlBox.Text,
+							this.accessTokenHttpMethod.SelectedIndex == 0 ? HttpDeliveryMethods.GetRequest : HttpDeliveryMethods.PostRequest),
 					TamperProtectionElements = new ITamperProtectionChannelBindingElement[] { new HmacSha1SigningBindingElement() },
 					ProtocolVersion = this.oauthVersion.SelectedIndex == 0 ? ProtocolVersion.V10 : ProtocolVersion.V10a,
 				};
@@ -158,9 +164,7 @@
 					var authorizationResponse = await consumer.ProcessUserAuthorizationAsync(requestToken, null);
 					accessToken = authorizationResponse.AccessToken;
 				} else {
-					var authorizePopup = new Authorize(
-						consumer,
-						c => c.RequestUserAuthorizationAsync(null, null));
+					var authorizePopup = new Authorize(consumer, c => c.RequestUserAuthorizationAsync(null, null));
 					authorizePopup.Owner = this;
 					bool? result = authorizePopup.ShowDialog();
 					if (result.HasValue && result.Value) {
@@ -169,15 +173,16 @@
 						return;
 					}
 				}
-				HttpDeliveryMethods resourceHttpMethod = this.resourceHttpMethodList.SelectedIndex < 2 ? HttpDeliveryMethods.GetRequest : HttpDeliveryMethods.PostRequest;
-				if (this.resourceHttpMethodList.SelectedIndex == 1) {
-					resourceHttpMethod |= HttpDeliveryMethods.AuthorizationHeaderRequest;
-				}
-				var resourceEndpoint = new MessageReceivingEndpoint(this.resourceUrlBox.Text, resourceHttpMethod);
-				var request = await consumer.PrepareAuthorizedRequestAsync(resourceEndpoint, accessToken);
-				using (var httpClient = new HttpClient()) {
-					using (var resourceResponse = await httpClient.SendAsync(request)) {
-						this.resultsBox.Text = await resourceResponse.Content.ReadAsStringAsync();
+				HttpMethod resourceHttpMethod = this.resourceHttpMethodList.SelectedIndex < 2 ? HttpMethod.Get : HttpMethod.Post;
+				using (var handler = consumer.CreateMessageHandler(accessToken)) {
+					handler.Location = this.resourceHttpMethodList.SelectedIndex == 1
+						                   ? OAuth1HttpMessageHandlerBase.OAuthParametersLocation.AuthorizationHttpHeader
+						                   : OAuth1HttpMessageHandlerBase.OAuthParametersLocation.QueryString;
+					using (var httpClient = consumer.CreateHttpClient(handler)) {
+						var request = new HttpRequestMessage(resourceHttpMethod, this.resourceUrlBox.Text);
+						using (var resourceResponse = await httpClient.SendAsync(request)) {
+							this.resultsBox.Text = await resourceResponse.Content.ReadAsStringAsync();
+						}
 					}
 				}
 			} catch (DotNetOpenAuth.Messaging.ProtocolException ex) {
