@@ -183,6 +183,25 @@ namespace DotNetOpenAuth.OAuth {
 		protected abstract string SignatureMethod { get; }
 
 		/// <summary>
+		/// Gets the OAuth 1.0 signature to apply to the specified request.
+		/// </summary>
+		/// <param name="request">The outbound HTTP request.</param>
+		/// <param name="oauthParameters">The oauth parameters.</param>
+		/// <returns>
+		/// The value for the "oauth_signature" parameter.
+		/// </returns>
+		protected virtual string GetSignature(HttpRequestMessage request, NameValueCollection oauthParameters) {
+			Requires.NotNull(request, "request");
+			Requires.NotNull(oauthParameters, "oauthParameters");
+
+			string signatureBaseString = this.ConstructSignatureBaseString(request, oauthParameters);
+			byte[] signatureBaseStringBytes = Encoding.ASCII.GetBytes(signatureBaseString);
+			byte[] signatureBytes = this.Sign(signatureBaseStringBytes);
+			string signatureString = Convert.ToBase64String(signatureBytes);
+			return signatureString;
+		}
+
+		/// <summary>
 		/// Gets the "ConsumerSecret&amp;AccessTokenSecret" string, allowing either property to be empty or null.
 		/// </summary>
 		/// <returns>The concatenated string.</returns>
@@ -333,25 +352,6 @@ namespace DotNetOpenAuth.OAuth {
 			}
 
 			return normalizedParameterString.ToString();
-		}
-
-		/// <summary>
-		/// Gets the OAuth 1.0 signature to apply to the specified request.
-		/// </summary>
-		/// <param name="request">The outbound HTTP request.</param>
-		/// <param name="oauthParameters">The oauth parameters.</param>
-		/// <returns>
-		/// The value for the "oauth_signature" parameter.
-		/// </returns>
-		private string GetSignature(HttpRequestMessage request, NameValueCollection oauthParameters) {
-			Requires.NotNull(request, "request");
-			Requires.NotNull(oauthParameters, "oauthParameters");
-
-			string signatureBaseString = this.ConstructSignatureBaseString(request, oauthParameters);
-			byte[] signatureBaseStringBytes = Encoding.ASCII.GetBytes(signatureBaseString);
-			byte[] signatureBytes = this.Sign(signatureBaseStringBytes);
-			string signatureString = Convert.ToBase64String(signatureBytes);
-			return signatureString;
 		}
 	}
 }
