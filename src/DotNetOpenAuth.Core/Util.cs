@@ -111,7 +111,7 @@ namespace DotNetOpenAuth {
 					foreach (var pair in pairs) {
 						var key = pair.Key.ToString();
 						string value = pair.Value.ToString();
-						if (messageDictionary != null && messageDictionary.Description.Mapping[key].IsSecuritySensitive) {
+						if (messageDictionary != null && messageDictionary.Description.Mapping.ContainsKey(key) && messageDictionary.Description.Mapping[key].IsSecuritySensitive) {
 							value = "********";
 						}
 
