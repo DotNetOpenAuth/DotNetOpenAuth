@@ -87,9 +87,11 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// </param>
 		[SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings",
 			Justification = "We don't have a Uri object handy.")]
-		public virtual void RequestAuthentication(HttpContextBase context, Uri returnUrl) {
+        public virtual void RequestAuthentication(HttpContextBase context, Uri returnUrl, StateDictionary state)
+        {
 			Requires.NotNull(returnUrl, "returnUrl");
-
+            Requires.NotNull(state, "state");
+            returnUrl = returnUrl.AttachQueryStringParameter("state", state.ToEncodedString());
 			var realm = new Realm(returnUrl.GetComponents(UriComponents.SchemeAndServer, UriFormat.Unescaped));
 			IAuthenticationRequest request = RelyingParty.CreateRequest(this.providerIdentifier, realm, returnUrl);
 

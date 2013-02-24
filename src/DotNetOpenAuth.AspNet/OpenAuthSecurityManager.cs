@@ -110,7 +110,8 @@ namespace DotNetOpenAuth.AspNet {
 		/// The provider name, if one is available.
 		/// </returns>
 		public static string GetProviderName(HttpContextBase context) {
-			return context.Request.QueryString[ProviderQueryStringName];
+            StateDictionary state;
+            return StateDictionary.TryParse(context.Request.QueryString["state"], out state) ? state[ProviderQueryStringName] : string.Empty;
 		}
 
 		/// <summary>
@@ -144,7 +145,12 @@ namespace DotNetOpenAuth.AspNet {
 		/// <param name="returnUrl">
 		/// The return url after user is authenticated. 
 		/// </param>
-		public void RequestAuthentication(string returnUrl) {
+		/// <param name="state">
+		/// Additional state to be passed on the return url.
+		/// </param>
+		public void RequestAuthentication(string returnUrl, StateDictionary state = null) {
+		    state = state ?? new StateDictionary();
+
 			// convert returnUrl to an absolute path
 			Uri uri;
 			if (!string.IsNullOrEmpty(returnUrl)) {
@@ -156,13 +162,12 @@ namespace DotNetOpenAuth.AspNet {
 
 			// attach the provider parameter so that we know which provider initiated 
 			// the login when user is redirected back to this page
-			uri = uri.AttachQueryStringParameter(ProviderQueryStringName, this.authenticationProvider.ProviderName);
-
 			// Guard against XSRF attack by injecting session id into the redirect url and response cookie.
 			// Upon returning from the external provider, we'll compare the session id value in the query 
 			// string and the cookie. If they don't match, we'll reject the request.
 			string sessionId = Guid.NewGuid().ToString("N");
-			uri = uri.AttachQueryStringParameter(SessionIdQueryStringName, sessionId);
+            state.Add(ProviderQueryStringName, this.authenticationProvider.ProviderName);
+            state.Add(SessionIdQueryStringName, sessionId);
 
 			// The cookie value will be the current username secured against the session id we just created.
 			byte[] encryptedCookieBytes = MachineKeyUtil.Protect(Encoding.UTF8.GetBytes(GetUsername(this.requestContext)), AntiXsrfPurposeString, "Token: " + sessionId);
@@ -176,7 +181,7 @@ namespace DotNetOpenAuth.AspNet {
 			this.requestContext.Response.Cookies.Add(xsrfCookie);
 
 			// issue the redirect to the external auth provider
-			this.authenticationProvider.RequestAuthentication(this.requestContext, uri);
+			this.authenticationProvider.RequestAuthentication(this.requestContext, uri, state);
 		}
 
 		/// <summary>
@@ -190,9 +195,15 @@ namespace DotNetOpenAuth.AspNet {
 		/// The result of the authentication.
 		/// </returns>
 		public AuthenticationResult VerifyAuthentication(string returnUrl) {
+            StateDictionary state;
+            if (!StateDictionary.TryParse(this.requestContext.Request.QueryString["state"], out state))
+            {
+                return AuthenticationResult.Failed;
+            }
+
 			// check for XSRF attack
 			string sessionId;
-			bool successful = this.ValidateRequestAgainstXsrfAttack(out sessionId);
+			bool successful = this.ValidateRequestAgainstXsrfAttack(out sessionId, state);
 			if (!successful) {
 				return new AuthenticationResult(
 							isSuccessful: false,
@@ -204,6 +215,7 @@ namespace DotNetOpenAuth.AspNet {
 
 			// Only OAuth2 requires the return url value for the verify authenticaiton step
 			OAuth2Client oauth2Client = this.authenticationProvider as OAuth2Client;
+            AuthenticationResult result;
 			if (oauth2Client != null) {
 				// convert returnUrl to an absolute path
 				Uri uri;
@@ -214,16 +226,8 @@ namespace DotNetOpenAuth.AspNet {
 					uri = this.requestContext.Request.GetPublicFacingUrl();
 				}
 
-				// attach the provider parameter so that we know which provider initiated
-				// the login when user is redirected back to this page
-				uri = uri.AttachQueryStringParameter(ProviderQueryStringName, this.authenticationProvider.ProviderName);
-
-				// When we called RequestAuthentication(), we put the sessionId in the returnUrl query string.
-				// Hence, we need to put it in the VerifyAuthentication url again to please FB/Microsoft account providers.
-				uri = uri.AttachQueryStringParameter(SessionIdQueryStringName, sessionId);
-
 				try {
-					AuthenticationResult result = oauth2Client.VerifyAuthentication(this.requestContext, uri);
+					result = oauth2Client.VerifyAuthentication(this.requestContext, uri);
 					if (!result.IsSuccessful) {
 						// if the result is a Failed result, creates a new Failed response which has providerName info.
 						result = new AuthenticationResult(
@@ -233,16 +237,17 @@ namespace DotNetOpenAuth.AspNet {
 							userName: null,
 							extraData: null);
 					}
-
-					return result;
 				}
 				catch (HttpException exception) {
 					return new AuthenticationResult(exception.GetBaseException(), this.authenticationProvider.ProviderName);
 				}
 			}
 			else {
-				return this.authenticationProvider.VerifyAuthentication(this.requestContext);
+                result = this.authenticationProvider.VerifyAuthentication(this.requestContext);
 			}
+
+		    result.State = state;
+		    return result;
 		}
 
 		/// <summary>
@@ -258,18 +263,20 @@ namespace DotNetOpenAuth.AspNet {
 			return username ?? string.Empty;
 		}
 
-		/// <summary>
-		/// Validates the request against XSRF attack.
-		/// </summary>
-		/// <param name="sessionId">The session id embedded in the query string.</param>
-		/// <returns>
-		///   <c>true</c> if the request is safe. Otherwise, <c>false</c>.
-		/// </returns>
-		private bool ValidateRequestAgainstXsrfAttack(out string sessionId) {
+	    /// <summary>
+	    /// Validates the request against XSRF attack.
+	    /// </summary>
+	    /// <param name="sessionId">The session id embedded in the query string.</param>
+        /// <param name="state">Additional state to pass on the callback url.</param>
+	    /// <returns>
+	    ///   <c>true</c> if the request is safe. Otherwise, <c>false</c>.
+	    /// </returns>
+	    private bool ValidateRequestAgainstXsrfAttack(out string sessionId, StateDictionary state)
+        {
 			sessionId = null;
 
 			// get the session id query string parameter
-			string queryStringSessionId = this.requestContext.Request.QueryString[SessionIdQueryStringName];
+            string queryStringSessionId = state[SessionIdQueryStringName];
 
 			// verify that the query string value is a valid guid
 			Guid guid;

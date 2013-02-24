@@ -109,11 +109,17 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <param name="returnUrl">
 		/// The return url after users have completed authenticating against external website. 
 		/// </param>
-		public virtual void RequestAuthentication(HttpContextBase context, Uri returnUrl) {
+        /// <param name="state">
+        /// Additional state to pass on the callback url.
+        /// </param>
+        public virtual void RequestAuthentication(HttpContextBase context, Uri returnUrl, StateDictionary state)
+        {
 			Requires.NotNull(returnUrl, "returnUrl");
 			Requires.NotNull(context, "context");
+            Requires.NotNull(state, "state");
 
 			Uri callback = returnUrl.StripQueryArgumentsWithPrefix("oauth_");
+            callback = callback.AttachQueryStringParameter("state", state.ToEncodedString());
 			this.WebWorker.RequestAuthentication(callback);
 		}
 
