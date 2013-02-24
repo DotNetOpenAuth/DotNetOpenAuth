@@ -560,6 +560,29 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Assembles the content of the HTTP Authorization or WWW-Authenticate header.
 		/// </summary>
+		/// <param name="fields">The fields to include.</param>
+		/// <returns>
+		/// A value prepared for an HTTP header.
+		/// </returns>
+		internal static string AssembleAuthorizationHeader(IEnumerable<KeyValuePair<string, string>> fields) {
+			Requires.NotNull(fields, "fields");
+
+			var authorization = new StringBuilder();
+			foreach (var pair in fields) {
+				string key = MessagingUtilities.EscapeUriDataStringRfc3986(pair.Key);
+				string value = MessagingUtilities.EscapeUriDataStringRfc3986(pair.Value);
+				authorization.Append(key);
+				authorization.Append("=\"");
+				authorization.Append(value);
+				authorization.Append("\",");
+			}
+			authorization.Length--; // remove trailing comma
+			return authorization.ToString();
+		}
+
+		/// <summary>
+		/// Assembles the content of the HTTP Authorization or WWW-Authenticate header.
+		/// </summary>
 		/// <param name="scheme">The scheme.</param>
 		/// <param name="fields">The fields to include.</param>
 		/// <returns>A value prepared for an HTTP header.</returns>
@@ -570,15 +593,7 @@ namespace DotNetOpenAuth.Messaging {
 			var authorization = new StringBuilder();
 			authorization.Append(scheme);
 			authorization.Append(" ");
-			foreach (var pair in fields) {
-				string key = MessagingUtilities.EscapeUriDataStringRfc3986(pair.Key);
-				string value = MessagingUtilities.EscapeUriDataStringRfc3986(pair.Value);
-				authorization.Append(key);
-				authorization.Append("=\"");
-				authorization.Append(value);
-				authorization.Append("\",");
-			}
-			authorization.Length--; // remove trailing comma
+			authorization.Append(AssembleAuthorizationHeader(fields));
 			return authorization.ToString();
 		}
 
@@ -1627,6 +1642,21 @@ namespace DotNetOpenAuth.Messaging {
 		internal static Dictionary<TKey, TValue> ToDictionary<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> sequence) {
 			Requires.NotNull(sequence, "sequence");
 			return sequence.ToDictionary(pair => pair.Key, pair => pair.Value);
+		}
+
+		/// <summary>
+		/// Enumerates all members of the collection as key=value pairs.
+		/// </summary>
+		/// <param name="nvc">The collection to enumerate.</param>
+		/// <returns>A sequence of pairs.</returns>
+		internal static IEnumerable<KeyValuePair<string, string>> AsKeyValuePairs(this NameValueCollection nvc) {
+			Requires.NotNull(nvc, "nvc");
+
+			foreach (string key in nvc) {
+				foreach (string value in nvc.GetValues(key)) {
+					yield return new KeyValuePair<string, string>(key, value);
+				}
+			}
 		}
 
 		/// <summary>

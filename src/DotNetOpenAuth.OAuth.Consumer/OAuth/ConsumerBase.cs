@@ -11,6 +11,9 @@ namespace DotNetOpenAuth.OAuth {
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Net;
+#if CLR4
+	using System.Net.Http;
+#endif
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
@@ -102,6 +105,27 @@ namespace DotNetOpenAuth.OAuth {
 			this.TokenManager.ExpireRequestTokenAndStoreNewAccessToken(this.ConsumerKey, requestTokenResponse.RequestToken, grantAccess.AccessToken, grantAccess.TokenSecret);
 			return grantAccess.AccessToken;
 		}
+
+#if CLR4
+
+		/// <summary>
+		/// Creates an HTTP handler that automatically applies an OAuth 1 access token and signature to outbound HTTP requests.
+		/// The result of this method can be supplied to the <see cref="HttpClient(HttpMessageHandler)"/> constructor.
+		/// </summary>
+		/// <param name="accessToken">The access token to use to authorize each outbound HTTP message.</param>
+		/// <param name="innerHandler">The inner HTTP handler to use.  The default uses <see cref="HttpClientHandler"/> as the inner handler.</param>
+		/// <returns>An <see cref="HttpMessageHandler"/> instance.</returns>
+		public DelegatingHandler CreateAuthorizingHandler(string accessToken, HttpMessageHandler innerHandler = null) {
+			Requires.NotNullOrEmpty(accessToken, "accessToken");
+			return new OAuth1HmacSha1HttpMessageHandler(innerHandler ?? new HttpClientHandler()) {
+				ConsumerKey = this.TokenManager.ConsumerKey,
+				ConsumerSecret = this.TokenManager.ConsumerSecret,
+				AccessToken = accessToken,
+				AccessTokenSecret = this.TokenManager.GetTokenSecret(accessToken),
+			};
+		}
+
+#endif
 
 		/// <summary>
 		/// Creates a web request prepared with OAuth authorization 
