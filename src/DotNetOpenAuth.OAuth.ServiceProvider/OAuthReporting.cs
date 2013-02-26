@@ -45,9 +45,7 @@ namespace DotNetOpenAuth {
 					builder.Append(nonceStore.GetType().Name);
 				}
 				builder.Append(" ");
-				builder.Append(service.Version);
-				builder.Append(" ");
-				builder.Append(service.UserAuthorizationEndpoint);
+				builder.Append(service.ResourceOwnerAuthorizationEndpoint);
 				Reporting.ObservedFeatures.Add(builder.ToString());
 				Reporting.Touch();
 			}

@@ -19,6 +19,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="OAuthReporting.cs" />
     <Compile Include="OAuth\ChannelElements\IConsumerDescription.cs" />
     <Compile Include="OAuth\ChannelElements\IServiceProviderAccessToken.cs" />
     <Compile Include="OAuth\ChannelElements\IServiceProviderRequestToken.cs" />

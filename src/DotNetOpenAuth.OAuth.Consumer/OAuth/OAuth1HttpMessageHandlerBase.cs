@@ -154,6 +154,10 @@ namespace DotNetOpenAuth.OAuth {
 			// Add parameters and signature to request.
 			switch (this.Location) {
 				case OAuthParametersLocation.AuthorizationHttpHeader:
+					// Some oauth parameters may have been put in the query string of the original message.
+					// We want to move any that we find into the authorization header.
+					oauthParameters.Add(ExtractOAuthParametersFromQueryString(request));
+
 					request.Headers.Authorization = new AuthenticationHeaderValue(Protocol.AuthorizationHeaderScheme, MessagingUtilities.AssembleAuthorizationHeader(oauthParameters.AsKeyValuePairs()));
 					break;
 				case OAuthParametersLocation.QueryString:
@@ -258,6 +262,38 @@ namespace DotNetOpenAuth.OAuth {
 		}
 
 		/// <summary>
+		/// Collects and removes all query string parameters beginning with "oauth_" from the specified request,
+		/// and returns them as a collection.
+		/// </summary>
+		/// <param name="request">The request whose query string should be searched for "oauth_" parameters.</param>
+		/// <returns>The collection of parameters that were removed from the query string.</returns>
+		private static NameValueCollection ExtractOAuthParametersFromQueryString(HttpRequestMessage request) {
+			Requires.NotNull(request, "request");
+
+			var extracted = new NameValueCollection();
+			if (!string.IsNullOrEmpty(request.RequestUri.Query)) {
+				var queryString = HttpUtility.ParseQueryString(request.RequestUri.Query);
+				foreach (var pair in queryString.AsKeyValuePairs()) {
+					if (pair.Key.StartsWith(Protocol.ParameterPrefix, StringComparison.Ordinal)) {
+						extracted.Add(pair.Key, pair.Value);
+					}
+				}
+
+				if (extracted.Count > 0) {
+					foreach (string key in extracted) {
+						queryString.Remove(key);
+					}
+
+					var modifiedRequestUri = new UriBuilder(request.RequestUri);
+					modifiedRequestUri.Query = MessagingUtilities.CreateQueryString(queryString.AsKeyValuePairs());
+					request.RequestUri = modifiedRequestUri.Uri;
+				}
+			}
+
+			return extracted;
+		}
+
+		/// <summary>
 		/// Constructs the "Signature Base String" as described in http://tools.ietf.org/html/rfc5849#section-3.4.1
 		/// </summary>
 		/// <param name="request">The HTTP request message.</param>
@@ -319,12 +355,6 @@ namespace DotNetOpenAuth.OAuth {
 			if (request.RequestUri.Query != null) {
 				// NameValueCollection does support non-unique keys, as long as you use it carefully.
 				nvc = HttpUtility.ParseQueryString(request.RequestUri.Query);
-
-				// Remove any parameters beginning with "oauth_"
-				var keysToRemove = nvc.Cast<string>().Where(k => k.StartsWith(Protocol.ParameterPrefix, StringComparison.Ordinal)).ToList();
-				foreach (string key in keysToRemove) {
-					nvc.Remove(key);
-				}
 			} else {
 				nvc = new NameValueCollection(8);
 			}

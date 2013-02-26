@@ -4,8 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.ApplicationBlock
-{
+namespace DotNetOpenAuth.ApplicationBlock {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
@@ -29,17 +28,15 @@ namespace DotNetOpenAuth.ApplicationBlock
 	/// <summary>
 	/// A consumer capable of communicating with Google Data APIs.
 	/// </summary>
-	public static class GoogleConsumer
-	{
+	public class GoogleConsumer : Consumer {
 		/// <summary>
 		/// The Consumer to use for accessing Google data APIs.
 		/// </summary>
-		public static readonly ServiceProviderDescription ServiceDescription = new ServiceProviderDescription {
-			RequestTokenEndpoint = new MessageReceivingEndpoint("https://www.google.com/accounts/OAuthGetRequestToken", HttpDeliveryMethods.AuthorizationHeaderRequest | HttpDeliveryMethods.GetRequest),
-			UserAuthorizationEndpoint = new MessageReceivingEndpoint("https://www.google.com/accounts/OAuthAuthorizeToken", HttpDeliveryMethods.AuthorizationHeaderRequest | HttpDeliveryMethods.GetRequest),
-			AccessTokenEndpoint = new MessageReceivingEndpoint("https://www.google.com/accounts/OAuthGetAccessToken", HttpDeliveryMethods.AuthorizationHeaderRequest | HttpDeliveryMethods.GetRequest),
-			TamperProtectionElements = new ITamperProtectionChannelBindingElement[] { new HmacSha1SigningBindingElement() },
-		};
+		public static readonly ServiceProviderDescription ServiceDescription =
+			new ServiceProviderDescription(
+				"https://www.google.com/accounts/OAuthGetRequestToken",
+				"https://www.google.com/accounts/OAuthAuthorizeToken",
+				"https://www.google.com/accounts/OAuthGetAccessToken");
 
 		/// <summary>
 		/// A mapping between Google's applications and their URI scope values.
@@ -72,8 +69,7 @@ namespace DotNetOpenAuth.ApplicationBlock
 		/// The many specific authorization scopes Google offers.
 		/// </summary>
 		[Flags]
-		public enum Applications : long
-		{
+		public enum Applications : long {
 			/// <summary>
 			/// The Gmail address book.
 			/// </summary>
@@ -155,23 +151,7 @@ namespace DotNetOpenAuth.ApplicationBlock
 			Maps = 0x8000,
 		}
 
-		/// <summary>
-		/// The service description to use for accessing Google data APIs using an X509 certificate.
-		/// </summary>
-		/// <param name="signingCertificate">The signing certificate.</param>
-		/// <returns>A service description that can be used to create an instance of
-		/// <see cref="DesktopConsumer"/> or <see cref="WebConsumer"/>. </returns>
-		public static ServiceProviderDescription CreateRsaSha1ServiceDescription(X509Certificate2 signingCertificate) {
-			if (signingCertificate == null) {
-				throw new ArgumentNullException("signingCertificate");
-			}
-
-			return new ServiceProviderDescription {
-				RequestTokenEndpoint = new MessageReceivingEndpoint("https://www.google.com/accounts/OAuthGetRequestToken", HttpDeliveryMethods.AuthorizationHeaderRequest | HttpDeliveryMethods.GetRequest),
-				UserAuthorizationEndpoint = new MessageReceivingEndpoint("https://www.google.com/accounts/OAuthAuthorizeToken", HttpDeliveryMethods.AuthorizationHeaderRequest | HttpDeliveryMethods.GetRequest),
-				AccessTokenEndpoint = new MessageReceivingEndpoint("https://www.google.com/accounts/OAuthGetAccessToken", HttpDeliveryMethods.AuthorizationHeaderRequest | HttpDeliveryMethods.GetRequest),
-				TamperProtectionElements = new ITamperProtectionChannelBindingElement[] { new RsaSha1ConsumerSigningBindingElement(signingCertificate) },
-			};
+		public GoogleConsumer() {
 		}
 
 		/// <summary>
@@ -184,40 +164,12 @@ namespace DotNetOpenAuth.ApplicationBlock
 		/// A task that completes with the asynchronous operation.
 		/// </returns>
 		/// <exception cref="System.ArgumentNullException">consumer</exception>
-		public static async Task RequestAuthorizationAsync(WebConsumer consumer, Applications requestedAccessScope, CancellationToken cancellationToken = default(CancellationToken)) {
-			if (consumer == null) {
-				throw new ArgumentNullException("consumer");
-			}
-
+		public Task<Uri> RequestUserAuthorizationAsync(Applications requestedAccessScope, CancellationToken cancellationToken = default(CancellationToken)) {
 			var extraParameters = new Dictionary<string, string> {
 				{ "scope", GetScopeUri(requestedAccessScope) },
 			};
 			Uri callback = Util.GetCallbackUrlFromContext();
-			var request = await consumer.PrepareRequestUserAuthorizationAsync(callback, extraParameters, null, cancellationToken);
-			var redirectingResponse = await consumer.Channel.PrepareResponseAsync(request, cancellationToken);
-			redirectingResponse.Send();
-		}
-
-		/// <summary>
-		/// Requests authorization from Google to access data from a set of Google applications.
-		/// </summary>
-		/// <param name="consumer">The Google consumer previously constructed using <see cref="CreateWebConsumer" /> or <see cref="CreateDesktopConsumer" />.</param>
-		/// <param name="requestedAccessScope">The requested access scope.</param>
-		/// <param name="cancellationToken">The cancellation token.</param>
-		/// <returns>
-		/// The URI to redirect to and the request token.
-		/// </returns>
-		/// <exception cref="System.ArgumentNullException">consumer</exception>
-		public static Task<Tuple<Uri, string>> RequestAuthorizationAsync(DesktopConsumer consumer, Applications requestedAccessScope, CancellationToken cancellationToken = default(CancellationToken)) {
-			if (consumer == null) {
-				throw new ArgumentNullException("consumer");
-			}
-
-			var extraParameters = new Dictionary<string, string> {
-				{ "scope", GetScopeUri(requestedAccessScope) },
-			};
-
-			return consumer.RequestUserAuthorizationAsync(extraParameters, null, cancellationToken);
+			return this.RequestUserAuthorizationAsync(callback, extraParameters, cancellationToken);
 		}
 
 		/// <summary>
@@ -232,14 +184,10 @@ namespace DotNetOpenAuth.ApplicationBlock
 		/// An XML document returned by Google.
 		/// </returns>
 		/// <exception cref="System.ArgumentNullException">consumer</exception>
-		public static async Task<XDocument> GetContactsAsync(ConsumerBase consumer, string accessToken, int maxResults = 25, int startIndex = 1, CancellationToken cancellationToken = default(CancellationToken)) {
-			if (consumer == null) {
-				throw new ArgumentNullException("consumer");
-			}
-
+		public async Task<XDocument> GetContactsAsync(AccessToken accessToken, int maxResults = 25, int startIndex = 1, CancellationToken cancellationToken = default(CancellationToken)) {
 			// Enable gzip compression.  Google only compresses the response for recognized user agent headers. - Mike Lim
 			var handler = new HttpClientHandler { AutomaticDecompression = DecompressionMethods.GZip };
-			using (var httpClient = consumer.CreateHttpClient(accessToken, handler)) {
+			using (var httpClient = this.CreateHttpClient(accessToken, handler)) {
 				var request = new HttpRequestMessage(HttpMethod.Get, GetContactsEndpoint);
 				request.Content = new FormUrlEncodedContent(
 					new Dictionary<string, string>() {
@@ -255,7 +203,7 @@ namespace DotNetOpenAuth.ApplicationBlock
 			}
 		}
 
-		public static async Task PostBlogEntryAsync(ConsumerBase consumer, string accessToken, string blogUrl, string title, XElement body, CancellationToken cancellationToken) {
+		public async Task PostBlogEntryAsync(AccessToken accessToken, string blogUrl, string title, XElement body, CancellationToken cancellationToken) {
 			string feedUrl;
 			var getBlogHome = WebRequest.Create(blogUrl);
 			using (var blogHomeResponse = getBlogHome.GetResponse()) {
@@ -285,7 +233,7 @@ namespace DotNetOpenAuth.ApplicationBlock
 			var request = new HttpRequestMessage(HttpMethod.Post, feedUrl);
 			request.Content = new StreamContent(ms);
 			request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/atom+xml");
-			using (var httpClient = consumer.CreateHttpClient(accessToken)) {
+			using (var httpClient = this.CreateHttpClient(accessToken)) {
 				using (var response = await httpClient.SendAsync(request, cancellationToken)) {
 					if (response.StatusCode == HttpStatusCode.Created) {
 						// Success

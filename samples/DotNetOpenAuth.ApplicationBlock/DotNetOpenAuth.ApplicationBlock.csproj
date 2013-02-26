@@ -101,9 +101,6 @@
     <Compile Include="GoogleConsumer.cs" />
     <Compile Include="HttpAsyncHandlerBase.cs" />
     <Compile Include="InMemoryClientAuthorizationTracker.cs" />
-    <Compile Include="InMemoryTokenManager.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TwitterConsumer.cs" />
     <Compile Include="Util.cs" />
@@ -137,6 +134,10 @@
     <ProjectReference Include="..\..\src\DotNetOpenAuth.Core\DotNetOpenAuth.Core.csproj">
       <Project>{60426312-6AE5-4835-8667-37EDEA670222}</Project>
       <Name>DotNetOpenAuth.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\DotNetOpenAuth.OAuth.Common\DotNetOpenAuth.OAuth.Common.csproj">
+      <Project>{115217c5-22cd-415c-a292-0dd0238cdd89}</Project>
+      <Name>DotNetOpenAuth.OAuth.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\src\DotNetOpenAuth.OAuth.Consumer\DotNetOpenAuth.OAuth.Consumer.csproj">
       <Project>{B202E40D-4663-4A2B-ACDA-865F88FF7CAA}</Project>

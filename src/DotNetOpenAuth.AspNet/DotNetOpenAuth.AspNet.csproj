@@ -55,7 +55,6 @@
     </Compile>
     <Compile Include="Clients\OAuth\CookieOAuthTokenManager.cs" />
     <Compile Include="Clients\OAuth\IOAuthTokenManager.cs" />
-    <Compile Include="Clients\OAuth\SimpleConsumerTokenManager.cs" />
     <Compile Include="IAuthenticationClient.cs" />
     <Compile Include="Clients\OAuth2\FacebookClient.cs" />
     <Compile Include="Clients\OAuth2\FacebookGraphData.cs" />
@@ -73,7 +72,6 @@
     <Compile Include="Clients\OpenID\GoogleOpenIdClient.cs" />
     <Compile Include="Clients\OpenID\OpenIdClient.cs" />
     <Compile Include="Clients\OpenID\YahooOpenIdClient.cs" />
-    <Compile Include="MachineKeyUtil.cs" />
     <Compile Include="UriHelper.cs" />
     <Compile Include="IOpenAuthDataProvider.cs" />
     <Compile Include="OpenAuthAuthenticationTicketHelper.cs" />

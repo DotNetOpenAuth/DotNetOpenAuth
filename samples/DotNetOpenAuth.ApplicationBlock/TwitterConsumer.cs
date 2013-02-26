@@ -35,22 +35,18 @@ namespace DotNetOpenAuth.ApplicationBlock {
 		/// The description of Twitter's OAuth protocol URIs for use with actually reading/writing
 		/// a user's private Twitter data.
 		/// </summary>
-		public static readonly ServiceProviderDescription ServiceDescription = new ServiceProviderDescription {
-			RequestTokenEndpoint = new MessageReceivingEndpoint("http://twitter.com/oauth/request_token", HttpDeliveryMethods.GetRequest | HttpDeliveryMethods.AuthorizationHeaderRequest),
-			UserAuthorizationEndpoint = new MessageReceivingEndpoint("http://twitter.com/oauth/authorize", HttpDeliveryMethods.GetRequest | HttpDeliveryMethods.AuthorizationHeaderRequest),
-			AccessTokenEndpoint = new MessageReceivingEndpoint("http://twitter.com/oauth/access_token", HttpDeliveryMethods.GetRequest | HttpDeliveryMethods.AuthorizationHeaderRequest),
-			TamperProtectionElements = new ITamperProtectionChannelBindingElement[] { new HmacSha1SigningBindingElement() },
-		};
+		public static readonly ServiceProviderDescription ServiceDescription = new ServiceProviderDescription(
+			"https://api.twitter.com/oauth/request_token",
+			"https://api.twitter.com/oauth/authorize",
+			"https://api.twitter.com/oauth/access_token");
 
 		/// <summary>
 		/// The description of Twitter's OAuth protocol URIs for use with their "Sign in with Twitter" feature.
 		/// </summary>
-		public static readonly ServiceProviderDescription SignInWithTwitterServiceDescription = new ServiceProviderDescription {
-			RequestTokenEndpoint = new MessageReceivingEndpoint("http://twitter.com/oauth/request_token", HttpDeliveryMethods.GetRequest | HttpDeliveryMethods.AuthorizationHeaderRequest),
-			UserAuthorizationEndpoint = new MessageReceivingEndpoint("http://twitter.com/oauth/authenticate", HttpDeliveryMethods.GetRequest | HttpDeliveryMethods.AuthorizationHeaderRequest),
-			AccessTokenEndpoint = new MessageReceivingEndpoint("http://twitter.com/oauth/access_token", HttpDeliveryMethods.GetRequest | HttpDeliveryMethods.AuthorizationHeaderRequest),
-			TamperProtectionElements = new ITamperProtectionChannelBindingElement[] { new HmacSha1SigningBindingElement() },
-		};
+		public static readonly ServiceProviderDescription SignInWithTwitterServiceDescription = new ServiceProviderDescription(
+			"https://api.twitter.com/oauth/request_token",
+			"https://api.twitter.com/oauth/authenticate",
+			"https://api.twitter.com/oauth/access_token");
 
 		/// <summary>
 		/// The URI to get a user's favorites.
@@ -68,22 +64,33 @@ namespace DotNetOpenAuth.ApplicationBlock {
 
 		private static readonly Uri VerifyCredentialsEndpoint = new Uri("http://api.twitter.com/1/account/verify_credentials.xml");
 
-		/// <summary>
-		/// The consumer used for the Sign in to Twitter feature.
-		/// </summary>
-		private static WebConsumer signInConsumer;
+		private class HostFactories : IHostFactories {
+			private static readonly IHostFactories underlyingFactories = new DefaultOAuthHostFactories();
 
-		/// <summary>
-		/// The lock acquired to initialize the <see cref="signInConsumer"/> field.
-		/// </summary>
-		private static object signInConsumerInitLock = new object();
+			public HttpMessageHandler CreateHttpMessageHandler() {
+				return new WebRequestHandler();
+			}
 
-		/// <summary>
-		/// Initializes static members of the <see cref="TwitterConsumer"/> class.
-		/// </summary>
-		static TwitterConsumer() {
-			// Twitter can't handle the Expect 100 Continue HTTP header. 
-			ServicePointManager.FindServicePoint(GetFavoritesEndpoint).Expect100Continue = false;
+			public HttpClient CreateHttpClient(HttpMessageHandler handler = null) {
+				var client = underlyingFactories.CreateHttpClient(handler);
+
+				// Twitter can't handle the Expect 100 Continue HTTP header. 
+				client.DefaultRequestHeaders.ExpectContinue = false;
+				return client;
+			}
+		}
+
+		public static Consumer CreateConsumer(bool forWeb = true) {
+			string consumerKey = ConfigurationManager.AppSettings["twitterConsumerKey"];
+			string consumerSecret = ConfigurationManager.AppSettings["twitterConsumerSecret"];
+			if (IsTwitterConsumerConfigured) {
+				ITemporaryCredentialStorage storage = forWeb ? (ITemporaryCredentialStorage)new CookieTemporaryCredentialStorage() : new MemoryTemporaryCredentialStorage();
+				return new Consumer(consumerKey, consumerSecret, ServiceDescription, storage) {
+					HostFactories = new HostFactories(),
+				};
+			} else {
+				throw new InvalidOperationException("No Twitter OAuth consumer key and secret could be found in web.config AppSettings.");
+			}
 		}
 
 		/// <summary>
@@ -96,45 +103,7 @@ namespace DotNetOpenAuth.ApplicationBlock {
 			}
 		}
 
-		/// <summary>
-		/// Gets the consumer to use for the Sign in to Twitter feature.
-		/// </summary>
-		/// <value>The twitter sign in.</value>
-		private static WebConsumer TwitterSignIn {
-			get {
-				if (signInConsumer == null) {
-					lock (signInConsumerInitLock) {
-						if (signInConsumer == null) {
-							signInConsumer = new WebConsumer(SignInWithTwitterServiceDescription, ShortTermUserSessionTokenManager);
-						}
-					}
-				}
-
-				return signInConsumer;
-			}
-		}
-
-		private static InMemoryTokenManager ShortTermUserSessionTokenManager {
-			get {
-				var store = HttpContext.Current.Session;
-				var tokenManager = (InMemoryTokenManager)store["TwitterShortTermUserSessionTokenManager"];
-				if (tokenManager == null) {
-					string consumerKey = ConfigurationManager.AppSettings["twitterConsumerKey"];
-					string consumerSecret = ConfigurationManager.AppSettings["twitterConsumerSecret"];
-					if (IsTwitterConsumerConfigured) {
-						tokenManager = new InMemoryTokenManager(consumerKey, consumerSecret);
-						store["TwitterShortTermUserSessionTokenManager"] = tokenManager;
-					} else {
-						throw new InvalidOperationException("No Twitter OAuth consumer key and secret could be found in web.config AppSettings.");
-					}
-				}
-
-				return tokenManager;
-			}
-		}
-
-		public static async Task<JArray> GetUpdatesAsync(
-			ConsumerBase twitter, string accessToken, CancellationToken cancellationToken = default(CancellationToken)) {
+		public static async Task<JArray> GetUpdatesAsync(Consumer twitter, AccessToken accessToken, CancellationToken cancellationToken = default(CancellationToken)) {
 			using (var httpClient = twitter.CreateHttpClient(accessToken)) {
 				using (var response = await httpClient.GetAsync(GetFriendTimelineStatusEndpoint, cancellationToken)) {
 					response.EnsureSuccessStatusCode();
@@ -145,7 +114,7 @@ namespace DotNetOpenAuth.ApplicationBlock {
 			}
 		}
 
-		public static async Task<XDocument> GetFavorites(ConsumerBase twitter, string accessToken, CancellationToken cancellationToken = default(CancellationToken)) {
+		public static async Task<XDocument> GetFavorites(Consumer twitter, AccessToken accessToken, CancellationToken cancellationToken = default(CancellationToken)) {
 			using (var httpClient = twitter.CreateHttpClient(accessToken)) {
 				using (HttpResponseMessage response = await httpClient.GetAsync(GetFavoritesEndpoint, cancellationToken)) {
 					response.EnsureSuccessStatusCode();
@@ -154,7 +123,7 @@ namespace DotNetOpenAuth.ApplicationBlock {
 			}
 		}
 
-		public static async Task<XDocument> UpdateProfileBackgroundImageAsync(ConsumerBase twitter, string accessToken, string image, bool tile, CancellationToken cancellationToken) {
+		public static async Task<XDocument> UpdateProfileBackgroundImageAsync(Consumer twitter, AccessToken accessToken, string image, bool tile, CancellationToken cancellationToken) {
 			var imageAttachment = new StreamContent(File.OpenRead(image));
 			imageAttachment.Headers.ContentType = new MediaTypeHeaderValue("image/" + Path.GetExtension(image).Substring(1).ToLowerInvariant());
 			HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, UpdateProfileBackgroundImageEndpoint);
@@ -172,12 +141,12 @@ namespace DotNetOpenAuth.ApplicationBlock {
 			}
 		}
 
-		public static Task<XDocument> UpdateProfileImageAsync(ConsumerBase twitter, string accessToken, string pathToImage, CancellationToken cancellationToken = default(CancellationToken)) {
+		public static Task<XDocument> UpdateProfileImageAsync(Consumer twitter, AccessToken accessToken, string pathToImage, CancellationToken cancellationToken = default(CancellationToken)) {
 			string contentType = "image/" + Path.GetExtension(pathToImage).Substring(1).ToLowerInvariant();
 			return UpdateProfileImageAsync(twitter, accessToken, File.OpenRead(pathToImage), contentType, cancellationToken);
 		}
 
-		public static async Task<XDocument> UpdateProfileImageAsync(ConsumerBase twitter, string accessToken, Stream image, string contentType, CancellationToken cancellationToken = default(CancellationToken)) {
+		public static async Task<XDocument> UpdateProfileImageAsync(Consumer twitter, AccessToken accessToken, Stream image, string contentType, CancellationToken cancellationToken = default(CancellationToken)) {
 			var imageAttachment = new StreamContent(image);
 			imageAttachment.Headers.ContentType = new MediaTypeHeaderValue(contentType);
 			HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, UpdateProfileImageEndpoint);
@@ -193,7 +162,7 @@ namespace DotNetOpenAuth.ApplicationBlock {
 			}
 		}
 
-		public static async Task<XDocument> VerifyCredentialsAsync(ConsumerBase twitter, string accessToken, CancellationToken cancellationToken = default(CancellationToken)) {
+		public static async Task<XDocument> VerifyCredentialsAsync(Consumer twitter, AccessToken accessToken, CancellationToken cancellationToken = default(CancellationToken)) {
 			using (var httpClient = twitter.CreateHttpClient(accessToken)) {
 				using (var response = await httpClient.GetAsync(VerifyCredentialsEndpoint, cancellationToken)) {
 					response.EnsureSuccessStatusCode();
@@ -204,7 +173,7 @@ namespace DotNetOpenAuth.ApplicationBlock {
 			}
 		}
 
-		public static async Task<string> GetUsername(ConsumerBase twitter, string accessToken, CancellationToken cancellationToken = default(CancellationToken)) {
+		public static async Task<string> GetUsername(Consumer twitter, AccessToken accessToken, CancellationToken cancellationToken = default(CancellationToken)) {
 			XDocument xml = await VerifyCredentialsAsync(twitter, accessToken, cancellationToken);
 			XPathNavigator nav = xml.CreateNavigator();
 			return nav.SelectSingleNode("/user/screen_name").Value;
@@ -223,14 +192,17 @@ namespace DotNetOpenAuth.ApplicationBlock {
 		/// <c>return StartSignInWithTwitter().<see cref="MessagingUtilities.AsActionResult">AsActionResult()</see></c>
 		/// to actually perform the redirect.
 		/// </remarks>
-		public static async Task<HttpResponseMessage> StartSignInWithTwitterAsync(bool forceNewLogin = false, CancellationToken cancellationToken = default(CancellationToken)) {
+		public static async Task<Uri> StartSignInWithTwitterAsync(bool forceNewLogin = false, CancellationToken cancellationToken = default(CancellationToken)) {
 			var redirectParameters = new Dictionary<string, string>();
 			if (forceNewLogin) {
 				redirectParameters["force_login"] = "true";
 			}
 			Uri callback = MessagingUtilities.GetRequestUrlFromContext().StripQueryArgumentsWithPrefix("oauth_");
-			var request = await TwitterSignIn.PrepareRequestUserAuthorizationAsync(callback, null, redirectParameters, cancellationToken);
-			return await TwitterSignIn.Channel.PrepareResponseAsync(request, cancellationToken);
+
+			var consumer = CreateConsumer();
+			consumer.ServiceProvider = SignInWithTwitterServiceDescription;
+			Uri redirectUrl = await consumer.RequestUserAuthorizationAsync(callback, cancellationToken: cancellationToken);
+			return redirectUrl;
 		}
 
 		/// <summary>
@@ -241,19 +213,16 @@ namespace DotNetOpenAuth.ApplicationBlock {
 		/// <returns>
 		/// A tuple with the screen name and Twitter unique user ID if successful; otherwise <c>null</c>.
 		/// </returns>
-		public static async Task<Tuple<string, int>> TryFinishSignInWithTwitterAsync(CancellationToken cancellationToken = default(CancellationToken)) {
-			var response = await TwitterSignIn.ProcessUserAuthorizationAsync(cancellationToken: cancellationToken);
+		public static async Task<Tuple<string, int>> TryFinishSignInWithTwitterAsync(Uri completeUrl, CancellationToken cancellationToken = default(CancellationToken)) {
+			var consumer = CreateConsumer();
+			consumer.ServiceProvider = SignInWithTwitterServiceDescription;
+			var response = await consumer.ProcessUserAuthorizationAsync(completeUrl, cancellationToken: cancellationToken);
 			if (response == null) {
 				return null;
 			}
 
 			string screenName = response.ExtraData["screen_name"];
 			int userId = int.Parse(response.ExtraData["user_id"]);
-
-			// If we were going to make this LOOK like OpenID even though it isn't,
-			// this seems like a reasonable, secure claimed id to allow the user to assume.
-			////OpenId.Identifier fake_claimed_id = string.Format(CultureInfo.InvariantCulture, "http://twitter.com/{0}#{1}", screenName, userId);
-
 			return Tuple.Create(screenName, userId);
 		}
 	}

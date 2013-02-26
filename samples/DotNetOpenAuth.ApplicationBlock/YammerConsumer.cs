@@ -4,10 +4,10 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.ApplicationBlock
-{
+namespace DotNetOpenAuth.ApplicationBlock {
 	using System;
 	using System.Collections.Generic;
+	using System.Configuration;
 	using System.Linq;
 	using System.Net;
 	using System.Text;
@@ -18,47 +18,35 @@ namespace DotNetOpenAuth.ApplicationBlock
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.OAuth.Messages;
 
-	public static class YammerConsumer
-	{
+	public static class YammerConsumer {
 		/// <summary>
 		/// The Consumer to use for accessing Google data APIs.
 		/// </summary>
-		public static readonly ServiceProviderDescription ServiceDescription = new ServiceProviderDescription {
-			RequestTokenEndpoint = new MessageReceivingEndpoint("https://www.yammer.com/oauth/request_token", HttpDeliveryMethods.AuthorizationHeaderRequest | HttpDeliveryMethods.PostRequest),
-			UserAuthorizationEndpoint = new MessageReceivingEndpoint("https://www.yammer.com/oauth/authorize", HttpDeliveryMethods.AuthorizationHeaderRequest | HttpDeliveryMethods.GetRequest),
-			AccessTokenEndpoint = new MessageReceivingEndpoint("https://www.yammer.com/oauth/access_token", HttpDeliveryMethods.AuthorizationHeaderRequest | HttpDeliveryMethods.PostRequest),
-			TamperProtectionElements = new ITamperProtectionChannelBindingElement[] { new PlaintextSigningBindingElement() },
-			ProtocolVersion = ProtocolVersion.V10,
-		};
+		public static readonly ServiceProviderDescription ServiceDescription =
+			new ServiceProviderDescription(
+				"https://www.yammer.com/oauth/request_token",
+				"https://www.yammer.com/oauth/authorize",
+				"https://www.yammer.com/oauth/access_token");
 
-		public static DesktopConsumer CreateConsumer(IConsumerTokenManager tokenManager) {
-			return new DesktopConsumer(ServiceDescription, tokenManager);
-		}
-
-		public static Task<Tuple<Uri, string>> PrepareRequestAuthorizationAsync(DesktopConsumer consumer, CancellationToken cancellationToken = default(CancellationToken)) {
-			if (consumer == null) {
-				throw new ArgumentNullException("consumer");
+		/// <summary>
+		/// Gets a value indicating whether the Twitter consumer key and secret are set in the web.config file.
+		/// </summary>
+		public static bool IsConsumerConfigured {
+			get {
+				return !string.IsNullOrEmpty(ConfigurationManager.AppSettings["yammerConsumerKey"]) &&
+					!string.IsNullOrEmpty(ConfigurationManager.AppSettings["yammerConsumerSecret"]);
 			}
-
-			return consumer.RequestUserAuthorizationAsync(null, null, cancellationToken);
 		}
 
-		public static async Task<AuthorizedTokenResponse> CompleteAuthorizationAsync(DesktopConsumer consumer, string requestToken, string userCode, CancellationToken cancellationToken = default(CancellationToken)) {
-			// Because Yammer has a proprietary callback_token parameter, and it's passed
-			// with the message that specifically bans extra arguments being passed, we have
-			// to cheat by adding the data to the URL itself here.
-			var customServiceDescription = new ServiceProviderDescription {
-				RequestTokenEndpoint = ServiceDescription.RequestTokenEndpoint,
-				UserAuthorizationEndpoint = ServiceDescription.UserAuthorizationEndpoint,
-				AccessTokenEndpoint = new MessageReceivingEndpoint(ServiceDescription.AccessTokenEndpoint.Location.AbsoluteUri + "?oauth_verifier=" + Uri.EscapeDataString(userCode), HttpDeliveryMethods.AuthorizationHeaderRequest | HttpDeliveryMethods.PostRequest),
-				TamperProtectionElements = ServiceDescription.TamperProtectionElements,
-				ProtocolVersion = ProtocolVersion.V10,
-			};
-
-			// To use a custom service description we also must create a new WebConsumer.
-			var customConsumer = new DesktopConsumer(customServiceDescription, consumer.TokenManager);
-			var response = await customConsumer.ProcessUserAuthorizationAsync(requestToken, userCode, cancellationToken);
-			return response;
+		public static Consumer CreateConsumer(bool forWeb = true) {
+			string consumerKey = ConfigurationManager.AppSettings["yammerConsumerKey"];
+			string consumerSecret = ConfigurationManager.AppSettings["yammerConsumerSecret"];
+			if (IsConsumerConfigured) {
+				ITemporaryCredentialStorage storage = forWeb ? (ITemporaryCredentialStorage)new CookieTemporaryCredentialStorage() : new MemoryTemporaryCredentialStorage();
+				return new Consumer(consumerKey, consumerSecret, ServiceDescription, storage);
+			} else {
+				throw new InvalidOperationException("No Yammer OAuth consumer key and secret could be found in web.config AppSettings.");
+			}
 		}
 	}
 }

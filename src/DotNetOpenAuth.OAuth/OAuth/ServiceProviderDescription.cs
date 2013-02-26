@@ -1,101 +1,84 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="ServiceProviderDescription.cs" company="Outercurve Foundation">
-//     Copyright (c) Outercurve Foundation. All rights reserved.
+// <copyright file="ServiceProviderDescription.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OAuth {
 	using System;
-	using System.Diagnostics;
-	using System.Diagnostics.CodeAnalysis;
+	using System.Collections.Generic;
 	using System.Linq;
-	using DotNetOpenAuth.Messaging;
-	using DotNetOpenAuth.OAuth.ChannelElements;
+	using System.Net.Http;
+	using System.Text;
+	using System.Threading.Tasks;
+	using Validation;
 
 	/// <summary>
-	/// A description of the endpoints on a Service Provider.
+	/// Describes an OAuth 1.0 service provider.
 	/// </summary>
 	public class ServiceProviderDescription {
 		/// <summary>
-		/// The field used to store the value of the <see cref="RequestTokenEndpoint"/> property.
+		/// Initializes a new instance of the <see cref="ServiceProviderDescription" /> class.
 		/// </summary>
-		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		private MessageReceivingEndpoint requestTokenEndpoint;
+		public ServiceProviderDescription() {
+			this.TemporaryCredentialsRequestEndpointMethod = HttpMethod.Post;
+			this.TokenRequestEndpointMethod = HttpMethod.Post;
+		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ServiceProviderDescription"/> class.
 		/// </summary>
-		public ServiceProviderDescription() {
-			this.ProtocolVersion = Protocol.Default.ProtocolVersion;
-		}
-
-		/// <summary>
-		/// Gets or sets the OAuth version supported by the Service Provider.
-		/// </summary>
-		public ProtocolVersion ProtocolVersion { get; set; }
-
-		/// <summary>
-		/// Gets or sets the URL used to obtain an unauthorized Request Token,
-		/// described in Section 6.1 (Obtaining an Unauthorized Request Token).
-		/// </summary>
-		/// <remarks>
-		/// The request URL query MUST NOT contain any OAuth Protocol Parameters.
-		/// This is the URL that <see cref="OAuth.Messages.UnauthorizedTokenRequest"/> messages are directed to.
-		/// </remarks>
-		/// <exception cref="ArgumentException">Thrown if this property is set to a URI with OAuth protocol parameters.</exception>
-		public MessageReceivingEndpoint RequestTokenEndpoint {
-			get {
-				return this.requestTokenEndpoint;
+		/// <param name="temporaryCredentialsRequestEndpoint">The temporary credentials request endpoint.</param>
+		/// <param name="resourceOwnerAuthorizationEndpoint">The resource owner authorization endpoint.</param>
+		/// <param name="tokenRequestEndpoint">The token request endpoint.</param>
+		public ServiceProviderDescription(
+			string temporaryCredentialsRequestEndpoint, string resourceOwnerAuthorizationEndpoint, string tokenRequestEndpoint) {
+			if (temporaryCredentialsRequestEndpoint != null) {
+				this.TemporaryCredentialsRequestEndpoint = new Uri(temporaryCredentialsRequestEndpoint, UriKind.Absolute);
 			}
 
-			set {
-				if (value != null && UriUtil.QueryStringContainPrefixedParameters(value.Location, OAuth.Protocol.ParameterPrefix)) {
-					throw new ArgumentException(OAuthStrings.RequestUrlMustNotHaveOAuthParameters);
-				}
+			if (resourceOwnerAuthorizationEndpoint != null) {
+				this.ResourceOwnerAuthorizationEndpoint = new Uri(resourceOwnerAuthorizationEndpoint, UriKind.Absolute);
+			}
 
-				this.requestTokenEndpoint = value;
+			if (tokenRequestEndpoint != null) {
+				this.TokenRequestEndpoint = new Uri(tokenRequestEndpoint, UriKind.Absolute);
 			}
 		}
 
 		/// <summary>
-		/// Gets or sets the URL used to obtain User authorization for Consumer access, 
-		/// described in Section 6.2 (Obtaining User Authorization).
+		/// Gets or sets the temporary credentials request endpoint.
 		/// </summary>
-		/// <remarks>
-		/// This is the URL that <see cref="OAuth.Messages.UserAuthorizationRequest"/> messages are
-		/// indirectly (via the user agent) sent to.
-		/// </remarks>
-		public MessageReceivingEndpoint UserAuthorizationEndpoint { get; set; }
+		/// <value>
+		/// The temporary credentials request endpoint.
+		/// </value>
+		public Uri TemporaryCredentialsRequestEndpoint { get; set; }
 
 		/// <summary>
-		/// Gets or sets the URL used to exchange the User-authorized Request Token 
-		/// for an Access Token, described in Section 6.3 (Obtaining an Access Token).
+		/// Gets or sets the HTTP method to use with the temporary credentials request endpoint.
 		/// </summary>
-		/// <remarks>
-		/// This is the URL that <see cref="OAuth.Messages.AuthorizedTokenRequest"/> messages are directed to.
-		/// </remarks>
-		public MessageReceivingEndpoint AccessTokenEndpoint { get; set; }
+		public HttpMethod TemporaryCredentialsRequestEndpointMethod { get; set; }
 
 		/// <summary>
-		/// Gets or sets the signing policies that apply to this Service Provider.
+		/// Gets the resource owner authorization endpoint.
 		/// </summary>
-		[SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays", Justification = "Type initializers require this format.")]
-		public ITamperProtectionChannelBindingElement[] TamperProtectionElements { get; set; }
+		/// <value>
+		/// The resource owner authorization endpoint.
+		/// May be <c>null</c> for 2-legged OAuth.
+		/// </value>
+		public Uri ResourceOwnerAuthorizationEndpoint { get; set; }
 
 		/// <summary>
-		/// Gets the OAuth version supported by the Service Provider.
+		/// Gets the token request endpoint.
 		/// </summary>
-		internal Version Version {
-			get { return Protocol.Lookup(this.ProtocolVersion).Version; }
-		}
+		/// <value>
+		/// The token request endpoint.
+		/// </value>
+		public Uri TokenRequestEndpoint { get; set; }
 
 		/// <summary>
-		/// Creates a signing element that includes all the signing elements this service provider supports.
+		/// Gets or sets the HTTP method to use with the token request endpoint.
 		/// </summary>
-		/// <returns>The created signing element.</returns>
-		internal ITamperProtectionChannelBindingElement CreateTamperProtectionElement() {
-			RequiresEx.ValidState(this.TamperProtectionElements != null);
-			return new SigningBindingElementChain(this.TamperProtectionElements.Select(el => (ITamperProtectionChannelBindingElement)el.Clone()).ToArray());
-		}
+		public HttpMethod TokenRequestEndpointMethod { get; set; }
 	}
 }

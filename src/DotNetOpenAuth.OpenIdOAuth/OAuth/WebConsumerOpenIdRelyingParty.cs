@@ -8,9 +8,11 @@ namespace DotNetOpenAuth.OAuth {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Net.Http;
 	using System.Text;
 	using System.Threading;
 	using System.Threading.Tasks;
+	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.OAuth.Messages;
@@ -26,14 +28,13 @@ namespace DotNetOpenAuth.OAuth {
 	/// The methods on this class are thread-safe.  Provided the properties are set and not changed
 	/// afterward, a single instance of this class may be used by an entire web application safely.
 	/// </remarks>
-	public class WebConsumerOpenIdRelyingParty : WebConsumer {
+	public class WebConsumerOpenIdRelyingParty : Consumer {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="WebConsumerOpenIdRelyingParty"/> class.
 		/// </summary>
 		/// <param name="serviceDescription">The endpoints and behavior of the Service Provider.</param>
 		/// <param name="tokenManager">The host's method of storing and recalling tokens and secrets.</param>
-		public WebConsumerOpenIdRelyingParty(ServiceProviderDescription serviceDescription, IConsumerTokenManager tokenManager)
-			: base(serviceDescription, tokenManager) {
+		public WebConsumerOpenIdRelyingParty() {
 		}
 
 		/// <summary>
@@ -64,11 +65,8 @@ namespace DotNetOpenAuth.OAuth {
 		/// The access token, if granted, is automatically stored in the <see cref="ConsumerBase.TokenManager" />.
 		/// The token manager instance must implement <see cref="IOpenIdOAuthTokenManager" />.
 		/// </remarks>
-		public async Task<AuthorizedTokenResponse> ProcessUserAuthorizationAsync(IAuthenticationResponse openIdAuthenticationResponse, CancellationToken cancellationToken = default(CancellationToken)) {
+		public async Task<AccessTokenResponse> ProcessUserAuthorizationAsync(IAuthenticationResponse openIdAuthenticationResponse, CancellationToken cancellationToken = default(CancellationToken)) {
 			Requires.NotNull(openIdAuthenticationResponse, "openIdAuthenticationResponse");
-			RequiresEx.ValidState(this.TokenManager is IOpenIdOAuthTokenManager);
-			var openidTokenManager = this.TokenManager as IOpenIdOAuthTokenManager;
-			ErrorUtilities.VerifyOperation(openidTokenManager != null, OAuthStrings.OpenIdOAuthExtensionRequiresSpecialTokenManagerInterface, typeof(IOpenIdOAuthTokenManager).FullName);
 
 			// The OAuth extension is only expected in positive assertion responses.
 			if (openIdAuthenticationResponse.Status != AuthenticationStatus.Authenticated) {
@@ -81,21 +79,24 @@ namespace DotNetOpenAuth.OAuth {
 				return null;
 			}
 
-			// Prepare a message to exchange the request token for an access token.
-			// We are careful to use a v1.0 message version so that the oauth_verifier is not required.
-			var requestAccess = new AuthorizedTokenRequest(this.ServiceProvider.AccessTokenEndpoint, Protocol.V10.Version) {
-				RequestToken = positiveAuthorization.RequestToken,
-				ConsumerKey = this.ConsumerKey,
-			};
+			using (var client = this.CreateHttpClient(new AccessToken(positiveAuthorization.RequestToken, string.Empty))) {
+				var request = new HttpRequestMessage(this.ServiceProvider.TokenRequestEndpointMethod, this.ServiceProvider.TokenRequestEndpoint);
+				using (var response = await client.SendAsync(request, cancellationToken)) {
+					response.EnsureSuccessStatusCode();
 
-			// Retrieve the access token and store it in the token manager.
-			openidTokenManager.StoreOpenIdAuthorizedRequestToken(this.ConsumerKey, positiveAuthorization);
-			var grantAccess = await this.Channel.RequestAsync<AuthorizedTokenResponse>(requestAccess, cancellationToken);
-			this.TokenManager.ExpireRequestTokenAndStoreNewAccessToken(this.ConsumerKey, positiveAuthorization.RequestToken, grantAccess.AccessToken, grantAccess.TokenSecret);
+					// Parse the response and ensure that it meets the requirements of the OAuth 1.0 spec.
+					string content = await response.Content.ReadAsStringAsync();
+					var responseData = HttpUtility.ParseQueryString(content);
+					string accessToken = responseData[Protocol.TokenParameter];
+					string tokenSecret = responseData[Protocol.TokenSecretParameter];
+					ErrorUtilities.VerifyProtocol(!string.IsNullOrEmpty(accessToken), MessagingStrings.RequiredParametersMissing, typeof(AuthorizedTokenResponse).Name, Protocol.TokenParameter);
+					ErrorUtilities.VerifyProtocol(tokenSecret != null, MessagingStrings.RequiredParametersMissing, typeof(AuthorizedTokenResponse).Name, Protocol.TokenSecretParameter);
 
-			// Provide the caller with the access token so it may be associated with the user
-			// that is logging in.
-			return grantAccess;
+					responseData.Remove(Protocol.TokenParameter);
+					responseData.Remove(Protocol.TokenSecretParameter);
+					return new AccessTokenResponse(accessToken, tokenSecret, responseData);
+				}
+			}
 		}
 	}
 }
