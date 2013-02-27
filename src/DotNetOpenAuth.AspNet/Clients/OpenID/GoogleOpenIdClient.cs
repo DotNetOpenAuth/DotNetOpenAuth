@@ -38,6 +38,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 				var extraData = new Dictionary<string, string>();
 				extraData.AddItemIfNotEmpty("email", fetchResponse.GetAttributeValue(WellKnownAttributes.Contact.Email));
 				extraData.AddItemIfNotEmpty("country", fetchResponse.GetAttributeValue(WellKnownAttributes.Contact.HomeAddress.Country));
+				extraData.AddItemIfNotEmpty("language", fetchResponse.GetAttributeValue(WellKnownAttributes.Preferences.Language));
 				extraData.AddItemIfNotEmpty("firstName", fetchResponse.GetAttributeValue(WellKnownAttributes.Name.First));
 				extraData.AddItemIfNotEmpty("lastName", fetchResponse.GetAttributeValue(WellKnownAttributes.Name.Last));
 
@@ -57,9 +58,10 @@ namespace DotNetOpenAuth.AspNet.Clients {
 			// Attribute Exchange extensions
 			var fetchRequest = new FetchRequest();
 			fetchRequest.Attributes.AddRequired(WellKnownAttributes.Contact.Email);
-			fetchRequest.Attributes.AddOptional(WellKnownAttributes.Contact.HomeAddress.Country);
-			fetchRequest.Attributes.AddOptional(WellKnownAttributes.Name.First);
-			fetchRequest.Attributes.AddOptional(WellKnownAttributes.Name.Last);
+			fetchRequest.Attributes.AddRequired(WellKnownAttributes.Contact.HomeAddress.Country);
+			fetchRequest.Attributes.AddRequired(WellKnownAttributes.Preferences.Language);
+			fetchRequest.Attributes.AddRequired(WellKnownAttributes.Name.First);
+			fetchRequest.Attributes.AddRequired(WellKnownAttributes.Name.Last);
 
 			request.AddExtension(fetchRequest);
 		}
