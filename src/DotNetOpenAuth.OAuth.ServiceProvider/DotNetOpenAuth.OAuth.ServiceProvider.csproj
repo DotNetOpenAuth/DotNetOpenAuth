@@ -32,6 +32,7 @@
     <Compile Include="OAuth\ChannelElements\StandardTokenGenerator.cs" />
     <Compile Include="OAuth\ChannelElements\TokenHandlingBindingElement.cs" />
     <Compile Include="OAuth\ServiceProvider.cs" />
+    <Compile Include="OAuth\ServiceProviderHostDescription.cs" />
     <Compile Include="OAuth\VerificationCodeFormat.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>

@@ -393,6 +393,15 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Gets the public facing URL for the given incoming HTTP request.
+		/// </summary>
+		/// <returns>The URI that the outside world used to create this request.</returns>
+		public static Uri GetPublicFacingUrl() {
+			ErrorUtilities.VerifyHttpContext();
+			return GetPublicFacingUrl(new HttpRequestWrapper(HttpContext.Current.Request));
+		}
+
+		/// <summary>
 		/// Wraps a response message as an MVC <see cref="ActionResult"/> so it can be conveniently returned from an MVC controller's action method.
 		/// </summary>
 		/// <param name="response">The response message.</param>

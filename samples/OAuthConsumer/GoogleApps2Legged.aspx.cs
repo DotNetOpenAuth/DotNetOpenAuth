@@ -12,26 +12,10 @@
 	using DotNetOpenAuth.OAuth.Messages;
 
 	public partial class GoogleApps2Legged : System.Web.UI.Page {
-		private InMemoryTokenManager TokenManager {
-			get {
-				var tokenManager = (InMemoryTokenManager)Application["GoogleTokenManager"];
-				if (tokenManager == null) {
-					string consumerKey = ConfigurationManager.AppSettings["googleConsumerKey"];
-					string consumerSecret = ConfigurationManager.AppSettings["googleConsumerSecret"];
-					if (!string.IsNullOrEmpty(consumerKey)) {
-						tokenManager = new InMemoryTokenManager(consumerKey, consumerSecret);
-						Application["GoogleTokenManager"] = tokenManager;
-					}
-				}
-
-				return tokenManager;
-			}
-		}
-
 		protected async void Page_Load(object sender, EventArgs e) {
-			var google = new WebConsumer(GoogleConsumer.ServiceDescription, this.TokenManager);
-			string accessToken = await google.RequestNewClientAccountAsync(cancellationToken: Response.ClientDisconnectedToken);
-			using (var httpClient = google.CreateHttpClient(accessToken)) {
+			var google = new GoogleConsumer();
+			var accessToken = await google.RequestNewClientAccountAsync();
+			using (var httpClient = google.CreateHttpClient(accessToken.AccessToken)) {
 				await httpClient.GetAsync("http://someUri", Response.ClientDisconnectedToken);
 			}
 		}

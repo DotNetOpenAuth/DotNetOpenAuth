@@ -107,9 +107,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\DotNetOpenAuth.ApplicationBlock\InMemoryTokenManager.cs">
-      <Link>Code\InMemoryTokenManager.cs</Link>
-    </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

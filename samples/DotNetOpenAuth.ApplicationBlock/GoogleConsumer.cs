@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.ApplicationBlock {
 	using System;
 	using System.Collections.Generic;
+	using System.Configuration;
 	using System.Diagnostics;
 	using System.Globalization;
 	using System.IO;
@@ -19,6 +20,7 @@ namespace DotNetOpenAuth.ApplicationBlock {
 	using System.Text.RegularExpressions;
 	using System.Threading;
 	using System.Threading.Tasks;
+	using System.Web;
 	using System.Xml;
 	using System.Xml.Linq;
 	using DotNetOpenAuth.Messaging;
@@ -64,6 +66,18 @@ namespace DotNetOpenAuth.ApplicationBlock {
 		/// The URI to get contacts once authorization is granted.
 		/// </summary>
 		private static readonly Uri GetContactsEndpoint = new Uri("http://www.google.com/m8/feeds/contacts/default/full/");
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GoogleConsumer"/> class.
+		/// </summary>
+		public GoogleConsumer() {
+			this.ServiceProvider = ServiceDescription;
+			this.ConsumerKey = ConfigurationManager.AppSettings["googleConsumerKey"];
+			this.ConsumerSecret = ConfigurationManager.AppSettings["googleConsumerSecret"];
+			this.TemporaryCredentialStorage = HttpContext.Current != null
+												  ? (ITemporaryCredentialStorage)new CookieTemporaryCredentialStorage()
+												  : new MemoryTemporaryCredentialStorage();
+		}
 
 		/// <summary>
 		/// The many specific authorization scopes Google offers.
@@ -151,19 +165,23 @@ namespace DotNetOpenAuth.ApplicationBlock {
 			Maps = 0x8000,
 		}
 
-		public GoogleConsumer() {
+		/// <summary>
+		/// Gets the scope URI in Google's format.
+		/// </summary>
+		/// <param name="scope">The scope, which may include one or several Google applications.</param>
+		/// <returns>A space-delimited list of URIs for the requested Google applications.</returns>
+		public static string GetScopeUri(Applications scope) {
+			return string.Join(" ", Util.GetIndividualFlags(scope).Select(app => DataScopeUris[(Applications)app]).ToArray());
 		}
 
 		/// <summary>
 		/// Requests authorization from Google to access data from a set of Google applications.
 		/// </summary>
-		/// <param name="consumer">The Google consumer previously constructed using <see cref="CreateWebConsumer" /> or <see cref="CreateDesktopConsumer" />.</param>
 		/// <param name="requestedAccessScope">The requested access scope.</param>
 		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// A task that completes with the asynchronous operation.
 		/// </returns>
-		/// <exception cref="System.ArgumentNullException">consumer</exception>
 		public Task<Uri> RequestUserAuthorizationAsync(Applications requestedAccessScope, CancellationToken cancellationToken = default(CancellationToken)) {
 			var extraParameters = new Dictionary<string, string> {
 				{ "scope", GetScopeUri(requestedAccessScope) },
@@ -175,7 +193,6 @@ namespace DotNetOpenAuth.ApplicationBlock {
 		/// <summary>
 		/// Gets the Gmail address book's contents.
 		/// </summary>
-		/// <param name="consumer">The Google consumer.</param>
 		/// <param name="accessToken">The access token previously retrieved.</param>
 		/// <param name="maxResults">The maximum number of entries to return. If you want to receive all of the contacts, rather than only the default maximum, you can specify a very large number here.</param>
 		/// <param name="startIndex">The 1-based index of the first result to be retrieved (for paging).</param>
@@ -183,7 +200,6 @@ namespace DotNetOpenAuth.ApplicationBlock {
 		/// <returns>
 		/// An XML document returned by Google.
 		/// </returns>
-		/// <exception cref="System.ArgumentNullException">consumer</exception>
 		public async Task<XDocument> GetContactsAsync(AccessToken accessToken, int maxResults = 25, int startIndex = 1, CancellationToken cancellationToken = default(CancellationToken)) {
 			// Enable gzip compression.  Google only compresses the response for recognized user agent headers. - Mike Lim
 			var handler = new HttpClientHandler { AutomaticDecompression = DecompressionMethods.GZip };
@@ -243,15 +259,6 @@ namespace DotNetOpenAuth.ApplicationBlock {
 					}
 				}
 			}
-		}
-
-		/// <summary>
-		/// Gets the scope URI in Google's format.
-		/// </summary>
-		/// <param name="scope">The scope, which may include one or several Google applications.</param>
-		/// <returns>A space-delimited list of URIs for the requested Google applications.</returns>
-		public static string GetScopeUri(Applications scope) {
-			return string.Join(" ", Util.GetIndividualFlags(scope).Select(app => DataScopeUris[(Applications)app]).ToArray());
 		}
 	}
 }

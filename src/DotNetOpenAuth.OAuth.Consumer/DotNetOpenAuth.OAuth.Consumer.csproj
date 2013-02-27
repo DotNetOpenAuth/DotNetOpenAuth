@@ -29,6 +29,7 @@
     <Compile Include="OAuth\OAuth1HttpMessageHandlerBase.cs" />
     <Compile Include="OAuth\OAuth1PlainTextMessageHandler.cs" />
     <Compile Include="OAuth\OAuth1RsaSha1HttpMessageHandler.cs" />
+    <Compile Include="OAuth\ServiceProviderDescription.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>
       </SubType>

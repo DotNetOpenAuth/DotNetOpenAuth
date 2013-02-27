@@ -14,51 +14,33 @@
 	using DotNetOpenAuth.OAuth;
 
 	public partial class Twitter : System.Web.UI.Page {
-		private string AccessToken {
-			get { return (string)Session["TwitterAccessToken"]; }
+		private AccessToken AccessToken {
+			get { return (AccessToken)Session["TwitterAccessToken"]; }
 			set { Session["TwitterAccessToken"] = value; }
 		}
 
-		private InMemoryTokenManager TokenManager {
-			get {
-				var tokenManager = (InMemoryTokenManager)Application["TwitterTokenManager"];
-				if (tokenManager == null) {
-					string consumerKey = ConfigurationManager.AppSettings["twitterConsumerKey"];
-					string consumerSecret = ConfigurationManager.AppSettings["twitterConsumerSecret"];
-					if (!string.IsNullOrEmpty(consumerKey)) {
-						tokenManager = new InMemoryTokenManager(consumerKey, consumerSecret);
-						Application["TwitterTokenManager"] = tokenManager;
-					}
-				}
-
-				return tokenManager;
-			}
-		}
-
 		protected async void Page_Load(object sender, EventArgs e) {
-			if (this.TokenManager != null) {
+			var twitter = new TwitterConsumer();
+			if (twitter.ConsumerKey != null) {
 				this.MultiView1.ActiveViewIndex = 1;
 
 				if (!IsPostBack) {
-					var twitter = new WebConsumer(TwitterConsumer.ServiceDescription, this.TokenManager);
-
 					// Is Twitter calling back with authorization?
-					var accessTokenResponse = await twitter.ProcessUserAuthorizationAsync(new HttpRequestWrapper(Request), Response.ClientDisconnectedToken);
+					var accessTokenResponse = await twitter.ProcessUserAuthorizationAsync(this.Request.Url);
 					if (accessTokenResponse != null) {
 						this.AccessToken = accessTokenResponse.AccessToken;
-					} else if (this.AccessToken == null) {
+					} else {
 						// If we don't yet have access, immediately request it.
-						var message = await twitter.PrepareRequestUserAuthorizationAsync(Response.ClientDisconnectedToken);
-						var response = await twitter.Channel.PrepareResponseAsync(message, Response.ClientDisconnectedToken);
-						await response.SendAsync();
+						Uri redirectUrl = await twitter.RequestUserAuthorizationAsync(MessagingUtilities.GetPublicFacingUrl());
+						this.Response.RedirectLocation = redirectUrl.AbsoluteUri;
 					}
 				}
 			}
 		}
 
 		protected async void downloadUpdates_Click(object sender, EventArgs e) {
-			var twitter = new WebConsumer(TwitterConsumer.ServiceDescription, this.TokenManager);
-			var statusesJson = await TwitterConsumer.GetUpdatesAsync(twitter, this.AccessToken, Response.ClientDisconnectedToken);
+			var twitter = new TwitterConsumer();
+			var statusesJson = await twitter.GetUpdatesAsync(this.AccessToken);
 
 			StringBuilder tableBuilder = new StringBuilder();
 			tableBuilder.Append("<table><tr><td>Name</td><td>Update</td></tr>");
@@ -83,13 +65,11 @@
 				return;
 			}
 
-			var twitter = new WebConsumer(TwitterConsumer.ServiceDescription, this.TokenManager);
-			XDocument imageResult = await TwitterConsumer.UpdateProfileImageAsync(
-				twitter,
+			var twitter = new TwitterConsumer();
+			XDocument imageResult = await twitter.UpdateProfileImageAsync(
 				this.AccessToken,
 				this.profilePhoto.PostedFile.InputStream,
-				this.profilePhoto.PostedFile.ContentType,
-				Response.ClientDisconnectedToken);
+				this.profilePhoto.PostedFile.ContentType);
 			this.photoUploadedLabel.Visible = true;
 		}
 	}

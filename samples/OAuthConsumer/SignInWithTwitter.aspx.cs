@@ -19,7 +19,7 @@
 				this.MultiView1.ActiveViewIndex = 1;
 
 				if (!IsPostBack) {
-					var tuple = await TwitterConsumer.TryFinishSignInWithTwitterAsync(Response.ClientDisconnectedToken);
+					var tuple = await TwitterConsumer.TryFinishSignInWithTwitterAsync();
 					if (tuple != null) {
 						string screenName = tuple.Item1;
 						int userId = tuple.Item2;
@@ -35,8 +35,8 @@
 		}
 
 		protected async void signInButton_Click(object sender, ImageClickEventArgs e) {
-			var response = await TwitterConsumer.StartSignInWithTwitterAsync(this.forceLoginCheckbox.Checked, Response.ClientDisconnectedToken);
-			await response.SendAsync();
+			Uri redirectUrl = await TwitterConsumer.StartSignInWithTwitterAsync(this.forceLoginCheckbox.Checked, Response.ClientDisconnectedToken);
+			this.Response.RedirectLocation = redirectUrl.AbsoluteUri;
 		}
 	}
 }

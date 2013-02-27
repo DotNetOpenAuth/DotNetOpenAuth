@@ -44,7 +44,6 @@
     <Compile Include="OAuth\Messages\ITokenContainingMessage.cs" />
     <Compile Include="OAuth\Messages\SignedMessageBase.cs" />
     <Compile Include="OAuth\ChannelElements\SigningBindingElementBase.cs" />
-    <Compile Include="OAuth\ServiceProviderDescription.cs" />
     <Compile Include="OAuth\ServiceProviderSecuritySettings.cs" />
     <Compile Include="OAuth\ChannelElements\ITamperResistantOAuthMessage.cs" />
     <Compile Include="OAuth\Messages\MessageBase.cs" />
