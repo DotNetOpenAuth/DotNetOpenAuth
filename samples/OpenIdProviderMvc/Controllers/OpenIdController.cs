@@ -82,7 +82,7 @@ namespace OpenIdProviderMvc.Controllers {
 				!this.UserControlsIdentifier(ProviderEndpoint.PendingAuthenticationRequest))
 			{
 				// The user shouldn't have gotten this far without controlling the identifier we'd send an assertion for.
-				return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest);
+				throw new InvalidOperationException();
 			}
 
 			if (ProviderEndpoint.PendingAnonymousRequest != null) {
