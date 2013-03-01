@@ -71,7 +71,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 				ErrorUtilities.VerifyProtocol(accessTokenRequest.GrantType != GrantType.ClientCredentials || accessTokenResponse.RefreshToken == null, OAuthStrings.NoGrantNoRefreshToken);
 			}
 
-			return null;
+			return MessageProtectionTasks.Null;
 		}
 
 		/// <summary>
