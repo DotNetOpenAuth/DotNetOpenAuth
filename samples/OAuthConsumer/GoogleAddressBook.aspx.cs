@@ -2,6 +2,7 @@
 	using System;
 	using System.Configuration;
 	using System.Linq;
+	using System.Net;
 	using System.Text;
 	using System.Web;
 	using System.Web.UI;
@@ -32,7 +33,7 @@
 					} else if (this.AccessToken.Token == null) {
 						// If we don't yet have access, immediately request it.
 						Uri redirectUri = await google.RequestUserAuthorizationAsync(GoogleConsumer.Applications.Contacts);
-						this.Response.RedirectLocation = redirectUri.AbsoluteUri;
+						this.Response.Redirect(redirectUri.AbsoluteUri);
 					}
 				}
 			}

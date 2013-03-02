@@ -32,9 +32,8 @@
 						this.AccessToken = accessTokenResponse.AccessToken;
 					} else {
 						// If we don't yet have access, immediately request it.
-						Uri redirectUrl = await twitter.RequestUserAuthorizationAsync(MessagingUtilities.GetPublicFacingUrl());
-						this.Response.RedirectLocation = redirectUrl.AbsoluteUri;
-						this.Response.StatusCode = (int)HttpStatusCode.Redirect;
+						Uri redirectUri = await twitter.RequestUserAuthorizationAsync(MessagingUtilities.GetPublicFacingUrl());
+						this.Response.Redirect(redirectUri.AbsoluteUri);
 					}
 				}
 			}

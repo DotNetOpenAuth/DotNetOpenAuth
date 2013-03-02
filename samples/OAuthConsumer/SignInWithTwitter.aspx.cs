@@ -3,6 +3,7 @@
 	using System.Collections.Generic;
 	using System.Configuration;
 	using System.Linq;
+	using System.Net;
 	using System.Web;
 	using System.Web.Security;
 	using System.Web.UI;
@@ -35,8 +36,8 @@
 		}
 
 		protected async void signInButton_Click(object sender, ImageClickEventArgs e) {
-			Uri redirectUrl = await TwitterConsumer.StartSignInWithTwitterAsync(this.forceLoginCheckbox.Checked, Response.ClientDisconnectedToken);
-			this.Response.RedirectLocation = redirectUrl.AbsoluteUri;
+			Uri redirectUri = await TwitterConsumer.StartSignInWithTwitterAsync(this.forceLoginCheckbox.Checked, Response.ClientDisconnectedToken);
+			this.Response.Redirect(redirectUri.AbsoluteUri);
 		}
 	}
 }

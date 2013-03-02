@@ -47,7 +47,7 @@
 				{ "scope", scope },
 			};
 			Uri redirectUri = await consumer.RequestUserAuthorizationAsync(callback.Uri, requestParams);
-			this.Response.RedirectLocation = redirectUri.AbsoluteUri;
+			this.Response.Redirect(redirectUri.AbsoluteUri);
 		}
 
 		protected async void getNameButton_Click(object sender, EventArgs e) {
