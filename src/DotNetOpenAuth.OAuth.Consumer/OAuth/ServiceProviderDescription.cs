@@ -32,7 +32,8 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="resourceOwnerAuthorizationEndpoint">The resource owner authorization endpoint.</param>
 		/// <param name="tokenRequestEndpoint">The token request endpoint.</param>
 		public ServiceProviderDescription(
-			string temporaryCredentialsRequestEndpoint, string resourceOwnerAuthorizationEndpoint, string tokenRequestEndpoint) {
+			string temporaryCredentialsRequestEndpoint, string resourceOwnerAuthorizationEndpoint, string tokenRequestEndpoint)
+			: this() {
 			if (temporaryCredentialsRequestEndpoint != null) {
 				this.TemporaryCredentialsRequestEndpoint = new Uri(temporaryCredentialsRequestEndpoint, UriKind.Absolute);
 			}

@@ -159,6 +159,10 @@ namespace DotNetOpenAuth.ApplicationBlock {
 		}
 
 		public async Task<JArray> GetUpdatesAsync(AccessToken accessToken, CancellationToken cancellationToken = default(CancellationToken)) {
+			if (String.IsNullOrEmpty(accessToken.Token)) {
+				throw new ArgumentNullException("accessToken.Token");
+			}
+
 			using (var httpClient = this.CreateHttpClient(accessToken)) {
 				using (var response = await httpClient.GetAsync(GetFriendTimelineStatusEndpoint, cancellationToken)) {
 					response.EnsureSuccessStatusCode();
@@ -170,6 +174,10 @@ namespace DotNetOpenAuth.ApplicationBlock {
 		}
 
 		public async Task<XDocument> GetFavorites(AccessToken accessToken, CancellationToken cancellationToken = default(CancellationToken)) {
+			if (String.IsNullOrEmpty(accessToken.Token)) {
+				throw new ArgumentNullException("accessToken.Token");
+			}
+
 			using (var httpClient = this.CreateHttpClient(accessToken)) {
 				using (HttpResponseMessage response = await httpClient.GetAsync(GetFavoritesEndpoint, cancellationToken)) {
 					response.EnsureSuccessStatusCode();

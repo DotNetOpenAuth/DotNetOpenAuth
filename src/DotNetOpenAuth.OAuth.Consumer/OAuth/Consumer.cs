@@ -215,7 +215,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// <returns>
 		/// The access token assigned by the Service Provider, or <c>null</c> if no response was detected in the specified URL.
 		/// </returns>
-		public Task<AccessTokenResponse> ProcessUserAuthorizationAsync(Uri authorizationCompleteUri, CancellationToken cancellationToken = default(CancellationToken)) {
+		public async Task<AccessTokenResponse> ProcessUserAuthorizationAsync(Uri authorizationCompleteUri, CancellationToken cancellationToken = default(CancellationToken)) {
 			Requires.NotNull(authorizationCompleteUri, "authorizationCompleteUri");
 			Verify.Operation(this.TemporaryCredentialStorage != null, Strings.RequiredPropertyNotYetPreset, "TemporaryCredentialStorage");
 
@@ -235,7 +235,7 @@ namespace DotNetOpenAuth.OAuth {
 			var temporaryCredential = this.TemporaryCredentialStorage.RetrieveTemporaryCredential();
 			Verify.Operation(string.Equals(temporaryCredential.Key, identifier, StringComparison.Ordinal), "Temporary credential identifiers do not match.");
 
-			return this.ProcessUserAuthorizationAsync(verifier, cancellationToken);
+			return await this.ProcessUserAuthorizationAsync(verifier, cancellationToken);
 		}
 
 		/// <summary>

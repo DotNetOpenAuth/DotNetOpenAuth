@@ -3,6 +3,7 @@
 	using System.Collections.Generic;
 	using System.Configuration;
 	using System.Linq;
+	using System.Net;
 	using System.Text;
 	using System.Web;
 	using System.Web.UI;
@@ -15,7 +16,7 @@
 
 	public partial class Twitter : System.Web.UI.Page {
 		private AccessToken AccessToken {
-			get { return (AccessToken)Session["TwitterAccessToken"]; }
+			get { return (AccessToken)(Session["TwitterAccessToken"] ?? new AccessToken()); }
 			set { Session["TwitterAccessToken"] = value; }
 		}
 
@@ -33,6 +34,7 @@
 						// If we don't yet have access, immediately request it.
 						Uri redirectUrl = await twitter.RequestUserAuthorizationAsync(MessagingUtilities.GetPublicFacingUrl());
 						this.Response.RedirectLocation = redirectUrl.AbsoluteUri;
+						this.Response.StatusCode = (int)HttpStatusCode.Redirect;
 					}
 				}
 			}
