@@ -219,7 +219,7 @@ namespace DotNetOpenAuth.ApplicationBlock {
 			}
 		}
 
-		public async Task PostBlogEntryAsync(AccessToken accessToken, string blogUrl, string title, XElement body, CancellationToken cancellationToken) {
+		public async Task PostBlogEntryAsync(AccessToken accessToken, string blogUrl, string title, XElement body, CancellationToken cancellationToken = default(CancellationToken)) {
 			string feedUrl;
 			var getBlogHome = WebRequest.Create(blogUrl);
 			using (var blogHomeResponse = getBlogHome.GetResponse()) {

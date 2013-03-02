@@ -4,6 +4,7 @@
 	using System.Web;
 	using System.Web.Security;
 	using DotNetOpenAuth.ApplicationBlock;
+	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.Messages;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Extensions.AttributeExchange;
@@ -25,7 +26,7 @@
 				switch (authResponse.Status) {
 					case AuthenticationStatus.Authenticated:
 						State.FetchResponse = authResponse.GetExtension<FetchResponse>();
-						AuthorizedTokenResponse accessToken = await Global.GoogleWebConsumer.ProcessUserAuthorizationAsync(authResponse, Response.ClientDisconnectedToken);
+						AccessTokenResponse accessToken = await Global.GoogleWebConsumer.ProcessUserAuthorizationAsync(authResponse, Response.ClientDisconnectedToken);
 						if (accessToken != null) {
 							State.GoogleAccessToken = accessToken.AccessToken;
 							FormsAuthentication.SetAuthCookie(authResponse.ClaimedIdentifier, false);
@@ -56,7 +57,7 @@
 			// that is properly registered with Google.
 			// We will customize the realm to use http or https based on what the
 			// return_to URL will be (which will be this page).
-			Realm realm = Request.Url.Scheme + Uri.SchemeDelimiter + Global.GoogleTokenManager.ConsumerKey + "/";
+			Realm realm = Request.Url.Scheme + Uri.SchemeDelimiter + (new GoogleConsumer()).ConsumerKey + "/";
 			IAuthenticationRequest authReq = await relyingParty.CreateRequestAsync(GoogleOPIdentifier, realm, cancellationToken: Response.ClientDisconnectedToken);
 
 			// Prepare the OAuth extension

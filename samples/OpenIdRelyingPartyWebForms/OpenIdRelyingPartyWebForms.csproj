@@ -100,9 +100,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\DotNetOpenAuth.ApplicationBlock\InMemoryTokenManager.cs">
-      <Link>Code\InMemoryTokenManager.cs</Link>
-    </Compile>
     <Compile Include="ajaxlogin.aspx.cs">
       <DependentUpon>ajaxlogin.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

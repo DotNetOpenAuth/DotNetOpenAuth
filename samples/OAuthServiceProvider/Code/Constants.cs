@@ -10,9 +10,9 @@
 	public static class Constants {
 		public static Uri WebRootUrl { get; set; }
 
-		public static ServiceProviderDescription SelfDescription {
+		public static ServiceProviderHostDescription SelfDescription {
 			get {
-				ServiceProviderDescription description = new ServiceProviderDescription {
+				var description = new ServiceProviderHostDescription {
 					AccessTokenEndpoint = new MessageReceivingEndpoint(new Uri(WebRootUrl, "/OAuth.ashx"), HttpDeliveryMethods.PostRequest),
 					RequestTokenEndpoint = new MessageReceivingEndpoint(new Uri(WebRootUrl, "/OAuth.ashx"), HttpDeliveryMethods.PostRequest),
 					UserAuthorizationEndpoint = new MessageReceivingEndpoint(new Uri(WebRootUrl, "/OAuth.ashx"), HttpDeliveryMethods.PostRequest),

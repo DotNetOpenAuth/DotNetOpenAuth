@@ -92,23 +92,13 @@
                 </Grid.ColumnDefinitions>
                 <Label Grid.Row="0">Request Token URL</Label>
                 <TextBox Grid.Column="1" x:Name="requestTokenUrlBox" />
-                <ComboBox Grid.Column="2" x:Name="requestTokenHttpMethod" SelectedIndex="1">
-                    <ComboBox.Items>
-                        <ComboBoxItem>GET</ComboBoxItem>
-                        <ComboBoxItem>POST</ComboBoxItem>
-                    </ComboBox.Items>
-                </ComboBox>
+                <Label Grid.Column="2">POST</Label>
                 <Label Grid.Row="1">Authorize URL</Label>
                 <TextBox Grid.Row="1" Grid.Column="1" x:Name="authorizeUrlBox" />
                 <Label Grid.Row="1" Grid.Column="2">GET</Label>
                 <Label Grid.Row="2">Access Token URL</Label>
                 <TextBox Grid.Row="2" Grid.Column="1" x:Name="accessTokenUrlBox" />
-                <ComboBox Grid.Row="2" Grid.Column="2" x:Name="accessTokenHttpMethod" SelectedIndex="1">
-                    <ComboBox.Items>
-                        <ComboBoxItem>GET</ComboBoxItem>
-                        <ComboBoxItem>POST</ComboBoxItem>
-                    </ComboBox.Items>
-                </ComboBox>
+                <Label Grid.Row="2" Grid.Column="2">POST</Label>
                 <Label Grid.Row="3">Resource URL</Label>
                 <TextBox Grid.Row="3" Grid.Column="1" x:Name="resourceUrlBox" />
                 <ComboBox Grid.Row="3" Grid.Column="2" x:Name="resourceHttpMethodList" SelectedIndex="0">
@@ -123,10 +113,9 @@
                 <Label Grid.Row="5">Consumer secret</Label>
                 <TextBox Grid.Row="5" Grid.Column="1" x:Name="consumerSecretBox" Grid.ColumnSpan="2"/>
                 <Label Grid.Row="6">OAuth version</Label>
-                <ComboBox Grid.Row="6" Grid.Column="1" SelectedIndex="1" x:Name="oauthVersion">
+                <ComboBox Grid.Row="6" Grid.Column="1" SelectedIndex="0" x:Name="oauthVersion">
                     <ComboBox.Items>
-                        <ComboBoxItem>1.0</ComboBoxItem>
-                        <ComboBoxItem>1.0a</ComboBoxItem>
+                        <ComboBoxItem>RFC 5849</ComboBoxItem>
                     </ComboBox.Items>
                 </ComboBox>
                 <Button Grid.Row="7" Grid.Column="1" x:Name="beginButton" Click="beginButton_Click">Begin</Button>
