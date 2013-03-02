@@ -10,6 +10,7 @@ namespace DotNetOpenAuth.OAuth2 {
 	using System.IO;
 	using System.Security.Cryptography;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OAuth2.ChannelElements;
 	using Validation;
 
@@ -30,6 +31,14 @@ namespace DotNetOpenAuth.OAuth2 {
 		}
 
 		/// <summary>
+		/// Initializes a new instance of the <see cref="StandardAccessTokenAnalyzer"/> class.
+		/// </summary>
+		public StandardAccessTokenAnalyzer(ICryptoKeyStore symmetricKeyStore) {
+			Requires.NotNull(symmetricKeyStore, "symmetricKeyStore");
+			this.SymmetricKeyStore = symmetricKeyStore;
+		}
+
+		/// <summary>
 		/// Gets the authorization server public signing key.
 		/// </summary>
 		/// <value>The authorization server public signing key.</value>
@@ -41,6 +50,8 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <value>The resource server private encryption key.</value>
 		public RSACryptoServiceProvider ResourceServerPrivateEncryptionKey { get; private set; }
 
+		public ICryptoKeyStore SymmetricKeyStore { get; private set; }
+
 		/// <summary>
 		/// Reads an access token to find out what data it authorizes access to.
 		/// </summary>
@@ -50,7 +61,9 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <exception cref="ProtocolException">Thrown if the access token is expired, invalid, or from an untrusted authorization server.</exception>
 		public virtual AccessToken DeserializeAccessToken(IDirectedProtocolMessage message, string accessToken) {
 			ErrorUtilities.VerifyProtocol(!string.IsNullOrEmpty(accessToken), ResourceServerStrings.MissingAccessToken);
-			var accessTokenFormatter = AccessToken.CreateFormatter(this.AuthorizationServerPublicSigningKey, this.ResourceServerPrivateEncryptionKey);
+			var accessTokenFormatter = this.AuthorizationServerPublicSigningKey != null
+				? AccessToken.CreateFormatter(this.AuthorizationServerPublicSigningKey, this.ResourceServerPrivateEncryptionKey)
+				: AccessToken.CreateFormatter(this.SymmetricKeyStore);
 			var token = new AccessToken();
 			try {
 				accessTokenFormatter.Deserialize(token, accessToken, message, Protocol.access_token);
