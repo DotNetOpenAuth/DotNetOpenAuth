@@ -50,11 +50,6 @@
     <Compile Include="AuthenticationResult.cs" />
     <Compile Include="Clients\DictionaryExtensions.cs" />
     <Compile Include="Clients\OAuth2\WindowsLiveClient.cs" />
-    <Compile Include="Clients\OAuth\AuthenticationOnlyCookieOAuthTokenManager.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Clients\OAuth\CookieOAuthTokenManager.cs" />
-    <Compile Include="Clients\OAuth\IOAuthTokenManager.cs" />
     <Compile Include="IAuthenticationClient.cs" />
     <Compile Include="Clients\OAuth2\FacebookClient.cs" />
     <Compile Include="Clients\OAuth2\FacebookGraphData.cs" />
@@ -64,7 +59,6 @@
     <Compile Include="Clients\OAuth2\MicrosoftClient.cs" />
     <Compile Include="Clients\OAuth2\MicrosoftClientUserData.cs" />
     <Compile Include="Clients\OAuth\DotNetOpenAuthWebConsumer.cs" />
-    <Compile Include="Clients\OAuth\InMemoryOAuthTokenManager.cs" />
     <Compile Include="Clients\OAuth\IOAuthWebWorker.cs" />
     <Compile Include="Clients\OAuth\LinkedInClient.cs" />
     <Compile Include="Clients\OAuth\OAuthClient.cs" />

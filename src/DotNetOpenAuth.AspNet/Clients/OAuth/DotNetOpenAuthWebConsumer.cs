@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 	using System.Net.Http;
 	using System.Threading;
 	using System.Threading.Tasks;
+	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.ChannelElements;
@@ -20,13 +21,13 @@ namespace DotNetOpenAuth.AspNet.Clients {
 	/// <summary>
 	/// The dot net open auth web consumer.
 	/// </summary>
-	public class DotNetOpenAuthWebConsumer : IOAuthWebWorker, IDisposable {
+	public class DotNetOpenAuthWebConsumer : IOAuthWebWorker {
 		#region Constants and Fields
 
 		/// <summary>
 		/// The _web consumer.
 		/// </summary>
-		private readonly WebConsumer webConsumer;
+		private readonly Consumer webConsumer;
 
 		#endregion
 
@@ -41,11 +42,15 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <param name="tokenManager">
 		/// The token manager.
 		/// </param>
-		public DotNetOpenAuthWebConsumer(ServiceProviderDescription serviceDescription, IConsumerTokenManager tokenManager) {
+		public DotNetOpenAuthWebConsumer(ServiceProviderDescription serviceDescription, string consumerKey, string consumerSecret) {
 			Requires.NotNull(serviceDescription, "serviceDescription");
-			Requires.NotNull(tokenManager, "tokenManager");
 
-			this.webConsumer = new WebConsumer(serviceDescription, tokenManager);
+			this.webConsumer = new Consumer {
+				ServiceProvider = serviceDescription,
+				ConsumerKey = consumerKey,
+				ConsumerSecret = consumerSecret,
+				TemporaryCredentialStorage = new CookieTemporaryCredentialStorage(),
+			};
 		}
 
 		#endregion
@@ -53,7 +58,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <summary>
 		/// Gets the DotNetOpenAuth <see cref="WebConsumer"/> instance that can be used to make OAuth 1.0 authorized HTTP requests.
 		/// </summary>
-		public WebConsumer Consumer {
+		public Consumer Consumer {
 			get { return this.webConsumer; }
 		}
 
@@ -63,8 +68,8 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// Creates an HTTP message handler that authorizes outgoing web requests.
 		/// </summary>
 		/// <param name="accessToken">The access token.</param>
-		public HttpMessageHandler CreateMessageHandler(string accessToken) {
-			Requires.NotNullOrEmpty(accessToken, "accessToken");
+		public HttpMessageHandler CreateMessageHandler(AccessToken accessToken) {
+			Requires.NotNullOrEmpty(accessToken.Token, "accessToken");
 
 			return this.Consumer.CreateMessageHandler(accessToken);
 		}
@@ -76,8 +81,12 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <returns>
 		/// The response message.
 		/// </returns>
-		public Task<AuthorizedTokenResponse> ProcessUserAuthorizationAsync(CancellationToken cancellationToken = default(CancellationToken)) {
-			return this.webConsumer.ProcessUserAuthorizationAsync(cancellationToken: cancellationToken);
+		public Task<AccessTokenResponse> ProcessUserAuthorizationAsync(HttpContextBase context = null, CancellationToken cancellationToken = default(CancellationToken)) {
+			if (context == null) {
+				context = new HttpContextWrapper(HttpContext.Current);
+			}
+
+			return this.webConsumer.ProcessUserAuthorizationAsync(context.Request.Url, cancellationToken: cancellationToken);
 		}
 
 		/// <summary>
@@ -88,37 +97,10 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <returns>
 		/// The response message.
 		/// </returns>
-		public async Task<HttpResponseMessage> RequestAuthenticationAsync(Uri callback, CancellationToken cancellationToken = default(CancellationToken)) {
-			var redirectParameters = new Dictionary<string, string>();
-			UserAuthorizationRequest request = await this.webConsumer.PrepareRequestUserAuthorizationAsync(
-				callback, null, redirectParameters, cancellationToken);
-			var response = await this.webConsumer.Channel.PrepareResponseAsync(request, cancellationToken);
-			return response;
+		public Task<Uri> RequestAuthenticationAsync(Uri callback, CancellationToken cancellationToken = default(CancellationToken)) {
+			return this.webConsumer.RequestUserAuthorizationAsync(callback, cancellationToken: cancellationToken);
 		}
 
 		#endregion
-
-		#region IDisposable members
-
-		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
-		/// <filterpriority>2</filterpriority>
-		public void Dispose() {
-			this.Dispose(true);
-			GC.SuppressFinalize(this);
-		}
-
-		#endregion
-
-		/// <summary>
-		/// Releases unmanaged and - optionally - managed resources
-		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-		protected virtual void Dispose(bool disposing) {
-			if (disposing) {
-				this.webConsumer.Dispose();
-			}
-		}
 	}
 }

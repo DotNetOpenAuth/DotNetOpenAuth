@@ -10,7 +10,9 @@ namespace DotNetOpenAuth.AspNet.Clients {
 	using System.Net.Http;
 	using System.Threading;
 	using System.Threading.Tasks;
+	using System.Web;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.Messages;
 
 	/// <summary>
@@ -21,23 +23,23 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// Creates an HTTP message handler that authorizes outgoing web requests.
 		/// </summary>
 		/// <param name="accessToken">The access token.</param>
-		HttpMessageHandler CreateMessageHandler(string accessToken);
+		HttpMessageHandler CreateMessageHandler(AccessToken accessToken);
 
 		/// <summary>
 		/// The process user authorization.
 		/// </summary>
 		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
-		/// The response message.
+		/// The access token, if obtained; otherwise <c>null</c>.
 		/// </returns>
-		Task<AuthorizedTokenResponse> ProcessUserAuthorizationAsync(CancellationToken cancellationToken = default(CancellationToken));
+		Task<AccessTokenResponse> ProcessUserAuthorizationAsync(HttpContextBase context = null, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// The request authentication.
 		/// </summary>
 		/// <param name="callback">The callback.</param>
 		/// <param name="cancellationToken">The cancellation token.</param>
-		/// <returns>The response message</returns>
-		Task<HttpResponseMessage> RequestAuthenticationAsync(Uri callback, CancellationToken cancellationToken = default(CancellationToken));
+		/// <returns>The URL to redirect the user agent to.</returns>
+		Task<Uri> RequestAuthenticationAsync(Uri callback, CancellationToken cancellationToken = default(CancellationToken));
 	}
 }
