@@ -1,0 +1,13 @@
+﻿@{
+	ViewBag.Title = "Authorize";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Authorize</h2>
+
+@using (Html.BeginForm("Respond", "User", FormMethod.Post)) {
+	@AntiForgery.GetHtml()
+	@Html.Hidden("request", this.ViewData["request"])
+	<input type="submit" name="approval" value="true" />
+	<input type="submit" name="approval" value="false" />
+}
