@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.OAuth2 {
 	using System.Security.Cryptography;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OAuth2.ChannelElements;
 
 	/// <summary>
@@ -40,12 +41,23 @@ namespace DotNetOpenAuth.OAuth2 {
 		public RSACryptoServiceProvider ResourceServerEncryptionKey { get; set; }
 
 		/// <summary>
+		/// Gets or sets the symmetric key store to use if the asymmetric key properties are not set.
+		/// </summary>
+		public ICryptoKeyStore SymmetricKeyStore { get; set; }
+
+		/// <summary>
 		/// Serializes this instance to a simple string for transmission to the client.
 		/// </summary>
 		/// <returns>A non-empty string.</returns>
 		protected internal override string Serialize() {
-			ErrorUtilities.VerifyHost(this.AccessTokenSigningKey != null, AuthServerStrings.AccessTokenSigningKeyMissing);
-			var formatter = CreateFormatter(this.AccessTokenSigningKey, this.ResourceServerEncryptionKey);
+			ErrorUtilities.VerifyHost(this.AccessTokenSigningKey != null || this.SymmetricKeyStore != null, AuthServerStrings.AccessTokenSigningKeyMissing);
+			IDataBagFormatter<AccessToken> formatter;
+			if (this.AccessTokenSigningKey != null) {
+				formatter = CreateFormatter(this.AccessTokenSigningKey, this.ResourceServerEncryptionKey);
+			} else {
+				formatter = CreateFormatter(this.SymmetricKeyStore);
+			}
+
 			return formatter.Serialize(this);
 		}
 	}
