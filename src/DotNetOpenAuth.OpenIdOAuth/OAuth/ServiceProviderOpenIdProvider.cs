@@ -41,7 +41,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// </summary>
 		/// <param name="serviceDescription">The endpoints and behavior on the Service Provider.</param>
 		/// <param name="tokenManager">The host's method of storing and recalling tokens and secrets.</param>
-		public ServiceProviderOpenIdProvider(ServiceProviderDescription serviceDescription, IServiceProviderTokenManager tokenManager)
+		public ServiceProviderOpenIdProvider(ServiceProviderHostDescription serviceDescription, IServiceProviderTokenManager tokenManager)
 			: base(serviceDescription, tokenManager) {
 		}
 
@@ -51,7 +51,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="serviceDescription">The service description.</param>
 		/// <param name="tokenManager">The token manager.</param>
 		/// <param name="messageTypeProvider">The message type provider.</param>
-		public ServiceProviderOpenIdProvider(ServiceProviderDescription serviceDescription, IServiceProviderTokenManager tokenManager, OAuthServiceProviderMessageFactory messageTypeProvider)
+		public ServiceProviderOpenIdProvider(ServiceProviderHostDescription serviceDescription, IServiceProviderTokenManager tokenManager, OAuthServiceProviderMessageFactory messageTypeProvider)
 			: base(serviceDescription, tokenManager, messageTypeProvider) {
 		}
 
@@ -61,7 +61,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="serviceDescription">The service description.</param>
 		/// <param name="tokenManager">The token manager.</param>
 		/// <param name="nonceStore">The nonce store.</param>
-		public ServiceProviderOpenIdProvider(ServiceProviderDescription serviceDescription, IServiceProviderTokenManager tokenManager, INonceStore nonceStore)
+		public ServiceProviderOpenIdProvider(ServiceProviderHostDescription serviceDescription, IServiceProviderTokenManager tokenManager, INonceStore nonceStore)
 			: base(serviceDescription, tokenManager, nonceStore) {
 		}
 
@@ -72,7 +72,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="tokenManager">The token manager.</param>
 		/// <param name="nonceStore">The nonce store.</param>
 		/// <param name="messageTypeProvider">The message type provider.</param>
-		public ServiceProviderOpenIdProvider(ServiceProviderDescription serviceDescription, IServiceProviderTokenManager tokenManager, INonceStore nonceStore, OAuthServiceProviderMessageFactory messageTypeProvider)
+		public ServiceProviderOpenIdProvider(ServiceProviderHostDescription serviceDescription, IServiceProviderTokenManager tokenManager, INonceStore nonceStore, OAuthServiceProviderMessageFactory messageTypeProvider)
 			: base(serviceDescription, tokenManager, nonceStore, messageTypeProvider) {
 		}
 

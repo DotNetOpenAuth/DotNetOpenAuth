@@ -28,21 +28,10 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <summary>
 		/// Describes the OAuth service provider endpoints for LinkedIn.
 		/// </summary>
-		public static readonly ServiceProviderDescription LinkedInServiceDescription = new ServiceProviderDescription {
-			RequestTokenEndpoint =
-				new MessageReceivingEndpoint(
-					"https://api.linkedin.com/uas/oauth/requestToken",
-					HttpDeliveryMethods.GetRequest | HttpDeliveryMethods.AuthorizationHeaderRequest),
-			UserAuthorizationEndpoint =
-				new MessageReceivingEndpoint(
-					"https://www.linkedin.com/uas/oauth/authenticate",
-					HttpDeliveryMethods.GetRequest | HttpDeliveryMethods.AuthorizationHeaderRequest),
-			AccessTokenEndpoint =
-				new MessageReceivingEndpoint(
-					"https://api.linkedin.com/uas/oauth/accessToken",
-					HttpDeliveryMethods.GetRequest | HttpDeliveryMethods.AuthorizationHeaderRequest),
-			TamperProtectionElements = new ITamperProtectionChannelBindingElement[] { new HmacSha1SigningBindingElement() },
-		};
+		public static readonly ServiceProviderDescription LinkedInServiceDescription = new ServiceProviderDescription(
+			"https://api.linkedin.com/uas/oauth/requestToken",
+			"https://www.linkedin.com/uas/oauth/authenticate",
+			"https://api.linkedin.com/uas/oauth/accessToken");
 
 		#endregion
 
@@ -51,28 +40,10 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="LinkedInClient"/> class.
 		/// </summary>
-		/// <remarks>
-		/// Tokens exchanged during the OAuth handshake are stored in cookies.
-		/// </remarks>
-		/// <param name="consumerKey">
-		/// The LinkedIn app's consumer key. 
-		/// </param>
-		/// <param name="consumerSecret">
-		/// The LinkedIn app's consumer secret. 
-		/// </param>
-		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope",
-			Justification = "We can't dispose the object because we still need it through the app lifetime.")]
-		public LinkedInClient(string consumerKey, string consumerSecret)
-			: this(consumerKey, consumerSecret, new CookieOAuthTokenManager()) { }
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="LinkedInClient"/> class.
-		/// </summary>
 		/// <param name="consumerKey">The consumer key.</param>
 		/// <param name="consumerSecret">The consumer secret.</param>
-		/// <param name="tokenManager">The token manager.</param>
-		public LinkedInClient(string consumerKey, string consumerSecret, IOAuthTokenManager tokenManager)
-			: base("linkedIn", LinkedInServiceDescription, new SimpleConsumerTokenManager(consumerKey, consumerSecret, tokenManager)) {
+		public LinkedInClient(string consumerKey, string consumerSecret)
+			: base("linkedIn", LinkedInServiceDescription, consumerKey, consumerSecret) {
 		}
 
 		#endregion
@@ -89,12 +60,11 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// </returns>
 		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes",
 			Justification = "We don't care if the request fails.")]
-		protected override async Task<AuthenticationResult> VerifyAuthenticationCoreAsync(AuthorizedTokenResponse response, CancellationToken cancellationToken = default(CancellationToken)) {
+		protected override async Task<AuthenticationResult> VerifyAuthenticationCoreAsync(AccessTokenResponse response, CancellationToken cancellationToken = default(CancellationToken)) {
 			// See here for Field Selectors API http://developer.linkedin.com/docs/DOC-1014
 			const string ProfileRequestUrl = "https://api.linkedin.com/v1/people/~:(id,first-name,last-name,headline,industry,summary)";
 
-			string accessToken = response.AccessToken;
-
+			var accessToken = response.AccessToken;
 			var authorizingHandler = this.WebWorker.CreateMessageHandler(accessToken);
 			try {
 				using (var httpClient = new HttpClient(authorizingHandler)) {
@@ -108,7 +78,8 @@ namespace DotNetOpenAuth.AspNet.Clients {
 							string userName = firstName + " " + lastName;
 
 							var extraData = new Dictionary<string, string>();
-							extraData.Add("accesstoken", accessToken);
+							extraData.Add("accesstoken", accessToken.Token);
+							extraData.Add("accesstokensecret", accessToken.Secret);
 							extraData.Add("name", userName);
 							extraData.AddDataIfNotEmpty(document, "headline");
 							extraData.AddDataIfNotEmpty(document, "summary");
@@ -123,8 +94,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 						}
 					}
 				}
-			}
-			catch (Exception exception) {
+			} catch (Exception exception) {
 				return new AuthenticationResult(exception);
 			}
 		}

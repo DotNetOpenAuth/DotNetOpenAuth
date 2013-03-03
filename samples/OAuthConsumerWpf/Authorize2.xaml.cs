@@ -31,6 +31,10 @@
 			get { return this.clientAuthorizationView.Authorization; }
 		}
 
+		public ClientAuthorizationView ClientAuthorizationView {
+			get { return this.clientAuthorizationView; }
+		}
+
 		private void clientAuthorizationView_Completed(object sender, ClientAuthorizationCompleteEventArgs e) {
 			this.DialogResult = e.Authorization != null;
 			this.Close();

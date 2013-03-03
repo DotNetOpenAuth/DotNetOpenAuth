@@ -1,5 +1,6 @@
 ﻿namespace OpenIdRelyingPartyWebForms {
 	using System;
+	using System.Web;
 	using System.Web.Security;
 	using DotNetOpenAuth.ApplicationBlock;
 	using DotNetOpenAuth.Messaging;
@@ -23,24 +24,19 @@
 		}
 
 		protected void identifierBox_LoggingIn(object sender, OpenIdEventArgs e) {
-			ServiceProviderDescription serviceDescription = new ServiceProviderDescription {
-				TamperProtectionElements = new ITamperProtectionChannelBindingElement[] { new HmacSha1SigningBindingElement() },
-			};
-
-			var consumer = new WebConsumerOpenIdRelyingParty(serviceDescription, Global.OwnSampleOPHybridTokenManager);
+			var consumer = CreateConsumer();
 			consumer.AttachAuthorizationRequest(e.Request, "http://tempuri.org/IDataApi/GetName");
 		}
 
 		protected async void identifierBox_LoggedIn(object sender, OpenIdEventArgs e) {
 			State.FetchResponse = e.Response.GetExtension<FetchResponse>();
 
-			ServiceProviderDescription serviceDescription = new ServiceProviderDescription {
-				AccessTokenEndpoint = new MessageReceivingEndpoint(new Uri(e.Response.Provider.Uri, "/access_token.ashx"), HttpDeliveryMethods.AuthorizationHeaderRequest | HttpDeliveryMethods.PostRequest),
-				TamperProtectionElements = new ITamperProtectionChannelBindingElement[] { new HmacSha1SigningBindingElement() },
+			var serviceDescription = new ServiceProviderDescription {
+				TokenRequestEndpoint = new Uri(e.Response.Provider.Uri, "/access_token.ashx"),
 			};
-			var consumer = new WebConsumerOpenIdRelyingParty(serviceDescription, Global.OwnSampleOPHybridTokenManager);
-
-			AuthorizedTokenResponse accessToken = await consumer.ProcessUserAuthorizationAsync(e.Response);
+			var consumer = CreateConsumer();
+			consumer.ServiceProvider = serviceDescription;
+			AccessTokenResponse accessToken = await consumer.ProcessUserAuthorizationAsync(e.Response);
 			if (accessToken != null) {
 				this.MultiView1.SetActiveView(this.AuthorizationGiven);
 
@@ -57,6 +53,13 @@
 
 		protected void identifierBox_Failed(object sender, OpenIdEventArgs e) {
 			this.MultiView1.SetActiveView(this.AuthenticationFailed);
+		}
+
+		private static WebConsumerOpenIdRelyingParty CreateConsumer() {
+			var consumer = new WebConsumerOpenIdRelyingParty();
+			consumer.ConsumerKey = new Uri(HttpContext.Current.Request.Url, HttpContext.Current.Request.ApplicationPath).AbsoluteUri;
+			consumer.ConsumerSecret = "some crazy secret";
+			return consumer;
 		}
 	}
 }

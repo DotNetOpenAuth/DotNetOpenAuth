@@ -25,7 +25,6 @@
     <Compile Include="Configuration\OAuthServiceProviderElement.cs" />
     <Compile Include="Configuration\OAuthServiceProviderSecuritySettingsElement.cs" />
     <Compile Include="Messaging\ITamperProtectionChannelBindingElement.cs" />
-    <Compile Include="OAuthReporting.cs" />
     <Compile Include="OAuth\ChannelElements\ITokenManager.cs" />
     <Compile Include="OAuth\ChannelElements\OAuthHttpMethodBindingElement.cs" />
     <Compile Include="OAuth\ChannelElements\PlaintextSigningBindingElement.cs" />
@@ -35,13 +34,13 @@
     <Compile Include="OAuth\ChannelElements\UriOrOobEncoding.cs" />
     <Compile Include="OAuth\ConsumerSecuritySettings.cs" />
     <Compile Include="OAuth\Messages\ITokenSecretContainingMessage.cs" />
+    <Compile Include="OAuth\Messages\MessageBaseSimple.cs" />
     <Compile Include="OAuth\OAuthStrings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>OAuthStrings.resx</DependentUpon>
     </Compile>
     <Compile Include="OAuth\SecuritySettings.cs" />
-    <Compile Include="OAuth\ServiceProviderDescription.cs" />
     <Compile Include="OAuth\Messages\ITokenContainingMessage.cs" />
     <Compile Include="OAuth\Messages\SignedMessageBase.cs" />
     <Compile Include="OAuth\ChannelElements\SigningBindingElementBase.cs" />

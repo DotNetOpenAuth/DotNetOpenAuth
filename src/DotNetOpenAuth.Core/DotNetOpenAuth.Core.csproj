@@ -22,10 +22,12 @@
     <Compile Include="Assumes.cs" />
     <Compile Include="IHostFactories.cs" />
     <Compile Include="IRequireHostFactories.cs" />
+    <Compile Include="MachineKeyUtil.cs" />
     <Compile Include="Messaging\Base64WebEncoder.cs" />
     <Compile Include="Messaging\Bindings\AsymmetricCryptoKeyStoreWrapper.cs" />
     <Compile Include="Messaging\Bindings\CryptoKey.cs" />
     <Compile Include="Messaging\Bindings\CryptoKeyCollisionException.cs" />
+    <Compile Include="Messaging\Bindings\HardCodedKeyCryptoKeyStore.cs" />
     <Compile Include="Messaging\Bindings\ICryptoKeyStore.cs" />
     <Compile Include="Messaging\Bindings\MemoryCryptoKeyStore.cs" />
     <Compile Include="Messaging\BinaryDataBagFormatter.cs" />

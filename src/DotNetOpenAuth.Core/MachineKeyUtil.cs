@@ -4,7 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.AspNet {
+namespace DotNetOpenAuth {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
@@ -183,7 +183,7 @@ namespace DotNetOpenAuth.AspNet {
 				}
 
 				// if we reached this point, some cryptographic operation failed
-				throw new CryptographicException(WebResources.Generic_CryptoFailure);
+				throw new CryptographicException(Strings.Generic_CryptoFailure);
 			}
 
 			/// <summary>

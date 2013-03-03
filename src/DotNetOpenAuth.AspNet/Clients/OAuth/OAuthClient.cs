@@ -33,34 +33,14 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// Name of the provider. 
 		/// </param>
 		/// <param name="serviceDescription">
-		/// The service description. 
-		/// </param>
-		/// <param name="consumerKey">
-		/// The consumer key. 
-		/// </param>
-		/// <param name="consumerSecret">
-		/// The consumer secret. 
-		/// </param>
-		protected OAuthClient(
-			string providerName, ServiceProviderDescription serviceDescription, string consumerKey, string consumerSecret)
-			: this(providerName, serviceDescription, new InMemoryOAuthTokenManager(consumerKey, consumerSecret)) { }
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="OAuthClient"/> class.
-		/// </summary>
-		/// <param name="providerName">
-		/// Name of the provider. 
-		/// </param>
-		/// <param name="serviceDescription">
 		/// The service Description.
 		/// </param>
 		/// <param name="tokenManager">
 		/// The token Manager.
 		/// </param>
-		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "I don't know how to ensure this rule is followed given this API")]
 		protected OAuthClient(
-			string providerName, ServiceProviderDescription serviceDescription, IConsumerTokenManager tokenManager)
-			: this(providerName, new DotNetOpenAuthWebConsumer(serviceDescription, tokenManager)) {
+			string providerName, ServiceProviderDescription serviceDescription, string consumerKey, string consumerSecret)
+			: this(providerName, new DotNetOpenAuthWebConsumer(serviceDescription, consumerKey, consumerSecret)) {
 		}
 
 		/// <summary>
@@ -128,7 +108,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// An instance of <see cref="AuthenticationResult" /> containing authentication result.
 		/// </returns>
 		public virtual async Task<AuthenticationResult> VerifyAuthenticationAsync(HttpContextBase context, CancellationToken cancellationToken = default(CancellationToken)) {
-			AuthorizedTokenResponse response = await this.WebWorker.ProcessUserAuthorizationAsync(cancellationToken);
+			AccessTokenResponse response = await this.WebWorker.ProcessUserAuthorizationAsync(context, cancellationToken);
 			if (response == null) {
 				return AuthenticationResult.Failed;
 			}
@@ -139,7 +119,8 @@ namespace DotNetOpenAuth.AspNet.Clients {
 				var wrapExtraData = result.ExtraData.IsReadOnly
 					? new Dictionary<string, string>(result.ExtraData)
 					: result.ExtraData;
-				wrapExtraData["accesstoken"] = response.AccessToken;
+				wrapExtraData["accesstoken"] = response.AccessToken.Token;
+				wrapExtraData["accesstokensecret"] = response.AccessToken.Secret;
 
 				AuthenticationResult wrapResult = new AuthenticationResult(
 					result.IsSuccessful,
@@ -174,14 +155,14 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <summary>
 		/// Check if authentication succeeded after user is redirected back from the service provider.
 		/// </summary>
-		/// <param name="response">
-		/// The response token returned from service provider 
+		/// <param name="accessToken">
+		/// The access token returned from service provider 
 		/// </param>
 		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// Authentication result 
 		/// </returns>
-		protected abstract Task<AuthenticationResult> VerifyAuthenticationCoreAsync(AuthorizedTokenResponse response, CancellationToken cancellationToken);
+		protected abstract Task<AuthenticationResult> VerifyAuthenticationCoreAsync(AccessTokenResponse accessToken, CancellationToken cancellationToken);
 		#endregion
 	}
 }

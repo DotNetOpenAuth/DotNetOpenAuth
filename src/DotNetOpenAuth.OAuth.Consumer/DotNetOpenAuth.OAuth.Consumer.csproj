@@ -19,17 +19,17 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="OAuth\ChannelElements\IConsumerTokenManager.cs" />
-    <Compile Include="OAuth\ChannelElements\OAuthConsumerChannel.cs" />
-    <Compile Include="OAuth\ChannelElements\OAuthConsumerMessageFactory.cs" />
-    <Compile Include="OAuth\ChannelElements\RsaSha1ConsumerSigningBindingElement.cs" />
-    <Compile Include="OAuth\ConsumerBase.cs" />
-    <Compile Include="OAuth\DesktopConsumer.cs" />
+    <Compile Include="OAuth\AccessToken.cs" />
+    <Compile Include="OAuth\AccessTokenResponse.cs" />
+    <Compile Include="OAuth\ITemporaryCredentialStorage.cs" />
+    <Compile Include="OAuth\Consumer.cs" />
+    <Compile Include="OAuth\CookieTemporaryCredentialStorage.cs" />
+    <Compile Include="OAuth\MemoryTemporaryCredentialStorage.cs" />
     <Compile Include="OAuth\OAuth1HmacSha1HttpMessageHandler.cs" />
     <Compile Include="OAuth\OAuth1HttpMessageHandlerBase.cs" />
     <Compile Include="OAuth\OAuth1PlainTextMessageHandler.cs" />
     <Compile Include="OAuth\OAuth1RsaSha1HttpMessageHandler.cs" />
-    <Compile Include="OAuth\WebConsumer.cs" />
+    <Compile Include="OAuth\ServiceProviderDescription.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>
       </SubType>

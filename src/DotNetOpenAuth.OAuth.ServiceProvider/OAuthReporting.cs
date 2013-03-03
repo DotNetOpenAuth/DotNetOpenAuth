@@ -25,7 +25,7 @@ namespace DotNetOpenAuth {
 		/// <param name="service">The service.</param>
 		/// <param name="tokenManager">The token manager.</param>
 		/// <param name="nonceStore">The nonce store.</param>
-		internal static void RecordFeatureAndDependencyUse(object value, ServiceProviderDescription service, ITokenManager tokenManager, INonceStore nonceStore) {
+		internal static void RecordFeatureAndDependencyUse(object value, ServiceProviderHostDescription service, ITokenManager tokenManager, INonceStore nonceStore) {
 			Requires.NotNull(value, "value");
 			Requires.NotNull(service, "service");
 			Requires.NotNull(tokenManager, "tokenManager");
@@ -45,9 +45,7 @@ namespace DotNetOpenAuth {
 					builder.Append(nonceStore.GetType().Name);
 				}
 				builder.Append(" ");
-				builder.Append(service.Version);
-				builder.Append(" ");
-				builder.Append(service.UserAuthorizationEndpoint);
+				builder.Append(service.UserAuthorizationEndpoint.Location);
 				Reporting.ObservedFeatures.Add(builder.ToString());
 				Reporting.Touch();
 			}

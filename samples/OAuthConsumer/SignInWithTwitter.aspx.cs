@@ -3,6 +3,7 @@
 	using System.Collections.Generic;
 	using System.Configuration;
 	using System.Linq;
+	using System.Net;
 	using System.Web;
 	using System.Web.Security;
 	using System.Web.UI;
@@ -19,7 +20,7 @@
 				this.MultiView1.ActiveViewIndex = 1;
 
 				if (!IsPostBack) {
-					var tuple = await TwitterConsumer.TryFinishSignInWithTwitterAsync(Response.ClientDisconnectedToken);
+					var tuple = await TwitterConsumer.TryFinishSignInWithTwitterAsync();
 					if (tuple != null) {
 						string screenName = tuple.Item1;
 						int userId = tuple.Item2;
@@ -35,8 +36,8 @@
 		}
 
 		protected async void signInButton_Click(object sender, ImageClickEventArgs e) {
-			var response = await TwitterConsumer.StartSignInWithTwitterAsync(this.forceLoginCheckbox.Checked, Response.ClientDisconnectedToken);
-			await response.SendAsync();
+			Uri redirectUri = await TwitterConsumer.StartSignInWithTwitterAsync(this.forceLoginCheckbox.Checked, Response.ClientDisconnectedToken);
+			this.Response.Redirect(redirectUri.AbsoluteUri);
 		}
 	}
 }

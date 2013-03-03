@@ -21,33 +21,28 @@
 	/// Interaction logic for Authorize.xaml
 	/// </summary>
 	public partial class Authorize : Window {
-		private DesktopConsumer consumer;
-		private string requestToken;
+		private Consumer consumer;
 
-		internal Authorize(DesktopConsumer consumer, Func<DesktopConsumer, Task<Tuple<Uri, string>>> fetchUriCallback) {
+		internal Authorize(Consumer consumer, Func<Consumer, Task<Uri>> fetchUriCallback) {
 			this.InitializeComponent();
 
 			this.consumer = consumer;
 			Cursor original = this.Cursor;
 			this.Cursor = Cursors.Wait;
 			Task.Run(async delegate {
-				var tuple = await fetchUriCallback(this.consumer);
-				Uri browserAuthorizationLocation = tuple.Item1;
-				this.requestToken = tuple.Item2;
+				Uri browserAuthorizationLocation = await fetchUriCallback(this.consumer);
 				System.Diagnostics.Process.Start(browserAuthorizationLocation.AbsoluteUri);
-				this.Dispatcher.BeginInvoke(new Action(() => {
+				await this.Dispatcher.BeginInvoke(new Action(() => {
 					this.Cursor = original;
 					finishButton.IsEnabled = true;
 				}));
 			});
 		}
 
-		internal delegate Uri FetchUri(DesktopConsumer consumer, out string requestToken);
-
-		internal string AccessToken { get; set; }
+		internal AccessToken AccessToken { get; set; }
 
 		private async void finishButton_Click(object sender, RoutedEventArgs e) {
-			var grantedAccess = await this.consumer.ProcessUserAuthorizationAsync(this.requestToken, this.verifierBox.Text);
+			var grantedAccess = await this.consumer.ProcessUserAuthorizationAsync(this.verifierBox.Text);
 			this.AccessToken = grantedAccess.AccessToken;
 			DialogResult = true;
 			Close();

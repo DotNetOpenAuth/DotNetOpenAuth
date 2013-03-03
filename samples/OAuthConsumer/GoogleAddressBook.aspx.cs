@@ -2,6 +2,7 @@
 	using System;
 	using System.Configuration;
 	using System.Linq;
+	using System.Net;
 	using System.Text;
 	using System.Web;
 	using System.Web.UI;
@@ -14,50 +15,34 @@
 	/// A page to demonstrate downloading a Gmail address book using OAuth.
 	/// </summary>
 	public partial class GoogleAddressBook : System.Web.UI.Page {
-		private string AccessToken {
-			get { return (string)Session["GoogleAccessToken"]; }
+		private AccessToken AccessToken {
+			get { return (AccessToken)Session["GoogleAccessToken"]; }
 			set { Session["GoogleAccessToken"] = value; }
 		}
 
-		private InMemoryTokenManager TokenManager {
-			get {
-				var tokenManager = (InMemoryTokenManager)Application["GoogleTokenManager"];
-				if (tokenManager == null) {
-					string consumerKey = ConfigurationManager.AppSettings["googleConsumerKey"];
-					string consumerSecret = ConfigurationManager.AppSettings["googleConsumerSecret"];
-					if (!string.IsNullOrEmpty(consumerKey)) {
-						tokenManager = new InMemoryTokenManager(consumerKey, consumerSecret);
-						Application["GoogleTokenManager"] = tokenManager;
-					}
-				}
-
-				return tokenManager;
-			}
-		}
-
 		protected async void Page_Load(object sender, EventArgs e) {
-			if (this.TokenManager != null) {
+			var google = new GoogleConsumer();
+			if (google.ConsumerKey != null) {
 				this.MultiView1.ActiveViewIndex = 1;
 
 				if (!IsPostBack) {
-					var google = new WebConsumer(GoogleConsumer.ServiceDescription, this.TokenManager);
-
 					// Is Google calling back with authorization?
-					var accessTokenResponse = await google.ProcessUserAuthorizationAsync(new HttpRequestWrapper(Request), Response.ClientDisconnectedToken);
+					var accessTokenResponse = await google.ProcessUserAuthorizationAsync(this.Request.Url);
 					if (accessTokenResponse != null) {
 						this.AccessToken = accessTokenResponse.AccessToken;
-					} else if (this.AccessToken == null) {
+					} else if (this.AccessToken.Token == null) {
 						// If we don't yet have access, immediately request it.
-						await GoogleConsumer.RequestAuthorizationAsync(google, GoogleConsumer.Applications.Contacts);
+						Uri redirectUri = await google.RequestUserAuthorizationAsync(GoogleConsumer.Applications.Contacts);
+						this.Response.Redirect(redirectUri.AbsoluteUri);
 					}
 				}
 			}
 		}
 
 		protected async void getAddressBookButton_Click(object sender, EventArgs e) {
-			var google = new WebConsumer(GoogleConsumer.ServiceDescription, this.TokenManager);
+			var google = new GoogleConsumer();
 
-			XDocument contactsDocument = await GoogleConsumer.GetContactsAsync(google, this.AccessToken, 5, 1, Response.ClientDisconnectedToken);
+			XDocument contactsDocument = await google.GetContactsAsync(this.AccessToken, 5, 1, Response.ClientDisconnectedToken);
 			var contacts = from entry in contactsDocument.Root.Elements(XName.Get("entry", "http://www.w3.org/2005/Atom"))
 						   select new { Name = entry.Element(XName.Get("title", "http://www.w3.org/2005/Atom")).Value, Email = entry.Element(XName.Get("email", "http://schemas.google.com/g/2005")).Attribute("address").Value };
 			StringBuilder tableBuilder = new StringBuilder();

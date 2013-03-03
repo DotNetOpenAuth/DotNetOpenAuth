@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OAuth {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Net.Http;
 	using System.Security.Cryptography;
 	using System.Security.Cryptography.X509Certificates;
 	using System.Text;
@@ -19,6 +20,20 @@ namespace DotNetOpenAuth.OAuth {
 	/// with an RSA-SHA1 signature.
 	/// </summary>
 	public class OAuth1RsaSha1HttpMessageHandler : OAuth1HttpMessageHandlerBase {
+		/// <summary>
+		/// Initializes a new instance of the <see cref="OAuth1RsaSha1HttpMessageHandler"/> class.
+		/// </summary>
+		public OAuth1RsaSha1HttpMessageHandler() {
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="OAuth1RsaSha1HttpMessageHandler"/> class.
+		/// </summary>
+		/// <param name="innerHandler">The inner handler which is responsible for processing the HTTP response messages.</param>
+		public OAuth1RsaSha1HttpMessageHandler(HttpMessageHandler innerHandler)
+			: base(innerHandler) {
+		}
+
 		/// <summary>
 		/// Gets or sets the certificate used to sign outgoing messages.  Used only by Consumers.
 		/// </summary>

@@ -1,13 +1,11 @@
 ﻿namespace OAuth2ProtectedWebApi.Controllers {
-	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using System.Net;
 	using System.Net.Http;
 	using System.Threading.Tasks;
 	using System.Web.Http;
 
 	using DotNetOpenAuth.OAuth2;
+
+	using OAuth2ProtectedWebApi.Code;
 
 	public class TokenController : ApiController {
 		// POST /api/token

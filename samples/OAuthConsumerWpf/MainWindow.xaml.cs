@@ -28,9 +28,8 @@
 	/// Interaction logic for MainWindow.xaml
 	/// </summary>
 	public partial class MainWindow : Window {
-		private InMemoryTokenManager googleTokenManager = new InMemoryTokenManager();
-		private DesktopConsumer google;
-		private string googleAccessToken;
+		private GoogleConsumer google;
+		private DotNetOpenAuth.OAuth.AccessToken googleAccessToken;
 		private UserAgentClient wcf;
 		private IAuthorizationState wcfAccessToken;
 
@@ -42,17 +41,12 @@
 		}
 
 		private void InitializeGoogleConsumer() {
-			this.googleTokenManager.ConsumerKey = ConfigurationManager.AppSettings["googleConsumerKey"];
-			this.googleTokenManager.ConsumerSecret = ConfigurationManager.AppSettings["googleConsumerSecret"];
-
 			string pfxFile = ConfigurationManager.AppSettings["googleConsumerCertificateFile"];
-			if (string.IsNullOrEmpty(pfxFile)) {
-				this.google = new DesktopConsumer(GoogleConsumer.ServiceDescription, this.googleTokenManager);
-			} else {
+			this.google = new GoogleConsumer();
+			if (!string.IsNullOrEmpty(pfxFile)) {
 				string pfxPassword = ConfigurationManager.AppSettings["googleConsumerCertificatePassword"];
 				var signingCertificate = new X509Certificate2(pfxFile, pfxPassword);
-				var service = GoogleConsumer.CreateRsaSha1ServiceDescription(signingCertificate);
-				this.google = new DesktopConsumer(service, this.googleTokenManager);
+				this.google.ConsumerCertificate = signingCertificate;
 			}
 		}
 
@@ -65,7 +59,7 @@
 		}
 
 		private async void beginAuthorizationButton_Click(object sender, RoutedEventArgs e) {
-			if (string.IsNullOrEmpty(this.googleTokenManager.ConsumerKey)) {
+			if (string.IsNullOrEmpty(this.google.ConsumerKey)) {
 				MessageBox.Show(this, "You must modify the App.config or OAuthConsumerWpf.exe.config file for this application to include your Google OAuth consumer key first.", "Configuration required", MessageBoxButton.OK, MessageBoxImage.Stop);
 				return;
 			}
@@ -73,15 +67,13 @@
 			var auth = new Authorize(
 				this.google,
 				consumer =>
-				GoogleConsumer.RequestAuthorizationAsync(
-					consumer,
-					GoogleConsumer.Applications.Contacts | GoogleConsumer.Applications.Blogger));
+				((GoogleConsumer)consumer).RequestUserAuthorizationAsync(GoogleConsumer.Applications.Contacts | GoogleConsumer.Applications.Blogger));
 			bool? result = auth.ShowDialog();
 			if (result.HasValue && result.Value) {
 				this.googleAccessToken = auth.AccessToken;
 				this.postButton.IsEnabled = true;
 
-				XDocument contactsDocument = await GoogleConsumer.GetContactsAsync(this.google, this.googleAccessToken);
+				XDocument contactsDocument = await this.google.GetContactsAsync(this.googleAccessToken);
 				var contacts = from entry in contactsDocument.Root.Elements(XName.Get("entry", "http://www.w3.org/2005/Atom"))
 							   select new { Name = entry.Element(XName.Get("title", "http://www.w3.org/2005/Atom")).Value, Email = entry.Element(XName.Get("email", "http://schemas.google.com/g/2005")).Attribute("address").Value };
 				this.contactsGrid.Children.Clear();
@@ -100,7 +92,7 @@
 
 		private async void postButton_Click(object sender, RoutedEventArgs e) {
 			XElement postBodyXml = XElement.Parse(this.postBodyBox.Text);
-			await GoogleConsumer.PostBlogEntryAsync(this.google, this.googleAccessToken, this.blogUrlBox.Text, this.postTitleBox.Text, postBodyXml, CancellationToken.None);
+			await this.google.PostBlogEntryAsync(this.googleAccessToken, this.blogUrlBox.Text, this.postTitleBox.Text, postBodyXml);
 		}
 
 		private async void beginWcfAuthorizationButton_Click(object sender, RoutedEventArgs e) {
@@ -136,48 +128,27 @@
 
 		private async void beginButton_Click(object sender, RoutedEventArgs e) {
 			try {
-				var service = new ServiceProviderDescription {
-					RequestTokenEndpoint =
-						new MessageReceivingEndpoint(
-							this.requestTokenUrlBox.Text,
-							this.requestTokenHttpMethod.SelectedIndex == 0 ? HttpDeliveryMethods.GetRequest : HttpDeliveryMethods.PostRequest),
-					UserAuthorizationEndpoint = new MessageReceivingEndpoint(this.authorizeUrlBox.Text, HttpDeliveryMethods.GetRequest),
-					AccessTokenEndpoint =
-						new MessageReceivingEndpoint(
-							this.accessTokenUrlBox.Text,
-							this.accessTokenHttpMethod.SelectedIndex == 0 ? HttpDeliveryMethods.GetRequest : HttpDeliveryMethods.PostRequest),
-					TamperProtectionElements = new ITamperProtectionChannelBindingElement[] { new HmacSha1SigningBindingElement() },
-					ProtocolVersion = this.oauthVersion.SelectedIndex == 0 ? ProtocolVersion.V10 : ProtocolVersion.V10a,
-				};
-				var tokenManager = new InMemoryTokenManager();
-				tokenManager.ConsumerKey = this.consumerKeyBox.Text;
-				tokenManager.ConsumerSecret = this.consumerSecretBox.Text;
+				var service = new ServiceProviderDescription(
+					this.requestTokenUrlBox.Text,
+					this.authorizeUrlBox.Text,
+					this.accessTokenUrlBox.Text);
 
-				var consumer = new DesktopConsumer(service, tokenManager);
-				string accessToken;
-				if (service.ProtocolVersion == ProtocolVersion.V10) {
-					var tuple = await consumer.RequestUserAuthorizationAsync(null, null);
-					Uri authorizeUrl = tuple.Item1;
-					string requestToken = tuple.Item2;
-					Process.Start(authorizeUrl.AbsoluteUri);
-					MessageBox.Show(this, "Click OK when you've authorized the app.");
-					var authorizationResponse = await consumer.ProcessUserAuthorizationAsync(requestToken, null);
-					accessToken = authorizationResponse.AccessToken;
+				var consumer = new Consumer(this.consumerKeyBox.Text, this.consumerSecretBox.Text, service, new MemoryTemporaryCredentialStorage());
+				DotNetOpenAuth.OAuth.AccessToken accessToken;
+				var authorizePopup = new Authorize(consumer, c => c.RequestUserAuthorizationAsync(null, null));
+				authorizePopup.Owner = this;
+				bool? result = authorizePopup.ShowDialog();
+				if (result.HasValue && result.Value) {
+					accessToken = authorizePopup.AccessToken;
 				} else {
-					var authorizePopup = new Authorize(consumer, c => c.RequestUserAuthorizationAsync(null, null));
-					authorizePopup.Owner = this;
-					bool? result = authorizePopup.ShowDialog();
-					if (result.HasValue && result.Value) {
-						accessToken = authorizePopup.AccessToken;
-					} else {
-						return;
-					}
+					return;
 				}
+
 				HttpMethod resourceHttpMethod = this.resourceHttpMethodList.SelectedIndex < 2 ? HttpMethod.Get : HttpMethod.Post;
 				using (var handler = consumer.CreateMessageHandler(accessToken)) {
 					handler.Location = this.resourceHttpMethodList.SelectedIndex == 1
-						                   ? OAuth1HttpMessageHandlerBase.OAuthParametersLocation.AuthorizationHttpHeader
-						                   : OAuth1HttpMessageHandlerBase.OAuthParametersLocation.QueryString;
+										   ? OAuth1HttpMessageHandlerBase.OAuthParametersLocation.AuthorizationHttpHeader
+										   : OAuth1HttpMessageHandlerBase.OAuthParametersLocation.QueryString;
 					using (var httpClient = consumer.CreateHttpClient(handler)) {
 						var request = new HttpRequestMessage(resourceHttpMethod, this.resourceUrlBox.Text);
 						using (var resourceResponse = await httpClient.SendAsync(request)) {
@@ -203,28 +174,19 @@
 
 				var authorizePopup = new Authorize2(client);
 				authorizePopup.Authorization.Scope.AddRange(OAuthUtilities.SplitScopes(this.oauth2ScopeBox.Text));
-				authorizePopup.Authorization.Callback = new Uri("http://localhost:59721/");
+				authorizePopup.Authorization.Callback = new Uri("http://www.microsoft.com/en-us/default.aspx");
 				authorizePopup.Owner = this;
+				authorizePopup.ClientAuthorizationView.RequestImplicitGrant = flowBox.SelectedIndex == 1;
 				bool? result = authorizePopup.ShowDialog();
 				if (result.HasValue && result.Value) {
-					var requestUri = new UriBuilder(this.oauth2ResourceUrlBox.Text);
-					if (this.oauth2ResourceHttpMethodList.SelectedIndex > 0) {
-						requestUri.AppendQueryArgument("access_token", authorizePopup.Authorization.AccessToken);
-					}
-
-					var request = (HttpWebRequest)WebRequest.Create(requestUri.Uri);
-					request.Method = this.oauth2ResourceHttpMethodList.SelectedIndex < 2 ? "GET" : "POST";
-					if (this.oauth2ResourceHttpMethodList.SelectedIndex == 0) {
-						await client.AuthorizeRequestAsync(request, authorizePopup.Authorization, CancellationToken.None);
-					}
-
-					using (var resourceResponse = request.GetResponse()) {
-						using (var responseStream = new StreamReader(resourceResponse.GetResponseStream())) {
-							this.oauth2ResultsBox.Text = responseStream.ReadToEnd();
+					var request = new HttpRequestMessage(
+						new HttpMethod(((ComboBoxItem)this.oauth2ResourceHttpMethodList.SelectedValue).Content.ToString()),
+						this.oauth2ResourceUrlBox.Text);
+					using (var httpClient = new HttpClient(client.CreateAuthorizingHandler(authorizePopup.Authorization))) {
+						using (var resourceResponse = await httpClient.SendAsync(request)) {
+							this.oauth2ResultsBox.Text = await resourceResponse.Content.ReadAsStringAsync();
 						}
 					}
-				} else {
-					return;
 				}
 			} catch (Messaging.ProtocolException ex) {
 				MessageBox.Show(this, ex.Message);

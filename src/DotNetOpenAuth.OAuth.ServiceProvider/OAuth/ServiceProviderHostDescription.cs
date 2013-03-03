@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="ServiceProviderDescription.cs" company="Outercurve Foundation">
+// <copyright file="ServiceProviderHostDescription.cs" company="Outercurve Foundation">
 //     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -15,7 +15,7 @@ namespace DotNetOpenAuth.OAuth {
 	/// <summary>
 	/// A description of the endpoints on a Service Provider.
 	/// </summary>
-	public class ServiceProviderDescription {
+	public class ServiceProviderHostDescription {
 		/// <summary>
 		/// The field used to store the value of the <see cref="RequestTokenEndpoint"/> property.
 		/// </summary>
@@ -23,9 +23,9 @@ namespace DotNetOpenAuth.OAuth {
 		private MessageReceivingEndpoint requestTokenEndpoint;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ServiceProviderDescription"/> class.
+		/// Initializes a new instance of the <see cref="ServiceProviderHostDescription"/> class.
 		/// </summary>
-		public ServiceProviderDescription() {
+		public ServiceProviderHostDescription() {
 			this.ProtocolVersion = Protocol.Default.ProtocolVersion;
 		}
 

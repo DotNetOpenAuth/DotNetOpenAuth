@@ -10,7 +10,7 @@
 
 	public partial class DisplayGoogleContacts : System.Web.UI.Page {
 		protected async void Page_Load(object sender, EventArgs e) {
-			if (!string.IsNullOrEmpty(State.GoogleAccessToken)) {
+			if (!string.IsNullOrEmpty(State.GoogleAccessToken.Token)) {
 				this.MultiView1.ActiveViewIndex = 1;
 				if (State.FetchResponse != null && State.FetchResponse.Attributes.Contains(WellKnownAttributes.Contact.Email)) {
 					this.emailLabel.Text = State.FetchResponse.Attributes[WellKnownAttributes.Contact.Email].Values[0];
@@ -18,7 +18,11 @@
 					this.emailLabel.Text = "unavailable";
 				}
 				this.claimedIdLabel.Text = this.User.Identity.Name;
-				var contactsDocument = await GoogleConsumer.GetContactsAsync(Global.GoogleWebConsumer, State.GoogleAccessToken, cancellationToken: Response.ClientDisconnectedToken);
+				var google = new GoogleConsumer {
+					ConsumerKey = Global.GoogleWebConsumer.ConsumerKey,
+					ConsumerSecret = Global.GoogleWebConsumer.ConsumerSecret,
+				};
+				var contactsDocument = await google.GetContactsAsync(State.GoogleAccessToken);
 				this.RenderContacts(contactsDocument);
 			}
 		}
