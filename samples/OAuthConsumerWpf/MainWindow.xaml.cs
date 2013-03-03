@@ -179,24 +179,14 @@
 				authorizePopup.ClientAuthorizationView.RequestImplicitGrant = flowBox.SelectedIndex == 1;
 				bool? result = authorizePopup.ShowDialog();
 				if (result.HasValue && result.Value) {
-					var requestUri = new UriBuilder(this.oauth2ResourceUrlBox.Text);
-					if (this.oauth2ResourceHttpMethodList.SelectedIndex > 0) {
-						requestUri.AppendQueryArgument("access_token", authorizePopup.Authorization.AccessToken);
-					}
-
-					var request = (HttpWebRequest)WebRequest.Create(requestUri.Uri);
-					request.Method = this.oauth2ResourceHttpMethodList.SelectedIndex < 2 ? "GET" : "POST";
-					if (this.oauth2ResourceHttpMethodList.SelectedIndex == 0) {
-						await client.AuthorizeRequestAsync(request, authorizePopup.Authorization, CancellationToken.None);
-					}
-
-					using (var resourceResponse = request.GetResponse()) {
-						using (var responseStream = new StreamReader(resourceResponse.GetResponseStream())) {
-							this.oauth2ResultsBox.Text = responseStream.ReadToEnd();
+					var request = new HttpRequestMessage(
+						new HttpMethod(((ComboBoxItem)this.oauth2ResourceHttpMethodList.SelectedValue).Content.ToString()),
+						this.oauth2ResourceUrlBox.Text);
+					using (var httpClient = new HttpClient(client.CreateAuthorizingHandler(authorizePopup.Authorization))) {
+						using (var resourceResponse = await httpClient.SendAsync(request)) {
+							this.oauth2ResultsBox.Text = await resourceResponse.Content.ReadAsStringAsync();
 						}
 					}
-				} else {
-					return;
 				}
 			} catch (Messaging.ProtocolException ex) {
 				MessageBox.Show(this, ex.Message);

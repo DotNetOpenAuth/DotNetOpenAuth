@@ -103,9 +103,9 @@
                 <TextBox Grid.Row="3" Grid.Column="1" x:Name="resourceUrlBox" />
                 <ComboBox Grid.Row="3" Grid.Column="2" x:Name="resourceHttpMethodList" SelectedIndex="0">
                     <ComboBox.Items>
-                        <ComboBoxItem>GET w/ header</ComboBoxItem>
-                        <ComboBoxItem>GET w/ querystring</ComboBoxItem>
-                        <ComboBoxItem>POST</ComboBoxItem>
+						<ComboBoxItem>GET w/ header</ComboBoxItem>
+						<ComboBoxItem>GET w/ querystring</ComboBoxItem>
+						<ComboBoxItem>POST</ComboBoxItem>
                     </ComboBox.Items>
                 </ComboBox>
                 <Label Grid.Row="4">Consumer key</Label>
@@ -159,10 +159,9 @@
 				<TextBox Grid.Row="3" Grid.Column="1" x:Name="oauth2ResourceUrlBox" Text="http://localhost:23603/api/values" TabIndex="208" />
                 <ComboBox Grid.Row="3" Grid.Column="2" x:Name="oauth2ResourceHttpMethodList" SelectedIndex="0" TabIndex="209">
                     <ComboBox.Items>
-                        <ComboBoxItem>GET w/ header</ComboBoxItem>
-                        <ComboBoxItem>GET w/ querystring</ComboBoxItem>
-                        <ComboBoxItem>POST</ComboBoxItem>
-                    </ComboBox.Items>
+						<ComboBoxItem>GET</ComboBoxItem>
+						<ComboBoxItem>POST</ComboBoxItem>
+					</ComboBox.Items>
                 </ComboBox>
                 <Label Grid.Row="4" TabIndex="210">Client Identifier</Label>
                 <TextBox Grid.Row="4" Grid.Column="1" x:Name="oauth2ClientIdentifierBox" Grid.ColumnSpan="2" Text="a" TabIndex="211" />
