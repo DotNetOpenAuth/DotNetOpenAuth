@@ -12,14 +12,15 @@
 	public class AuthorizationServerHost : IAuthorizationServerHost {
 		private static ICryptoKeyStore cryptoKeyStore = MemoryCryptoKeyStore.Instance;
 
-		private static INonceStore nonceStore = new MemoryNonceStore();
-
 		public ICryptoKeyStore CryptoKeyStore {
 			get { return cryptoKeyStore; }
 		}
 
 		public INonceStore NonceStore {
-			get { return nonceStore; }
+			get {
+				// Implementing a nonce store is a good idea as it mitigates replay attacks.
+				return null;
+			}
 		}
 
 		public AccessTokenResult CreateAccessToken(IAccessTokenRequest accessTokenRequestMessage) {
@@ -31,7 +32,7 @@
 		}
 
 		public IClientDescription GetClient(string clientIdentifier) {
-			return new ClientDescription("zzz", new Uri("http://www.microsoft.com/en-us/default.aspx"), ClientType.Confidential);
+			return new ClientDescription("b", new Uri("http://www.microsoft.com/en-us/default.aspx"), ClientType.Confidential);
 		}
 
 		public bool IsAuthorizationValid(IAuthorizationDescription authorization) {

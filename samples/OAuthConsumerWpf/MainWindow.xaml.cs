@@ -174,7 +174,7 @@
 
 				var authorizePopup = new Authorize2(client);
 				authorizePopup.Authorization.Scope.AddRange(OAuthUtilities.SplitScopes(this.oauth2ScopeBox.Text));
-				authorizePopup.Authorization.Callback = new Uri("http://localhost:59721/");
+				authorizePopup.Authorization.Callback = new Uri("http://www.microsoft.com/en-us/default.aspx");
 				authorizePopup.Owner = this;
 				bool? result = authorizePopup.ShowDialog();
 				if (result.HasValue && result.Value) {
