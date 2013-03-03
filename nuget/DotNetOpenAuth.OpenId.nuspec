@@ -53,6 +53,7 @@
 
 		<file src="content\OpenId.Core\net35-full\web.config.transform" target="content\net35-full\" />
 		<file src="content\OpenId.Core\net40-full\web.config.transform" target="content\net40-full\" />
+		<file src="content\OpenId.Core\net45-full\web.config.transform" target="content\net45-full\" />
 
 		<file src="..\src\$Identity$\**\*.cs" target="src\$identity$" exclude="..\src\$Identity$\obj\**" />
 		<file src="$GeneratedAssemblyInfoSourceFile$" target="src\$identity$" />

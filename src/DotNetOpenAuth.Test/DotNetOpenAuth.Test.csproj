@@ -249,6 +249,7 @@
     <Compile Include="Mocks\TestMessageFactory.cs" />
     <Compile Include="OAuth2\AuthorizationServerTests.cs" />
     <Compile Include="OAuth2\MessageFactoryTests.cs" />
+    <Compile Include="OAuth2\ResourceServerTests.cs" />
     <Compile Include="OAuth2\UserAgentClientAuthorizeTests.cs" />
     <Compile Include="OAuth2\OAuth2Coordinator.cs" />
     <Compile Include="OAuth2\OAuth2TestBase.cs" />

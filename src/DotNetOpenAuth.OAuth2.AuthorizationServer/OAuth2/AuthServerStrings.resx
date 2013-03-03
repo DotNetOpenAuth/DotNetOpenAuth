@@ -112,13 +112,16 @@
     <value>2.0</value>
   </resheader>
   <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AccessScopeExceedsGrantScope" xml:space="preserve">
     <value>The requested access scope exceeds the grant scope.</value>
+  </data>
+  <data name="AccessTokenSigningKeyMissing" xml:space="preserve">
+    <value>The access token's private signing key must be set.</value>
   </data>
   <data name="ClientCallbackDisallowed" xml:space="preserve">
     <value>The callback URL ({0}) is not allowed for this client.</value>

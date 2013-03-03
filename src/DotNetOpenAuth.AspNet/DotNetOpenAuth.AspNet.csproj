@@ -28,7 +28,7 @@
   <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.props" />
   <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.Product.props" />
   <PropertyGroup>
-     <RootNamespace>DotNetOpenAuth.AspNet</RootNamespace>
+    <RootNamespace>DotNetOpenAuth.AspNet</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -48,6 +48,7 @@
     <Compile Include="Clients\OAuth\AuthenticationOnlyCookieOAuthTokenManager.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Clients\OAuth\CookieOAuthTokenManager.cs" />
     <Compile Include="Clients\OAuth\IOAuthTokenManager.cs" />
     <Compile Include="Clients\OAuth\SimpleConsumerTokenManager.cs" />
     <Compile Include="IAuthenticationClient.cs" />

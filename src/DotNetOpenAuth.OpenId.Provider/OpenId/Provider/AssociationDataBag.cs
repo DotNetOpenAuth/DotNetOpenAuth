@@ -72,7 +72,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		public void Deserialize(Stream stream) {
 			var reader = new BinaryReader(stream);
 			this.IsPrivateAssociation = reader.ReadBoolean();
-			this.Secret = reader.ReadBuffer();
+			this.Secret = reader.ReadBuffer(256);
 			this.ExpiresUtc = TimestampEncoder.Epoch + TimeSpan.FromSeconds(reader.ReadInt32());
 		}
 

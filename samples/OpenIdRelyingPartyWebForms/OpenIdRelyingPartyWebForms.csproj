@@ -104,6 +104,7 @@
     </Compile>
     <Compile Include="ajaxlogin.aspx.cs">
       <DependentUpon>ajaxlogin.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="ajaxlogin.aspx.designer.cs">
       <DependentUpon>ajaxlogin.aspx</DependentUpon>
@@ -111,6 +112,7 @@
     <Compile Include="Code\CustomStore.cs" />
     <Compile Include="Code\CustomStoreDataSet.cs">
       <DependentUpon>CustomStoreDataSet.xsd</DependentUpon>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Code\CustomStoreDataSet.Designer.cs">
       <DependentUpon>CustomStoreDataSet.cs</DependentUpon>
@@ -124,18 +126,21 @@
     <Compile Include="Code\TracePageAppender.cs" />
     <Compile Include="DetectGoogleSession.aspx.cs">
       <DependentUpon>DetectGoogleSession.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="DetectGoogleSession.aspx.designer.cs">
       <DependentUpon>DetectGoogleSession.aspx</DependentUpon>
     </Compile>
     <Compile Include="loginGoogleApps.aspx.cs">
       <DependentUpon>loginGoogleApps.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="loginGoogleApps.aspx.designer.cs">
       <DependentUpon>loginGoogleApps.aspx</DependentUpon>
     </Compile>
     <Compile Include="loginPlusOAuthSampleOP.aspx.cs">
       <DependentUpon>loginPlusOAuthSampleOP.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="loginPlusOAuthSampleOP.aspx.designer.cs">
       <DependentUpon>loginPlusOAuthSampleOP.aspx</DependentUpon>
@@ -145,36 +150,42 @@
     </Compile>
     <Compile Include="login.aspx.cs">
       <DependentUpon>login.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="login.aspx.designer.cs">
       <DependentUpon>login.aspx</DependentUpon>
     </Compile>
     <Compile Include="loginPlusOAuth.aspx.cs">
       <DependentUpon>loginPlusOAuth.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="loginPlusOAuth.aspx.designer.cs">
       <DependentUpon>loginPlusOAuth.aspx</DependentUpon>
     </Compile>
     <Compile Include="loginProgrammatic.aspx.cs">
       <DependentUpon>loginProgrammatic.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="loginProgrammatic.aspx.designer.cs">
       <DependentUpon>loginProgrammatic.aspx</DependentUpon>
     </Compile>
     <Compile Include="MembersOnly\DisplayGoogleContacts.aspx.cs">
       <DependentUpon>DisplayGoogleContacts.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="MembersOnly\DisplayGoogleContacts.aspx.designer.cs">
       <DependentUpon>DisplayGoogleContacts.aspx</DependentUpon>
     </Compile>
     <Compile Include="MembersOnly\ProfileFieldsDisplay.ascx.cs">
       <DependentUpon>ProfileFieldsDisplay.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="MembersOnly\ProfileFieldsDisplay.ascx.designer.cs">
       <DependentUpon>ProfileFieldsDisplay.ascx</DependentUpon>
     </Compile>
     <Compile Include="NoIdentityOpenId.aspx.cs">
       <DependentUpon>NoIdentityOpenId.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="NoIdentityOpenId.aspx.designer.cs">
       <DependentUpon>NoIdentityOpenId.aspx</DependentUpon>
@@ -182,6 +193,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TracePage.aspx.cs">
       <DependentUpon>TracePage.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="TracePage.aspx.designer.cs">
       <DependentUpon>TracePage.aspx</DependentUpon>

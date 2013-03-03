@@ -101,6 +101,15 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Gets or sets a value indicating whether the value contained by this property contains
+		/// sensitive information that should generally not be logged.
+		/// </summary>
+		/// <value>
+		/// <c>true</c> if this instance is security sensitive; otherwise, <c>false</c>.
+		/// </value>
+		public bool IsSecuritySensitive { get; set; }
+
+		/// <summary>
 		/// Gets or sets the minimum version of the protocol this attribute applies to
 		/// and overrides any attributes with lower values for this property.
 		/// </summary>

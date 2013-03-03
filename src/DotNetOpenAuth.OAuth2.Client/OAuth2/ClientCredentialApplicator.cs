@@ -135,7 +135,9 @@ namespace DotNetOpenAuth.OAuth2 {
 							clientIdentifier);
 					}
 
-					request.Credentials = this.credential ?? new NetworkCredential(clientIdentifier, this.clientSecret);
+					// HttpWebRequest ignores the Credentials property until the remote server returns a 401 Unauthorized.
+					// So we also set the HTTP Authorization request header directly.
+					OAuthUtilities.ApplyHttpBasicAuth(request.Headers, clientIdentifier, this.clientSecret);
 				}
 			}
 		}

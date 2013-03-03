@@ -82,7 +82,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// Gets or sets the user's password.
 		/// </summary>
 		/// <value>The password.</value>
-		[MessagePart(Protocol.password, IsRequired = true)]
+		[MessagePart(Protocol.password, IsRequired = true, IsSecuritySensitive = true)]
 		internal string Password { get; set; }
 
 		/// <summary>

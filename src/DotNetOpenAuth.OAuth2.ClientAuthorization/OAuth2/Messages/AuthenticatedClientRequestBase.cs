@@ -44,7 +44,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <remarks>
 		/// REQUIRED. The client secret as described in Section 2.1  (Client Credentials). OPTIONAL if no client secret was issued. 
 		/// </remarks>
-		[MessagePart(Protocol.client_secret, IsRequired = false)]
+		[MessagePart(Protocol.client_secret, IsRequired = false, IsSecuritySensitive = true)]
 		public string ClientSecret { get; internal set; }
 
 		/// <summary>

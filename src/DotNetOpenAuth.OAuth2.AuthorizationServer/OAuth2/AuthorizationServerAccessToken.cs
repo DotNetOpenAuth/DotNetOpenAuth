@@ -45,6 +45,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <returns>A non-empty string.</returns>
 		protected internal override string Serialize() {
+			ErrorUtilities.VerifyHost(this.AccessTokenSigningKey != null, AuthServerStrings.AccessTokenSigningKeyMissing);
 			var formatter = CreateFormatter(this.AccessTokenSigningKey, this.ResourceServerEncryptionKey);
 			return formatter.Serialize(this);
 		}

@@ -217,8 +217,8 @@ namespace DotNetOpenAuth.Messaging {
 			if (this.signed) {
 				using (var dataStream = new MemoryStream(data)) {
 					var dataReader = new BinaryReader(dataStream);
-					signature = dataReader.ReadBuffer();
-					data = dataReader.ReadBuffer();
+					signature = dataReader.ReadBuffer(1024);
+					data = dataReader.ReadBuffer(8 * 1024);
 				}
 
 				// Verify that the verification code was issued by message authorization server.
