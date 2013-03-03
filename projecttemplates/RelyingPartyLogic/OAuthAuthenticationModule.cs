@@ -8,6 +8,7 @@ namespace RelyingPartyLogic {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Security.Claims;
 	using System.Security.Principal;
 	using System.Threading;
 	using System.Threading.Tasks;
@@ -84,7 +85,7 @@ namespace RelyingPartyLogic {
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="System.Web.Security.RoleManagerEventArgs"/> instance containing the event data.</param>
 		private void roleManager_GetRoles(object sender, RoleManagerEventArgs e) {
-			if (this.application.User is DotNetOpenAuth.OAuth.ChannelElements.OAuthPrincipal) {
+			if (this.application.User is ClaimsPrincipal) {
 				e.RolesPopulated = true;
 			}
 		}

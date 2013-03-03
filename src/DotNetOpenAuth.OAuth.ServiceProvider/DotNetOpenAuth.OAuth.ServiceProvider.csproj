@@ -25,7 +25,6 @@
     <Compile Include="OAuth\ChannelElements\IServiceProviderRequestToken.cs" />
     <Compile Include="OAuth\ChannelElements\IServiceProviderTokenManager.cs" />
     <Compile Include="OAuth\ChannelElements\ITokenGenerator.cs" />
-    <Compile Include="OAuth\ChannelElements\OAuth1Principal.cs" />
     <Compile Include="OAuth\ChannelElements\OAuthServiceProviderChannel.cs" />
     <Compile Include="OAuth\ChannelElements\OAuthServiceProviderMessageFactory.cs" />
     <Compile Include="OAuth\ChannelElements\RsaSha1ServiceProviderSigningBindingElement.cs" />

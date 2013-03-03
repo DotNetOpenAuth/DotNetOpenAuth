@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.OAuth2 {
 	using System.Linq;
 	using System.Net;
 	using System.Net.Http;
+	using System.Security.Claims;
 	using System.Security.Principal;
 	using System.ServiceModel.Channels;
 	using System.Text;
@@ -167,10 +168,8 @@ namespace DotNetOpenAuth.OAuth2 {
 			string principalUserName = !string.IsNullOrEmpty(accessToken.User)
 				? this.ResourceOwnerPrincipalPrefix + accessToken.User
 				: this.ClientPrincipalPrefix + accessToken.ClientIdentifier;
-			string[] principalScope = accessToken.Scope != null ? accessToken.Scope.ToArray() : new string[0];
-			var principal = new OAuthPrincipal(principalUserName, principalScope);
 
-			return principal;
+			return OAuthPrincipal.CreatePrincipal(principalUserName, accessToken.Scope);
 		}
 
 		/// <summary>

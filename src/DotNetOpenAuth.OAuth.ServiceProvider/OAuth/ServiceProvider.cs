@@ -412,11 +412,11 @@ namespace DotNetOpenAuth.OAuth {
 		/// </summary>
 		/// <param name="request">The request.</param>
 		/// <returns>The <see cref="IPrincipal"/> instance that can be used for access control of resources.</returns>
-		public OAuthPrincipal CreatePrincipal(AccessProtectedResourceRequest request) {
+		public IPrincipal CreatePrincipal(AccessProtectedResourceRequest request) {
 			Requires.NotNull(request, "request");
 
 			IServiceProviderAccessToken accessToken = this.TokenManager.GetAccessToken(request.AccessToken);
-			return new OAuth1Principal(accessToken);
+			return OAuthPrincipal.CreatePrincipal(accessToken.Username, accessToken.Roles);
 		}
 
 		#region IDisposable Members

@@ -21,7 +21,6 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="OAuth\ChannelElements\OAuthIdentity.cs" />
     <Compile Include="OAuth\ChannelElements\OAuthPrincipal.cs" />
     <Compile Include="OAuth\DefaultOAuthHostFactories.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
