@@ -9,12 +9,15 @@
 
 	using DotNetOpenAuth.OAuth2;
 
+	/// <summary>
+	/// An HTTP server message handler that detects OAuth 2 bearer tokens in the authorization header
+	/// and applies the appropriate principal to the request when found.
+	/// </summary>
 	public class BearerTokenHandler : DelegatingHandler {
 		protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken) {
 			if (request.Headers.Authorization != null) {
 				if (request.Headers.Authorization.Scheme == "Bearer") {
-					string bearer = request.Headers.Authorization.Parameter;
-					var resourceServer = new ResourceServer(new StandardAccessTokenAnalyzer(MemoryCryptoKeyStore.Instance));
+					var resourceServer = new ResourceServer(new StandardAccessTokenAnalyzer(AuthorizationServerHost.HardCodedCryptoKeyStore));
 					var principal = await resourceServer.GetPrincipalAsync(request, cancellationToken);
 					HttpContext.Current.User = principal;
 					Thread.CurrentPrincipal = principal;

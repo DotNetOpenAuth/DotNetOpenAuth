@@ -22,13 +22,25 @@ namespace DotNetOpenAuth.OAuth2 {
 		private readonly string secret;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ClientDescription"/> class.
+		/// Initializes a new instance of the <see cref="ClientDescription"/> class
+		/// to represent a confidential client (one that has an authenticating secret.)
 		/// </summary>
 		/// <param name="secret">The secret.</param>
 		/// <param name="defaultCallback">The default callback.</param>
 		/// <param name="clientType">Type of the client.</param>
-		public ClientDescription(string secret, Uri defaultCallback, ClientType clientType) {
+		public ClientDescription(string secret, Uri defaultCallback = null, ClientType clientType = ClientType.Confidential) {
 			this.secret = secret;
+			this.DefaultCallback = defaultCallback;
+			this.ClientType = clientType;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ClientDescription"/> class
+		/// to represent a public client (one that does not have an authenticating secret.)
+		/// </summary>
+		/// <param name="defaultCallback">The default callback.</param>
+		/// <param name="clientType">Type of the client.</param>
+		public ClientDescription(Uri defaultCallback = null, ClientType clientType = ClientType.Public) {
 			this.DefaultCallback = defaultCallback;
 			this.ClientType = clientType;
 		}

@@ -128,7 +128,6 @@
     <Compile Include="Code\AuthorizationServerHost.cs" />
     <Compile Include="Code\BearerTokenHandler.cs" />
     <Compile Include="Code\HttpHeaderAttribute.cs" />
-    <Compile Include="Code\MemoryCryptoKeyStore.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\TokenController.cs" />
     <Compile Include="Controllers\UserController.cs" />
