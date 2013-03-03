@@ -121,7 +121,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			// Typically the fragment is not available because the browser doesn't send it to a web server
 			// but this request may have been fabricated by an installed desktop app, in which case
 			// the fragment is available.
-			string fragment = request.GetPublicFacingUrl().Fragment;
+			string fragment = request.Url.Fragment;
 			if (!string.IsNullOrEmpty(fragment)) {
 				foreach (var pair in HttpUtility.ParseQueryString(fragment.Substring(1)).ToDictionary()) {
 					fields.Add(pair.Key, pair.Value);

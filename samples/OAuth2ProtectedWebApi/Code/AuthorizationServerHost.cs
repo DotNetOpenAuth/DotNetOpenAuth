@@ -85,7 +85,7 @@
 			// TODO: Consider adding a clients table in your database to track actual client accounts
 			//       with authenticating secrets.
 			// For now, just allow all clients regardless of ID, and consider them "Public" clients.
-			return new ClientDescription();
+			return new AnyCallbackClient();
 		}
 
 		/// <summary>
@@ -169,6 +169,12 @@
 			} else {
 				// Only authenticated clients should be given access.
 				return new AutomatedAuthorizationCheckResponse(accessRequest, false);
+			}
+		}
+
+		private class AnyCallbackClient : ClientDescription {
+			public override bool IsCallbackAllowed(Uri callback) {
+				return true;
 			}
 		}
 	}

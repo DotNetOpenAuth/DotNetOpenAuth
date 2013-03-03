@@ -95,6 +95,14 @@ namespace DotNetOpenAuth.OAuth2 {
 		}
 
 		/// <summary>
+		/// Gets or sets a value indicating whether the implicit grant type should be used instead of the authorization code grant.
+		/// </summary>
+		/// <value>
+		/// <c>true</c> if [request implicit grant]; otherwise, <c>false</c>.
+		/// </value>
+		public bool RequestImplicitGrant { get; set; }
+
+		/// <summary>
 		/// Called when the authorization flow has been completed.
 		/// </summary>
 		protected virtual void OnCompleted() {
@@ -113,7 +121,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		protected override async void OnLoad(EventArgs e) {
 			base.OnLoad(e);
 
-			Uri authorizationUrl = await this.Client.RequestUserAuthorizationAsync(this.Authorization);
+			Uri authorizationUrl = await this.Client.RequestUserAuthorizationAsync(this.Authorization, implicitResponseType: this.RequestImplicitGrant);
 			this.webBrowser1.Navigate(authorizationUrl.AbsoluteUri); // use AbsoluteUri to workaround bug in WebBrowser that calls Uri.ToString instead of Uri.AbsoluteUri leading to escaping errors.
 		}
 

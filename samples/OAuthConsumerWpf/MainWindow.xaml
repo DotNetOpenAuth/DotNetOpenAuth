@@ -152,7 +152,7 @@
                     <ComboBox.Items>
                         <ComboBoxItem>Authorization Code</ComboBoxItem>
                         <ComboBoxItem>Implicit Grant</ComboBoxItem>
-                        <ComboBoxItem>Resource Owner Password Credentials</ComboBoxItem>
+                        <!--<ComboBoxItem>Resource Owner Password Credentials</ComboBoxItem>-->
                     </ComboBox.Items>
                 </ComboBox>
                 <Label Grid.Row="3" TabIndex="207">Resource URL</Label>

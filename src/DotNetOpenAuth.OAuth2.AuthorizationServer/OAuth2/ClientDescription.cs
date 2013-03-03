@@ -27,11 +27,13 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <param name="secret">The secret.</param>
 		/// <param name="defaultCallback">The default callback.</param>
-		/// <param name="clientType">Type of the client.</param>
-		public ClientDescription(string secret, Uri defaultCallback = null, ClientType clientType = ClientType.Confidential) {
+		public ClientDescription(string secret, Uri defaultCallback) {
+			Requires.NotNullOrEmpty(secret, "secret");
+			Requires.NotNull(defaultCallback, "defaultCallback");
+
 			this.secret = secret;
 			this.DefaultCallback = defaultCallback;
-			this.ClientType = clientType;
+			this.ClientType = ClientType.Confidential;
 		}
 
 		/// <summary>
@@ -39,10 +41,17 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// to represent a public client (one that does not have an authenticating secret.)
 		/// </summary>
 		/// <param name="defaultCallback">The default callback.</param>
-		/// <param name="clientType">Type of the client.</param>
-		public ClientDescription(Uri defaultCallback = null, ClientType clientType = ClientType.Public) {
+		public ClientDescription(Uri defaultCallback) {
+			Requires.NotNull(defaultCallback, "defaultCallback");
+
 			this.DefaultCallback = defaultCallback;
-			this.ClientType = clientType;
+			this.ClientType = ClientType.Public;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ClientDescription"/> class.
+		/// </summary>
+		protected ClientDescription() {
 		}
 
 		#region IClientDescription Members
@@ -54,12 +63,12 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <value>
 		/// An absolute URL; or <c>null</c> if none is registered.
 		/// </value>
-		public Uri DefaultCallback { get; private set; }
+		public Uri DefaultCallback { get; protected set; }
 
 		/// <summary>
 		/// Gets the type of the client.
 		/// </summary>
-		public ClientType ClientType { get; private set; }
+		public ClientType ClientType { get; protected set; }
 
 		/// <summary>
 		/// Gets a value indicating whether a non-empty secret is registered for this client.
