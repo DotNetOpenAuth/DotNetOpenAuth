@@ -6,7 +6,7 @@
 	using System.Net.Http;
 	using System.Web.Http;
 
-	[Authorize]
+	[Authorize(Roles = "Values")]
 	public class ValuesController : ApiController {
 		// GET api/values
 		public IEnumerable<string> Get() {
