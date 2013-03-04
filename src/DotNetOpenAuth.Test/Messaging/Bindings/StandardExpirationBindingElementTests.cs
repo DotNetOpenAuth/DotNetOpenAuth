@@ -6,7 +6,7 @@
 
 namespace DotNetOpenAuth.Test.Messaging.Bindings {
 	using System;
-
+	using System.Threading.Tasks;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
@@ -16,13 +16,13 @@ namespace DotNetOpenAuth.Test.Messaging.Bindings {
 	[TestFixture]
 	public class StandardExpirationBindingElementTests : MessagingTestBase {
 		[Test]
-		public void SendSetsTimestamp() {
+		public async Task SendSetsTimestamp() {
 			TestExpiringMessage message = new TestExpiringMessage(MessageTransport.Indirect);
 			message.Recipient = new Uri("http://localtest");
 			((IExpiringProtocolMessage)message).UtcCreationDate = DateTime.Parse("1/1/1990");
 
 			Channel channel = CreateChannel(MessageProtections.Expiration);
-			channel.PrepareResponse(message);
+			await channel.PrepareResponseAsync(message);
 			Assert.IsTrue(DateTime.UtcNow - ((IExpiringProtocolMessage)message).UtcCreationDate < TimeSpan.FromSeconds(3), "The timestamp on the message was not set on send.");
 		}
 

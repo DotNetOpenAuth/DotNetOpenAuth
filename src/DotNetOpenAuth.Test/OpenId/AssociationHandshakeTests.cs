@@ -6,6 +6,8 @@
 
 namespace DotNetOpenAuth.Test.OpenId {
 	using System;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Messages;
@@ -42,14 +44,14 @@ namespace DotNetOpenAuth.Test.OpenId {
 		public void AssociateDiffieHellmanOverHttps() {
 			Protocol protocol = Protocol.V20;
 			OpenIdCoordinator coordinator = new OpenIdCoordinator(
-				rp => {
+				(rp, ct) => {
 					// We have to formulate the associate request manually,
 					// since the DNOI RP won't voluntarily use DH on HTTPS.
 					AssociateDiffieHellmanRequest request = new AssociateDiffieHellmanRequest(protocol.Version, new Uri("https://Provider"));
 					request.AssociationType = protocol.Args.SignatureAlgorithm.HMAC_SHA256;
 					request.SessionType = protocol.Args.SessionType.DH_SHA256;
 					request.InitializeRequest();
-					var response = rp.Channel.Request<AssociateSuccessfulResponse>(request);
+					var response = await rp.Channel.RequestAsync<AssociateSuccessfulResponse>(request, CancellationToken.None);
 					Assert.IsNotNull(response);
 					Assert.AreEqual(request.AssociationType, response.AssociationType);
 					Assert.AreEqual(request.SessionType, response.SessionType);

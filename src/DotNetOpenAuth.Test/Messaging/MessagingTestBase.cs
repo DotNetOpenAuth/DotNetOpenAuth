@@ -10,6 +10,8 @@ namespace DotNetOpenAuth.Test {
 	using System.Collections.Specialized;
 	using System.IO;
 	using System.Net;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Xml;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
@@ -143,11 +145,11 @@ namespace DotNetOpenAuth.Test {
 			}
 		}
 
-		internal void ParameterizedReceiveTest(string method) {
+		internal async Task ParameterizedReceiveTestAsync(string method) {
 			var fields = GetStandardTestFields(FieldFill.CompleteBeforeBindings);
 			TestMessage expectedMessage = GetStandardTestMessage(FieldFill.CompleteBeforeBindings);
 
-			IDirectedProtocolMessage requestMessage = this.Channel.ReadFromRequest(CreateHttpRequestInfo(method, fields));
+			IDirectedProtocolMessage requestMessage = await this.Channel.ReadFromRequestAsync(CreateHttpRequestInfo(method, fields), CancellationToken.None);
 			Assert.IsNotNull(requestMessage);
 			Assert.IsInstanceOf<TestMessage>(requestMessage);
 			TestMessage actualMessage = (TestMessage)requestMessage;
@@ -156,7 +158,7 @@ namespace DotNetOpenAuth.Test {
 			Assert.AreEqual(expectedMessage.Location, actualMessage.Location);
 		}
 
-		internal void ParameterizedReceiveProtectedTest(DateTime? utcCreatedDate, bool invalidSignature) {
+		internal async Task ParameterizedReceiveProtectedTestAsync(DateTime? utcCreatedDate, bool invalidSignature) {
 			TestMessage expectedMessage = GetStandardTestMessage(FieldFill.CompleteBeforeBindings);
 			var fields = GetStandardTestFields(FieldFill.CompleteBeforeBindings);
 			fields.Add("Signature", invalidSignature ? "badsig" : MockSigningBindingElement.MessageSignature);
@@ -165,7 +167,7 @@ namespace DotNetOpenAuth.Test {
 				utcCreatedDate = DateTime.Parse(utcCreatedDate.Value.ToUniversalTime().ToString()); // round off the milliseconds so comparisons work later
 				fields.Add("created_on", XmlConvert.ToString(utcCreatedDate.Value, XmlDateTimeSerializationMode.Utc));
 			}
-			IProtocolMessage requestMessage = this.Channel.ReadFromRequest(CreateHttpRequestInfo("GET", fields));
+			IProtocolMessage requestMessage = await this.Channel.ReadFromRequestAsync(CreateHttpRequestInfo("GET", fields), CancellationToken.None);
 			Assert.IsNotNull(requestMessage);
 			Assert.IsInstanceOf<TestSignedDirectedMessage>(requestMessage);
 			TestSignedDirectedMessage actualMessage = (TestSignedDirectedMessage)requestMessage;

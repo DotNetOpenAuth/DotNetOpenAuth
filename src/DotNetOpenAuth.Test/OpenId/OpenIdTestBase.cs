@@ -9,6 +9,9 @@ namespace DotNetOpenAuth.Test.OpenId {
 	using System.Collections.Generic;
 	using System.IO;
 	using System.Reflection;
+	using System.Threading;
+	using System.Threading.Tasks;
+
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
@@ -142,9 +145,9 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// <remarks>
 		/// This is a very useful method to pass to the OpenIdCoordinator constructor for the Provider argument.
 		/// </remarks>
-		internal void AutoProvider(OpenIdProvider provider) {
+		internal async Task AutoProvider(OpenIdProvider provider, CancellationToken cancellationToken) {
 			while (!((CoordinatingChannel)provider.Channel).RemoteChannel.IsDisposed) {
-				IRequest request = provider.GetRequest();
+				IRequest request = await provider.GetRequestAsync(cancellationToken);
 				if (request == null) {
 					continue;
 				}
@@ -171,7 +174,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 					}
 				}
 
-				provider.Respond(request);
+				await provider.Channel.PrepareResponseAsync(request, cancellationToken);
 			}
 		}
 

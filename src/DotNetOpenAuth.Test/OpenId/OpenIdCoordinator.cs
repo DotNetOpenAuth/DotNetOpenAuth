@@ -6,6 +6,8 @@
 
 namespace DotNetOpenAuth.Test.OpenId {
 	using System;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId;
@@ -15,7 +17,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 	using Validation;
 
 	internal class OpenIdCoordinator : CoordinatorBase<OpenIdRelyingParty, OpenIdProvider> {
-		internal OpenIdCoordinator(Action<OpenIdRelyingParty> rpAction, Action<OpenIdProvider> opAction)
+		internal OpenIdCoordinator(Func<OpenIdRelyingParty, CancellationToken, Task> rpAction, Func<OpenIdProvider, CancellationToken, Task> opAction)
 			: base(WrapAction(rpAction), WrapAction(opAction)) {
 		}
 
@@ -23,7 +25,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 
 		internal OpenIdRelyingParty RelyingParty { get; set; }
 
-		internal override void Run() {
+		internal override Task RunAsync() {
 			this.EnsurePartiesAreInitialized();
 			var rpCoordinatingChannel = new CoordinatingChannel(this.RelyingParty.Channel, this.IncomingMessageFilter, this.OutgoingMessageFilter);
 			var opCoordinatingChannel = new CoordinatingChannel(this.Provider.Channel, this.IncomingMessageFilter, this.OutgoingMessageFilter);
@@ -33,23 +35,23 @@ namespace DotNetOpenAuth.Test.OpenId {
 			this.RelyingParty.Channel = rpCoordinatingChannel;
 			this.Provider.Channel = opCoordinatingChannel;
 
-			RunCore(this.RelyingParty, this.Provider);
+			return this.RunCoreAsync(this.RelyingParty, this.Provider);
 		}
 
-		private static Action<OpenIdRelyingParty> WrapAction(Action<OpenIdRelyingParty> action) {
+		private static Func<OpenIdRelyingParty, Task> WrapAction(Func<OpenIdRelyingParty, Task> action) {
 			Requires.NotNull(action, "action");
 
-			return rp => {
-				action(rp);
+			return async rp => {
+				await action(rp);
 				((CoordinatingChannel)rp.Channel).Close();
 			};
 		}
 
-		private static Action<OpenIdProvider> WrapAction(Action<OpenIdProvider> action) {
+		private static Func<OpenIdProvider, Task> WrapAction(Func<OpenIdProvider, Task> action) {
 			Requires.NotNull(action, "action");
 
-			return op => {
-				action(op);
+			return async op => {
+				await action(op);
 				((CoordinatingChannel)op.Channel).Close();
 			};
 		}
