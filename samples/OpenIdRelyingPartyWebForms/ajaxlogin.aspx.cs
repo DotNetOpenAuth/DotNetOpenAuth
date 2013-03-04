@@ -1,5 +1,6 @@
 ﻿namespace OpenIdRelyingPartyWebForms {
 	using System;
+	using System.Web.UI;
 	using System.Web.UI.WebControls;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.RelyingParty;
@@ -29,20 +30,24 @@
 			}
 		}
 
-		protected async void submitButton_Click(object sender, EventArgs e) {
-			if (!Page.IsValid) {
-				return;
-			}
+		protected void submitButton_Click(object sender, EventArgs e) {
+			this.RegisterAsyncTask(
+				new PageAsyncTask(
+					async ct => {
+						if (!Page.IsValid) {
+							return;
+						}
 
-			var response = await this.OpenIdAjaxTextBox1.GetAuthenticationResponseAsync(Response.ClientDisconnectedToken);
-			if (response != null) {
-				if (response.Status == AuthenticationStatus.Authenticated) {
-					// Save comment here!
-					this.multiView.ActiveViewIndex = 1;
-				} else {
-					this.multiView.ActiveViewIndex = 2;
-				}
-			}
+						var response = await this.OpenIdAjaxTextBox1.GetAuthenticationResponseAsync(Response.ClientDisconnectedToken);
+						if (response != null) {
+							if (response.Status == AuthenticationStatus.Authenticated) {
+								// Save comment here!
+								this.multiView.ActiveViewIndex = 1;
+							} else {
+								this.multiView.ActiveViewIndex = 2;
+							}
+						}
+					}));
 		}
 
 		protected void editComment_Click(object sender, EventArgs e) {

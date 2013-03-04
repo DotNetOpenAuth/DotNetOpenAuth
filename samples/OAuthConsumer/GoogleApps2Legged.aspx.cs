@@ -12,12 +12,16 @@
 	using DotNetOpenAuth.OAuth.Messages;
 
 	public partial class GoogleApps2Legged : System.Web.UI.Page {
-		protected async void Page_Load(object sender, EventArgs e) {
-			var google = new GoogleConsumer();
-			var accessToken = await google.RequestNewClientAccountAsync();
-			using (var httpClient = google.CreateHttpClient(accessToken.AccessToken)) {
-				await httpClient.GetAsync("http://someUri", Response.ClientDisconnectedToken);
-			}
+		protected void Page_Load(object sender, EventArgs e) {
+			this.RegisterAsyncTask(
+				new PageAsyncTask(
+					async ct => {
+						var google = new GoogleConsumer();
+						var accessToken = await google.RequestNewClientAccountAsync();
+						using (var httpClient = google.CreateHttpClient(accessToken.AccessToken)) {
+							await httpClient.GetAsync("http://someUri", Response.ClientDisconnectedToken);
+						}
+					}));
 		}
 
 		protected void getAddressBookButton_Click(object sender, EventArgs e) {

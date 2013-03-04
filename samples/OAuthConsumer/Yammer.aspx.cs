@@ -29,28 +29,36 @@
 			// TODO: code here
 		}
 
-		protected async void obtainAuthorizationButton_Click(object sender, EventArgs e) {
-			var yammer = new YammerConsumer();
-			Uri popupWindowLocation = await yammer.RequestUserAuthorizationAsync(MessagingUtilities.GetPublicFacingUrl());
-			string javascript = "window.open('" + popupWindowLocation.AbsoluteUri + "');";
-			this.Page.ClientScript.RegisterStartupScript(GetType(), "YammerPopup", javascript, true);
-			this.MultiView1.SetActiveView(this.CompleteAuthorizationView);
+		protected void obtainAuthorizationButton_Click(object sender, EventArgs e) {
+			this.RegisterAsyncTask(
+				new PageAsyncTask(
+					async ct => {
+						var yammer = new YammerConsumer();
+						Uri popupWindowLocation = await yammer.RequestUserAuthorizationAsync(MessagingUtilities.GetPublicFacingUrl());
+						string javascript = "window.open('" + popupWindowLocation.AbsoluteUri + "');";
+						this.Page.ClientScript.RegisterStartupScript(GetType(), "YammerPopup", javascript, true);
+						this.MultiView1.SetActiveView(this.CompleteAuthorizationView);
+					}));
 		}
 
-		protected async void finishAuthorizationButton_Click(object sender, EventArgs e) {
-			if (!Page.IsValid) {
-				return;
-			}
+		protected void finishAuthorizationButton_Click(object sender, EventArgs e) {
+			this.RegisterAsyncTask(
+				new PageAsyncTask(
+					async ct => {
+						if (!Page.IsValid) {
+							return;
+						}
 
-			var yammer = new YammerConsumer();
-			var authorizationResponse = await yammer.ProcessUserAuthorizationAsync(this.yammerUserCode.Text);
-			if (authorizationResponse != null) {
-				this.accessTokenLabel.Text = HttpUtility.HtmlEncode(authorizationResponse.AccessToken);
-				this.MultiView1.SetActiveView(this.AuthorizationCompleteView);
-			} else {
-				this.MultiView1.SetActiveView(this.BeginAuthorizationView);
-				this.authorizationErrorLabel.Visible = true;
-			}
+						var yammer = new YammerConsumer();
+						var authorizationResponse = await yammer.ProcessUserAuthorizationAsync(this.yammerUserCode.Text);
+						if (authorizationResponse != null) {
+							this.accessTokenLabel.Text = HttpUtility.HtmlEncode(authorizationResponse.AccessToken);
+							this.MultiView1.SetActiveView(this.AuthorizationCompleteView);
+						} else {
+							this.MultiView1.SetActiveView(this.BeginAuthorizationView);
+							this.authorizationErrorLabel.Visible = true;
+						}
+					}));
 		}
 	}
 }

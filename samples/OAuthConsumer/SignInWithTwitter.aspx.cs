@@ -15,29 +15,39 @@
 	using DotNetOpenAuth.OAuth;
 
 	public partial class SignInWithTwitter : System.Web.UI.Page {
-		protected async void Page_Load(object sender, EventArgs e) {
-			if (TwitterConsumer.IsTwitterConsumerConfigured) {
-				this.MultiView1.ActiveViewIndex = 1;
+		protected void Page_Load(object sender, EventArgs e) {
+			this.RegisterAsyncTask(
+				new PageAsyncTask(
+					async ct => {
+						if (TwitterConsumer.IsTwitterConsumerConfigured) {
+							this.MultiView1.ActiveViewIndex = 1;
 
-				if (!IsPostBack) {
-					var tuple = await TwitterConsumer.TryFinishSignInWithTwitterAsync();
-					if (tuple != null) {
-						string screenName = tuple.Item1;
-						int userId = tuple.Item2;
-						this.loggedInPanel.Visible = true;
-						this.loggedInName.Text = screenName;
+							if (!IsPostBack) {
+								var tuple = await TwitterConsumer.TryFinishSignInWithTwitterAsync();
+								if (tuple != null) {
+									string screenName = tuple.Item1;
+									int userId = tuple.Item2;
+									this.loggedInPanel.Visible = true;
+									this.loggedInName.Text = screenName;
 
-						// In a real app, the Twitter username would likely be used
-						// to log the user into the application.
-						////FormsAuthentication.RedirectFromLoginPage(screenName, false);
-					}
-				}
-			}
+									// In a real app, the Twitter username would likely be used
+									// to log the user into the application.
+									////FormsAuthentication.RedirectFromLoginPage(screenName, false);
+								}
+							}
+						}
+					}));
 		}
 
-		protected async void signInButton_Click(object sender, ImageClickEventArgs e) {
-			Uri redirectUri = await TwitterConsumer.StartSignInWithTwitterAsync(this.forceLoginCheckbox.Checked, Response.ClientDisconnectedToken);
-			this.Response.Redirect(redirectUri.AbsoluteUri);
+		protected void signInButton_Click(object sender, ImageClickEventArgs e) {
+			this.RegisterAsyncTask(
+				new PageAsyncTask(
+					async ct => {
+						Uri redirectUri =
+							await
+							TwitterConsumer.StartSignInWithTwitterAsync(this.forceLoginCheckbox.Checked, Response.ClientDisconnectedToken);
+						this.Response.Redirect(redirectUri.AbsoluteUri);
+					}));
 		}
 	}
 }

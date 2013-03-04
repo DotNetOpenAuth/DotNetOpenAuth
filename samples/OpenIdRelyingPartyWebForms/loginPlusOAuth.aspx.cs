@@ -3,6 +3,8 @@
 	using System.Threading.Tasks;
 	using System.Web;
 	using System.Web.Security;
+	using System.Web.UI;
+
 	using DotNetOpenAuth.ApplicationBlock;
 	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.Messages;
@@ -14,39 +16,49 @@
 		private const string GoogleOPIdentifier = "https://www.google.com/accounts/o8/id";
 		private static readonly OpenIdRelyingParty relyingParty = new OpenIdRelyingParty();
 
-		protected async void Page_Load(object sender, EventArgs e) {
-			if (!IsPostBack && string.Equals(Request.Url.Host, "localhost", StringComparison.OrdinalIgnoreCase)) {
-				// Disable the button since the scenario won't work under localhost,
-				// and this will help encourage the user to read the the text above the button.
-				this.beginButton.Enabled = false;
-			}
-
-			IAuthenticationResponse authResponse = await relyingParty.GetResponseAsync(new HttpRequestWrapper(Request), Response.ClientDisconnectedToken);
-			if (authResponse != null) {
-				switch (authResponse.Status) {
-					case AuthenticationStatus.Authenticated:
-						State.FetchResponse = authResponse.GetExtension<FetchResponse>();
-						AccessTokenResponse accessToken = await Global.GoogleWebConsumer.ProcessUserAuthorizationAsync(authResponse, Response.ClientDisconnectedToken);
-						if (accessToken != null) {
-							State.GoogleAccessToken = accessToken.AccessToken;
-							FormsAuthentication.SetAuthCookie(authResponse.ClaimedIdentifier, false);
-							Response.Redirect("~/MembersOnly/DisplayGoogleContacts.aspx");
-						} else {
-							MultiView1.SetActiveView(AuthorizationDenied);
+		protected void Page_Load(object sender, EventArgs e) {
+			this.RegisterAsyncTask(
+				new PageAsyncTask(
+					async ct => {
+						if (!IsPostBack && string.Equals(Request.Url.Host, "localhost", StringComparison.OrdinalIgnoreCase)) {
+							// Disable the button since the scenario won't work under localhost,
+							// and this will help encourage the user to read the the text above the button.
+							this.beginButton.Enabled = false;
 						}
-						break;
-					case AuthenticationStatus.Canceled:
-					case AuthenticationStatus.Failed:
-					default:
-						this.MultiView1.SetActiveView(this.AuthenticationFailed);
-						break;
-				}
-			}
+
+						IAuthenticationResponse authResponse =
+							await relyingParty.GetResponseAsync(new HttpRequestWrapper(Request), Response.ClientDisconnectedToken);
+						if (authResponse != null) {
+							switch (authResponse.Status) {
+								case AuthenticationStatus.Authenticated:
+									State.FetchResponse = authResponse.GetExtension<FetchResponse>();
+									AccessTokenResponse accessToken =
+										await Global.GoogleWebConsumer.ProcessUserAuthorizationAsync(authResponse, Response.ClientDisconnectedToken);
+									if (accessToken != null) {
+										State.GoogleAccessToken = accessToken.AccessToken;
+										FormsAuthentication.SetAuthCookie(authResponse.ClaimedIdentifier, false);
+										Response.Redirect("~/MembersOnly/DisplayGoogleContacts.aspx");
+									} else {
+										MultiView1.SetActiveView(AuthorizationDenied);
+									}
+									break;
+								case AuthenticationStatus.Canceled:
+								case AuthenticationStatus.Failed:
+								default:
+									this.MultiView1.SetActiveView(this.AuthenticationFailed);
+									break;
+							}
+						}
+					}));
 		}
 
-		protected async void beginButton_Click(object sender, EventArgs e) {
-			var request = await this.GetGoogleRequestAsync();
-			await request.RedirectToProviderAsync();
+		protected void beginButton_Click(object sender, EventArgs e) {
+			this.RegisterAsyncTask(
+				new PageAsyncTask(
+					async ct => {
+						var request = await this.GetGoogleRequestAsync();
+						await request.RedirectToProviderAsync();
+					}));
 		}
 
 		private async Task<IAuthenticationRequest> GetGoogleRequestAsync() {

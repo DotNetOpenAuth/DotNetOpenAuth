@@ -50,72 +50,95 @@
 			set { HttpContext.Current.Session["Authorization"] = value; }
 		}
 
-		protected async void Page_Load(object sender, EventArgs e) {
-			if (!IsPostBack) {
-				// Check to see if we're receiving a end user authorization response.
-				var authorization = await Client.ProcessUserAuthorizationAsync(new HttpRequestWrapper(Request), Response.ClientDisconnectedToken);
-				if (authorization != null) {
-					// We are receiving an authorization response.  Store it and associate it with this user.
-					Authorization = authorization;
-					Response.Redirect(Request.Path); // get rid of the /?code= parameter
-				}
-			}
+		protected void Page_Load(object sender, EventArgs e) {
+			this.RegisterAsyncTask(
+				new PageAsyncTask(
+					async ct => {
+						if (!IsPostBack) {
+							// Check to see if we're receiving a end user authorization response.
+							var authorization =
+								await Client.ProcessUserAuthorizationAsync(new HttpRequestWrapper(Request), Response.ClientDisconnectedToken);
+							if (authorization != null) {
+								// We are receiving an authorization response.  Store it and associate it with this user.
+								Authorization = authorization;
+								Response.Redirect(Request.Path); // get rid of the /?code= parameter
+							}
+						}
 
-			if (Authorization != null) {
-				// Indicate to the user that we have already obtained authorization on some of these.
-				foreach (var li in this.scopeList.Items.OfType<ListItem>().Where(li => Authorization.Scope.Contains(li.Value))) {
-					li.Selected = true;
-				}
-				this.authorizationLabel.Text = "Authorization received!";
-				if (Authorization.AccessTokenExpirationUtc.HasValue) {
-					TimeSpan timeLeft = Authorization.AccessTokenExpirationUtc.Value - DateTime.UtcNow;
-					this.authorizationLabel.Text += string.Format(CultureInfo.CurrentCulture, "  (access token expires in {0} minutes)", Math.Round(timeLeft.TotalMinutes, 1));
-				}
-			}
+						if (Authorization != null) {
+							// Indicate to the user that we have already obtained authorization on some of these.
+							foreach (var li in this.scopeList.Items.OfType<ListItem>().Where(li => Authorization.Scope.Contains(li.Value))) {
+								li.Selected = true;
+							}
+							this.authorizationLabel.Text = "Authorization received!";
+							if (Authorization.AccessTokenExpirationUtc.HasValue) {
+								TimeSpan timeLeft = Authorization.AccessTokenExpirationUtc.Value - DateTime.UtcNow;
+								this.authorizationLabel.Text += string.Format(
+									CultureInfo.CurrentCulture, "  (access token expires in {0} minutes)", Math.Round(timeLeft.TotalMinutes, 1));
+							}
+						}
 
-			this.getNameButton.Enabled = this.getAgeButton.Enabled = this.getFavoriteSites.Enabled = Authorization != null;
+						this.getNameButton.Enabled = this.getAgeButton.Enabled = this.getFavoriteSites.Enabled = Authorization != null;
+					}));
 		}
 
-		protected async void getAuthorizationButton_Click(object sender, EventArgs e) {
-			string[] scopes = (from item in this.scopeList.Items.OfType<ListItem>()
-							   where item.Selected
-							   select item.Value).ToArray();
+		protected void getAuthorizationButton_Click(object sender, EventArgs e) {
+			this.RegisterAsyncTask(
+				new PageAsyncTask(
+					async ct => {
+						string[] scopes =
+							(from item in this.scopeList.Items.OfType<ListItem>() where item.Selected select item.Value).ToArray();
 
-			var request = await Client.PrepareRequestUserAuthorizationAsync(scopes, cancellationToken: Response.ClientDisconnectedToken);
-			await request.SendAsync();
-			this.Context.Response.End();
+						var request =
+							await Client.PrepareRequestUserAuthorizationAsync(scopes, cancellationToken: Response.ClientDisconnectedToken);
+						await request.SendAsync();
+						this.Context.Response.End();
+					}));
 		}
 
-		protected async void getNameButton_Click(object sender, EventArgs e) {
-			try {
-				this.nameLabel.Text = await this.CallServiceAsync(client => client.GetName(), Response.ClientDisconnectedToken);
-			} catch (SecurityAccessDeniedException) {
-				this.nameLabel.Text = "Access denied!";
-			} catch (MessageSecurityException) {
-				this.nameLabel.Text = "Access denied!";
-			}
+		protected void getNameButton_Click(object sender, EventArgs e) {
+			this.RegisterAsyncTask(
+				new PageAsyncTask(
+					async ct => {
+						try {
+							this.nameLabel.Text = await this.CallServiceAsync(client => client.GetName(), Response.ClientDisconnectedToken);
+						} catch (SecurityAccessDeniedException) {
+							this.nameLabel.Text = "Access denied!";
+						} catch (MessageSecurityException) {
+							this.nameLabel.Text = "Access denied!";
+						}
+					}));
 		}
 
-		protected async void getAgeButton_Click(object sender, EventArgs e) {
-			try {
-				int? age = await this.CallServiceAsync(client => client.GetAge(), Response.ClientDisconnectedToken);
-				this.ageLabel.Text = age.HasValue ? age.Value.ToString(CultureInfo.CurrentCulture) : "not available";
-			} catch (SecurityAccessDeniedException) {
-				this.ageLabel.Text = "Access denied!";
-			} catch (MessageSecurityException) {
-				this.ageLabel.Text = "Access denied!";
-			}
+		protected void getAgeButton_Click(object sender, EventArgs e) {
+			this.RegisterAsyncTask(
+				new PageAsyncTask(
+					async ct => {
+						try {
+							int? age = await this.CallServiceAsync(client => client.GetAge(), Response.ClientDisconnectedToken);
+							this.ageLabel.Text = age.HasValue ? age.Value.ToString(CultureInfo.CurrentCulture) : "not available";
+						} catch (SecurityAccessDeniedException) {
+							this.ageLabel.Text = "Access denied!";
+						} catch (MessageSecurityException) {
+							this.ageLabel.Text = "Access denied!";
+						}
+					}));
 		}
 
-		protected async void getFavoriteSites_Click(object sender, EventArgs e) {
-			try {
-				string[] favoriteSites = await this.CallServiceAsync(client => client.GetFavoriteSites(), Response.ClientDisconnectedToken);
-				this.favoriteSitesLabel.Text = string.Join(", ", favoriteSites);
-			} catch (SecurityAccessDeniedException) {
-				this.favoriteSitesLabel.Text = "Access denied!";
-			} catch (MessageSecurityException) {
-				this.favoriteSitesLabel.Text = "Access denied!";
-			}
+		protected void getFavoriteSites_Click(object sender, EventArgs e) {
+			this.RegisterAsyncTask(
+				new PageAsyncTask(
+					async ct => {
+						try {
+							string[] favoriteSites =
+								await this.CallServiceAsync(client => client.GetFavoriteSites(), Response.ClientDisconnectedToken);
+							this.favoriteSitesLabel.Text = string.Join(", ", favoriteSites);
+						} catch (SecurityAccessDeniedException) {
+							this.favoriteSitesLabel.Text = "Access denied!";
+						} catch (MessageSecurityException) {
+							this.favoriteSitesLabel.Text = "Access denied!";
+						}
+					}));
 		}
 
 		private async Task<T> CallServiceAsync<T>(Func<DataApiClient, T> predicate, CancellationToken cancellationToken) {

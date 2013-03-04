@@ -2,6 +2,7 @@
 	using System;
 	using System.Threading.Tasks;
 	using System.Web.Security;
+	using System.Web.UI;
 	using System.Web.UI.WebControls;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
@@ -12,24 +13,32 @@
 	/// Page for handling logins to this server. 
 	/// </summary>
 	public partial class _default : System.Web.UI.Page {
-		protected async void Page_Load(object sender, EventArgs e) {
-			if (Request.QueryString["rp"] != null) {
-				if (Page.User.Identity.IsAuthenticated) {
-					await this.SendAssertionAsync(Request.QueryString["rp"]);
-				} else {
-					FormsAuthentication.RedirectToLoginPage();
-				}
-			} else {
-				TextBox relyingPartySite = (TextBox)this.loginView.FindControl("relyingPartySite");
-				if (relyingPartySite != null) {
-					relyingPartySite.Focus();
-				}
-			}
+		protected void Page_Load(object sender, EventArgs e) {
+			this.RegisterAsyncTask(
+				new PageAsyncTask(
+					async ct => {
+						if (Request.QueryString["rp"] != null) {
+							if (Page.User.Identity.IsAuthenticated) {
+								await this.SendAssertionAsync(Request.QueryString["rp"]);
+							} else {
+								FormsAuthentication.RedirectToLoginPage();
+							}
+						} else {
+							TextBox relyingPartySite = (TextBox)this.loginView.FindControl("relyingPartySite");
+							if (relyingPartySite != null) {
+								relyingPartySite.Focus();
+							}
+						}
+					}));
 		}
 
 		protected async void sendAssertionButton_Click(object sender, EventArgs e) {
-			TextBox relyingPartySite = (TextBox)this.loginView.FindControl("relyingPartySite");
-			await this.SendAssertionAsync(relyingPartySite.Text);
+			this.RegisterAsyncTask(
+				new PageAsyncTask(
+					async ct => {
+						TextBox relyingPartySite = (TextBox)this.loginView.FindControl("relyingPartySite");
+						await this.SendAssertionAsync(relyingPartySite.Text);
+					}));
 		}
 
 		private async Task SendAssertionAsync(string relyingPartyRealm) {

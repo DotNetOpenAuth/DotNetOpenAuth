@@ -10,6 +10,7 @@
 	using System.ServiceModel.Security;
 	using System.Threading.Tasks;
 	using System.Web;
+	using System.Web.UI;
 	using System.Web.UI.WebControls;
 	using DotNetOpenAuth;
 	using DotNetOpenAuth.ApplicationBlock;
@@ -22,58 +23,75 @@
 	/// Sample consumer of our Service Provider sample's WCF service.
 	/// </summary>
 	public partial class SampleWcf : System.Web.UI.Page {
-		protected async void Page_Load(object sender, EventArgs e) {
-			if (!IsPostBack) {
-				var consumer = this.CreateConsumer();
-				if (consumer.ConsumerKey != null) {
-					var accessTokenMessage = await consumer.ProcessUserAuthorizationAsync(this.Request.Url);
-					if (accessTokenMessage != null) {
-						Session["WcfAccessToken"] = accessTokenMessage.AccessToken;
-						this.authorizationLabel.Text = "Authorized!  Access token: " + accessTokenMessage.AccessToken;
-					}
-				}
-			}
+		protected void Page_Load(object sender, EventArgs e) {
+			this.RegisterAsyncTask(
+				new PageAsyncTask(
+					async ct => {
+						if (!IsPostBack) {
+							var consumer = this.CreateConsumer();
+							if (consumer.ConsumerKey != null) {
+								var accessTokenMessage = await consumer.ProcessUserAuthorizationAsync(this.Request.Url);
+								if (accessTokenMessage != null) {
+									Session["WcfAccessToken"] = accessTokenMessage.AccessToken;
+									this.authorizationLabel.Text = "Authorized!  Access token: " + accessTokenMessage.AccessToken;
+								}
+							}
+						}
+					}));
 		}
 
-		protected async void getAuthorizationButton_Click(object sender, EventArgs e) {
-			var consumer = this.CreateConsumer();
-			UriBuilder callback = new UriBuilder(Request.Url);
-			callback.Query = null;
-			string[] scopes = (from item in this.scopeList.Items.OfType<ListItem>()
-							   where item.Selected
-							   select item.Value).ToArray();
-			string scope = string.Join("|", scopes);
-			var requestParams = new Dictionary<string, string> {
-				{ "scope", scope },
-			};
-			Uri redirectUri = await consumer.RequestUserAuthorizationAsync(callback.Uri, requestParams);
-			this.Response.Redirect(redirectUri.AbsoluteUri);
+		protected void getAuthorizationButton_Click(object sender, EventArgs e) {
+			this.RegisterAsyncTask(
+				new PageAsyncTask(
+					async ct => {
+						var consumer = this.CreateConsumer();
+						UriBuilder callback = new UriBuilder(Request.Url);
+						callback.Query = null;
+						string[] scopes =
+							(from item in this.scopeList.Items.OfType<ListItem>() where item.Selected select item.Value).ToArray();
+						string scope = string.Join("|", scopes);
+						var requestParams = new Dictionary<string, string> { { "scope", scope }, };
+						Uri redirectUri = await consumer.RequestUserAuthorizationAsync(callback.Uri, requestParams);
+						this.Response.Redirect(redirectUri.AbsoluteUri);
+					}));
 		}
 
-		protected async void getNameButton_Click(object sender, EventArgs e) {
-			try {
-				this.nameLabel.Text = await this.CallServiceAsync(client => client.GetName());
-			} catch (SecurityAccessDeniedException) {
-				this.nameLabel.Text = "Access denied!";
-			}
+		protected void getNameButton_Click(object sender, EventArgs e) {
+			this.RegisterAsyncTask(
+				new PageAsyncTask(
+					async ct => {
+						try {
+							this.nameLabel.Text = await this.CallServiceAsync(client => client.GetName());
+						} catch (SecurityAccessDeniedException) {
+							this.nameLabel.Text = "Access denied!";
+						}
+					}));
 		}
 
-		protected async void getAgeButton_Click(object sender, EventArgs e) {
-			try {
-				int? age = await this.CallServiceAsync(client => client.GetAge());
-				this.ageLabel.Text = age.HasValue ? age.Value.ToString(CultureInfo.CurrentCulture) : "not available";
-			} catch (SecurityAccessDeniedException) {
-				this.ageLabel.Text = "Access denied!";
-			}
+		protected void getAgeButton_Click(object sender, EventArgs e) {
+			this.RegisterAsyncTask(
+				new PageAsyncTask(
+					async ct => {
+						try {
+							int? age = await this.CallServiceAsync(client => client.GetAge());
+							this.ageLabel.Text = age.HasValue ? age.Value.ToString(CultureInfo.CurrentCulture) : "not available";
+						} catch (SecurityAccessDeniedException) {
+							this.ageLabel.Text = "Access denied!";
+						}
+					}));
 		}
 
-		protected async void getFavoriteSites_Click(object sender, EventArgs e) {
-			try {
-				string[] favoriteSites = await this.CallServiceAsync(client => client.GetFavoriteSites());
-				this.favoriteSitesLabel.Text = string.Join(", ", favoriteSites);
-			} catch (SecurityAccessDeniedException) {
-				this.favoriteSitesLabel.Text = "Access denied!";
-			}
+		protected void getFavoriteSites_Click(object sender, EventArgs e) {
+			this.RegisterAsyncTask(
+				new PageAsyncTask(
+					async ct => {
+						try {
+							string[] favoriteSites = await this.CallServiceAsync(client => client.GetFavoriteSites());
+							this.favoriteSitesLabel.Text = string.Join(", ", favoriteSites);
+						} catch (SecurityAccessDeniedException) {
+							this.favoriteSitesLabel.Text = "Access denied!";
+						}
+					}));
 		}
 
 		private async Task<T> CallServiceAsync<T>(Func<DataApiClient, T> predicate) {

@@ -934,21 +934,26 @@ idselector_input_id = '" + this.ClientID + @"';
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-		private async void LoginButton_Click(object sender, EventArgs e) {
-			if (!this.Page.IsValid) {
-				return;
-			}
+		private void LoginButton_Click(object sender, EventArgs e) {
+			this.Page.RegisterAsyncTask(
+				new PageAsyncTask(
+					async ct => {
+						if (!this.Page.IsValid) {
+							return;
+						}
 
-			var authenticationRequests = await this.CreateRequestsAsync(CancellationToken.None);
-			IAuthenticationRequest request = authenticationRequests.FirstOrDefault();
-			if (request != null) {
-				await this.LogOnAsync(request, CancellationToken.None);
-			} else {
-				if (!string.IsNullOrEmpty(this.FailedMessageText)) {
-					this.errorLabel.Text = string.Format(CultureInfo.CurrentCulture, this.FailedMessageText, OpenIdStrings.OpenIdEndpointNotFound);
-					this.errorLabel.Visible = true;
-				}
-			}
+						var authenticationRequests = await this.CreateRequestsAsync(CancellationToken.None);
+						IAuthenticationRequest request = authenticationRequests.FirstOrDefault();
+						if (request != null) {
+							await this.LogOnAsync(request, CancellationToken.None);
+						} else {
+							if (!string.IsNullOrEmpty(this.FailedMessageText)) {
+								this.errorLabel.Text = string.Format(
+									CultureInfo.CurrentCulture, this.FailedMessageText, OpenIdStrings.OpenIdEndpointNotFound);
+								this.errorLabel.Visible = true;
+							}
+						}
+					}));
 		}
 
 		/// <summary>

@@ -35,15 +35,19 @@
 			}
 		}
 
-		protected async void cancelButton_Click(object sender, EventArgs e) {
-			var req = ProviderEndpoint.PendingAuthenticationRequest;
-			if (req != null) {
-				req.IsAuthenticated = false;
-				var providerEndpoint = new ProviderEndpoint();
-				var response = await providerEndpoint.PrepareResponseAsync(Response.ClientDisconnectedToken);
-				await response.SendAsync(new HttpContextWrapper(this.Context), Response.ClientDisconnectedToken);
-				this.Context.Response.End();
-			}
+		protected void cancelButton_Click(object sender, EventArgs e) {
+			this.RegisterAsyncTask(
+				new PageAsyncTask(
+					async ct => {
+						var req = ProviderEndpoint.PendingAuthenticationRequest;
+						if (req != null) {
+							req.IsAuthenticated = false;
+							var providerEndpoint = new ProviderEndpoint();
+							var response = await providerEndpoint.PrepareResponseAsync(Response.ClientDisconnectedToken);
+							await response.SendAsync(new HttpContextWrapper(this.Context), Response.ClientDisconnectedToken);
+							this.Context.Response.End();
+						}
+					}));
 		}
 	}
 }

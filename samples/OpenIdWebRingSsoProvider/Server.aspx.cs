@@ -12,8 +12,12 @@
 		protected void Page_Load(object sender, EventArgs e) {
 		}
 
-		protected async void providerEndpoint1_AuthenticationChallenge(object sender, AuthenticationChallengeEventArgs e) {
-			await Util.ProcessAuthenticationChallengeAsync(e.Request, Response.ClientDisconnectedToken);
+		protected void providerEndpoint1_AuthenticationChallenge(object sender, AuthenticationChallengeEventArgs e) {
+			this.RegisterAsyncTask(
+				new PageAsyncTask(
+					async ct => {
+						await Util.ProcessAuthenticationChallengeAsync(e.Request, ct);
+					}));
 		}
 	}
 }
