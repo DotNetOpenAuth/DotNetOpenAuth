@@ -42,6 +42,7 @@
 				var providerEndpoint = new ProviderEndpoint();
 				var response = await providerEndpoint.PrepareResponseAsync(Response.ClientDisconnectedToken);
 				await response.SendAsync(new HttpContextWrapper(this.Context), Response.ClientDisconnectedToken);
+				this.Context.Response.End();
 			}
 		}
 	}

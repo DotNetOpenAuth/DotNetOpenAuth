@@ -40,6 +40,7 @@
 				string rpSite = Identifier.Parse(relyingPartyRealm);
 				var response = await op.PrepareUnsolicitedAssertionAsync(providerEndpoint, rpSite, Util.BuildIdentityUrl(), Util.BuildIdentityUrl());
 				await response.SendAsync();
+				this.Context.Response.End();
 			} catch (ProtocolException ex) {
 				Label errorLabel = (Label)this.loginView.FindControl("errorLabel");
 				errorLabel.Visible = true;

@@ -447,6 +447,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				cancellationToken);
 
 			await response.SendAsync(new HttpContextWrapper(this.Context), cancellationToken);
+			this.Context.Response.End();
 		}
 
 		/// <summary>

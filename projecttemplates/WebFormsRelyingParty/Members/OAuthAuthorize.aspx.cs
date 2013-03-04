@@ -40,6 +40,7 @@ namespace WebFormsRelyingParty.Members {
 					var response = OAuthServiceProvider.AuthorizationServer.PrepareApproveAuthorizationRequest(this.pendingRequest, HttpContext.Current.User.Identity.Name);
 					var responseMessage = await OAuthServiceProvider.AuthorizationServer.Channel.PrepareResponseAsync(response, Response.ClientDisconnectedToken);
 					await responseMessage.SendAsync(new HttpContextWrapper(this.Context), Response.ClientDisconnectedToken);
+					this.Context.Response.End();
 				}
 				this.ViewState["AuthRequest"] = this.pendingRequest;
 			} else {
@@ -60,12 +61,14 @@ namespace WebFormsRelyingParty.Members {
 			var response = OAuthServiceProvider.AuthorizationServer.PrepareApproveAuthorizationRequest(this.pendingRequest, HttpContext.Current.User.Identity.Name);
 			var responseMessage = await OAuthServiceProvider.AuthorizationServer.Channel.PrepareResponseAsync(response, Response.ClientDisconnectedToken);
 			await responseMessage.SendAsync(new HttpContextWrapper(this.Context), Response.ClientDisconnectedToken);
+			this.Context.Response.End();
 		}
 
 		protected async void noButton_Click(object sender, EventArgs e) {
 			var response = OAuthServiceProvider.AuthorizationServer.PrepareRejectAuthorizationRequest(this.pendingRequest);
 			var responseMessage = await OAuthServiceProvider.AuthorizationServer.Channel.PrepareResponseAsync(response, Response.ClientDisconnectedToken);
 			await responseMessage.SendAsync(new HttpContextWrapper(this.Context), Response.ClientDisconnectedToken);
+			this.Context.Response.End();
 		}
 	}
 }

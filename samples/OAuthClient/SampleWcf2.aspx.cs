@@ -83,6 +83,7 @@
 
 			var request = await Client.PrepareRequestUserAuthorizationAsync(scopes, cancellationToken: Response.ClientDisconnectedToken);
 			await request.SendAsync();
+			this.Context.Response.End();
 		}
 
 		protected async void getNameButton_Click(object sender, EventArgs e) {

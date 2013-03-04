@@ -470,11 +470,6 @@ namespace DotNetOpenAuth.Messaging {
 			if (response.Content != null) {
 				await response.Content.CopyToAsync(responseContext.OutputStream).ConfigureAwait(false);
 			}
-
-			// This prevents a hosting ASP.NET web forms page from rendering HTML after a control
-			// has taken control of the response stream.
-			context.ApplicationInstance.CompleteRequest();
-			context.Response.End();
 		}
 
 		/// <summary>
@@ -1226,7 +1221,6 @@ namespace DotNetOpenAuth.Messaging {
 					case "Proxy-Connection": break; // we don't care
 					case "Referer": message.Headers.Referrer = request.UrlReferrer; break;
 					case "Transfer-Encoding": message.Headers.TransferEncoding.Add(new TransferCodingHeaderValue(request.Headers[headerName])); break;
-					case "User-Agent": message.Headers.UserAgent.Add(new ProductInfoHeaderValue(request.UserAgent)); break;
 					default:
 						HttpHeaders headers = headerName.StartsWith("Content-", StringComparison.Ordinal) && message.Content != null
 							? (HttpHeaders)message.Content.Headers
