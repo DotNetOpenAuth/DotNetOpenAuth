@@ -54,7 +54,7 @@ namespace OpenIdProviderWebForms.Code {
 					// add extension responses here.
 				}
 			} else {
-				HttpContext.Current.Response.Redirect("~/decide.aspx", true);
+				HttpContext.Current.Response.Redirect("~/decide.aspx", false);
 			}
 		}
 
@@ -70,7 +70,7 @@ namespace OpenIdProviderWebForms.Code {
 					// These would typically be filled in from a user database
 				}
 			} else {
-				HttpContext.Current.Response.Redirect("~/decide.aspx", true);
+				HttpContext.Current.Response.Redirect("~/decide.aspx", false);
 			}
 		}
 

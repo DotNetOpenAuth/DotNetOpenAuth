@@ -96,9 +96,11 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <returns>
 		/// The deserialized message, if one is found.  Null otherwise.
 		/// </returns>
-		protected override IDirectedProtocolMessage ReadFromRequestCore(HttpRequestBase request, CancellationToken cancellationToken) {
-			if (!string.IsNullOrEmpty(request.Url.Fragment)) {
-				var fields = HttpUtility.ParseQueryString(request.Url.Fragment.Substring(1)).ToDictionary();
+		protected override async Task<IDirectedProtocolMessage> ReadFromRequestCoreAsync(HttpRequestMessage request, CancellationToken cancellationToken) {
+			Requires.NotNull(request, "request");
+
+			if (!string.IsNullOrEmpty(request.RequestUri.Fragment)) {
+				var fields = HttpUtility.ParseQueryString(request.RequestUri.Fragment.Substring(1)).ToDictionary();
 
 				MessageReceivingEndpoint recipient;
 				try {
@@ -111,7 +113,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 				return (IDirectedProtocolMessage)this.Receive(fields, recipient);
 			}
 
-			return base.ReadFromRequestCore(request, cancellationToken);
+			return await base.ReadFromRequestCoreAsync(request, cancellationToken);
 		}
 
 		/// <summary>

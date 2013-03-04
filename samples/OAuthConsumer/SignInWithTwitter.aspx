@@ -33,6 +33,7 @@
 				</asp:Panel>
 			</asp:View>
 		</asp:MultiView>
+	</div>
 	</form>
 </body>
 </html>

@@ -10,6 +10,7 @@ namespace DotNetOpenAuth.OAuth {
 	using System.ComponentModel;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Globalization;
+	using System.Net.Http;
 	using System.Security.Principal;
 	using System.ServiceModel.Channels;
 	using System.Threading;
@@ -214,7 +215,23 @@ namespace DotNetOpenAuth.OAuth {
 		/// Requires HttpContext.Current.
 		/// </remarks>
 		public Task<IDirectedProtocolMessage> ReadRequestAsync(HttpRequestBase request = null, CancellationToken cancellationToken = default(CancellationToken)) {
-			return this.Channel.ReadFromRequestAsync(request ?? this.Channel.GetRequestFromContext(), cancellationToken);
+			return this.ReadRequestAsync((request ?? this.Channel.GetRequestFromContext()).AsHttpRequestMessage(), cancellationToken);
+		}
+
+		/// <summary>
+		/// Reads any incoming OAuth message.
+		/// </summary>
+		/// <param name="request">The request.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The deserialized message.
+		/// </returns>
+		/// <remarks>
+		/// Requires HttpContext.Current.
+		/// </remarks>
+		public Task<IDirectedProtocolMessage> ReadRequestAsync(HttpRequestMessage request, CancellationToken cancellationToken = default(CancellationToken)) {
+			Requires.NotNull(request, "request");
+			return this.Channel.ReadFromRequestAsync(request, cancellationToken);
 		}
 
 		/// <summary>
@@ -226,8 +243,24 @@ namespace DotNetOpenAuth.OAuth {
 		/// The incoming request, or null if no OAuth message was attached.
 		/// </returns>
 		/// <exception cref="ProtocolException">Thrown if an unexpected OAuth message is attached to the incoming request.</exception>
-		public async Task<UnauthorizedTokenRequest> ReadTokenRequestAsync(HttpRequestBase request = null, CancellationToken cancellationToken = default(CancellationToken)) {
-			var message = await this.Channel.TryReadFromRequestAsync<UnauthorizedTokenRequest>(cancellationToken, request);
+		public Task<UnauthorizedTokenRequest> ReadTokenRequestAsync(
+			HttpRequestBase request = null, CancellationToken cancellationToken = default(CancellationToken)) {
+			return this.ReadTokenRequestAsync((request ?? this.channel.GetRequestFromContext()).AsHttpRequestMessage(), cancellationToken);
+		}
+
+		/// <summary>
+		/// Reads a request for an unauthorized token from the incoming HTTP request.
+		/// </summary>
+		/// <param name="request">The HTTP request to read from.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The incoming request, or null if no OAuth message was attached.
+		/// </returns>
+		/// <exception cref="ProtocolException">Thrown if an unexpected OAuth message is attached to the incoming request.</exception>
+		public async Task<UnauthorizedTokenRequest> ReadTokenRequestAsync(HttpRequestMessage request, CancellationToken cancellationToken = default(CancellationToken)) {
+			Requires.NotNull(request, "request");
+
+			var message = await this.Channel.TryReadFromRequestAsync<UnauthorizedTokenRequest>(request, cancellationToken);
 			if (message != null) {
 				ErrorUtilities.VerifyProtocol(message.Version >= Protocol.Lookup(this.SecuritySettings.MinimumRequiredOAuthVersion).Version, OAuthStrings.MinimumConsumerVersionRequirementNotMet, this.SecuritySettings.MinimumRequiredOAuthVersion, message.Version);
 			}
@@ -261,8 +294,9 @@ namespace DotNetOpenAuth.OAuth {
 		/// The incoming request, or null if no OAuth message was attached.
 		/// </returns>
 		/// <exception cref="ProtocolException">Thrown if an unexpected OAuth message is attached to the incoming request.</exception>
-		public Task<UserAuthorizationRequest> ReadAuthorizationRequestAsync(HttpRequestBase request, CancellationToken cancellationToken = default(CancellationToken)) {
-			return this.Channel.TryReadFromRequestAsync<UserAuthorizationRequest>(cancellationToken, request);
+		public Task<UserAuthorizationRequest> ReadAuthorizationRequestAsync(HttpRequestBase request = null, CancellationToken cancellationToken = default(CancellationToken)) {
+			request = request ?? this.channel.GetRequestFromContext();
+			return this.Channel.TryReadFromRequestAsync<UserAuthorizationRequest>(request.AsHttpRequestMessage(), cancellationToken);
 		}
 
 		/// <summary>
@@ -337,7 +371,8 @@ namespace DotNetOpenAuth.OAuth {
 		/// </returns>
 		/// <exception cref="ProtocolException">Thrown if an unexpected OAuth message is attached to the incoming request.</exception>
 		public Task<AuthorizedTokenRequest> ReadAccessTokenRequestAsync(HttpRequestBase request = null, CancellationToken cancellationToken = default(CancellationToken)) {
-			return this.Channel.TryReadFromRequestAsync<AuthorizedTokenRequest>(cancellationToken, request);
+			request = request ?? this.Channel.GetRequestFromContext();
+			return this.Channel.TryReadFromRequestAsync<AuthorizedTokenRequest>(request.AsHttpRequestMessage(), cancellationToken);
 		}
 
 		/// <summary>
@@ -391,9 +426,8 @@ namespace DotNetOpenAuth.OAuth {
 		/// </remarks>
 		/// <exception cref="ProtocolException">Thrown if an unexpected message is attached to the request.</exception>
 		public async Task<AccessProtectedResourceRequest> ReadProtectedResourceAuthorizationAsync(HttpRequestBase request = null, CancellationToken cancellationToken = default(CancellationToken)) {
-			Requires.NotNull(request, "request");
-
-			var accessMessage = await this.Channel.TryReadFromRequestAsync<AccessProtectedResourceRequest>(cancellationToken, request);
+			request = request ?? this.Channel.GetRequestFromContext();
+			var accessMessage = await this.Channel.TryReadFromRequestAsync<AccessProtectedResourceRequest>(request.AsHttpRequestMessage(), cancellationToken);
 			if (accessMessage != null) {
 				if (this.TokenManager.GetTokenType(accessMessage.AccessToken) != TokenType.AccessToken) {
 					throw new ProtocolException(

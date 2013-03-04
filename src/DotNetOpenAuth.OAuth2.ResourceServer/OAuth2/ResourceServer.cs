@@ -88,17 +88,34 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </returns>
 		/// <exception cref="ProtocolFaultResponseException">Thrown when the client is not authorized.  This exception should be caught and the
 		/// <see cref="ProtocolFaultResponseException.ErrorResponseMessage" /> message should be returned to the client.</exception>
-		public virtual async Task<AccessToken> GetAccessTokenAsync(HttpRequestBase httpRequestInfo = null, CancellationToken cancellationToken = default(CancellationToken), params string[] requiredScopes) {
+		public virtual Task<AccessToken> GetAccessTokenAsync(HttpRequestBase httpRequestInfo = null, CancellationToken cancellationToken = default(CancellationToken), params string[] requiredScopes) {
 			Requires.NotNull(requiredScopes, "requiredScopes");
 			RequiresEx.ValidState(this.ScopeSatisfiedCheck != null, Strings.RequiredPropertyNotYetPreset);
-			if (httpRequestInfo == null) {
-				httpRequestInfo = this.Channel.GetRequestFromContext();
-			}
+
+			httpRequestInfo = httpRequestInfo ?? this.Channel.GetRequestFromContext();
+			return this.GetAccessTokenAsync(httpRequestInfo.AsHttpRequestMessage(), cancellationToken, requiredScopes);
+		}
+
+		/// <summary>
+		/// Discovers what access the client should have considering the access token in the current request.
+		/// </summary>
+		/// <param name="request">The HTTP request message.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <param name="requiredScopes">The set of scopes required to approve this request.</param>
+		/// <returns>
+		/// The access token describing the authorization the client has.  Never <c>null</c>.
+		/// </returns>
+		/// <exception cref="ProtocolFaultResponseException">Thrown when the client is not authorized.  This exception should be caught and the
+		/// <see cref="ProtocolFaultResponseException.ErrorResponseMessage" /> message should be returned to the client.</exception>
+		public virtual async Task<AccessToken> GetAccessTokenAsync(HttpRequestMessage requestMessage, CancellationToken cancellationToken = default(CancellationToken), params string[] requiredScopes) {
+			Requires.NotNull(requestMessage, "requestMessage");
+			Requires.NotNull(requiredScopes, "requiredScopes");
+			RequiresEx.ValidState(this.ScopeSatisfiedCheck != null, Strings.RequiredPropertyNotYetPreset);
 
 			AccessToken accessToken;
 			AccessProtectedResourceRequest request = null;
 			try {
-				request = await this.Channel.TryReadFromRequestAsync<AccessProtectedResourceRequest>(cancellationToken, httpRequestInfo);
+				request = await this.Channel.TryReadFromRequestAsync<AccessProtectedResourceRequest>(requestMessage, cancellationToken);
 				if (request != null) {
 					accessToken = this.AccessTokenAnalyzer.DeserializeAccessToken(request, request.AccessToken);
 					ErrorUtilities.VerifyHost(accessToken != null, "IAccessTokenAnalyzer.DeserializeAccessToken returned a null reslut.");
@@ -128,22 +145,6 @@ namespace DotNetOpenAuth.OAuth2 {
 				var response = request != null ? UnauthorizedResponse.InvalidToken(request, ex) : UnauthorizedResponse.InvalidRequest(ex);
 				throw new ProtocolFaultResponseException(this.Channel, response, innerException: ex);
 			}
-		}
-
-		/// <summary>
-		/// Discovers what access the client should have considering the access token in the current request.
-		/// </summary>
-		/// <param name="request">The HTTP request message.</param>
-		/// <param name="cancellationToken">The cancellation token.</param>
-		/// <param name="requiredScopes">The set of scopes required to approve this request.</param>
-		/// <returns>
-		/// The access token describing the authorization the client has.  Never <c>null</c>.
-		/// </returns>
-		/// <exception cref="ProtocolFaultResponseException">Thrown when the client is not authorized.  This exception should be caught and the
-		/// <see cref="ProtocolFaultResponseException.ErrorResponseMessage" /> message should be returned to the client.</exception>
-		public virtual Task<AccessToken> GetAccessTokenAsync(HttpRequestMessage request, CancellationToken cancellationToken = default(CancellationToken), params string[] requiredScopes) {
-			Requires.NotNull(request, "request");
-			return this.GetAccessTokenAsync(new HttpRequestInfo(request), cancellationToken, requiredScopes);
 		}
 
 		/// <summary>

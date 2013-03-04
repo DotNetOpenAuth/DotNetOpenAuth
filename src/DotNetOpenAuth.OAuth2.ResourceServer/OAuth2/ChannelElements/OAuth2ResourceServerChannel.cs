@@ -55,10 +55,12 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <returns>
 		/// The deserialized message, if one is found.  Null otherwise.
 		/// </returns>
-		protected override IDirectedProtocolMessage ReadFromRequestCore(HttpRequestBase request, CancellationToken cancellationToken) {
+		protected override async Task<IDirectedProtocolMessage> ReadFromRequestCoreAsync(HttpRequestMessage request, CancellationToken cancellationToken) {
+			Requires.NotNull(request, "request");
+
 			var fields = new Dictionary<string, string>();
 			string accessToken;
-			if ((accessToken = SearchForBearerAccessTokenInRequest(request)) != null) {
+			if ((accessToken = await SearchForBearerAccessTokenInRequestAsync(request, cancellationToken)) != null) {
 				fields[Protocol.token_type] = Protocol.AccessTokenTypes.Bearer;
 				fields[Protocol.access_token] = accessToken;
 			}
@@ -129,27 +131,24 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// </summary>
 		/// <param name="request">The request.</param>
 		/// <returns>The bearer access token, if one exists.  Otherwise <c>null</c>.</returns>
-		private static string SearchForBearerAccessTokenInRequest(HttpRequestBase request) {
+		private static async Task<string> SearchForBearerAccessTokenInRequestAsync(HttpRequestMessage request, CancellationToken cancellationToken) {
 			Requires.NotNull(request, "request");
 
 			// First search the authorization header.
-			string authorizationHeader = request.Headers[HttpRequestHeaders.Authorization];
-			if (!string.IsNullOrEmpty(authorizationHeader) && authorizationHeader.StartsWith(Protocol.BearerHttpAuthorizationSchemeWithTrailingSpace, StringComparison.OrdinalIgnoreCase)) {
-				return authorizationHeader.Substring(Protocol.BearerHttpAuthorizationSchemeWithTrailingSpace.Length);
+			var authorizationHeader = request.Headers.Authorization;
+			if (authorizationHeader != null && string.Equals(authorizationHeader.Scheme, Protocol.BearerHttpAuthorizationScheme, StringComparison.OrdinalIgnoreCase)) {
+				return authorizationHeader.Parameter;
 			}
 
 			// Failing that, scan the entity
-			if (!string.IsNullOrEmpty(request.Headers[HttpRequestHeaders.ContentType])) {
-				var contentType = new ContentType(request.Headers[HttpRequestHeaders.ContentType]);
-				if (string.Equals(contentType.MediaType, HttpFormUrlEncoded, StringComparison.Ordinal)) {
-					if (request.Form[Protocol.BearerTokenEncodedUrlParameterName] != null) {
-						return request.Form[Protocol.BearerTokenEncodedUrlParameterName];
-					}
+			foreach (var pair in await ParseUrlEncodedFormContentAsync(request, cancellationToken)) {
+				if (string.Equals(pair.Key, Protocol.BearerTokenEncodedUrlParameterName, StringComparison.Ordinal)) {
+					return pair.Value;
 				}
 			}
 
 			// Finally, check the least desirable location: the query string
-			var unrewrittenQuery = request.GetQueryStringBeforeRewriting();
+			var unrewrittenQuery = HttpUtility.ParseQueryString(request.RequestUri.Query);
 			if (!string.IsNullOrEmpty(unrewrittenQuery[Protocol.BearerTokenEncodedUrlParameterName])) {
 				return unrewrittenQuery[Protocol.BearerTokenEncodedUrlParameterName];
 			}

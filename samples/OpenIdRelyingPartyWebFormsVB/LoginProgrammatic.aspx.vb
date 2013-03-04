@@ -54,7 +54,7 @@ Public Class LoginProgrammatic
 			builder.Query = Nothing
 			Me.Response.Redirect(builder.Uri.AbsoluteUri)
 		End If
-		Dim response As IAuthenticationResponse = Await relyingParty.GetResponseAsync(CancellationToken.None)
+		Dim response As IAuthenticationResponse = Await relyingParty.GetResponseAsync(New HttpRequestWrapper(Request))
 		If response IsNot Nothing Then
 			Select Case response.Status
 				Case AuthenticationStatus.Authenticated

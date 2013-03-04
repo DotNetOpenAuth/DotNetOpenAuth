@@ -40,7 +40,7 @@ namespace WebFormsRelyingParty {
 		protected override async Task ProcessRequestAsync(HttpContext context) {
 			var serviceProvider = OAuthServiceProvider.AuthorizationServer;
 			var response = await serviceProvider.HandleTokenRequestAsync(new HttpRequestWrapper(context.Request), context.Response.ClientDisconnectedToken);
-			await response.SendAsync(new HttpResponseWrapper(context.Response), context.Response.ClientDisconnectedToken);
+			await response.SendAsync(new HttpContextWrapper(context), context.Response.ClientDisconnectedToken);
 		}
 	}
 }

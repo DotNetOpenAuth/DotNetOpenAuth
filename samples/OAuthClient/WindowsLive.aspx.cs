@@ -30,7 +30,7 @@
 				if (authorization == null) {
 					// Kick off authorization request
 					var request = await client.PrepareRequestUserAuthorizationAsync(scopes: new[] { WindowsLiveClient.Scopes.Basic }); // this scope isn't even required just to log in
-					await request.SendAsync(new HttpResponseWrapper(Response), Response.ClientDisconnectedToken);
+					await request.SendAsync(new HttpContextWrapper(this.Context), Response.ClientDisconnectedToken);
 				} else {
 					var request =
 						WebRequest.Create("https://apis.live.net/v5.0/me?access_token=" + Uri.EscapeDataString(authorization.AccessToken));

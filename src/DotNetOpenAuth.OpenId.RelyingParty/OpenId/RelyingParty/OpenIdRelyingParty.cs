@@ -520,9 +520,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <remarks>
 		/// Requires an <see cref="HttpContext.Current">HttpContext.Current</see> context.
 		/// </remarks>
-		public Task<IAuthenticationResponse> GetResponseAsync(CancellationToken cancellationToken = default(CancellationToken)) {
-			RequiresEx.ValidState(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
-			return this.GetResponseAsync(this.Channel.GetRequestFromContext(), cancellationToken);
+		public Task<IAuthenticationResponse> GetResponseAsync(HttpRequestBase request = null, CancellationToken cancellationToken = default(CancellationToken)) {
+			request = request ?? this.channel.GetRequestFromContext();
+			return this.GetResponseAsync(request.AsHttpRequestMessage(), cancellationToken);
 		}
 
 		/// <summary>
@@ -533,10 +533,10 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <returns>
 		/// The processed authentication response if there is any; <c>null</c> otherwise.
 		/// </returns>
-		public async Task<IAuthenticationResponse> GetResponseAsync(HttpRequestBase httpRequestInfo, CancellationToken cancellationToken = default(CancellationToken)) {
-			Requires.NotNull(httpRequestInfo, "httpRequestInfo");
+		public async Task<IAuthenticationResponse> GetResponseAsync(HttpRequestMessage request, CancellationToken cancellationToken = default(CancellationToken)) {
+			Requires.NotNull(request, "httpRequestInfo");
 			try {
-				var message = await this.Channel.ReadFromRequestAsync(httpRequestInfo, cancellationToken);
+				var message = await this.Channel.ReadFromRequestAsync(request, cancellationToken);
 				PositiveAssertionResponse positiveAssertion;
 				NegativeAssertionResponse negativeAssertion;
 				IndirectSignedResponse positiveExtensionOnly;
@@ -572,6 +572,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Processes the response received in a popup window or iframe to an AJAX-directed OpenID authentication.
 		/// </summary>
+		/// <param name="request">The request.</param>
 		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The HTTP response to send to this HTTP request.
@@ -579,10 +580,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <remarks>
 		/// Requires an <see cref="HttpContext.Current">HttpContext.Current</see> context.
 		/// </remarks>
-		public Task<HttpResponseMessage> ProcessResponseFromPopupAsync(CancellationToken cancellationToken) {
-			RequiresEx.ValidState(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
-
-			return this.ProcessResponseFromPopupAsync(this.Channel.GetRequestFromContext(), cancellationToken);
+		public Task<HttpResponseMessage> ProcessResponseFromPopupAsync(HttpRequestBase request = null, CancellationToken cancellationToken = default(CancellationToken)) {
+			request = request ?? this.Channel.GetRequestFromContext();
+			return this.ProcessResponseFromPopupAsync(request.AsHttpRequestMessage(), cancellationToken);
 		}
 
 		/// <summary>
@@ -593,9 +593,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <returns>
 		/// The HTTP response to send to this HTTP request.
 		/// </returns>
-		public Task<HttpResponseMessage> ProcessResponseFromPopupAsync(HttpRequestBase request, CancellationToken cancellationToken) {
+		public Task<HttpResponseMessage> ProcessResponseFromPopupAsync(HttpRequestMessage request, CancellationToken cancellationToken = default(CancellationToken)) {
 			Requires.NotNull(request, "request");
-
 			return this.ProcessResponseFromPopupAsync(request, null, cancellationToken);
 		}
 
@@ -680,11 +679,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// The HTTP response to send to this HTTP request.
 		/// </returns>
 		[SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "OpenID", Justification = "real word"), SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "iframe", Justification = "Code contracts")]
-		internal async Task<HttpResponseMessage> ProcessResponseFromPopupAsync(HttpRequestBase request, Action<AuthenticationStatus> callback, CancellationToken cancellationToken) {
+		internal async Task<HttpResponseMessage> ProcessResponseFromPopupAsync(HttpRequestMessage request, Action<AuthenticationStatus> callback, CancellationToken cancellationToken) {
 			Requires.NotNull(request, "request");
 
 			string extensionsJson = null;
-			var authResponse = await this.NonVerifyingRelyingParty.GetResponseAsync(cancellationToken);
+			var authResponse = await this.NonVerifyingRelyingParty.GetResponseAsync(request, cancellationToken);
 			ErrorUtilities.VerifyProtocol(authResponse != null, OpenIdStrings.PopupRedirectMissingResponse);
 
 			// Give the caller a chance to notify the hosting page and fill up the clientScriptExtensions collection.
@@ -692,7 +691,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				callback(authResponse.Status);
 			}
 
-			Logger.OpenId.DebugFormat("Popup or iframe callback from OP: {0}", request.Url);
+			Logger.OpenId.DebugFormat("Popup or iframe callback from OP: {0}", request.RequestUri);
 			Logger.Controls.DebugFormat(
 				"An authentication response was found in a popup window or iframe using a non-verifying RP with status: {0}",
 				authResponse.Status);
@@ -714,13 +713,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			string payload = "document.URL";
-			if (request.HttpMethod == "POST") {
+			if (request.Method == HttpMethod.Post) {
 				// Promote all form variables to the query string, but since it won't be passed
 				// to any server (this is a javascript window-to-window transfer) the length of
 				// it can be arbitrarily long, whereas it was POSTed here probably because it
 				// was too long for HTTP transit.
-				UriBuilder payloadUri = new UriBuilder(request.Url);
-				payloadUri.AppendQueryArgs(request.Form.ToDictionary());
+				UriBuilder payloadUri = new UriBuilder(request.RequestUri);
+				payloadUri.AppendQueryArgs(await Channel.ParseUrlEncodedFormContentAsync(request, cancellationToken));
 				payload = MessagingUtilities.GetSafeJavascriptValue(payloadUri.Uri.AbsoluteUri);
 			}
 

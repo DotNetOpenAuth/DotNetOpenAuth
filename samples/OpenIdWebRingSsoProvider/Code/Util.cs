@@ -54,7 +54,8 @@ namespace OpenIdWebRingSsoProvider.Code {
 
 		internal static async Task ProcessAuthenticationChallengeAsync(IAuthenticationRequest idrequest, CancellationToken cancellationToken) {
 			// Verify that RP discovery is successful.
-			if (await idrequest.IsReturnUrlDiscoverableAsync(ProviderEndpoint.Provider.Channel.HostFactories, cancellationToken) != RelyingPartyDiscoveryResult.Success) {
+			var providerEndpoint = new ProviderEndpoint();
+			if (await idrequest.IsReturnUrlDiscoverableAsync(providerEndpoint.Provider.Channel.HostFactories, cancellationToken) != RelyingPartyDiscoveryResult.Success) {
 				idrequest.IsAuthenticated = false;
 				return;
 			}

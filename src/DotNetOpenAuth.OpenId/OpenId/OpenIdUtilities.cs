@@ -97,7 +97,7 @@ namespace DotNetOpenAuth.OpenId {
 
 			context = context ?? new HttpContextWrapper(HttpContext.Current);
 			var response = await authenticationRequest.GetRedirectingResponseAsync(cancellationToken);
-			await response.SendAsync(context.Response);
+			await response.SendAsync(context, cancellationToken);
 		}
 
 		/// <summary>

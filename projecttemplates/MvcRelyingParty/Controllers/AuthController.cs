@@ -106,7 +106,7 @@ namespace MvcRelyingParty.Controllers {
 		/// </remarks>
 		[AcceptVerbs(HttpVerbs.Get | HttpVerbs.Post), ValidateInput(false)]
 		public Task<ActionResult> PopUpReturnTo() {
-			return this.RelyingParty.ProcessAjaxOpenIdResponseAsync(Response.ClientDisconnectedToken);
+			return this.RelyingParty.ProcessAjaxOpenIdResponseAsync(this.Request, this.Response.ClientDisconnectedToken);
 		}
 
 		/// <summary>
@@ -128,7 +128,7 @@ namespace MvcRelyingParty.Controllers {
 				HttpRequestBase clientResponseInfo = HttpRequestInfo.Create("GET", auth, headers: Request.Headers);
 				response = await this.RelyingParty.GetResponseAsync(clientResponseInfo, Response.ClientDisconnectedToken);
 			} else {
-				response = await this.RelyingParty.GetResponseAsync(Response.ClientDisconnectedToken);
+				response = await this.RelyingParty.GetResponseAsync(Request, Response.ClientDisconnectedToken);
 			}
 			if (response != null) {
 				switch (response.Status) {

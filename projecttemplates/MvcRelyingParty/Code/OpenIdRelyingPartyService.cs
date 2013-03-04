@@ -23,9 +23,7 @@
 
 		Task<string> PreloadDiscoveryResultsAsync(Realm realm, Uri returnTo, Uri privacyPolicy, CancellationToken cancellationToken = default(CancellationToken), params Identifier[] identifiers);
 
-		Task<ActionResult> ProcessAjaxOpenIdResponseAsync(CancellationToken cancellationToken = default(CancellationToken));
-
-		Task<IAuthenticationResponse> GetResponseAsync(CancellationToken cancellationToken = default(CancellationToken));
+		Task<ActionResult> ProcessAjaxOpenIdResponseAsync(HttpRequestBase request, CancellationToken cancellationToken = default(CancellationToken));
 
 		Task<IAuthenticationResponse> GetResponseAsync(HttpRequestBase request, CancellationToken cancellationToken = default(CancellationToken));
 	}
@@ -96,12 +94,8 @@
 			return await relyingParty.AsAjaxPreloadedDiscoveryResultAsync(results, cancellationToken);
 		}
 
-		public async Task<ActionResult> ProcessAjaxOpenIdResponseAsync(CancellationToken cancellationToken = default(CancellationToken)) {
-			return (await relyingParty.ProcessResponseFromPopupAsync(cancellationToken)).AsActionResult();
-		}
-
-		public Task<IAuthenticationResponse> GetResponseAsync(CancellationToken cancellationToken = default(CancellationToken)) {
-			return relyingParty.GetResponseAsync(cancellationToken);
+		public async Task<ActionResult> ProcessAjaxOpenIdResponseAsync(HttpRequestBase request, CancellationToken cancellationToken = default(CancellationToken)) {
+			return (await relyingParty.ProcessResponseFromPopupAsync(request, cancellationToken)).AsActionResult();
 		}
 
 		public Task<IAuthenticationResponse> GetResponseAsync(HttpRequestBase request, CancellationToken cancellationToken = default(CancellationToken)) {

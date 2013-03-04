@@ -442,11 +442,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			};
 
 			HttpResponseMessage response = await this.RelyingParty.ProcessResponseFromPopupAsync(
-				new HttpRequestWrapper(this.Context.Request),
+				new HttpRequestWrapper(this.Context.Request).AsHttpRequestMessage(),
 				callback,
 				cancellationToken);
 
-			response.Send();
+			await response.SendAsync(new HttpContextWrapper(this.Context), cancellationToken);
 		}
 
 		/// <summary>

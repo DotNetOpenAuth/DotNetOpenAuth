@@ -132,6 +132,18 @@
       <Project>{56459A6C-6BA2-4BAC-A9C0-27E3BD961FA6}</Project>
       <Name>DotNetOpenAuth.OAuth2</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\src\DotNetOpenAuth.OpenId.RelyingParty.UI\DotNetOpenAuth.OpenId.RelyingParty.UI.csproj">
+      <Project>{1ed8d424-f8ab-4050-aceb-f27f4f909484}</Project>
+      <Name>DotNetOpenAuth.OpenId.RelyingParty.UI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\DotNetOpenAuth.OpenId.RelyingParty\DotNetOpenAuth.OpenId.RelyingParty.csproj">
+      <Project>{f458ab60-ba1c-43d9-8cef-ec01b50be87b}</Project>
+      <Name>DotNetOpenAuth.OpenId.RelyingParty</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\DotNetOpenAuth.OpenId\DotNetOpenAuth.OpenId.csproj">
+      <Project>{3896a32a-e876-4c23-b9b8-78e17d134cd3}</Project>
+      <Name>DotNetOpenAuth.OpenId</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

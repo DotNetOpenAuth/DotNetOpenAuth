@@ -31,14 +31,14 @@ public class OAuth : HttpAsyncHandlerBase, IRequiresSessionState {
 		if ((requestToken = request as RequestScopedTokenMessage) != null) {
 			var response = sp.PrepareUnauthorizedTokenMessage(requestToken);
 			var responseMessage = await sp.Channel.PrepareResponseAsync(response);
-			await responseMessage.SendAsync(new HttpResponseWrapper(context.Response));
+			await responseMessage.SendAsync(new HttpContextWrapper(context));
 		} else if ((requestAuth = request as UserAuthorizationRequest) != null) {
 			Global.PendingOAuthAuthorization = requestAuth;
 			HttpContext.Current.Response.Redirect("~/Members/Authorize.aspx");
 		} else if ((requestAccessToken = request as AuthorizedTokenRequest) != null) {
 			var response = sp.PrepareAccessTokenMessage(requestAccessToken);
 			var responseMessage = await sp.Channel.PrepareResponseAsync(response);
-			await responseMessage.SendAsync(new HttpResponseWrapper(context.Response));
+			await responseMessage.SendAsync(new HttpContextWrapper(context));
 		} else {
 			throw new InvalidOperationException();
 		}

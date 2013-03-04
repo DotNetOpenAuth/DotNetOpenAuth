@@ -118,28 +118,23 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <param name="request">The HTTP request to search.</param>
 		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
-		protected override IDirectedProtocolMessage ReadFromRequestCore(HttpRequestBase request, CancellationToken cancellationToken) {
+		protected override async Task<IDirectedProtocolMessage> ReadFromRequestCoreAsync(HttpRequestMessage request, CancellationToken cancellationToken) {
 			// First search the Authorization header.
-			string authorization = request.Headers[HttpRequestHeaders.Authorization];
+			var authorization = request.Headers.Authorization;
 			var fields = MessagingUtilities.ParseAuthorizationHeader(Protocol.AuthorizationHeaderScheme, authorization).ToDictionary();
 			fields.Remove("realm"); // ignore the realm parameter, since we don't use it, and it must be omitted from signature base string.
 
 			// Scrape the entity
-			if (!string.IsNullOrEmpty(request.Headers[HttpRequestHeaders.ContentType])) {
-				var contentType = new ContentType(request.Headers[HttpRequestHeaders.ContentType]);
-				if (string.Equals(contentType.MediaType, HttpFormUrlEncoded, StringComparison.Ordinal)) {
-					foreach (string key in request.Form) {
-						if (key != null) {
-							fields.Add(key, request.Form[key]);
-						} else {
-							Logger.OAuth.WarnFormat("Ignoring query string parameter '{0}' since it isn't a standard name=value parameter.", request.Form[key]);
-						}
-					}
+			foreach (var pair in await ParseUrlEncodedFormContentAsync(request, cancellationToken)) {
+				if (pair.Key != null) {
+					fields.Add(pair.Key, pair.Value);
+				} else {
+					Logger.OAuth.WarnFormat("Ignoring query string parameter '{0}' since it isn't a standard name=value parameter.", pair.Value);
 				}
 			}
 
 			// Scrape the query string
-			var qs = request.GetQueryStringBeforeRewriting();
+			var qs = HttpUtility.ParseQueryString(request.RequestUri.Query);
 			foreach (string key in qs) {
 				if (key != null) {
 					fields.Add(key, qs[key]);
@@ -162,8 +157,8 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			// Add receiving HTTP transport information required for signature generation.
 			var signedMessage = message as ITamperResistantOAuthMessage;
 			if (signedMessage != null) {
-				signedMessage.Recipient = request.GetPublicFacingUrl();
-				signedMessage.HttpMethod = new HttpMethod(request.HttpMethod);
+				signedMessage.Recipient = request.RequestUri;
+				signedMessage.HttpMethod = request.Method;
 			}
 
 			return message;

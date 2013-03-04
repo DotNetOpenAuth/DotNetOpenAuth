@@ -76,7 +76,7 @@
 		}
 
 		[Authorize, AcceptVerbs(HttpVerbs.Post), ValidateAntiForgeryToken]
-		public async Task<ActionResult> AuthorizeResponseAsync(bool isApproved) {
+		public async Task<ActionResult> AuthorizeResponse(bool isApproved) {
 			var pendingRequest = await OAuthServiceProvider.AuthorizationServer.ReadAuthorizationRequestAsync(Request, Response.ClientDisconnectedToken);
 			if (pendingRequest == null) {
 				throw new HttpException((int)HttpStatusCode.BadRequest, "Missing authorization request.");

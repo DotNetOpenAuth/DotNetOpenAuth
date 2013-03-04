@@ -214,14 +214,15 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// on its own user database and policies.</para>
 		///   <para>Requires an <see cref="HttpContext.Current">HttpContext.Current</see> context.</para>
 		/// </remarks>
-		public Task<IRequest> GetRequestAsync(CancellationToken cancellationToken) {
-			return this.GetRequestAsync(this.Channel.GetRequestFromContext(), cancellationToken);
+		public Task<IRequest> GetRequestAsync(HttpRequestBase request, CancellationToken cancellationToken) {
+			request = request ?? this.Channel.GetRequestFromContext();
+			return this.GetRequestAsync(request.AsHttpRequestMessage(), cancellationToken);
 		}
 
 		/// <summary>
 		/// Gets the incoming OpenID request if there is one, or null if none was detected.
 		/// </summary>
-		/// <param name="httpRequestInfo">The incoming HTTP request to extract the message from.</param>
+		/// <param name="request">The incoming HTTP request to extract the message from.</param>
 		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The request that the hosting Provider should process and then transmit the response for.
@@ -234,17 +235,17 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// be authentication requests where the Provider site has to make decisions based
 		/// on its own user database and policies.
 		/// </remarks>
-		public async Task<IRequest> GetRequestAsync(HttpRequestBase httpRequestInfo, CancellationToken cancellationToken) {
-			Requires.NotNull(httpRequestInfo, "httpRequestInfo");
+		public async Task<IRequest> GetRequestAsync(HttpRequestMessage request, CancellationToken cancellationToken = default(CancellationToken)) {
+			Requires.NotNull(request, "request");
 			IDirectedProtocolMessage incomingMessage = null;
 
 			try {
-				incomingMessage = await this.Channel.ReadFromRequestAsync(httpRequestInfo, cancellationToken);
+				incomingMessage = await this.Channel.ReadFromRequestAsync(request, cancellationToken);
 				if (incomingMessage == null) {
 					// If the incoming request does not resemble an OpenID message at all,
 					// it's probably a user who just navigated to this URL, and we should
 					// just return null so the host can display a message to the user.
-					if (httpRequestInfo.HttpMethod == "GET" && !httpRequestInfo.GetPublicFacingUrl().QueryStringContainPrefixedParameters(Protocol.Default.openid.Prefix)) {
+					if (request.Method == HttpMethod.Get && !request.RequestUri.QueryStringContainPrefixedParameters(Protocol.Default.openid.Prefix)) {
 						return null;
 					}
 
@@ -292,7 +293,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 
 				throw ErrorUtilities.ThrowProtocol(MessagingStrings.UnexpectedMessageReceivedOfMany);
 			} catch (ProtocolException ex) {
-				IRequest errorResponse = this.GetErrorResponse(ex, httpRequestInfo, incomingMessage);
+				IRequest errorResponse = this.GetErrorResponse(ex, request, incomingMessage);
 				if (errorResponse == null) {
 					throw;
 				}
@@ -450,16 +451,16 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <returns>
 		/// Either the <see cref="IRequest"/> to return to the host site or null to indicate no response could be reasonably created and that the caller should rethrow the exception.
 		/// </returns>
-		private IRequest GetErrorResponse(ProtocolException ex, HttpRequestBase httpRequestInfo, IDirectedProtocolMessage incomingMessage) {
+		private IRequest GetErrorResponse(ProtocolException ex, HttpRequestMessage request, IDirectedProtocolMessage incomingMessage) {
 			Requires.NotNull(ex, "ex");
-			Requires.NotNull(httpRequestInfo, "httpRequestInfo");
+			Requires.NotNull(request, "request");
 
 			Logger.OpenId.Error("An exception was generated while processing an incoming OpenID request.", ex);
 			IErrorMessage errorMessage;
 
 			// We must create the appropriate error message type (direct vs. indirect)
 			// based on what we see in the request.
-			string returnTo = httpRequestInfo.QueryString[Protocol.Default.openid.return_to];
+			string returnTo = HttpUtility.ParseQueryString(request.RequestUri.Query)[Protocol.Default.openid.return_to];
 			if (returnTo != null) {
 				// An indirect request message from the RP
 				// We need to return an indirect response error message so the RP can consume it.
@@ -470,7 +471,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 				} else {
 					errorMessage = new IndirectErrorResponse(Protocol.Default.Version, new Uri(returnTo));
 				}
-			} else if (httpRequestInfo.HttpMethod == "POST") {
+			} else if (request.Method == HttpMethod.Post) {
 				// A direct request message from the RP
 				// We need to return a direct response error message so the RP can consume it.
 				// Consistent with OpenID 2.0 section 5.1.2.2.

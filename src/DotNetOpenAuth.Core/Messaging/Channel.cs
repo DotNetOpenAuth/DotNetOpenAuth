@@ -325,21 +325,6 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Gets the protocol message embedded in the given HTTP request, if present.
 		/// </summary>
-		/// <param name="cancellationToken">The cancellation token.</param>
-		/// <returns>
-		/// The deserialized message, if one is found.  Null otherwise.
-		/// </returns>
-		/// <exception cref="InvalidOperationException">Thrown when <see cref="HttpContext.Current" /> is null.</exception>
-		/// <remarks>
-		/// Requires an HttpContext.Current context.
-		/// </remarks>
-		public Task<IDirectedProtocolMessage> ReadFromRequestAsync(CancellationToken cancellationToken) {
-			return this.ReadFromRequestAsync(this.GetRequestFromContext(), cancellationToken);
-		}
-
-		/// <summary>
-		/// Gets the protocol message embedded in the given HTTP request, if present.
-		/// </summary>
 		/// <typeparam name="TRequest">The expected type of the message to be received.</typeparam>
 		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <param name="httpRequest">The request to search for an embedded message.</param>
@@ -348,9 +333,9 @@ namespace DotNetOpenAuth.Messaging {
 		/// </returns>
 		/// <exception cref="InvalidOperationException">Thrown when <see cref="HttpContext.Current" /> is null.</exception>
 		/// <exception cref="ProtocolException">Thrown when a request message of an unexpected type is received.</exception>
-		public async Task<TRequest> TryReadFromRequestAsync<TRequest>(CancellationToken cancellationToken, HttpRequestBase httpRequest = null)
+		public async Task<TRequest> TryReadFromRequestAsync<TRequest>(HttpRequestMessage httpRequest, CancellationToken cancellationToken)
 			where TRequest : class, IProtocolMessage {
-			httpRequest = httpRequest ?? this.GetRequestFromContext();
+			Requires.NotNull(httpRequest, "httpRequest");
 
 			IProtocolMessage untypedRequest = await this.ReadFromRequestAsync(httpRequest, cancellationToken);
 			if (untypedRequest == null) {
@@ -373,10 +358,11 @@ namespace DotNetOpenAuth.Messaging {
 		/// </returns>
 		/// <exception cref="ProtocolException">Thrown if the expected message was not recognized in the response.</exception>
 		[SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "This returns and verifies the appropriate message type.")]
-		public async Task<TRequest> ReadFromRequestAsync<TRequest>(CancellationToken cancellationToken, HttpRequestBase httpRequest = null)
+		public async Task<TRequest> ReadFromRequestAsync<TRequest>(HttpRequestMessage httpRequest, CancellationToken cancellationToken)
 			where TRequest : class, IProtocolMessage {
-			httpRequest = httpRequest ?? this.GetRequestFromContext();
-			TRequest request = await this.TryReadFromRequestAsync<TRequest>(cancellationToken, httpRequest);
+			Requires.NotNull(httpRequest, "httpRequest");
+
+			TRequest request = await this.TryReadFromRequestAsync<TRequest>(httpRequest, cancellationToken);
 			ErrorUtilities.VerifyProtocol(request != null, MessagingStrings.ExpectedMessageNotReceived, typeof(TRequest));
 			return request;
 		}
@@ -389,20 +375,20 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>
 		/// The deserialized message, if one is found.  Null otherwise.
 		/// </returns>
-		public async Task<IDirectedProtocolMessage> ReadFromRequestAsync(HttpRequestBase httpRequest, CancellationToken cancellationToken) {
+		public async Task<IDirectedProtocolMessage> ReadFromRequestAsync(HttpRequestMessage httpRequest, CancellationToken cancellationToken) {
 			Requires.NotNull(httpRequest, "httpRequest");
 
-			if (Logger.Channel.IsInfoEnabled && httpRequest.GetPublicFacingUrl() != null) {
-				Logger.Channel.InfoFormat("Scanning incoming request for messages: {0}", httpRequest.GetPublicFacingUrl().AbsoluteUri);
+			if (Logger.Channel.IsInfoEnabled && httpRequest.RequestUri != null) {
+				Logger.Channel.InfoFormat("Scanning incoming request for messages: {0}", httpRequest.RequestUri.AbsoluteUri);
 			}
-			IDirectedProtocolMessage requestMessage = this.ReadFromRequestCore(httpRequest, cancellationToken);
+			IDirectedProtocolMessage requestMessage = await this.ReadFromRequestCoreAsync(httpRequest, cancellationToken);
 			if (requestMessage != null) {
 				Logger.Channel.DebugFormat("Incoming request received: {0}", requestMessage.GetType().Name);
 
 				var directRequest = requestMessage as IHttpDirectRequest;
 				if (directRequest != null) {
-					foreach (string header in httpRequest.Headers) {
-						directRequest.Headers[header] = httpRequest.Headers[header];
+					foreach (var header in httpRequest.Headers) {
+						directRequest.Headers.Add(header.Key, header.Value);
 					}
 				}
 
@@ -539,6 +525,21 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Parses the URL encoded form content.
+		/// </summary>
+		/// <param name="request">The request.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>A sequence of key=value pairs found in the request's entity; or an empty sequence if none are found.</returns>
+		protected internal static async Task<IEnumerable<KeyValuePair<string, string>>> ParseUrlEncodedFormContentAsync(HttpRequestMessage request, CancellationToken cancellationToken) {
+			if (request.Content != null && request.Content.Headers.ContentType != null
+				&& request.Content.Headers.ContentType.MediaType.Equals(HttpFormUrlEncoded)) {
+				return HttpUtility.ParseQueryString(await request.Content.ReadAsStringAsync()).AsKeyValuePairs();
+			}
+
+			return Enumerable.Empty<KeyValuePair<string, string>>();
+		}
+
+		/// <summary>
 		/// Gets the HTTP context for the current HTTP request.
 		/// </summary>
 		/// <returns>An HttpContextBase instance.</returns>
@@ -671,8 +672,8 @@ namespace DotNetOpenAuth.Messaging {
 			var webRequest = this.CreateHttpRequest(request);
 			var directRequest = request as IHttpDirectRequest;
 			if (directRequest != null) {
-				foreach (string header in directRequest.Headers) {
-					webRequest.Headers.Add(header, directRequest.Headers[header]);
+				foreach (var header in directRequest.Headers) {
+					webRequest.Headers.Add(header.Key, header.Value);
 				}
 			}
 
@@ -741,16 +742,18 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="request">The request to search for an embedded message.</param>
 		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
-		protected virtual IDirectedProtocolMessage ReadFromRequestCore(HttpRequestBase request, CancellationToken cancellationToken) {
+		protected virtual async Task<IDirectedProtocolMessage> ReadFromRequestCoreAsync(HttpRequestMessage request, CancellationToken cancellationToken) {
 			Requires.NotNull(request, "request");
 
-			Logger.Channel.DebugFormat("Incoming HTTP request: {0} {1}", request.HttpMethod, request.GetPublicFacingUrl().AbsoluteUri);
+			Logger.Channel.DebugFormat("Incoming HTTP request: {0} {1}", request.Method, request.RequestUri.AbsoluteUri);
+
+			var fields = new Dictionary<string, string>();
 
 			// Search Form data first, and if nothing is there search the QueryString
-			Assumes.True(request.Form != null && request.GetQueryStringBeforeRewriting() != null);
-			var fields = request.Form.ToDictionary();
-			if (fields.Count == 0 && request.HttpMethod != "POST") { // OpenID 2.0 section 4.1.2
-				fields = request.GetQueryStringBeforeRewriting().ToDictionary();
+			fields.AddRange(await ParseUrlEncodedFormContentAsync(request, cancellationToken));
+
+			if (fields.Count == 0 && request.Method.Method != "POST") { // OpenID 2.0 section 4.1.2
+				fields.AddRange(HttpUtility.ParseQueryString(request.RequestUri.Query).AsKeyValuePairs());
 			}
 
 			MessageReceivingEndpoint recipient;

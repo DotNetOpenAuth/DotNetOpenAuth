@@ -19,5 +19,9 @@
 				await httpClient.GetAsync("http://someUri", Response.ClientDisconnectedToken);
 			}
 		}
+
+		protected void getAddressBookButton_Click(object sender, EventArgs e) {
+			throw new NotImplementedException();
+		}
 	}
 }

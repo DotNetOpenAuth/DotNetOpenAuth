@@ -100,6 +100,7 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="user_xrds.aspx" />
+    <Content Include="WebForm1.aspx" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="access_token.ashx.cs">
@@ -174,6 +175,13 @@
     </Compile>
     <Compile Include="user.aspx.designer.cs">
       <DependentUpon>user.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="WebForm1.aspx.cs">
+      <DependentUpon>WebForm1.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="WebForm1.aspx.designer.cs">
+      <DependentUpon>WebForm1.aspx</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -251,7 +259,7 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>True</UseIIS>
+          <UseIIS>False</UseIIS>
           <AutoAssignPort>False</AutoAssignPort>
           <DevelopmentServerPort>4860</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>

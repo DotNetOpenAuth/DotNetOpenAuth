@@ -135,13 +135,10 @@ namespace DotNetOpenAuth.OAuth2 {
 			RequiresEx.ValidState(!string.IsNullOrEmpty(this.ClientIdentifier), Strings.RequiredPropertyNotYetPreset, "ClientIdentifier");
 			RequiresEx.ValidState(this.ClientCredentialApplicator != null, Strings.RequiredPropertyNotYetPreset, "ClientCredentialApplicator");
 
-			if (request == null) {
-				request = this.Channel.GetRequestFromContext();
-			}
-
-			var response = await this.Channel.TryReadFromRequestAsync<IMessageWithClientState>(cancellationToken, request);
+			request = request ?? this.Channel.GetRequestFromContext();
+			var response = await this.Channel.TryReadFromRequestAsync<IMessageWithClientState>(request.AsHttpRequestMessage(), cancellationToken);
 			if (response != null) {
-				Uri callback = MessagingUtilities.StripMessagePartsFromQueryString(request.GetPublicFacingUrl(), this.Channel.MessageDescriptions.Get(response));
+				Uri callback = request.GetPublicFacingUrl().StripMessagePartsFromQueryString(this.Channel.MessageDescriptions.Get(response));
 				IAuthorizationState authorizationState;
 				if (this.AuthorizationTracker != null) {
 					authorizationState = this.AuthorizationTracker.GetAuthorizationState(callback, response.ClientState);

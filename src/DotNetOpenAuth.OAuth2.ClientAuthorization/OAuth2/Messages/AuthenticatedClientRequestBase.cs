@@ -7,6 +7,8 @@
 namespace DotNetOpenAuth.OAuth2.Messages {
 	using System;
 	using System.Net;
+	using System.Net.Http;
+
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
@@ -16,7 +18,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <summary>
 		/// The backing for the <see cref="Headers"/> property.
 		/// </summary>
-		private readonly WebHeaderCollection headers = new WebHeaderCollection();
+		private readonly System.Net.Http.Headers.HttpRequestHeaders headers = new HttpRequestMessage().Headers;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AuthenticatedClientRequestBase"/> class.
@@ -51,7 +53,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// Gets the HTTP headers of the request.
 		/// </summary>
 		/// <value>May be an empty collection, but must not be <c>null</c>.</value>
-		public WebHeaderCollection Headers {
+		public System.Net.Http.Headers.HttpRequestHeaders Headers {
 			get { return this.headers; }
 		}
 	}

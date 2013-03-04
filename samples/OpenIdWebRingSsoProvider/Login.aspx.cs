@@ -39,8 +39,9 @@
 			var req = ProviderEndpoint.PendingAuthenticationRequest;
 			if (req != null) {
 				req.IsAuthenticated = false;
-				var response = await ProviderEndpoint.PrepareResponseAsync(Response.ClientDisconnectedToken);
-				await response.SendAsync(new HttpResponseWrapper(Response), Response.ClientDisconnectedToken);
+				var providerEndpoint = new ProviderEndpoint();
+				var response = await providerEndpoint.PrepareResponseAsync(Response.ClientDisconnectedToken);
+				await response.SendAsync(new HttpContextWrapper(this.Context), Response.ClientDisconnectedToken);
 			}
 		}
 	}

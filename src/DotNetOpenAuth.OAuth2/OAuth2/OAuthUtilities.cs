@@ -180,12 +180,12 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <param name="headers">The incoming web headers.</param>
 		/// <returns>The network credentials; or <c>null</c> if none could be discovered in the request.</returns>
-		internal static NetworkCredential ParseHttpBasicAuth(WebHeaderCollection headers) {
+		internal static NetworkCredential ParseHttpBasicAuth(System.Net.Http.Headers.HttpRequestHeaders headers) {
 			Requires.NotNull(headers, "headers");
 
-			string authorizationHeader = headers[HttpRequestHeaders.Authorization];
-			if (authorizationHeader != null && authorizationHeader.StartsWith(HttpBasicAuthScheme, StringComparison.Ordinal)) {
-				string base64 = authorizationHeader.Substring(HttpBasicAuthScheme.Length);
+			var authorizationHeader = headers.Authorization;
+			if (authorizationHeader != null && string.Equals(authorizationHeader.Scheme, HttpBasicAuthScheme, StringComparison.Ordinal)) {
+				string base64 = authorizationHeader.Parameter;
 				byte[] bits = Convert.FromBase64String(base64);
 				string usernameColonPassword = HttpBasicEncoding.GetString(bits);
 				string[] usernameAndPassword = usernameColonPassword.Split(ColonSeparator, 2);

@@ -61,7 +61,7 @@ public class OpenIdProviderEndpoint : IHttpAsyncHandler {
 			}
 
 			var response = await provider.PrepareResponseAsync(request, context.Response.ClientDisconnectedToken);
-			await response.SendAsync(new HttpResponseWrapper(context.Response), context.Response.ClientDisconnectedToken);
+			await response.SendAsync(new HttpContextWrapper(context), context.Response.ClientDisconnectedToken);
 		}
 	}
 }

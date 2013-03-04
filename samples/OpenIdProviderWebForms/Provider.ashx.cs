@@ -24,7 +24,8 @@
 		}
 
 		protected override async Task ProcessRequestAsync(HttpContext context) {
-			IRequest request = await ProviderEndpoint.Provider.GetRequestAsync(new HttpRequestWrapper(context.Request), context.Response.ClientDisconnectedToken);
+			var providerEndpoint = new ProviderEndpoint();
+			IRequest request = await providerEndpoint.Provider.GetRequestAsync(new HttpRequestWrapper(context.Request), context.Response.ClientDisconnectedToken);
 			if (request != null) {
 				// Some OpenID requests are automatable and can be responded to immediately.
 				// But authentication requests cannot be responded to until something on
@@ -57,12 +58,12 @@
 					// We DON'T use ProviderEndpoint.SendResponse because
 					// that only sends responses to requests in PendingAuthenticationRequest,
 					// but we don't set that for associate and other non-checkid requests.
-					var response = await ProviderEndpoint.Provider.PrepareResponseAsync(request, context.Response.ClientDisconnectedToken);
+					var response = await providerEndpoint.Provider.PrepareResponseAsync(request, context.Response.ClientDisconnectedToken);
 
 					// Make sure that any PendingAuthenticationRequest that MAY be set is cleared.
 					ProviderEndpoint.PendingRequest = null;
 
-					await response.SendAsync(new HttpResponseWrapper(context.Response));
+					await response.SendAsync(new HttpContextWrapper(context));
 				}
 			}
 		}

@@ -15,8 +15,9 @@
 			if (User.Identity.IsAuthenticated && ProviderEndpoint.PendingAuthenticationRequest != null) {
 				await Util.ProcessAuthenticationChallengeAsync(ProviderEndpoint.PendingAuthenticationRequest, Response.ClientDisconnectedToken);
 				if (ProviderEndpoint.PendingAuthenticationRequest.IsAuthenticated.HasValue) {
-					var responseMessage = await ProviderEndpoint.PrepareResponseAsync(this.Response.ClientDisconnectedToken);
-					await responseMessage.SendAsync(new HttpResponseWrapper(this.Response), this.Response.ClientDisconnectedToken);
+					var providerEndpoint = new ProviderEndpoint();
+					var responseMessage = await providerEndpoint.PrepareResponseAsync(this.Response.ClientDisconnectedToken);
+					await responseMessage.SendAsync(new HttpContextWrapper(this.Context), this.Response.ClientDisconnectedToken);
 				}
 			}
 		}

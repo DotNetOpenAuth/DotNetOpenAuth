@@ -19,7 +19,7 @@
 			if (authorization == null) {
 				// Kick off authorization request
 				var request = await client.PrepareRequestUserAuthorizationAsync(cancellationToken: Response.ClientDisconnectedToken);
-				await request.SendAsync(new HttpResponseWrapper(Response), Response.ClientDisconnectedToken);
+				await request.SendAsync(new HttpContextWrapper(Context), Response.ClientDisconnectedToken);
 			} else {
 				var request = WebRequest.Create("https://graph.facebook.com/me?access_token=" + Uri.EscapeDataString(authorization.AccessToken));
 				using (var response = request.GetResponse()) {

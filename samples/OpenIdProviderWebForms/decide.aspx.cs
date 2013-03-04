@@ -1,6 +1,7 @@
 namespace OpenIdProviderWebForms {
 	using System;
 	using System.Diagnostics;
+	using System.Net;
 	using System.Web.Security;
 	using System.Web.UI;
 	using DotNetOpenAuth.Messaging;
@@ -15,7 +16,11 @@ namespace OpenIdProviderWebForms {
 	public partial class decide : Page {
 		protected async void Page_Load(object src, EventArgs e) {
 			if (ProviderEndpoint.PendingRequest == null) {
-				Response.Redirect("~/");
+				// Response.Redirect(string) throws ThreadInterruptedException, and "async void Page_Load" doesn't properly catch it.
+				this.Response.RedirectLocation = "/";
+				this.Response.StatusCode = (int)HttpStatusCode.Redirect;
+				this.Context.ApplicationInstance.CompleteRequest();
+				return;
 			}
 
 			this.relyingPartyVerificationResultLabel.Text =
@@ -63,7 +68,7 @@ namespace OpenIdProviderWebForms {
 		}
 
 		protected async void Yes_Click(object sender, EventArgs e) {
-			if (!Page.IsValid) {
+			if (!Page.IsValid || ProviderEndpoint.PendingRequest == null) {
 				return;
 			}
 
@@ -99,18 +104,25 @@ namespace OpenIdProviderWebForms {
 				ProviderEndpoint.PendingAnonymousRequest.IsApproved = true;
 			}
 			Debug.Assert(ProviderEndpoint.PendingRequest.IsResponseReady, "Setting authentication should be all that's necessary.");
-			var response = await ProviderEndpoint.PrepareResponseAsync(this.Response.ClientDisconnectedToken);
+
+			var provider = new ProviderEndpoint();
+			var response = await provider.PrepareResponseAsync();
 			await response.SendAsync();
 		}
 
 		protected async void No_Click(object sender, EventArgs e) {
+			if (ProviderEndpoint.PendingRequest == null) {
+				return;
+			}
+
 			if (ProviderEndpoint.PendingAuthenticationRequest != null) {
 				ProviderEndpoint.PendingAuthenticationRequest.IsAuthenticated = false;
 			} else {
 				ProviderEndpoint.PendingAnonymousRequest.IsApproved = false;
 			}
 			Debug.Assert(ProviderEndpoint.PendingRequest.IsResponseReady, "Setting authentication should be all that's necessary.");
-			var response = await ProviderEndpoint.PrepareResponseAsync(this.Response.ClientDisconnectedToken);
+			var provider = new ProviderEndpoint();
+			var response = await provider.PrepareResponseAsync();
 			await response.SendAsync();
 		}
 	}

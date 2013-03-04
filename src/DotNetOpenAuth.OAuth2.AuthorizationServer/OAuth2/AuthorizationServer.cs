@@ -93,11 +93,8 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <exception cref="ProtocolException">Thrown if an unexpected OAuth message is attached to the incoming request.</exception>
 		[SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "unauthorizedclient", Justification = "Protocol required.")]
 		public async Task<EndUserAuthorizationRequest> ReadAuthorizationRequestAsync(HttpRequestBase request = null, CancellationToken cancellationToken = default(CancellationToken)) {
-			if (request == null) {
-				request = this.Channel.GetRequestFromContext();
-			}
-
-			var message = await this.Channel.TryReadFromRequestAsync<EndUserAuthorizationRequest>(cancellationToken, request);
+			request = request ?? this.Channel.GetRequestFromContext();
+			var message = await this.Channel.TryReadFromRequestAsync<EndUserAuthorizationRequest>(request.AsHttpRequestMessage(), cancellationToken);
 			if (message != null) {
 				if (message.ResponseType == EndUserAuthorizationResponseType.AuthorizationCode) {
 					// Clients with no secrets can only request implicit grant types.
@@ -142,14 +139,12 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// The HTTP response to send to the client.
 		/// </returns>
 		public async Task<HttpResponseMessage> HandleTokenRequestAsync(HttpRequestBase request = null, CancellationToken cancellationToken = default(CancellationToken)) {
-			if (request == null) {
-				request = this.Channel.GetRequestFromContext();
-			}
+			request = request ?? this.Channel.GetRequestFromContext();
 
 			AccessTokenRequestBase requestMessage;
 			IProtocolMessage responseMessage;
 			try {
-				requestMessage = await this.Channel.TryReadFromRequestAsync<AccessTokenRequestBase>(cancellationToken, request);
+				requestMessage = await this.Channel.TryReadFromRequestAsync<AccessTokenRequestBase>(request.AsHttpRequestMessage(), cancellationToken);
 				if (requestMessage != null) {
 					var accessTokenResult = this.AuthorizationServerServices.CreateAccessToken(requestMessage);
 					ErrorUtilities.VerifyHost(accessTokenResult != null, "IAuthorizationServerHost.CreateAccessToken must not return null.");

@@ -15,6 +15,6 @@ namespace DotNetOpenAuth.Messaging {
 		/// Gets the HTTP headers of the request.
 		/// </summary>
 		/// <value>May be an empty collection, but must not be <c>null</c>.</value>
-		WebHeaderCollection Headers { get; }
+		System.Net.Http.Headers.HttpRequestHeaders Headers { get; }
 	}
 }

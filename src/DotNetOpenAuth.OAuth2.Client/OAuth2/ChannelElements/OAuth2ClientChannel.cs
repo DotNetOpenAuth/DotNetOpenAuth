@@ -17,6 +17,8 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2.Messages;
 
+	using Validation;
+
 	/// <summary>
 	/// The messaging channel used by OAuth 2.0 Clients.
 	/// </summary>
@@ -112,18 +114,20 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <returns>
 		/// The deserialized message, if one is found.  Null otherwise.
 		/// </returns>
-		protected override IDirectedProtocolMessage ReadFromRequestCore(HttpRequestBase request, CancellationToken cancellationToken) {
-			Logger.Channel.DebugFormat("Incoming HTTP request: {0} {1}", request.HttpMethod, request.GetPublicFacingUrl().AbsoluteUri);
+		protected override async Task<IDirectedProtocolMessage> ReadFromRequestCoreAsync(HttpRequestMessage request, CancellationToken cancellationToken) {
+			Requires.NotNull(request, "request");
 
-			var fields = request.GetQueryStringBeforeRewriting().ToDictionary();
+			Logger.Channel.DebugFormat("Incoming HTTP request: {0} {1}", request.Method, request.RequestUri.AbsoluteUri);
+
+			var fields = HttpUtility.ParseQueryString(request.RequestUri.Query).ToDictionary();
 
 			// Also read parameters from the fragment, if it's available.
 			// Typically the fragment is not available because the browser doesn't send it to a web server
 			// but this request may have been fabricated by an installed desktop app, in which case
 			// the fragment is available.
-			string fragment = request.Url.Fragment;
+			string fragment = request.RequestUri.Fragment;
 			if (!string.IsNullOrEmpty(fragment)) {
-				foreach (var pair in HttpUtility.ParseQueryString(fragment.Substring(1)).ToDictionary()) {
+				foreach (var pair in HttpUtility.ParseQueryString(fragment.Substring(1)).AsKeyValuePairs()) {
 					fields.Add(pair.Key, pair.Value);
 				}
 			}

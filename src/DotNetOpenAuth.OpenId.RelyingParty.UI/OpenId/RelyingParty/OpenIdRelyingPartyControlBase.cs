@@ -677,7 +677,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// A task that completes with the asynchronous operation.
 		/// </returns>
 		protected virtual Task ScriptClosingPopupOrIFrameAsync(CancellationToken cancellationToken) {
-			return this.RelyingParty.ProcessResponseFromPopupAsync(cancellationToken);
+			return this.RelyingParty.ProcessResponseFromPopupAsync(new HttpRequestWrapper(this.Context.Request).AsHttpRequestMessage(), cancellationToken);
 		}
 
 		/// <summary>

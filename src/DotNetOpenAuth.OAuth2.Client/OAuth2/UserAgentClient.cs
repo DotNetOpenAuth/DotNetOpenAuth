@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OAuth2 {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Net.Http;
 	using System.Text;
 	using System.Threading;
 	using System.Threading.Tasks;
@@ -127,7 +128,7 @@ namespace DotNetOpenAuth.OAuth2 {
 				authorizationState = new AuthorizationState();
 			}
 
-			var carrier = new HttpRequestInfo("GET", actualRedirectUrl);
+			var carrier = new HttpRequestMessage(HttpMethod.Get, actualRedirectUrl);
 			IDirectedProtocolMessage response = await this.Channel.ReadFromRequestAsync(carrier, cancellationToken);
 			if (response == null) {
 				return null;
