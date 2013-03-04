@@ -36,7 +36,7 @@
 		}
 
 		private void clientAuthorizationView_Completed(object sender, ClientAuthorizationCompleteEventArgs e) {
-			this.DialogResult = e.Authorization != null;
+			this.DialogResult = e.Authorization != null && e.Authorization.AccessToken != null;
 			this.Close();
 		}
 	}

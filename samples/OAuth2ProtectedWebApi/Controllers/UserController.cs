@@ -34,10 +34,13 @@
 			var authRequest = await authServer.ReadAuthorizationRequestAsync(new Uri(request));
 			IProtocolMessage responseMessage;
 			if (approval) {
-				responseMessage = authServer.PrepareApproveAuthorizationRequest(
+				var grantedResponse = authServer.PrepareApproveAuthorizationRequest(
 					authRequest, this.User.Identity.Name, authRequest.Scope);
+				responseMessage = grantedResponse;
 			} else {
-				responseMessage = authServer.PrepareRejectAuthorizationRequest(authRequest);
+				var rejectionResponse = authServer.PrepareRejectAuthorizationRequest(authRequest);
+				rejectionResponse.Error = Protocol.EndUserAuthorizationRequestErrorCodes.AccessDenied;
+				responseMessage = rejectionResponse;
 			}
 
 			var response = await authServer.Channel.PrepareResponseAsync(responseMessage);
