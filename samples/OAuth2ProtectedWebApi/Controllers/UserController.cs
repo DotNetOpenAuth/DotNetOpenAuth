@@ -7,14 +7,16 @@
 	using System.Threading.Tasks;
 	using System.Web;
 	using System.Web.Mvc;
-
+	using System.Web.Security;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2;
 	using DotNetOpenAuth.OAuth2.Messages;
+	using DotNetOpenAuth.OpenId;
+	using DotNetOpenAuth.OpenId.RelyingParty;
 	using OAuth2ProtectedWebApi.Code;
 
-	// [Authorize]
 	public class UserController : Controller {
+		[Authorize]
 		[HttpGet]
 		[HttpHeader("x-frame-options", "SAMEORIGIN")] // mitigates clickjacking
 		public async Task<ActionResult> Authorize() {
@@ -25,12 +27,11 @@
 			return View();
 		}
 
+		[Authorize]
 		[HttpPost, ValidateAntiForgeryToken]
 		public async Task<ActionResult> Respond(string request, bool approval) {
-			System.Web.HttpContext.Current.User = new GenericPrincipal(new GenericIdentity("Andrew"), new string[0]);
 			var authServer = new AuthorizationServer(new AuthorizationServerHost());
-			var httpInfo = HttpRequestInfo.Create(HttpMethod.Get.Method, new Uri(request));
-			var authRequest = await authServer.ReadAuthorizationRequestAsync(httpInfo);
+			var authRequest = await authServer.ReadAuthorizationRequestAsync(new Uri(request));
 			IProtocolMessage responseMessage;
 			if (approval) {
 				responseMessage = authServer.PrepareApproveAuthorizationRequest(
@@ -41,6 +42,32 @@
 
 			var response = await authServer.Channel.PrepareResponseAsync(responseMessage);
 			return response.AsActionResult();
+		}
+
+		public async Task<ActionResult> Login(string returnUrl) {
+			var rp = new OpenIdRelyingParty(null);
+			Realm officialWebSiteHome = Realm.AutoDetect;
+			Uri returnTo = new Uri(this.Request.Url, this.Url.Action("Authenticate"));
+			var request = await rp.CreateRequestAsync(WellKnownProviders.Google, officialWebSiteHome, returnTo);
+			if (returnUrl != null) {
+				request.SetUntrustedCallbackArgument("returnUrl", returnUrl);
+			}
+
+			var redirectingResponse = await request.GetRedirectingResponseAsync();
+			return redirectingResponse.AsActionResult();
+		}
+
+		public async Task<ActionResult> Authenticate() {
+			var rp = new OpenIdRelyingParty(null);
+			var response = await rp.GetResponseAsync(this.Request);
+			if (response != null) {
+				if (response.Status == AuthenticationStatus.Authenticated) {
+					FormsAuthentication.SetAuthCookie(response.ClaimedIdentifier, false);
+					return this.Redirect(FormsAuthentication.GetRedirectUrl(response.ClaimedIdentifier, false));
+				}
+			}
+
+			return this.RedirectToAction("Index", "Home");
 		}
 	}
 }

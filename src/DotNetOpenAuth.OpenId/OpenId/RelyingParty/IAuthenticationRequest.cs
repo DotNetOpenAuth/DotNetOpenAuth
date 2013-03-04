@@ -175,6 +175,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>The response message that will cause the client to redirect to the Provider.</returns>
-		Task<HttpResponseMessage> GetRedirectingResponseAsync(CancellationToken cancellationToken);
+		Task<HttpResponseMessage> GetRedirectingResponseAsync(CancellationToken cancellationToken = default(CancellationToken));
 	}
 }

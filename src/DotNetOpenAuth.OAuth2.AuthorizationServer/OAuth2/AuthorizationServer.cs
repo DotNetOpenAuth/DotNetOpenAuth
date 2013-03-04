@@ -110,6 +110,21 @@ namespace DotNetOpenAuth.OAuth2 {
 		}
 
 		/// <summary>
+		/// Reads in a client's request for the Authorization Server to obtain permission from
+		/// the user to authorize the Client's access of some protected resource(s).
+		/// </summary>
+		/// <param name="requestUri">The URL that carries the authorization request.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The incoming request, or null if no OAuth message was attached.
+		/// </returns>
+		/// <exception cref="ProtocolException">Thrown if an unexpected OAuth message is attached to the incoming request.</exception>
+		public Task<EndUserAuthorizationRequest> ReadAuthorizationRequestAsync(Uri requestUri, CancellationToken cancellationToken = default(CancellationToken)) {
+			var httpInfo = HttpRequestInfo.Create(HttpMethod.Get.Method, requestUri);
+			return this.ReadAuthorizationRequestAsync(httpInfo, cancellationToken);
+		}
+
+		/// <summary>
 		/// Handles an incoming request to the authorization server's token endpoint.
 		/// </summary>
 		/// <param name="request">The HTTP request.</param>

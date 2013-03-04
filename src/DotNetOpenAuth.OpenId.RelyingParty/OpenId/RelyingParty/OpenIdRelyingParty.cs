@@ -93,7 +93,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		private Channel channel;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="OpenIdRelyingParty"/> class.
+		/// Initializes a new instance of the <see cref="OpenIdRelyingParty"/> class
+		/// such that it uses a memory store for things it must remember across logins.
 		/// </summary>
 		public OpenIdRelyingParty()
 			: this(OpenIdElement.Configuration.RelyingParty.ApplicationStore.CreateInstance(GetHttpApplicationStore(), null)) {
@@ -519,7 +520,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <remarks>
 		/// Requires an <see cref="HttpContext.Current">HttpContext.Current</see> context.
 		/// </remarks>
-		public Task<IAuthenticationResponse> GetResponseAsync(CancellationToken cancellationToken) {
+		public Task<IAuthenticationResponse> GetResponseAsync(CancellationToken cancellationToken = default(CancellationToken)) {
 			RequiresEx.ValidState(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
 			return this.GetResponseAsync(this.Channel.GetRequestFromContext(), cancellationToken);
 		}
@@ -532,7 +533,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <returns>
 		/// The processed authentication response if there is any; <c>null</c> otherwise.
 		/// </returns>
-		public async Task<IAuthenticationResponse> GetResponseAsync(HttpRequestBase httpRequestInfo, CancellationToken cancellationToken) {
+		public async Task<IAuthenticationResponse> GetResponseAsync(HttpRequestBase httpRequestInfo, CancellationToken cancellationToken = default(CancellationToken)) {
 			Requires.NotNull(httpRequestInfo, "httpRequestInfo");
 			try {
 				var message = await this.Channel.ReadFromRequestAsync(httpRequestInfo, cancellationToken);

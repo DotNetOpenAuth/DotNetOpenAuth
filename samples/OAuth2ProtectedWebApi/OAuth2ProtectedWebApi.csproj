@@ -266,6 +266,14 @@
       <Project>{56459a6c-6ba2-4bac-a9c0-27e3bd961fa6}</Project>
       <Name>DotNetOpenAuth.OAuth2</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\src\DotNetOpenAuth.OpenId.RelyingParty\DotNetOpenAuth.OpenId.RelyingParty.csproj">
+      <Project>{f458ab60-ba1c-43d9-8cef-ec01b50be87b}</Project>
+      <Name>DotNetOpenAuth.OpenId.RelyingParty</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\DotNetOpenAuth.OpenId\DotNetOpenAuth.OpenId.csproj">
+      <Project>{3896a32a-e876-4c23-b9b8-78e17d134cd3}</Project>
+      <Name>DotNetOpenAuth.OpenId</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
