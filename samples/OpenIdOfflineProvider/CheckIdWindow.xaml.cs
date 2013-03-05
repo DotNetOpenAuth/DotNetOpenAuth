@@ -31,9 +31,9 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="CheckIdWindow"/> class.
 		/// </summary>
-		/// <param name="provider">The OpenID Provider host.</param>
+		/// <param name="userIdentityPageBase">The base URI upon which user identity pages are created.</param>
 		/// <param name="request">The incoming authentication request.</param>
-		private CheckIdWindow(HostedProvider provider, IAuthenticationRequest request) {
+		private CheckIdWindow(Uri userIdentityPageBase, IAuthenticationRequest request) {
 			Requires.NotNull(request, "request");
 
 			this.InitializeComponent();
@@ -44,8 +44,8 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 			this.setupModeLabel.Visibility = request.Immediate ? Visibility.Collapsed : Visibility.Visible;
 
 			if (request.IsDirectedIdentity) {
-				this.claimedIdentifierBox.Text = provider.UserIdentityPageBase.AbsoluteUri;
-				this.localIdentifierBox.Text = provider.UserIdentityPageBase.AbsoluteUri;
+				this.claimedIdentifierBox.Text = userIdentityPageBase.AbsoluteUri;
+				this.localIdentifierBox.Text = userIdentityPageBase.AbsoluteUri;
 			} else {
 				this.claimedIdentifierBox.Text = request.ClaimedIdentifier;
 				this.localIdentifierBox.Text = request.LocalIdentifier;
@@ -55,17 +55,17 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// <summary>
 		/// Processes an authentication request by a popup window.
 		/// </summary>
-		/// <param name="provider">The OpenID Provider host.</param>
+		/// <param name="userIdentityPageBase">The base URI upon which user identity pages are created.</param>
 		/// <param name="request">The incoming authentication request.</param>
 		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// A task that completes with the asynchronous operation.
 		/// </returns>
-		internal static async Task ProcessAuthenticationAsync(HostedProvider provider, IAuthenticationRequest request, CancellationToken cancellationToken) {
-			Requires.NotNull(provider, "provider");
+		internal static async Task ProcessAuthenticationAsync(Uri userIdentityPageBase, IAuthenticationRequest request, CancellationToken cancellationToken) {
+			Requires.NotNull(userIdentityPageBase, "userIdentityPageBase");
 			Requires.NotNull(request, "request");
 
-			var window = new CheckIdWindow(provider, request);
+			var window = new CheckIdWindow(userIdentityPageBase, request);
 
 			bool isRPDiscoverable = await request.IsReturnUrlDiscoverableAsync(cancellationToken: cancellationToken) == RelyingPartyDiscoveryResult.Success;
 			window.discoverableYesLabel.Visibility = isRPDiscoverable ? Visibility.Visible : Visibility.Collapsed;

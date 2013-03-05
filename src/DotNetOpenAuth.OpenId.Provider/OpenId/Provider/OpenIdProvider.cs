@@ -312,7 +312,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </returns>
 		/// <exception cref="InvalidOperationException">Thrown if <see cref="IRequest.IsResponseReady" /> is <c>false</c>.</exception>
 		[SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily", Justification = "Code Contract requires that we cast early.")]
-		public async Task<HttpResponseMessage> PrepareResponseAsync(IRequest request, CancellationToken cancellationToken) {
+		public async Task<HttpResponseMessage> PrepareResponseAsync(IRequest request, CancellationToken cancellationToken = default(CancellationToken)) {
 			Requires.NotNull(request, "request");
 			Requires.That(request.IsResponseReady, "request", OpenIdStrings.ResponseNotReady);
 

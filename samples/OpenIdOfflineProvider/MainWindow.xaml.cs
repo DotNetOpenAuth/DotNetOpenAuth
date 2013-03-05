@@ -15,10 +15,13 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 	using System.Net.Http;
 	using System.Net.Http.Headers;
 	using System.Runtime.InteropServices;
+	using System.ServiceModel;
 	using System.Text;
 	using System.Threading;
 	using System.Threading.Tasks;
 	using System.Web;
+	using System.Web.Http.Routing;
+	using System.Web.Http.SelfHost;
 	using System.Windows;
 	using System.Windows.Controls;
 	using System.Windows.Data;
@@ -36,19 +39,21 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 	using log4net.Core;
 	using Validation;
 
+	using System.Web.Http;
+
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
 	/// </summary>
 	public partial class MainWindow : Window, IDisposable {
 		/// <summary>
-		/// The OpenID Provider host object.
-		/// </summary>
-		private HostedProvider hostedProvider = new HostedProvider();
-
-		/// <summary>
 		/// The logger the application may use.
 		/// </summary>
 		private ILog logger = log4net.LogManager.GetLogger(typeof(MainWindow));
+
+		/// <summary>
+		/// The HTTP listener that acts as the OpenID Provider socket.
+		/// </summary>
+		private HttpSelfHostServer hostServer;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MainWindow"/> class.
@@ -60,8 +65,11 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 				boxLogger.Writer = new TextBoxTextWriter(this.logBox);
 			}
 
+			Instance = this;
 			this.StartProviderAsync();
 		}
+
+		internal static MainWindow Instance;
 
 		#region IDisposable Members
 
@@ -78,12 +86,11 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
 		protected virtual void Dispose(bool disposing) {
 			if (disposing) {
-				var host = this.hostedProvider as IDisposable;
-				if (host != null) {
-					host.Dispose();
+				if (this.hostServer != null) {
+					this.hostServer.Dispose();
 				}
 
-				this.hostedProvider = null;
+				this.hostServer = null;
 			}
 		}
 
@@ -124,38 +131,6 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		}
 
 		/// <summary>
-		/// Starts the provider.
-		/// </summary>
-		private async Task StartProviderAsync() {
-			Exception exception = null;
-			try {
-				await this.hostedProvider.StartProviderAsync(new Handler(this));
-			} catch (InvalidOperationException ex) {
-				exception = ex;
-			}
-
-			if (exception != null) {
-				if (MessageBox.Show(exception.Message, "Configuration error", MessageBoxButton.OKCancel, MessageBoxImage.Error)
-					== MessageBoxResult.OK) {
-					await this.StartProviderAsync();
-					return;
-				} else {
-					this.Close();
-				}
-			}
-
-			this.opIdentifierLabel.Content = this.hostedProvider.OPIdentifier;
-		}
-
-		/// <summary>
-		/// Stops the provider.
-		/// </summary>
-		private async Task StopProviderAsync() {
-			await this.hostedProvider.StopProviderAsync();
-			this.opIdentifierLabel.Content = string.Empty;
-		}
-
-		/// <summary>
 		/// Handles the MouseDown event of the opIdentifierLabel control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
@@ -177,66 +152,61 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 			this.logBox.Clear();
 		}
 
-		private class Handler : HttpMessageHandler {
-			private readonly MainWindow owner;
+		/// <summary>
+		/// Starts the provider.
+		/// </summary>
+		private async Task StartProviderAsync() {
+			Exception exception = null;
+			try {
+				Verify.Operation(this.hostServer == null, "Server already started.");
 
-			private readonly IOpenIdApplicationStore store = new StandardProviderApplicationStore();
-
-			internal Handler(MainWindow owner) {
-				Requires.NotNull(owner, "owner");
-				this.owner = owner;
-			}
-
-			protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage requestMessage, CancellationToken cancellationToken) {
-				var provider = new OpenIdProvider(store);
-				IRequest request = await provider.GetRequestAsync(requestMessage, cancellationToken);
-				if (request == null) {
-					App.Logger.Error("A request came in that did not carry an OpenID message.");
-					return new HttpResponseMessage(HttpStatusCode.BadRequest) {
-						Content = new StringContent("<html><body>This is an OpenID Provider endpoint.</body></html>", Encoding.UTF8, "text/html"),
-					};
+				int port = 45235;
+				var baseUri = new UriBuilder("http", "localhost", port);
+				var configuration = new HttpSelfHostConfiguration(baseUri.Uri);
+				configuration.Routes.MapHttpRoute("default", "{controller}/{id}", new { controller = "Home", id = RouteParameter.Optional });
+				try {
+					var hostServer = new HttpSelfHostServer(configuration);
+					await hostServer.OpenAsync();
+					this.hostServer = hostServer;
+				} catch (AddressAccessDeniedException ex) {
+					// If this throws an exception, use an elevated command prompt and execute:
+					// netsh http add urlacl url=http://+:45235/ user=YOUR_USERNAME_HERE
+					string message = string.Format(
+						CultureInfo.CurrentCulture,
+						"Use an elevated command prompt and execute: \nnetsh http add urlacl url=http://+:{0}/ user={1}\\{2}",
+						port,
+						Environment.UserDomainName,
+						Environment.UserName);
+					throw new InvalidOperationException(message, ex);
 				}
 
-				return await await this.owner.Dispatcher.InvokeAsync(async delegate {
-					if (!request.IsResponseReady) {
-						var authRequest = request as IAuthenticationRequest;
-						if (authRequest != null) {
-							switch (this.owner.checkidRequestList.SelectedIndex) {
-								case 0:
-									if (authRequest.IsDirectedIdentity) {
-										string userIdentityPageBase = this.owner.hostedProvider.UserIdentityPageBase.AbsoluteUri;
-										if (this.owner.capitalizedHostName.IsChecked.Value) {
-											userIdentityPageBase = (this.owner.hostedProvider.UserIdentityPageBase.Scheme + Uri.SchemeDelimiter + this.owner.hostedProvider.UserIdentityPageBase.Authority).ToUpperInvariant() + this.owner.hostedProvider.UserIdentityPageBase.PathAndQuery;
-										}
-										string leafPath = "directedidentity";
-										if (this.owner.directedIdentityTrailingPeriodsCheckbox.IsChecked.Value) {
-											leafPath += ".";
-										}
-										authRequest.ClaimedIdentifier = Identifier.Parse(userIdentityPageBase + leafPath, true);
-										authRequest.LocalIdentifier = authRequest.ClaimedIdentifier;
-									}
-									authRequest.IsAuthenticated = true;
-									break;
-								case 1:
-									authRequest.IsAuthenticated = false;
-									break;
-								case 2:
-									IntPtr oldForegroundWindow = NativeMethods.GetForegroundWindow();
-									bool stoleFocus = NativeMethods.SetForegroundWindow(this.owner);
-									await CheckIdWindow.ProcessAuthenticationAsync(this.owner.hostedProvider, authRequest, cancellationToken);
-									if (stoleFocus) {
-										NativeMethods.SetForegroundWindow(oldForegroundWindow);
-									}
-									break;
-							}
-						}
-					}
+				this.opIdentifierLabel.Content = baseUri.Uri.AbsoluteUri;
+			} catch (InvalidOperationException ex) {
+				exception = ex;
+			}
 
-					var responseMessage = await provider.PrepareResponseAsync(request, cancellationToken);
-					return responseMessage;
-				});
+			if (exception != null) {
+				if (MessageBox.Show(exception.Message, "Configuration error", MessageBoxButton.OKCancel, MessageBoxImage.Error)
+					== MessageBoxResult.OK) {
+					await this.StartProviderAsync();
+					return;
+				} else {
+					this.Close();
+				}
 			}
 		}
 
+		/// <summary>
+		/// Stops the provider.
+		/// </summary>
+		private async Task StopProviderAsync() {
+			if (this.hostServer != null) {
+				await this.hostServer.CloseAsync();
+				this.hostServer.Dispose();
+				this.hostServer = null;
+			}
+
+			this.opIdentifierLabel.Content = string.Empty;
+		}
 	}
 }
