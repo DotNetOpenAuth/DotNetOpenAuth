@@ -437,8 +437,7 @@ namespace DotNetOpenAuth.Messaging {
 				httpRequest.Content = new StreamContent(request.InputStream);
 			}
 
-			request.ApplyHeaders(httpRequest);
-
+			httpRequest.CopyHeadersFrom(request);
 			return httpRequest;
 		}
 
@@ -1199,9 +1198,9 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Clones an <see cref="HttpWebRequest" /> in order to send it again.
 		/// </summary>
-		/// <param name="request">The request with headers to clone.</param>
 		/// <param name="message">The message to set headers on.</param>
-		internal static void ApplyHeaders(this HttpRequestBase request, HttpRequestMessage message) {
+		/// <param name="request">The request with headers to clone.</param>
+		internal static void CopyHeadersFrom(this HttpRequestMessage message, HttpRequestBase request) {
 			Requires.NotNull(request, "request");
 			Requires.NotNull(message, "message");
 
