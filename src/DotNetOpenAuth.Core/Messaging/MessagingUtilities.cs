@@ -1205,39 +1205,10 @@ namespace DotNetOpenAuth.Messaging {
 			Requires.NotNull(request, "request");
 			Requires.NotNull(message, "message");
 
-			// First copy headers.  Only set those that are explicitly set on the original requestHeaders,
-			// because some properties (like IfModifiedSince) activate special behavior when set,
-			// even when set to their "original" values.
 			foreach (string headerName in request.Headers) {
-				switch (headerName) {
-					case "Accept": message.Headers.Accept.AddRange(request.AcceptTypes.Select(at => new MediaTypeWithQualityHeaderValue(at.Trim()))); break;
-					case "Connection": break; // Keep-Alive controls this
-					case "Content-Length":
-						if (!message.Content.Headers.ContentLength.HasValue) {
-							message.Content.Headers.ContentLength = request.ContentLength;
-						}
-
-						break;
-					case "Content-Type": message.Content.Headers.ContentType = new MediaTypeHeaderValue(request.ContentType); break;
-					case "Expect": message.Headers.Expect.Add(new NameValueWithParametersHeaderValue(request.Headers[headerName])); break;
-					case "Host": break; // implicitly copied as part of the RequestUri
-					case "If-Modified-Since": break; // we don't care
-					case "Keep-Alive": message.Headers.Connection.Add(request.Headers[headerName]); break;
-					case "Proxy-Connection": break; // we don't care
-					case "Referer": message.Headers.Referrer = request.UrlReferrer; break;
-					case "Transfer-Encoding": message.Headers.TransferEncoding.Add(new TransferCodingHeaderValue(request.Headers[headerName])); break;
-					default:
-						HttpHeaders headers = headerName.StartsWith("Content-", StringComparison.Ordinal) && message.Content != null
-							? (HttpHeaders)message.Content.Headers
-							: message.Headers;
-						var values = request.Headers.GetValues(headerName);
-						if (values.Length == 1) {
-							headers.Add(headerName, values[0]);
-						} else {
-							headers.Add(headerName, values);
-						}
-
-						break;
+				string[] headerValues = request.Headers.GetValues(headerName);
+				if (!message.Headers.TryAddWithoutValidation(headerName, headerValues)) {
+					message.Content.Headers.TryAddWithoutValidation(headerName, headerValues);
 				}
 			}
 		}
