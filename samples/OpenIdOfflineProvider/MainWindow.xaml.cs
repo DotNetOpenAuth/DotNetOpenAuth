@@ -180,7 +180,14 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 			});
 
 			var responseMessage = await this.hostedProvider.Provider.PrepareResponseAsync(request, CancellationToken.None);
+			response.StatusCode = (int)responseMessage.StatusCode;
 			ApplyHeadersToResponse(responseMessage.Headers, response);
+			if (responseMessage.Content != null) {
+				if (responseMessage.Content.Headers.ContentLength.HasValue) {
+					response.ContentLength64 = responseMessage.Content.Headers.ContentLength.Value;
+				}
+				await responseMessage.Content.CopyToAsync(response.OutputStream);
+			}
 		}
 
 		/// <summary>

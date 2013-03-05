@@ -222,6 +222,58 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// When overridden in a derived class, gets an array of client-supported MIME accept types.
+		/// </summary>
+		/// <returns>An array of client-supported MIME accept types.</returns>
+		public override string[] AcceptTypes {
+			get {
+				if (this.Headers["Accept"] != null) {
+					return this.headers["Accept"].Split(',');
+				}
+
+				return new string[0];
+			}
+		}
+
+		/// <summary>
+		/// When overridden in a derived class, gets information about the URL of the client request that linked to the current URL.
+		/// </summary>
+		/// <returns>The URL of the page that linked to the current request.</returns>
+		public override Uri UrlReferrer {
+			get {
+				if (this.Headers["Referer"] != null) { // misspelled word intentional, per RFC
+					return new Uri(this.Headers["Referer"]);
+				}
+
+				return null;
+			}
+		}
+
+		/// <summary>
+		/// When overridden in a derived class, gets the length, in bytes, of content that was sent by the client.
+		/// </summary>
+		/// <returns>The length, in bytes, of content that was sent by the client.</returns>
+		public override int ContentLength {
+			get {
+				if (this.Headers["Content-Length"] != null) {
+					return int.Parse(this.headers["Content-Length"]);
+				}
+
+				return 0;
+			}
+		}
+
+		/// <summary>
+		/// When overridden in a derived class, gets or sets the MIME content type of the request.
+		/// </summary>
+		/// <returns>The MIME content type of the request, such as "text/html".</returns>
+		/// <exception cref="System.NotImplementedException"></exception>
+		public override string ContentType {
+			get { return this.Headers["Content-Type"]; }
+			set { throw new NotImplementedException(); }
+		}
+
+		/// <summary>
 		/// Creates an <see cref="HttpRequestBase"/> instance that describes the specified HTTP request.
 		/// </summary>
 		/// <param name="request">The request.</param>

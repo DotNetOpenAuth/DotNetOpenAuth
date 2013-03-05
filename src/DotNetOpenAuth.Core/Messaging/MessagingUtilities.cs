@@ -1210,9 +1210,14 @@ namespace DotNetOpenAuth.Messaging {
 			// even when set to their "original" values.
 			foreach (string headerName in request.Headers) {
 				switch (headerName) {
-					case "Accept": message.Headers.Accept.AddRange(request.AcceptTypes.Select(at => new MediaTypeWithQualityHeaderValue(at))); break;
+					case "Accept": message.Headers.Accept.AddRange(request.AcceptTypes.Select(at => new MediaTypeWithQualityHeaderValue(at.Trim()))); break;
 					case "Connection": break; // Keep-Alive controls this
-					case "Content-Length": message.Content.Headers.ContentLength = request.ContentLength; break;
+					case "Content-Length":
+						if (!message.Content.Headers.ContentLength.HasValue) {
+							message.Content.Headers.ContentLength = request.ContentLength;
+						}
+
+						break;
 					case "Content-Type": message.Content.Headers.ContentType = new MediaTypeHeaderValue(request.ContentType); break;
 					case "Expect": message.Headers.Expect.Add(new NameValueWithParametersHeaderValue(request.Headers[headerName])); break;
 					case "Host": break; // implicitly copied as part of the RequestUri
