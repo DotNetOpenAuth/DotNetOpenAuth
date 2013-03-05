@@ -7,11 +7,17 @@
 namespace DotNetOpenAuth.OpenIdOfflineProvider {
 	using System;
 	using System.Collections.Generic;
+	using System.Globalization;
 	using System.IO;
 	using System.Linq;
 	using System.Net;
+	using System.Net.Http;
+	using System.ServiceModel;
+	using System.Text;
 	using System.Threading.Tasks;
 	using System.Web;
+	using System.Web.Http;
+	using System.Web.Http.SelfHost;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Provider;
 	using log4net;
@@ -37,20 +43,9 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		private const string UserIdentifierPath = "/user/";
 
 		/// <summary>
-		/// The <see cref="OpenIdProvider"/> instance that processes incoming requests.
-		/// </summary>
-		private OpenIdProvider provider = new OpenIdProvider(new StandardProviderApplicationStore());
-
-		/// <summary>
 		/// The HTTP listener that acts as the OpenID Provider socket.
 		/// </summary>
-		private HttpHost httpHost;
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="HostedProvider"/> class.
-		/// </summary>
-		internal HostedProvider() {
-		}
+		private HttpSelfHostServer hostServer;
 
 		/// <summary>
 		/// Gets a value indicating whether this instance is running.
@@ -59,30 +54,13 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// 	<c>true</c> if this instance is running; otherwise, <c>false</c>.
 		/// </value>
 		internal bool IsRunning {
-			get { return this.httpHost != null; }
+			get { return this.hostServer != null; }
 		}
-
-		/// <summary>
-		/// Gets the <see cref="OpenIdProvider"/> instance that processes incoming requests.
-		/// </summary>
-		internal OpenIdProvider Provider {
-			get { return this.provider; }
-		}
-
-		/// <summary>
-		/// Gets or sets the delegate that handles authentication requests.
-		/// </summary>
-		internal Func<HttpRequestBase, HttpListenerResponse, Task> ProcessRequestAsync { get; set; }
 
 		/// <summary>
 		/// Gets the provider endpoint.
 		/// </summary>
-		internal Uri ProviderEndpoint {
-			get {
-				Assumes.True(this.IsRunning);
-				return new Uri(this.httpHost.BaseUri, ProviderPath);
-			}
-		}
+		internal Uri ProviderEndpoint { get; private set; }
 
 		/// <summary>
 		/// Gets the base URI that all user identities must start with.
@@ -90,7 +68,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		internal Uri UserIdentityPageBase {
 			get {
 				Assumes.True(this.IsRunning);
-				return new Uri(this.httpHost.BaseUri, UserIdentifierPath);
+				return new Uri(this.ProviderEndpoint, UserIdentifierPath);
 			}
 		}
 
@@ -100,7 +78,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		internal Uri OPIdentifier {
 			get {
 				Assumes.True(this.IsRunning);
-				return new Uri(this.httpHost.BaseUri, OPIdentifierPath);
+				return new Uri(this.ProviderEndpoint, OPIdentifierPath);
 			}
 		}
 
@@ -114,17 +92,40 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// <summary>
 		/// Starts the provider.
 		/// </summary>
-		internal void StartProvider() {
-			this.httpHost = HttpHost.CreateHost(this.RequestHandlerAsync);
+		internal async Task StartProviderAsync(HttpMessageHandler providerEndpointHandler) {
+			Requires.NotNull(providerEndpointHandler, "providerEndpointHandler");
+			Verify.Operation(this.hostServer == null, "Server already started.");
+
+			int port = 45235;
+			var baseUri = new UriBuilder("http", "localhost", port);
+			var configuration = new HttpSelfHostConfiguration(baseUri.Uri);
+			try {
+				var hostServer = new HttpSelfHostServer(configuration, new Handler(this, providerEndpointHandler));
+				await hostServer.OpenAsync();
+				this.hostServer = hostServer;
+			} catch (AddressAccessDeniedException ex) {
+				// If this throws an exception, use an elevated command prompt and execute:
+				// netsh http add urlacl url=http://+:45235/ user=YOUR_USERNAME_HERE
+				string message = string.Format(
+					CultureInfo.CurrentCulture,
+					"Use an elevated command prompt and execute: \nnetsh http add urlacl url=http://+:{0}/ user={1}\\{2}",
+					port,
+					Environment.UserDomainName,
+					Environment.UserName);
+				throw new InvalidOperationException(message, ex);
+			}
+
+			this.ProviderEndpoint = new Uri(baseUri.Uri, ProviderPath);
 		}
 
 		/// <summary>
 		/// Stops the provider.
 		/// </summary>
-		internal void StopProvider() {
-			if (this.httpHost != null) {
-				this.httpHost.Dispose();
-				this.httpHost = null;
+		internal async Task StopProviderAsync() {
+			if (this.hostServer != null) {
+				await this.hostServer.CloseAsync();
+				this.hostServer.Dispose();
+				this.hostServer = null;
 			}
 		}
 
@@ -136,12 +137,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
 		protected virtual void Dispose(bool disposing) {
 			if (disposing) {
-				var host = this.httpHost as IDisposable;
-				if (host != null) {
-					host.Dispose();
-				}
-
-				this.httpHost = null;
+				this.hostServer.Dispose();
 			}
 		}
 
@@ -206,51 +202,34 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 				extensions);
 		}
 
-		/// <summary>
-		/// Handles incoming HTTP requests.
-		/// </summary>
-		/// <param name="context">The HttpListener context.</param>
-		/// <returns>
-		/// A task that completes with the asynchronous operation.
-		/// </returns>
-		private async Task RequestHandlerAsync(HttpListenerContext context) {
-			Requires.NotNull(context, "context");
-			Requires.NotNull(context.Response.OutputStream, "context.Response.OutputStream");
-			Requires.NotNull(this.ProcessRequestAsync, "this.ProcessRequestAsync");
+		private class Handler : DelegatingHandler {
+			private HostedProvider host;
 
-			Stream outputStream = context.Response.OutputStream;
-			Assumes.True(outputStream != null); // CC static verification shortcoming.
+			internal Handler(HostedProvider host, HttpMessageHandler innerHandler)
+				: base(innerHandler) {
+				Requires.NotNull(host, "host");
 
-			UriBuilder providerEndpointBuilder = new UriBuilder();
-			providerEndpointBuilder.Scheme = Uri.UriSchemeHttp;
-			providerEndpointBuilder.Host = "localhost";
-			providerEndpointBuilder.Port = context.Request.Url.Port;
-			providerEndpointBuilder.Path = ProviderPath;
-			Uri providerEndpoint = providerEndpointBuilder.Uri;
+				this.host = host;
+			}
 
-			if (context.Request.Url.AbsolutePath == ProviderPath) {
-				HttpRequestBase requestInfo = HttpRequestInfo.Create(context.Request);
-				await this.ProcessRequestAsync(requestInfo, context.Response);
-			} else if (context.Request.Url.AbsolutePath.StartsWith(UserIdentifierPath, StringComparison.Ordinal)) {
-				using (StreamWriter sw = new StreamWriter(outputStream)) {
-					context.Response.StatusCode = (int)HttpStatusCode.OK;
-
+			protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, System.Threading.CancellationToken cancellationToken) {
+				Uri providerEndpoint = new Uri(request.RequestUri, ProviderPath);
+				if (request.RequestUri.AbsolutePath == ProviderPath) {
+					return await base.SendAsync(request, cancellationToken);
+				} else if (request.RequestUri.AbsolutePath.StartsWith(UserIdentifierPath, StringComparison.Ordinal)) {
 					string localId = null; // string.Format("http://localhost:{0}/user", context.Request.Url.Port);
-					string html = GenerateHtmlDiscoveryDocument(providerEndpoint, localId);
-					sw.WriteLine(html);
+					return new HttpResponseMessage() {
+						RequestMessage = request,
+						Content = new StringContent(GenerateHtmlDiscoveryDocument(providerEndpoint, localId), Encoding.UTF8, "text/html"),
+					};
+				} else if (request.RequestUri == this.host.OPIdentifier) {
+					App.Logger.Info("Discovery on OP Identifier detected.");
+					return new HttpResponseMessage() {
+						Content = new StringContent(GenerateXrdsOPIdentifierDocument(providerEndpoint, Enumerable.Empty<string>()), Encoding.UTF8, "application/xrds+xml"),
+					};
+				} else {
+					return new HttpResponseMessage(HttpStatusCode.NotFound);
 				}
-				context.Response.OutputStream.Close();
-			} else if (context.Request.Url == this.OPIdentifier) {
-				context.Response.ContentType = "application/xrds+xml";
-				context.Response.StatusCode = (int)HttpStatusCode.OK;
-				App.Logger.Info("Discovery on OP Identifier detected.");
-				using (StreamWriter sw = new StreamWriter(outputStream)) {
-					sw.Write(GenerateXrdsOPIdentifierDocument(providerEndpoint, Enumerable.Empty<string>()));
-				}
-				context.Response.OutputStream.Close();
-			} else {
-				context.Response.StatusCode = (int)HttpStatusCode.NotFound;
-				context.Response.OutputStream.Close();
 			}
 		}
 	}

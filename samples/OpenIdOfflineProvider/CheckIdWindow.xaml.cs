@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
+	using System.Threading;
 	using System.Threading.Tasks;
 	using System.Windows;
 	using System.Windows.Controls;
@@ -19,6 +20,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 	using System.Windows.Media.Imaging;
 	using System.Windows.Shapes;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Provider;
 	using Validation;
 
@@ -55,16 +57,17 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// </summary>
 		/// <param name="provider">The OpenID Provider host.</param>
 		/// <param name="request">The incoming authentication request.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// A task that completes with the asynchronous operation.
 		/// </returns>
-		internal static async Task ProcessAuthenticationAsync(HostedProvider provider, IAuthenticationRequest request) {
+		internal static async Task ProcessAuthenticationAsync(HostedProvider provider, IAuthenticationRequest request, CancellationToken cancellationToken) {
 			Requires.NotNull(provider, "provider");
 			Requires.NotNull(request, "request");
 
 			var window = new CheckIdWindow(provider, request);
 
-			bool isRPDiscoverable = await request.IsReturnUrlDiscoverableAsync(provider.Provider.Channel.HostFactories) == RelyingPartyDiscoveryResult.Success;
+			bool isRPDiscoverable = await request.IsReturnUrlDiscoverableAsync(cancellationToken: cancellationToken) == RelyingPartyDiscoveryResult.Success;
 			window.discoverableYesLabel.Visibility = isRPDiscoverable ? Visibility.Visible : Visibility.Collapsed;
 			window.discoverableNoLabel.Visibility = isRPDiscoverable ? Visibility.Collapsed : Visibility.Visible;
 

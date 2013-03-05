@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 	using System.IO;
 	using System.Linq;
 	using System.Net;
+	using System.Net.Http;
 	using System.Net.Http.Headers;
 	using System.Runtime.InteropServices;
 	using System.Text;
@@ -54,13 +55,12 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// </summary>
 		public MainWindow() {
 			this.InitializeComponent();
-			this.hostedProvider.ProcessRequestAsync = this.ProcessRequestAsync;
 			TextWriterAppender boxLogger = log4net.LogManager.GetRepository().GetAppenders().OfType<TextWriterAppender>().FirstOrDefault(a => a.Name == "TextBoxAppender");
 			if (boxLogger != null) {
 				boxLogger.Writer = new TextBoxTextWriter(this.logBox);
 			}
 
-			this.startProvider();
+			this.StartProviderAsync();
 		}
 
 		#region IDisposable Members
@@ -94,7 +94,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// </summary>
 		/// <param name="e">The <see cref="System.ComponentModel.CancelEventArgs"/> instance containing the event data.</param>
 		protected override void OnClosing(System.ComponentModel.CancelEventArgs e) {
-			this.stopProvider();
+			this.StopProviderAsync();
 			base.OnClosing(e);
 		}
 
@@ -124,85 +124,34 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		}
 
 		/// <summary>
-		/// Processes an incoming request at the OpenID Provider endpoint.
-		/// </summary>
-		/// <param name="requestInfo">The request info.</param>
-		/// <param name="response">The response.</param>
-		/// <returns>
-		/// A task that completes with the asynchronous operation.
-		/// </returns>
-		private async Task ProcessRequestAsync(HttpRequestBase requestInfo, HttpListenerResponse response) {
-			IRequest request = await this.hostedProvider.Provider.GetRequestAsync(requestInfo, CancellationToken.None);
-			if (request == null) {
-				App.Logger.Error("A request came in that did not carry an OpenID message.");
-				response.ContentType = "text/html";
-				response.StatusCode = (int)HttpStatusCode.BadRequest;
-				using (StreamWriter sw = new StreamWriter(response.OutputStream)) {
-					sw.WriteLine("<html><body>This is an OpenID Provider endpoint.</body></html>");
-				}
-				return;
-			}
-
-			this.Dispatcher.Invoke(async delegate {
-				if (!request.IsResponseReady) {
-					var authRequest = request as IAuthenticationRequest;
-					if (authRequest != null) {
-						switch (this.checkidRequestList.SelectedIndex) {
-							case 0:
-								if (authRequest.IsDirectedIdentity) {
-									string userIdentityPageBase = this.hostedProvider.UserIdentityPageBase.AbsoluteUri;
-									if (this.capitalizedHostName.IsChecked.Value) {
-										userIdentityPageBase = (this.hostedProvider.UserIdentityPageBase.Scheme + Uri.SchemeDelimiter + this.hostedProvider.UserIdentityPageBase.Authority).ToUpperInvariant() + this.hostedProvider.UserIdentityPageBase.PathAndQuery;
-									}
-									string leafPath = "directedidentity";
-									if (this.directedIdentityTrailingPeriodsCheckbox.IsChecked.Value) {
-										leafPath += ".";
-									}
-									authRequest.ClaimedIdentifier = Identifier.Parse(userIdentityPageBase + leafPath, true);
-									authRequest.LocalIdentifier = authRequest.ClaimedIdentifier;
-								}
-								authRequest.IsAuthenticated = true;
-								break;
-							case 1:
-								authRequest.IsAuthenticated = false;
-								break;
-							case 2:
-								IntPtr oldForegroundWindow = NativeMethods.GetForegroundWindow();
-								bool stoleFocus = NativeMethods.SetForegroundWindow(this);
-								await CheckIdWindow.ProcessAuthenticationAsync(this.hostedProvider, authRequest);
-								if (stoleFocus) {
-									NativeMethods.SetForegroundWindow(oldForegroundWindow);
-								}
-								break;
-						}
-					}
-				}
-			});
-
-			var responseMessage = await this.hostedProvider.Provider.PrepareResponseAsync(request, CancellationToken.None);
-			response.StatusCode = (int)responseMessage.StatusCode;
-			ApplyHeadersToResponse(responseMessage.Headers, response);
-			if (responseMessage.Content != null) {
-				if (responseMessage.Content.Headers.ContentLength.HasValue) {
-					response.ContentLength64 = responseMessage.Content.Headers.ContentLength.Value;
-				}
-				await responseMessage.Content.CopyToAsync(response.OutputStream);
-			}
-		}
-
-		/// <summary>
 		/// Starts the provider.
 		/// </summary>
-		private void startProvider() {
-			this.hostedProvider.StartProvider();
+		private async Task StartProviderAsync() {
+			Exception exception = null;
+			try {
+				await this.hostedProvider.StartProviderAsync(new Handler(this));
+			} catch (InvalidOperationException ex) {
+				exception = ex;
+			}
+
+			if (exception != null) {
+				if (MessageBox.Show(exception.Message, "Configuration error", MessageBoxButton.OKCancel, MessageBoxImage.Error)
+					== MessageBoxResult.OK) {
+					await this.StartProviderAsync();
+					return;
+				} else {
+					this.Close();
+				}
+			}
+
 			this.opIdentifierLabel.Content = this.hostedProvider.OPIdentifier;
 		}
 
 		/// <summary>
 		/// Stops the provider.
 		/// </summary>
-		private void stopProvider() {
-			this.hostedProvider.StopProvider();
+		private async Task StopProviderAsync() {
+			await this.hostedProvider.StopProviderAsync();
 			this.opIdentifierLabel.Content = string.Empty;
 		}
 
@@ -227,5 +176,67 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		private void ClearLogButton_Click(object sender, RoutedEventArgs e) {
 			this.logBox.Clear();
 		}
+
+		private class Handler : HttpMessageHandler {
+			private readonly MainWindow owner;
+
+			private readonly IOpenIdApplicationStore store = new StandardProviderApplicationStore();
+
+			internal Handler(MainWindow owner) {
+				Requires.NotNull(owner, "owner");
+				this.owner = owner;
+			}
+
+			protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage requestMessage, CancellationToken cancellationToken) {
+				var provider = new OpenIdProvider(store);
+				IRequest request = await provider.GetRequestAsync(requestMessage, cancellationToken);
+				if (request == null) {
+					App.Logger.Error("A request came in that did not carry an OpenID message.");
+					return new HttpResponseMessage(HttpStatusCode.BadRequest) {
+						Content = new StringContent("<html><body>This is an OpenID Provider endpoint.</body></html>", Encoding.UTF8, "text/html"),
+					};
+				}
+
+				return await await this.owner.Dispatcher.InvokeAsync(async delegate {
+					if (!request.IsResponseReady) {
+						var authRequest = request as IAuthenticationRequest;
+						if (authRequest != null) {
+							switch (this.owner.checkidRequestList.SelectedIndex) {
+								case 0:
+									if (authRequest.IsDirectedIdentity) {
+										string userIdentityPageBase = this.owner.hostedProvider.UserIdentityPageBase.AbsoluteUri;
+										if (this.owner.capitalizedHostName.IsChecked.Value) {
+											userIdentityPageBase = (this.owner.hostedProvider.UserIdentityPageBase.Scheme + Uri.SchemeDelimiter + this.owner.hostedProvider.UserIdentityPageBase.Authority).ToUpperInvariant() + this.owner.hostedProvider.UserIdentityPageBase.PathAndQuery;
+										}
+										string leafPath = "directedidentity";
+										if (this.owner.directedIdentityTrailingPeriodsCheckbox.IsChecked.Value) {
+											leafPath += ".";
+										}
+										authRequest.ClaimedIdentifier = Identifier.Parse(userIdentityPageBase + leafPath, true);
+										authRequest.LocalIdentifier = authRequest.ClaimedIdentifier;
+									}
+									authRequest.IsAuthenticated = true;
+									break;
+								case 1:
+									authRequest.IsAuthenticated = false;
+									break;
+								case 2:
+									IntPtr oldForegroundWindow = NativeMethods.GetForegroundWindow();
+									bool stoleFocus = NativeMethods.SetForegroundWindow(this.owner);
+									await CheckIdWindow.ProcessAuthenticationAsync(this.owner.hostedProvider, authRequest, cancellationToken);
+									if (stoleFocus) {
+										NativeMethods.SetForegroundWindow(oldForegroundWindow);
+									}
+									break;
+							}
+						}
+					}
+
+					var responseMessage = await provider.PrepareResponseAsync(request, cancellationToken);
+					return responseMessage;
+				});
+			}
+		}
+
 	}
 }
