@@ -504,8 +504,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="response">The response that is anticipated to contain an protocol message.</param>
 		/// <returns>The deserialized message parts, if found.  Null otherwise.</returns>
 		/// <exception cref="ProtocolException">Thrown when the response is not valid.</exception>
-		internal Task<IDictionary<string, string>> ReadFromResponseCoreAsyncTestHook(HttpResponseMessage response) {
-			return this.ReadFromResponseCoreAsync(response);
+		internal Task<IDictionary<string, string>> ReadFromResponseCoreAsyncTestHook(HttpResponseMessage response, CancellationToken cancellationToken) {
+			return this.ReadFromResponseCoreAsync(response, cancellationToken);
 		}
 
 		/// <summary>
@@ -520,7 +520,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// This method should NOT be called by derived types
 		/// except when sending ONE WAY request messages.
 		/// </remarks>
-		internal Task ProcessOutgoingMessageTestHookAsync(IProtocolMessage message, CancellationToken cancellationToken) {
+		internal Task ProcessOutgoingMessageTestHookAsync(IProtocolMessage message, CancellationToken cancellationToken = default(CancellationToken)) {
 			return this.ProcessOutgoingMessageAsync(message, cancellationToken);
 		}
 
@@ -685,7 +685,7 @@ namespace DotNetOpenAuth.Messaging {
 								return null;
 							}
 
-							var responseFields = await this.ReadFromResponseCoreAsync(response);
+							var responseFields = await this.ReadFromResponseCoreAsync(response, cancellationToken);
 							if (responseFields == null) {
 								return null;
 							}
@@ -914,9 +914,12 @@ namespace DotNetOpenAuth.Messaging {
 		/// Gets the protocol message that may be in the given HTTP response.
 		/// </summary>
 		/// <param name="response">The response that is anticipated to contain an protocol message.</param>
-		/// <returns>The deserialized message parts, if found.  Null otherwise.</returns>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The deserialized message parts, if found.  Null otherwise.
+		/// </returns>
 		/// <exception cref="ProtocolException">Thrown when the response is not valid.</exception>
-		protected abstract Task<IDictionary<string, string>> ReadFromResponseCoreAsync(HttpResponseMessage response);
+		protected abstract Task<IDictionary<string, string>> ReadFromResponseCoreAsync(HttpResponseMessage response, CancellationToken cancellationToken);
 
 		/// <summary>
 		/// Prepares an HTTP request that carries a given message.

@@ -10,6 +10,7 @@ namespace DotNetOpenAuth.Test {
 	using System.Collections.Specialized;
 	using System.IO;
 	using System.Net;
+	using System.Net.Http;
 	using System.Threading;
 	using System.Threading.Tasks;
 	using System.Xml;
@@ -57,20 +58,19 @@ namespace DotNetOpenAuth.Test {
 			this.Channel = new TestChannel();
 		}
 
-		internal static HttpRequestInfo CreateHttpRequestInfo(string method, IDictionary<string, string> fields) {
+		internal static HttpRequestMessage CreateHttpRequestInfo(HttpMethod method, IDictionary<string, string> fields) {
+			var result = new HttpRequestMessage() { Method = method };
 			var requestUri = new UriBuilder(DefaultUrlForHttpRequestInfo);
-			var headers = new NameValueCollection();
-			NameValueCollection form = null;
-			if (method == "POST") {
-				form = fields.ToNameValueCollection();
-				headers.Add(HttpRequestHeaders.ContentType, Channel.HttpFormUrlEncoded);
-			} else if (method == "GET") {
-				requestUri.Query = MessagingUtilities.CreateQueryString(fields);
+			if (method == HttpMethod.Post) {
+				result.Content = new FormUrlEncodedContent(fields);
+			} else if (method == HttpMethod.Get) {
+				requestUri.AppendQueryArgs(fields);
 			} else {
 				throw new ArgumentOutOfRangeException("method", method, "Expected POST or GET");
 			}
 
-			return new HttpRequestInfo(method, requestUri.Uri, form: form, headers: headers);
+			result.RequestUri = requestUri.Uri;
+			return result;
 		}
 
 		internal static Channel CreateChannel(MessageProtections capabilityAndRecognition) {
@@ -145,7 +145,7 @@ namespace DotNetOpenAuth.Test {
 			}
 		}
 
-		internal async Task ParameterizedReceiveTestAsync(string method) {
+		internal async Task ParameterizedReceiveTestAsync(HttpMethod method) {
 			var fields = GetStandardTestFields(FieldFill.CompleteBeforeBindings);
 			TestMessage expectedMessage = GetStandardTestMessage(FieldFill.CompleteBeforeBindings);
 
@@ -167,7 +167,7 @@ namespace DotNetOpenAuth.Test {
 				utcCreatedDate = DateTime.Parse(utcCreatedDate.Value.ToUniversalTime().ToString()); // round off the milliseconds so comparisons work later
 				fields.Add("created_on", XmlConvert.ToString(utcCreatedDate.Value, XmlDateTimeSerializationMode.Utc));
 			}
-			IProtocolMessage requestMessage = await this.Channel.ReadFromRequestAsync(CreateHttpRequestInfo("GET", fields), CancellationToken.None);
+			IProtocolMessage requestMessage = await this.Channel.ReadFromRequestAsync(CreateHttpRequestInfo(HttpMethod.Get, fields), CancellationToken.None);
 			Assert.IsNotNull(requestMessage);
 			Assert.IsInstanceOf<TestSignedDirectedMessage>(requestMessage);
 			TestSignedDirectedMessage actualMessage = (TestSignedDirectedMessage)requestMessage;

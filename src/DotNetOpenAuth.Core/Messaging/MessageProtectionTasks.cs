@@ -31,5 +31,11 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		internal static readonly Task<MessageProtections?> TamperProtection =
 			Task.FromResult<MessageProtections?>(MessageProtections.TamperProtection);
+
+		/// <summary>
+		/// A task whose result is <see cref="MessageProtections.ReplayProtection"/>
+		/// </summary>
+		internal static readonly Task<MessageProtections?> ReplayProtection =
+			Task.FromResult<MessageProtections?>(MessageProtections.ReplayProtection);
 	}
 }

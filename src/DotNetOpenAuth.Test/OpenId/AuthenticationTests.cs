@@ -178,7 +178,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 							// When the RP notices the replay we get a specific ReplayMessageException.
 							try {
 								CoordinatingChannel channel = (CoordinatingChannel)rp.Channel;
-								channel.Replay(response);
+								await channel.ReplayAsync(response);
 								Assert.Fail("Expected ProtocolException was not thrown.");
 							} catch (ProtocolException ex) {
 								Assert.IsTrue(ex is ReplayedMessageException || ex is InvalidSignatureException, "A {0} exception was thrown instead of the expected {1} or {2}.", ex.GetType(), typeof(ReplayedMessageException).Name, typeof(InvalidSignatureException).Name);

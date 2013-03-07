@@ -7,6 +7,9 @@
 namespace DotNetOpenAuth.Test.Mocks {
 	using System;
 	using System.Collections.Generic;
+	using System.Net.Http;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
 
@@ -34,15 +37,15 @@ namespace DotNetOpenAuth.Test.Mocks {
 			return base.Receive(fields, recipient);
 		}
 
-		internal new IProtocolMessage ReadFromRequest(HttpRequestBase request) {
-			return base.ReadFromRequest(request);
+		internal new Task<IDirectedProtocolMessage> ReadFromRequestAsync(HttpRequestMessage request, CancellationToken cancellationToken) {
+			return base.ReadFromRequestAsync(request, cancellationToken);
 		}
 
-		protected override IDictionary<string, string> ReadFromResponseCore(IncomingWebResponse response) {
+		protected override Task<IDictionary<string, string>> ReadFromResponseCoreAsync(HttpResponseMessage response, CancellationToken cancellationToken) {
 			throw new NotImplementedException();
 		}
 
-		protected override OutgoingWebResponse PrepareDirectResponse(IProtocolMessage response) {
+		protected override HttpResponseMessage PrepareDirectResponse(IProtocolMessage response) {
 			throw new NotImplementedException();
 		}
 	}

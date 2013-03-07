@@ -296,7 +296,22 @@ namespace DotNetOpenAuth.OAuth {
 		/// <exception cref="ProtocolException">Thrown if an unexpected OAuth message is attached to the incoming request.</exception>
 		public Task<UserAuthorizationRequest> ReadAuthorizationRequestAsync(HttpRequestBase request = null, CancellationToken cancellationToken = default(CancellationToken)) {
 			request = request ?? this.channel.GetRequestFromContext();
-			return this.Channel.TryReadFromRequestAsync<UserAuthorizationRequest>(request.AsHttpRequestMessage(), cancellationToken);
+			return this.ReadAuthorizationRequestAsync(request.AsHttpRequestMessage(), cancellationToken);
+		}
+
+		/// <summary>
+		/// Reads in a Consumer's request for the Service Provider to obtain permission from
+		/// the user to authorize the Consumer's access of some protected resource(s).
+		/// </summary>
+		/// <param name="request">The HTTP request to read from.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The incoming request, or null if no OAuth message was attached.
+		/// </returns>
+		/// <exception cref="ProtocolException">Thrown if an unexpected OAuth message is attached to the incoming request.</exception>
+		public Task<UserAuthorizationRequest> ReadAuthorizationRequestAsync(HttpRequestMessage request, CancellationToken cancellationToken = default(CancellationToken)) {
+			Requires.NotNull(request, "request");
+			return this.Channel.TryReadFromRequestAsync<UserAuthorizationRequest>(request, cancellationToken);
 		}
 
 		/// <summary>
@@ -372,7 +387,21 @@ namespace DotNetOpenAuth.OAuth {
 		/// <exception cref="ProtocolException">Thrown if an unexpected OAuth message is attached to the incoming request.</exception>
 		public Task<AuthorizedTokenRequest> ReadAccessTokenRequestAsync(HttpRequestBase request = null, CancellationToken cancellationToken = default(CancellationToken)) {
 			request = request ?? this.Channel.GetRequestFromContext();
-			return this.Channel.TryReadFromRequestAsync<AuthorizedTokenRequest>(request.AsHttpRequestMessage(), cancellationToken);
+			return this.ReadAccessTokenRequestAsync(request.AsHttpRequestMessage(), cancellationToken);
+		}
+
+		/// <summary>
+		/// Reads in a Consumer's request to exchange an authorized request token for an access token.
+		/// </summary>
+		/// <param name="request">The HTTP request to read from.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The incoming request, or null if no OAuth message was attached.
+		/// </returns>
+		/// <exception cref="ProtocolException">Thrown if an unexpected OAuth message is attached to the incoming request.</exception>
+		public Task<AuthorizedTokenRequest> ReadAccessTokenRequestAsync(HttpRequestMessage request, CancellationToken cancellationToken = default(CancellationToken)) {
+			Requires.NotNull(request, "request");
+			return this.Channel.TryReadFromRequestAsync<AuthorizedTokenRequest>(request, cancellationToken);
 		}
 
 		/// <summary>
@@ -425,9 +454,26 @@ namespace DotNetOpenAuth.OAuth {
 		/// to access the resources being requested.
 		/// </remarks>
 		/// <exception cref="ProtocolException">Thrown if an unexpected message is attached to the request.</exception>
-		public async Task<AccessProtectedResourceRequest> ReadProtectedResourceAuthorizationAsync(HttpRequestBase request = null, CancellationToken cancellationToken = default(CancellationToken)) {
-			request = request ?? this.Channel.GetRequestFromContext();
-			var accessMessage = await this.Channel.TryReadFromRequestAsync<AccessProtectedResourceRequest>(request.AsHttpRequestMessage(), cancellationToken);
+		public Task<AccessProtectedResourceRequest> ReadProtectedResourceAuthorizationAsync(HttpRequestBase request = null, CancellationToken cancellationToken = default(CancellationToken)) {
+			request = request ?? this.channel.GetRequestFromContext();
+			return this.ReadProtectedResourceAuthorizationAsync(request.AsHttpRequestMessage(), cancellationToken);
+		}
+
+		/// <summary>
+		/// Gets the authorization (access token) for accessing some protected resource.
+		/// </summary>
+		/// <param name="request">The incoming HTTP request.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>The authorization message sent by the Consumer, or null if no authorization message is attached.</returns>
+		/// <remarks>
+		/// This method verifies that the access token and token secret are valid.
+		/// It falls on the caller to verify that the access token is actually authorized
+		/// to access the resources being requested.
+		/// </remarks>
+		/// <exception cref="ProtocolException">Thrown if an unexpected message is attached to the request.</exception>
+		public async Task<AccessProtectedResourceRequest> ReadProtectedResourceAuthorizationAsync(HttpRequestMessage request, CancellationToken cancellationToken = default(CancellationToken)) {
+			Requires.NotNull(request, "request");
+			var accessMessage = await this.Channel.TryReadFromRequestAsync<AccessProtectedResourceRequest>(request, cancellationToken);
 			if (accessMessage != null) {
 				if (this.TokenManager.GetTokenType(accessMessage.AccessToken) != TokenType.AccessToken) {
 					throw new ProtocolException(

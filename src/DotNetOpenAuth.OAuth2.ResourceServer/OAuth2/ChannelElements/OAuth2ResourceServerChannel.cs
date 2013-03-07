@@ -90,7 +90,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// The deserialized message parts, if found.  Null otherwise.
 		/// </returns>
 		/// <exception cref="ProtocolException">Thrown when the response is not valid.</exception>
-		protected override Task<IDictionary<string, string>> ReadFromResponseCoreAsync(HttpResponseMessage response) {
+		protected override Task<IDictionary<string, string>> ReadFromResponseCoreAsync(HttpResponseMessage response, CancellationToken cancellationToken) {
 			// We never expect resource servers to send out direct requests,
 			// and therefore won't have direct responses.
 			throw new NotImplementedException();

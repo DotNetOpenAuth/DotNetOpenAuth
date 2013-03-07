@@ -7,6 +7,8 @@
 namespace DotNetOpenAuth.Test {
 	using System;
 	using System.Collections.Generic;
+	using System.Net;
+	using System.Net.Http;
 	using System.Threading;
 	using System.Threading.Tasks;
 	using DotNetOpenAuth.Messaging;
@@ -15,40 +17,80 @@ namespace DotNetOpenAuth.Test {
 	using NUnit.Framework;
 	using Validation;
 
-	internal abstract class CoordinatorBase<T1, T2> {
-		private Func<T1, CancellationToken, Task> party1Action;
-		private Func<T2, CancellationToken, Task> party2Action;
+	using System.Linq;
 
-		protected CoordinatorBase(Func<T1, CancellationToken, Task> party1Action, Func<T2, CancellationToken, Task> party2Action) {
-			Requires.NotNull(party1Action, "party1Action");
-			Requires.NotNull(party2Action, "party2Action");
+	internal class CoordinatorBase {
+		private Func<IHostFactories, CancellationToken, Task> driver;
 
-			this.party1Action = party1Action;
-			this.party2Action = party2Action;
+		private Handler[] handlers;
+
+		internal CoordinatorBase(Func<IHostFactories, CancellationToken, Task> driver, params Handler[] handlers) {
+			Requires.NotNull(driver, "driver");
+			Requires.NotNull(handlers, "handlers");
+
+			this.driver = driver;
+			this.handlers = handlers;
 		}
 
-		protected internal Action<IProtocolMessage> IncomingMessageFilter { get; set; }
+		protected internal virtual async Task RunAsync(CancellationToken cancellationToken = default(CancellationToken)) {
+			IHostFactories hostFactories = new MyHostFactories(this.handlers);
 
-		protected internal Action<IProtocolMessage> OutgoingMessageFilter { get; set; }
+			await this.driver(hostFactories, cancellationToken);
+		}
 
-		internal abstract Task RunAsync();
+		internal static Handler Handle(Uri uri) {
+			return new Handler(uri);
+		}
 
-		protected async Task RunCoreAsync(T1 party1Object, T2 party2Object) {
-			var cts = new CancellationTokenSource();
+		internal struct Handler {
+			internal Handler(Uri uri)
+				: this() {
+				this.Uri = uri;
+			}
 
-			try {
-				var parties = new List<Task> {
-					Task.Run(() => this.party1Action(party1Object, cts.Token)),
-					Task.Run(() => this.party2Action(party2Object, cts.Token)),
-				};
-				var completingTask = await Task.WhenAny(parties);
-				await completingTask; // rethrow any exception from the first completing task.
+			public Uri Uri { get; private set; }
 
-				// if no exception, then block for the second task now.
-				await Task.WhenAll(parties);
-			} catch {
-				cts.Cancel(); // cause the second party to terminate, if necessary.
-				throw;
+			public Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> MessageHandler { get; private set; }
+
+			internal Handler By(Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> handler) {
+				return new Handler(this.Uri) { MessageHandler = handler };
+			}
+		}
+
+		private class MyHostFactories : IHostFactories {
+			private readonly Handler[] handlers;
+
+			public MyHostFactories(Handler[] handlers) {
+				this.handlers = handlers;
+			}
+
+			public HttpMessageHandler CreateHttpMessageHandler() {
+				return new ForwardingMessageHandler(this.handlers);
+			}
+
+			public HttpClient CreateHttpClient(HttpMessageHandler handler = null) {
+				return new HttpClient(handler ?? this.CreateHttpMessageHandler());
+			}
+		}
+
+		private class ForwardingMessageHandler : HttpMessageHandler {
+			private readonly Handler[] handlers;
+
+			public ForwardingMessageHandler(Handler[] handlers) {
+				this.handlers = handlers;
+			}
+
+			protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken) {
+				foreach (var handler in this.handlers) {
+					if (handler.Uri.AbsolutePath == request.RequestUri.AbsolutePath) {
+						var response = await handler.MessageHandler(request, cancellationToken);
+						if (response != null) {
+							return response;
+						}
+					}
+				}
+
+				return new HttpResponseMessage(HttpStatusCode.NotFound);
 			}
 		}
 	}

@@ -114,7 +114,6 @@
     <Compile Include="Messaging\EnumerableCacheTests.cs" />
     <Compile Include="Messaging\ErrorUtilitiesTests.cs" />
     <Compile Include="Messaging\MessageSerializerTests.cs" />
-    <Compile Include="Messaging\MultipartPostPartTests.cs" />
     <Compile Include="Messaging\Reflection\MessageDescriptionTests.cs" />
     <Compile Include="Messaging\Reflection\MessageDictionaryTests.cs" />
     <Compile Include="Messaging\MessagingTestBase.cs" />
@@ -127,12 +126,6 @@
     <Compile Include="Messaging\Reflection\ValueMappingTests.cs" />
     <Compile Include="Messaging\StandardMessageFactoryTests.cs" />
     <Compile Include="Mocks\AssociateUnencryptedRequestNoSslCheck.cs" />
-    <Compile Include="Mocks\CoordinatingChannel.cs" />
-    <Compile Include="Mocks\CoordinatingHttpRequestInfo.cs" />
-    <Compile Include="Mocks\CoordinatingOAuth2AuthServerChannel.cs" />
-    <Compile Include="Mocks\CoordinatingOAuth2ClientChannel.cs" />
-    <Compile Include="Mocks\CoordinatingOutgoingWebResponse.cs" />
-    <Compile Include="Mocks\CoordinatingOAuthConsumerChannel.cs" />
     <Compile Include="Mocks\IBaseMessageExplicitMembers.cs" />
     <Compile Include="Mocks\InMemoryTokenManager.cs" />
     <Compile Include="Mocks\MockHttpMessageHandler.cs" />
@@ -242,10 +235,7 @@
     <Compile Include="Performance\HighPerformance.cs" />
     <Compile Include="Performance\PerformanceTestUtilities.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Messaging\ResponseTests.cs" />
     <Compile Include="OAuth\AppendixScenarios.cs" />
-    <Compile Include="Mocks\CoordinatingOAuthServiceProviderChannel.cs" />
-    <Compile Include="OAuth\OAuthCoordinator.cs" />
     <Compile Include="TestBase.cs" />
     <Compile Include="TestUtilities.cs" />
     <Compile Include="UriUtilTests.cs" />

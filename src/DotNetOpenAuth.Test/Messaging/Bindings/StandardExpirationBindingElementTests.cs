@@ -27,27 +27,27 @@ namespace DotNetOpenAuth.Test.Messaging.Bindings {
 		}
 
 		[Test]
-		public void VerifyGoodTimestampIsAccepted() {
+		public async Task VerifyGoodTimestampIsAccepted() {
 			this.Channel = CreateChannel(MessageProtections.Expiration);
-			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow, false);
+			await this.ParameterizedReceiveProtectedTestAsync(DateTime.UtcNow, false);
 		}
 
 		[Test]
-		public void VerifyFutureTimestampWithinClockSkewIsAccepted() {
+		public async Task VerifyFutureTimestampWithinClockSkewIsAccepted() {
 			this.Channel = CreateChannel(MessageProtections.Expiration);
-			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow + DotNetOpenAuthSection.Messaging.MaximumClockSkew - TimeSpan.FromSeconds(1), false);
+			await this.ParameterizedReceiveProtectedTestAsync(DateTime.UtcNow + DotNetOpenAuthSection.Messaging.MaximumClockSkew - TimeSpan.FromSeconds(1), false);
 		}
 
 		[Test, ExpectedException(typeof(ExpiredMessageException))]
-		public void VerifyOldTimestampIsRejected() {
+		public async Task VerifyOldTimestampIsRejected() {
 			this.Channel = CreateChannel(MessageProtections.Expiration);
-			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow - StandardExpirationBindingElement.MaximumMessageAge - TimeSpan.FromSeconds(1), false);
+			await this.ParameterizedReceiveProtectedTestAsync(DateTime.UtcNow - StandardExpirationBindingElement.MaximumMessageAge - TimeSpan.FromSeconds(1), false);
 		}
 
 		[Test, ExpectedException(typeof(ProtocolException))]
-		public void VerifyFutureTimestampIsRejected() {
+		public async Task VerifyFutureTimestampIsRejected() {
 			this.Channel = CreateChannel(MessageProtections.Expiration);
-			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow + DotNetOpenAuthSection.Messaging.MaximumClockSkew + TimeSpan.FromSeconds(2), false);
+			await this.ParameterizedReceiveProtectedTestAsync(DateTime.UtcNow + DotNetOpenAuthSection.Messaging.MaximumClockSkew + TimeSpan.FromSeconds(2), false);
 		}
 	}
 }

@@ -14,7 +14,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 	using DotNetOpenAuth.OAuth.Messages;
 	using DotNetOpenAuth.Test.OAuth;
 
-	internal class InMemoryTokenManager : IConsumerTokenManager, IServiceProviderTokenManager {
+	internal class InMemoryTokenManager : IServiceProviderTokenManager {
 		private KeyedCollectionDelegate<string, ConsumerInfo> consumers = new KeyedCollectionDelegate<string, ConsumerInfo>(c => c.Key);
 		private KeyedCollectionDelegate<string, TokenInfo> tokens = new KeyedCollectionDelegate<string, TokenInfo>(t => t.Token);
 
@@ -27,18 +27,6 @@ namespace DotNetOpenAuth.Test.Mocks {
 		/// Access tokens that have been issued and have not yet expired.
 		/// </summary>
 		private List<string> accessTokens = new List<string>();
-
-		#region IConsumerTokenManager Members
-
-		public string ConsumerKey {
-			get { return this.consumers.Single().Key; }
-		}
-
-		public string ConsumerSecret {
-			get { return this.consumers.Single().Secret; }
-		}
-
-		#endregion
 
 		#region ITokenManager Members
 

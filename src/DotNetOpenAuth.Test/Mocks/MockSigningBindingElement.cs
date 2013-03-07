@@ -9,6 +9,9 @@ namespace DotNetOpenAuth.Test.Mocks {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
+
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 
@@ -26,26 +29,26 @@ namespace DotNetOpenAuth.Test.Mocks {
 		/// </summary>
 		public Channel Channel { get; set; }
 
-		MessageProtections? IChannelBindingElement.ProcessOutgoingMessage(IProtocolMessage message) {
-			ITamperResistantProtocolMessage signedMessage = message as ITamperResistantProtocolMessage;
+		Task<MessageProtections?> IChannelBindingElement.ProcessOutgoingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
+			var signedMessage = message as ITamperResistantProtocolMessage;
 			if (signedMessage != null) {
 				signedMessage.Signature = MessageSignature;
-				return MessageProtections.TamperProtection;
+				return MessageProtectionTasks.TamperProtection;
 			}
 
-			return null;
+			return MessageProtectionTasks.Null;
 		}
 
-		MessageProtections? IChannelBindingElement.ProcessIncomingMessage(IProtocolMessage message) {
-			ITamperResistantProtocolMessage signedMessage = message as ITamperResistantProtocolMessage;
+		Task<MessageProtections?> IChannelBindingElement.ProcessIncomingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
+			var signedMessage = message as ITamperResistantProtocolMessage;
 			if (signedMessage != null) {
 				if (signedMessage.Signature != MessageSignature) {
 					throw new InvalidSignatureException(message);
 				}
-				return MessageProtections.TamperProtection;
+				return MessageProtectionTasks.TamperProtection;
 			}
 
-			return null;
+			return MessageProtectionTasks.Null;
 		}
 
 		#endregion

@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
+	using System.Threading.Tasks;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.RelyingParty;
@@ -26,20 +27,17 @@ namespace DotNetOpenAuth.Test.Mocks {
 		/// Performs discovery on the specified identifier.
 		/// </summary>
 		/// <param name="identifier">The identifier to perform discovery on.</param>
-		/// <param name="requestHandler">The means to place outgoing HTTP requests.</param>
-		/// <param name="abortDiscoveryChain">if set to <c>true</c>, no further discovery services will be called for this identifier.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// A sequence of service endpoints yielded by discovery.  Must not be null, but may be empty.
 		/// </returns>
-		public IEnumerable<IdentifierDiscoveryResult> Discover(Identifier identifier, IDirectWebRequestHandler requestHandler, out bool abortDiscoveryChain) {
+		public Task<IdentifierDiscoveryServiceResult> DiscoverAsync(Identifier identifier, System.Threading.CancellationToken cancellationToken) {
 			var mockIdentifier = identifier as MockIdentifier;
 			if (mockIdentifier == null) {
-				abortDiscoveryChain = false;
-				return Enumerable.Empty<IdentifierDiscoveryResult>();
+				return Task.FromResult(new IdentifierDiscoveryServiceResult(Enumerable.Empty<IdentifierDiscoveryResult>(), abortDiscoveryChain: false));
 			}
 
-			abortDiscoveryChain = true;
-			return mockIdentifier.DiscoveryEndpoints;
+			return Task.FromResult(new IdentifierDiscoveryServiceResult(mockIdentifier.DiscoveryEndpoints, abortDiscoveryChain: true));
 		}
 
 		#endregion

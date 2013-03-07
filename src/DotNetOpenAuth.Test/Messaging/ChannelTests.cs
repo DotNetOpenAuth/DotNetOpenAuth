@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 	using System.Collections.Generic;
 	using System.IO;
 	using System.Net;
+	using System.Net.Http;
 	using System.Threading;
 	using System.Threading.Tasks;
 	using System.Web;
@@ -27,13 +28,13 @@ namespace DotNetOpenAuth.Test.Messaging {
 		}
 
 		[Test]
-		public void ReadFromRequestQueryString() {
-			this.ParameterizedReceiveTest("GET");
+		public async Task ReadFromRequestQueryString() {
+			await this.ParameterizedReceiveTestAsync(HttpMethod.Get);
 		}
 
 		[Test]
-		public void ReadFromRequestForm() {
-			this.ParameterizedReceiveTest("POST");
+		public async Task ReadFromRequestForm() {
+			await this.ParameterizedReceiveTestAsync(HttpMethod.Post);
 		}
 
 		/// <summary>
@@ -44,7 +45,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 		public async Task ReadFromRequestDisallowedHttpMethod() {
 			var fields = GetStandardTestFields(FieldFill.CompleteBeforeBindings);
 			fields["GetOnly"] = "true";
-			await this.Channel.ReadFromRequestAsync(CreateHttpRequestInfo("POST", fields), CancellationToken.None);
+			await this.Channel.ReadFromRequestAsync(CreateHttpRequestInfo(HttpMethod.Post, fields), CancellationToken.None);
 		}
 
 		[Test, ExpectedException(typeof(ArgumentNullException))]
@@ -79,14 +80,14 @@ namespace DotNetOpenAuth.Test.Messaging {
 
 			var response = await this.Channel.PrepareResponseAsync(message);
 			Assert.AreEqual(HttpStatusCode.Redirect, response.StatusCode);
-			Assert.AreEqual("text/html; charset=utf-8", response.Headers[HttpResponseHeader.ContentType]);
-			Assert.IsTrue(response.Body != null && response.Body.Length > 0); // a non-empty body helps get passed filters like WebSense
-			StringAssert.StartsWith("http://provider/path", response.Headers[HttpResponseHeader.Location]);
+			Assert.AreEqual("text/html; charset=utf-8", response.Content.Headers.ContentType.ToString());
+			Assert.IsTrue(response.Content != null && response.Content.Headers.ContentLength > 0); // a non-empty body helps get passed filters like WebSense
+			StringAssert.StartsWith("http://provider/path", response.Headers.Location.AbsoluteUri);
 			foreach (var pair in expected) {
 				string key = MessagingUtilities.EscapeUriDataStringRfc3986(pair.Key);
 				string value = MessagingUtilities.EscapeUriDataStringRfc3986(pair.Value);
 				string substring = string.Format("{0}={1}", key, value);
-				StringAssert.Contains(substring, response.Headers[HttpResponseHeader.Location]);
+				StringAssert.Contains(substring, response.Headers.Location.AbsoluteUri);
 			}
 		}
 
@@ -124,8 +125,8 @@ namespace DotNetOpenAuth.Test.Messaging {
 			};
 			var response = await this.Channel.PrepareResponseAsync(message);
 			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode, "A form redirect should be an HTTP successful response.");
-			Assert.IsNull(response.Headers[HttpResponseHeader.Location], "There should not be a redirection header in the response.");
-			string body = response.Body;
+			Assert.IsNull(response.Headers.Location, "There should not be a redirection header in the response.");
+			string body = await response.Content.ReadAsStringAsync();
 			StringAssert.Contains("<form ", body);
 			StringAssert.Contains("action=\"http://provider/path\"", body);
 			StringAssert.Contains("method=\"post\"", body);
@@ -197,23 +198,24 @@ namespace DotNetOpenAuth.Test.Messaging {
 			TestMessage expectedMessage = GetStandardTestMessage(FieldFill.AllRequired);
 			HttpRequest request = new HttpRequest("somefile", "http://someurl", MessagingUtilities.CreateQueryString(fields));
 			HttpContext.Current = new HttpContext(request, new HttpResponse(new StringWriter()));
-			IProtocolMessage message = await this.Channel.ReadFromRequestAsync(CancellationToken.None);
+			var requestBase = this.Channel.GetRequestFromContext();
+			IProtocolMessage message = await this.Channel.ReadFromRequestAsync(requestBase.AsHttpRequestMessage(), CancellationToken.None);
 			Assert.IsNotNull(message);
 			Assert.IsInstanceOf<TestMessage>(message);
 			Assert.AreEqual(expectedMessage.Age, ((TestMessage)message).Age);
 		}
 
 		[Test, ExpectedException(typeof(InvalidOperationException))]
-		public void ReadFromRequestNoContext() {
+		public void GetRequestFromContextNoContext() {
 			HttpContext.Current = null;
 			TestBadChannel badChannel = new TestBadChannel(false);
-			badChannel.ReadFromRequest();
+			badChannel.GetRequestFromContext();
 		}
 
 		[Test, ExpectedException(typeof(ArgumentNullException))]
-		public void ReadFromRequestNull() {
+		public async Task ReadFromRequestNull() {
 			TestBadChannel badChannel = new TestBadChannel(false);
-			badChannel.ReadFromRequest(null);
+			await badChannel.ReadFromRequestAsync(null, CancellationToken.None);
 		}
 
 		[Test]
@@ -227,22 +229,22 @@ namespace DotNetOpenAuth.Test.Messaging {
 		}
 
 		[Test, ExpectedException(typeof(InvalidSignatureException))]
-		public void ReceivedInvalidSignature() {
+		public async Task ReceivedInvalidSignature() {
 			this.Channel = CreateChannel(MessageProtections.TamperProtection);
-			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow, true);
+			await this.ParameterizedReceiveProtectedTestAsync(DateTime.UtcNow, true);
 		}
 
 		[Test]
-		public void ReceivedReplayProtectedMessageJustOnce() {
+		public async Task ReceivedReplayProtectedMessageJustOnce() {
 			this.Channel = CreateChannel(MessageProtections.ReplayProtection);
-			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow, false);
+			await this.ParameterizedReceiveProtectedTestAsync(DateTime.UtcNow, false);
 		}
 
 		[Test, ExpectedException(typeof(ReplayedMessageException))]
-		public void ReceivedReplayProtectedMessageTwice() {
+		public async Task ReceivedReplayProtectedMessageTwice() {
 			this.Channel = CreateChannel(MessageProtections.ReplayProtection);
-			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow, false);
-			this.ParameterizedReceiveProtectedTest(DateTime.UtcNow, false);
+			await this.ParameterizedReceiveProtectedTestAsync(DateTime.UtcNow, false);
+			await this.ParameterizedReceiveProtectedTestAsync(DateTime.UtcNow, false);
 		}
 
 		[Test, ExpectedException(typeof(ProtocolException))]
@@ -293,15 +295,15 @@ namespace DotNetOpenAuth.Test.Messaging {
 		}
 
 		[Test, ExpectedException(typeof(UnprotectedMessageException))]
-		public void InsufficientlyProtectedMessageReceived() {
+		public async Task InsufficientlyProtectedMessageReceived() {
 			this.Channel = CreateChannel(MessageProtections.None, MessageProtections.TamperProtection);
-			this.ParameterizedReceiveProtectedTest(DateTime.Now, false);
+			await this.ParameterizedReceiveProtectedTestAsync(DateTime.Now, false);
 		}
 
 		[Test, ExpectedException(typeof(ProtocolException))]
 		public async Task IncomingMessageMissingRequiredParameters() {
 			var fields = GetStandardTestFields(FieldFill.IdentifiableButNotAllRequired);
-			await this.Channel.ReadFromRequestAsync(CreateHttpRequestInfo("GET", fields), CancellationToken.None);
+			await this.Channel.ReadFromRequestAsync(CreateHttpRequestInfo(HttpMethod.Get, fields), CancellationToken.None);
 		}
 	}
 }

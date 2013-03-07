@@ -92,7 +92,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// The deserialized message parts, if found.  Null otherwise.
 		/// </returns>
 		/// <exception cref="ProtocolException">Thrown when the response is not valid.</exception>
-		protected override async Task<IDictionary<string, string>> ReadFromResponseCoreAsync(HttpResponseMessage response) {
+		protected override async Task<IDictionary<string, string>> ReadFromResponseCoreAsync(HttpResponseMessage response, CancellationToken cancellationToken) {
 			// The spec says direct responses should be JSON objects, but Facebook uses HttpFormUrlEncoded instead, calling it text/plain
 			// Others return text/javascript.  Again bad.
 			string body = await response.Content.ReadAsStringAsync();

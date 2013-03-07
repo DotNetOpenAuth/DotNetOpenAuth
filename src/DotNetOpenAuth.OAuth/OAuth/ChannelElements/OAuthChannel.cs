@@ -171,7 +171,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <returns>
 		/// The deserialized message parts, if found.  Null otherwise.
 		/// </returns>
-		protected override async Task<IDictionary<string, string>> ReadFromResponseCoreAsync(HttpResponseMessage response) {
+		protected override async Task<IDictionary<string, string>> ReadFromResponseCoreAsync(HttpResponseMessage response, CancellationToken cancellationToken) {
 			string body = await response.Content.ReadAsStringAsync();
 			return HttpUtility.ParseQueryString(body).ToDictionary();
 		}
