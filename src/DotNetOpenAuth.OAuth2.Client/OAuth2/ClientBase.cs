@@ -34,10 +34,10 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// The tool to use to apply client credentials to authenticated requests to the Authorization Server.  
 		/// May be <c>null</c> for clients with no secret or other means of authentication.
 		/// </param>
-		protected ClientBase(AuthorizationServerDescription authorizationServer, string clientIdentifier = null, ClientCredentialApplicator clientCredentialApplicator = null) {
+		protected ClientBase(AuthorizationServerDescription authorizationServer, string clientIdentifier = null, ClientCredentialApplicator clientCredentialApplicator = null, IHostFactories hostFactories = null) {
 			Requires.NotNull(authorizationServer, "authorizationServer");
 			this.AuthorizationServer = authorizationServer;
-			this.Channel = new OAuth2ClientChannel();
+			this.Channel = new OAuth2ClientChannel(hostFactories);
 			this.ClientIdentifier = clientIdentifier;
 			this.ClientCredentialApplicator = clientCredentialApplicator;
 		}

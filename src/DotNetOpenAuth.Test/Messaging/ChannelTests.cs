@@ -15,16 +15,25 @@ namespace DotNetOpenAuth.Test.Messaging {
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
+	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.Test.Mocks;
 	using NUnit.Framework;
 
 	[TestFixture]
 	public class ChannelTests : MessagingTestBase {
 		[Test, ExpectedException(typeof(ArgumentNullException))]
-		public void CtorNull() {
-			// This bad channel is deliberately constructed to pass null to
-			// its protected base class' constructor.
-			new TestBadChannel(true);
+		public void CtorNullFirstParameter() {
+			new TestBadChannel(null, new IChannelBindingElement[0], new DefaultOpenIdHostFactories());
+		}
+
+		[Test, ExpectedException(typeof(ArgumentNullException))]
+		public void CtorNullSecondParameter() {
+			new TestBadChannel(new TestMessageFactory(), null, new DefaultOpenIdHostFactories());
+		}
+
+		[Test, ExpectedException(typeof(ArgumentNullException))]
+		public void CtorNullThirdParameter() {
+			new TestBadChannel(new TestMessageFactory(), new IChannelBindingElement[0], null);
 		}
 
 		[Test]
@@ -93,20 +102,20 @@ namespace DotNetOpenAuth.Test.Messaging {
 
 		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void SendIndirectMessage301GetNullMessage() {
-			TestBadChannel badChannel = new TestBadChannel(false);
+			TestBadChannel badChannel = new TestBadChannel();
 			badChannel.Create301RedirectResponse(null, new Dictionary<string, string>());
 		}
 
 		[Test, ExpectedException(typeof(ArgumentException))]
 		public void SendIndirectMessage301GetEmptyRecipient() {
-			TestBadChannel badChannel = new TestBadChannel(false);
+			TestBadChannel badChannel = new TestBadChannel();
 			var message = new TestDirectedMessage(MessageTransport.Indirect);
 			badChannel.Create301RedirectResponse(message, new Dictionary<string, string>());
 		}
 
 		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void SendIndirectMessage301GetNullFields() {
-			TestBadChannel badChannel = new TestBadChannel(false);
+			TestBadChannel badChannel = new TestBadChannel();
 			var message = new TestDirectedMessage(MessageTransport.Indirect);
 			message.Recipient = new Uri("http://someserver");
 			badChannel.Create301RedirectResponse(message, null);
@@ -138,20 +147,20 @@ namespace DotNetOpenAuth.Test.Messaging {
 
 		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void SendIndirectMessageFormPostNullMessage() {
-			TestBadChannel badChannel = new TestBadChannel(false);
+			TestBadChannel badChannel = new TestBadChannel();
 			badChannel.CreateFormPostResponse(null, new Dictionary<string, string>());
 		}
 
 		[Test, ExpectedException(typeof(ArgumentException))]
 		public void SendIndirectMessageFormPostEmptyRecipient() {
-			TestBadChannel badChannel = new TestBadChannel(false);
+			TestBadChannel badChannel = new TestBadChannel();
 			var message = new TestDirectedMessage(MessageTransport.Indirect);
 			badChannel.CreateFormPostResponse(message, new Dictionary<string, string>());
 		}
 
 		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void SendIndirectMessageFormPostNullFields() {
-			TestBadChannel badChannel = new TestBadChannel(false);
+			TestBadChannel badChannel = new TestBadChannel();
 			var message = new TestDirectedMessage(MessageTransport.Indirect);
 			message.Recipient = new Uri("http://someserver");
 			badChannel.CreateFormPostResponse(message, null);
@@ -176,19 +185,19 @@ namespace DotNetOpenAuth.Test.Messaging {
 
 		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void SendIndirectMessageNull() {
-			TestBadChannel badChannel = new TestBadChannel(false);
+			TestBadChannel badChannel = new TestBadChannel();
 			badChannel.PrepareIndirectResponse(null);
 		}
 
 		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void ReceiveNull() {
-			TestBadChannel badChannel = new TestBadChannel(false);
+			TestBadChannel badChannel = new TestBadChannel();
 			badChannel.Receive(null, null);
 		}
 
 		[Test]
 		public void ReceiveUnrecognizedMessage() {
-			TestBadChannel badChannel = new TestBadChannel(false);
+			TestBadChannel badChannel = new TestBadChannel();
 			Assert.IsNull(badChannel.Receive(new Dictionary<string, string>(), null));
 		}
 
@@ -208,13 +217,13 @@ namespace DotNetOpenAuth.Test.Messaging {
 		[Test, ExpectedException(typeof(InvalidOperationException))]
 		public void GetRequestFromContextNoContext() {
 			HttpContext.Current = null;
-			TestBadChannel badChannel = new TestBadChannel(false);
+			TestBadChannel badChannel = new TestBadChannel();
 			badChannel.GetRequestFromContext();
 		}
 
 		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public async Task ReadFromRequestNull() {
-			TestBadChannel badChannel = new TestBadChannel(false);
+			TestBadChannel badChannel = new TestBadChannel();
 			await badChannel.ReadFromRequestAsync(null, CancellationToken.None);
 		}
 
@@ -251,15 +260,16 @@ namespace DotNetOpenAuth.Test.Messaging {
 		public void MessageExpirationWithoutTamperResistance() {
 			new TestChannel(
 				new TestMessageFactory(),
-				new StandardExpirationBindingElement());
+				new IChannelBindingElement[] { new StandardExpirationBindingElement() },
+				new DefaultOpenIdHostFactories());
 		}
 
 		[Test, ExpectedException(typeof(ProtocolException))]
 		public async Task TooManyBindingElementsProvidingSameProtection() {
 			Channel channel = new TestChannel(
 				new TestMessageFactory(),
-				new MockSigningBindingElement(),
-				new MockSigningBindingElement());
+				new IChannelBindingElement[] { new MockSigningBindingElement(), new MockSigningBindingElement() },
+				new DefaultOpenIdHostFactories());
 			await channel.ProcessOutgoingMessageTestHookAsync(new TestSignedDirectedMessage());
 		}
 
@@ -273,11 +283,8 @@ namespace DotNetOpenAuth.Test.Messaging {
 
 			Channel channel = new TestChannel(
 				new TestMessageFactory(),
-				sign,
-				replay,
-				expire,
-				transformB,
-				transformA);
+				new[] { sign, replay, expire, transformB, transformA },
+				new DefaultOpenIdHostFactories());
 
 			Assert.AreEqual(5, channel.BindingElements.Count);
 			Assert.AreSame(transformB, channel.BindingElements[0]);

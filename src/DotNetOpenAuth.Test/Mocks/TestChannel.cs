@@ -8,21 +8,26 @@ namespace DotNetOpenAuth.Test.Mocks {
 	using System;
 	using System.Collections.Generic;
 	using System.Net;
+	using System.Net.Http;
+	using System.Threading;
+	using System.Threading.Tasks;
+
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Reflection;
+	using DotNetOpenAuth.OpenId;
 
 	internal class TestChannel : Channel {
-		internal TestChannel()
-			: this(new TestMessageFactory()) {
+		internal TestChannel(IHostFactories hostFactories = null)
+			: this(new TestMessageFactory(), new IChannelBindingElement[0], hostFactories ?? new DefaultOpenIdHostFactories()) {
 		}
 
-		internal TestChannel(MessageDescriptionCollection messageDescriptions)
-			: this() {
+		internal TestChannel(MessageDescriptionCollection messageDescriptions, IHostFactories hostFactories = null)
+			: this(hostFactories) {
 			this.MessageDescriptions = messageDescriptions;
 		}
 
-		internal TestChannel(IMessageFactory messageTypeProvider, params IChannelBindingElement[] bindingElements)
-			: base(messageTypeProvider, bindingElements) {
+		internal TestChannel(IMessageFactory messageTypeProvider, IChannelBindingElement[] bindingElements, IHostFactories hostFactories)
+			: base(messageTypeProvider, bindingElements, hostFactories) {
 		}
 
 		/// <summary>
@@ -40,15 +45,15 @@ namespace DotNetOpenAuth.Test.Mocks {
 			return base.Receive(fields, recipient);
 		}
 
-		protected override IDictionary<string, string> ReadFromResponseCore(IncomingWebResponse response) {
+		protected override Task<IDictionary<string, string>> ReadFromResponseCoreAsync(HttpResponseMessage response, CancellationToken cancellationToken) {
 			throw new NotImplementedException("ReadFromResponseInternal");
 		}
 
-		protected override HttpWebRequest CreateHttpRequest(IDirectedProtocolMessage request) {
+		protected override HttpRequestMessage CreateHttpRequest(IDirectedProtocolMessage request) {
 			throw new NotImplementedException("CreateHttpRequest");
 		}
 
-		protected override OutgoingWebResponse PrepareDirectResponse(IProtocolMessage response) {
+		protected override HttpResponseMessage PrepareDirectResponse(IProtocolMessage response) {
 			throw new NotImplementedException("SendDirectMessageResponse");
 		}
 	}

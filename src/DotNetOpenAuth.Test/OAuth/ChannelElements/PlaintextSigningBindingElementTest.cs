@@ -5,6 +5,9 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
+	using System.Threading;
+	using System.Threading.Tasks;
+
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.ChannelElements;
@@ -15,20 +18,20 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 	[TestFixture]
 	public class PlaintextSigningBindingElementTest {
 		[Test]
-		public void HttpsSignatureGeneration() {
+		public async Task HttpsSignatureGeneration() {
 			SigningBindingElementBase target = new PlaintextSigningBindingElement();
 			target.Channel = new TestChannel();
 			MessageReceivingEndpoint endpoint = new MessageReceivingEndpoint("https://localtest", HttpDeliveryMethods.GetRequest);
 			ITamperResistantOAuthMessage message = new UnauthorizedTokenRequest(endpoint, Protocol.Default.Version);
 			message.ConsumerSecret = "cs";
 			message.TokenSecret = "ts";
-			Assert.IsNotNull(target.ProcessOutgoingMessage(message));
+			Assert.IsNotNull(await target.ProcessOutgoingMessageAsync(message, CancellationToken.None));
 			Assert.AreEqual("PLAINTEXT", message.SignatureMethod);
 			Assert.AreEqual("cs&ts", message.Signature);
 		}
 
 		[Test]
-		public void HttpsSignatureVerification() {
+		public async Task HttpsSignatureVerification() {
 			MessageReceivingEndpoint endpoint = new MessageReceivingEndpoint("https://localtest", HttpDeliveryMethods.GetRequest);
 			ITamperProtectionChannelBindingElement target = new PlaintextSigningBindingElement();
 			target.Channel = new TestChannel();
@@ -37,11 +40,11 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 			message.TokenSecret = "ts";
 			message.SignatureMethod = "PLAINTEXT";
 			message.Signature = "cs&ts";
-			Assert.IsNotNull(target.ProcessIncomingMessage(message));
+			Assert.IsNotNull(target.ProcessIncomingMessageAsync(message, CancellationToken.None));
 		}
 
 		[Test]
-		public void HttpsSignatureVerificationNotApplicable() {
+		public async Task HttpsSignatureVerificationNotApplicable() {
 			SigningBindingElementBase target = new PlaintextSigningBindingElement();
 			target.Channel = new TestChannel();
 			MessageReceivingEndpoint endpoint = new MessageReceivingEndpoint("https://localtest", HttpDeliveryMethods.GetRequest);
@@ -50,11 +53,11 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 			message.TokenSecret = "ts";
 			message.SignatureMethod = "ANOTHERALGORITHM";
 			message.Signature = "somethingelse";
-			Assert.AreEqual(MessageProtections.None, target.ProcessIncomingMessage(message), "PLAINTEXT binding element should opt-out where it doesn't understand.");
+			Assert.AreEqual(MessageProtections.None, await target.ProcessIncomingMessageAsync(message, CancellationToken.None), "PLAINTEXT binding element should opt-out where it doesn't understand.");
 		}
 
 		[Test]
-		public void HttpSignatureGeneration() {
+		public async Task HttpSignatureGeneration() {
 			SigningBindingElementBase target = new PlaintextSigningBindingElement();
 			target.Channel = new TestChannel();
 			MessageReceivingEndpoint endpoint = new MessageReceivingEndpoint("http://localtest", HttpDeliveryMethods.GetRequest);
@@ -63,13 +66,13 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 			message.TokenSecret = "ts";
 
 			// Since this is (non-encrypted) HTTP, so the plain text signer should not be used
-			Assert.IsNull(target.ProcessOutgoingMessage(message));
+			Assert.IsNull(await target.ProcessOutgoingMessageAsync(message, CancellationToken.None));
 			Assert.IsNull(message.SignatureMethod);
 			Assert.IsNull(message.Signature);
 		}
 
 		[Test]
-		public void HttpSignatureVerification() {
+		public async Task HttpSignatureVerification() {
 			SigningBindingElementBase target = new PlaintextSigningBindingElement();
 			target.Channel = new TestChannel();
 			MessageReceivingEndpoint endpoint = new MessageReceivingEndpoint("http://localtest", HttpDeliveryMethods.GetRequest);
@@ -78,7 +81,7 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 			message.TokenSecret = "ts";
 			message.SignatureMethod = "PLAINTEXT";
 			message.Signature = "cs%26ts";
-			Assert.IsNull(target.ProcessIncomingMessage(message), "PLAINTEXT signature binding element should refuse to participate in non-encrypted messages.");
+			Assert.IsNull(await target.ProcessIncomingMessageAsync(message, CancellationToken.None), "PLAINTEXT signature binding element should refuse to participate in non-encrypted messages.");
 		}
 	}
 }

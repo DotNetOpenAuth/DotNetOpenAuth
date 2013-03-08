@@ -31,26 +31,26 @@ namespace DotNetOpenAuth.OAuth2 {
 		private const string XsrfCookieName = "DotNetOpenAuth.WebServerClient.XSRF-Session";
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="WebServerClient"/> class.
+		/// Initializes a new instance of the <see cref="WebServerClient" /> class.
 		/// </summary>
 		/// <param name="authorizationServer">The authorization server.</param>
 		/// <param name="clientIdentifier">The client identifier.</param>
 		/// <param name="clientSecret">The client secret.</param>
-		public WebServerClient(AuthorizationServerDescription authorizationServer, string clientIdentifier = null, string clientSecret = null)
-			: this(authorizationServer, clientIdentifier, DefaultSecretApplicator(clientSecret)) {
+		/// <param name="hostFactories">The host factories.</param>
+		public WebServerClient(AuthorizationServerDescription authorizationServer, string clientIdentifier = null, string clientSecret = null, IHostFactories hostFactories = null)
+			: this(authorizationServer, clientIdentifier, DefaultSecretApplicator(clientSecret), hostFactories) {
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="WebServerClient"/> class.
+		/// Initializes a new instance of the <see cref="WebServerClient" /> class.
 		/// </summary>
 		/// <param name="authorizationServer">The authorization server.</param>
 		/// <param name="clientIdentifier">The client identifier.</param>
-		/// <param name="clientCredentialApplicator">
-		/// The tool to use to apply client credentials to authenticated requests to the Authorization Server.
-		/// May be <c>null</c> for clients with no secret or other means of authentication.
-		/// </param>
-		public WebServerClient(AuthorizationServerDescription authorizationServer, string clientIdentifier, ClientCredentialApplicator clientCredentialApplicator)
-			: base(authorizationServer, clientIdentifier, clientCredentialApplicator) {
+		/// <param name="clientCredentialApplicator">The tool to use to apply client credentials to authenticated requests to the Authorization Server.
+		/// May be <c>null</c> for clients with no secret or other means of authentication.</param>
+		/// <param name="hostFactories"></param>
+		public WebServerClient(AuthorizationServerDescription authorizationServer, string clientIdentifier, ClientCredentialApplicator clientCredentialApplicator, IHostFactories hostFactories = null)
+			: base(authorizationServer, clientIdentifier, clientCredentialApplicator, hostFactories) {
 		}
 
 		/// <summary>
@@ -131,22 +131,32 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="request">The incoming HTTP request that may carry an authorization response.</param>
 		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>The authorization state that contains the details of the authorization.</returns>
-		public async Task<IAuthorizationState> ProcessUserAuthorizationAsync(HttpRequestBase request = null, CancellationToken cancellationToken = default(CancellationToken)) {
+		public Task<IAuthorizationState> ProcessUserAuthorizationAsync(
+			HttpRequestBase request = null, CancellationToken cancellationToken = default(CancellationToken)) {
+			request = request ?? this.Channel.GetRequestFromContext();
+			return this.ProcessUserAuthorizationAsync(request.AsHttpRequestMessage(), cancellationToken);
+		}
+
+		/// <summary>
+		/// Processes the authorization response from an authorization server, if available.
+		/// </summary>
+		/// <param name="request">The incoming HTTP request that may carry an authorization response.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>The authorization state that contains the details of the authorization.</returns>
+		public async Task<IAuthorizationState> ProcessUserAuthorizationAsync(HttpRequestMessage request, CancellationToken cancellationToken = default(CancellationToken)) {
+			Requires.NotNull(request, "request");
 			RequiresEx.ValidState(!string.IsNullOrEmpty(this.ClientIdentifier), Strings.RequiredPropertyNotYetPreset, "ClientIdentifier");
 			RequiresEx.ValidState(this.ClientCredentialApplicator != null, Strings.RequiredPropertyNotYetPreset, "ClientCredentialApplicator");
 
-			request = request ?? this.Channel.GetRequestFromContext();
-			var response = await this.Channel.TryReadFromRequestAsync<IMessageWithClientState>(request.AsHttpRequestMessage(), cancellationToken);
+			var response = await this.Channel.TryReadFromRequestAsync<IMessageWithClientState>(request, cancellationToken);
 			if (response != null) {
-				Uri callback = request.GetPublicFacingUrl().StripMessagePartsFromQueryString(this.Channel.MessageDescriptions.Get(response));
+				Uri callback = request.RequestUri.StripMessagePartsFromQueryString(this.Channel.MessageDescriptions.Get(response));
 				IAuthorizationState authorizationState;
 				if (this.AuthorizationTracker != null) {
 					authorizationState = this.AuthorizationTracker.GetAuthorizationState(callback, response.ClientState);
 					ErrorUtilities.VerifyProtocol(authorizationState != null, ClientStrings.AuthorizationResponseUnexpectedMismatch);
 				} else {
-					var context = this.Channel.GetHttpContext();
-
-					HttpCookie cookie = request.Cookies[XsrfCookieName];
+					HttpCookie cookie = request.Headers.Cookies[XsrfCookieName];
 					ErrorUtilities.VerifyProtocol(cookie != null && string.Equals(response.ClientState, cookie.Value, StringComparison.Ordinal), ClientStrings.AuthorizationResponseUnexpectedMismatch);
 					authorizationState = new AuthorizationState { Callback = callback };
 				}

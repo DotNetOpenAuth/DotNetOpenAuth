@@ -12,13 +12,27 @@ namespace DotNetOpenAuth.Test.Mocks {
 	using System.Threading.Tasks;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId;
 
 	/// <summary>
 	/// A Channel derived type that passes null to the protected constructor.
 	/// </summary>
 	internal class TestBadChannel : Channel {
-		internal TestBadChannel(bool badConstructorParam)
-			: base(badConstructorParam ? null : new TestMessageFactory()) {
+		/// <summary>
+		/// Initializes a new instance of the <see cref="TestBadChannel" /> class.
+		/// </summary>
+		/// <param name="messageFactory">The message factory. Could be <see cref="TestMessageFactory"/></param>
+		/// <param name="bindingElements">The binding elements.</param>
+		/// <param name="hostFactories">The host factories.</param>
+		internal TestBadChannel(IMessageFactory messageFactory, IChannelBindingElement[] bindingElements, IHostFactories hostFactories)
+			: base(messageFactory, bindingElements, hostFactories) {
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="TestBadChannel"/> class.
+		/// </summary>
+		internal TestBadChannel()
+			: this(new TestMessageFactory(), new IChannelBindingElement[0], new DefaultOpenIdHostFactories()) {
 		}
 
 		internal new void Create301RedirectResponse(IDirectedProtocolMessage message, IDictionary<string, string> fields, bool payloadInFragment = false) {

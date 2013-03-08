@@ -36,10 +36,11 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		};
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="OAuth2ClientChannel"/> class.
+		/// Initializes a new instance of the <see cref="OAuth2ClientChannel" /> class.
 		/// </summary>
-		internal OAuth2ClientChannel()
-			: base(MessageTypes) {
+		/// <param name="hostFactories">The host factories.</param>
+		internal OAuth2ClientChannel(IHostFactories hostFactories)
+			: base(MessageTypes, hostFactories: hostFactories) {
 		}
 
 		/// <summary>

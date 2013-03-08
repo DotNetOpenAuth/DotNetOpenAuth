@@ -55,7 +55,7 @@ namespace DotNetOpenAuth.Test {
 		public override void SetUp() {
 			base.SetUp();
 
-			this.Channel = new TestChannel();
+			////this.Channel = new TestChannel();
 		}
 
 		internal static HttpRequestMessage CreateHttpRequestInfo(HttpMethod method, IDictionary<string, string> fields) {
@@ -101,7 +101,8 @@ namespace DotNetOpenAuth.Test {
 			}
 
 			var typeProvider = new TestMessageFactory(signing, expiration, replay);
-			return new TestChannel(typeProvider, bindingElements.ToArray());
+			////return new TestChannel(typeProvider, bindingElements.ToArray());
+			return null;
 		}
 
 		internal static IDictionary<string, string> GetStandardTestFields(FieldFill fill) {

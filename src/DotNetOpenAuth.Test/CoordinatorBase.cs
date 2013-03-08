@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.Test {
 	using System.Collections.Generic;
 	using System.Net;
 	using System.Net.Http;
+	using System.Net.Http.Headers;
 	using System.Threading;
 	using System.Threading.Tasks;
 	using DotNetOpenAuth.Messaging;
@@ -55,6 +56,20 @@ namespace DotNetOpenAuth.Test {
 			internal Handler By(Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> handler) {
 				return new Handler(this.Uri) { MessageHandler = handler };
 			}
+
+			internal Handler By(Func<HttpRequestMessage, HttpResponseMessage> handler) {
+				return By((req, ct) => Task.FromResult(handler(req)));
+			}
+
+			internal Handler By(string responseContent, string contentType, HttpStatusCode statusCode = HttpStatusCode.OK) {
+				return By(
+					req => {
+						var response = new HttpResponseMessage(statusCode);
+						response.Content = new StringContent(responseContent);
+						response.Content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
+						return response;
+					});
+			}
 		}
 
 		private class MyHostFactories : IHostFactories {
@@ -82,7 +97,7 @@ namespace DotNetOpenAuth.Test {
 
 			protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken) {
 				foreach (var handler in this.handlers) {
-					if (handler.Uri.AbsolutePath == request.RequestUri.AbsolutePath) {
+					if (handler.Uri.IsBaseOf(request.RequestUri) && handler.Uri.AbsolutePath == request.RequestUri.AbsolutePath) {
 						var response = await handler.MessageHandler(request, cancellationToken);
 						if (response != null) {
 							return response;

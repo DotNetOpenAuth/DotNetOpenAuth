@@ -5,6 +5,8 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
+	using System.Net.Http;
+
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.OAuth;
@@ -33,7 +35,7 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 			((ITamperResistantOAuthMessage)message).ConsumerSecret = "ExJXsYl7Or8OfK98";
 			((ITamperResistantOAuthMessage)message).TokenSecret = "b197333b-470a-43b3-bcd7-49d6d2229c4c";
 			var signedMessage = (ITamperResistantOAuthMessage)message;
-			signedMessage.HttpMethod = "GET";
+			signedMessage.HttpMethod = HttpMethod.Get;
 			signedMessage.SignatureMethod = "HMAC-SHA1";
 			MessageDictionary dictionary = this.MessageDescriptions.GetAccessor(message);
 			dictionary["oauth_timestamp"] = "1353545248";

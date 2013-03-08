@@ -6,6 +6,8 @@
 
 namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 	using System.Collections.Generic;
+	using System.Net.Http;
+
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.OAuth;
@@ -80,7 +82,7 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 			message.AccessToken = "tokenpublic";
 
 			var signedMessage = (ITamperResistantOAuthMessage)message;
-			signedMessage.HttpMethod = "GET";
+			signedMessage.HttpMethod = HttpMethod.Get;
 			signedMessage.SignatureMethod = "HMAC-SHA1";
 
 			MessageDictionary dictionary = this.MessageDescriptions.GetAccessor(message);
@@ -115,7 +117,7 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 			message.ConsumerKey = "nerdbank.org";
 			((ITamperResistantOAuthMessage)message).ConsumerSecret = "nerdbanksecret";
 			var signedMessage = (ITamperResistantOAuthMessage)message;
-			signedMessage.HttpMethod = "GET";
+			signedMessage.HttpMethod = HttpMethod.Get;
 			signedMessage.SignatureMethod = "HMAC-SHA1";
 			MessageDictionary dictionary = messageDescriptions.GetAccessor(message);
 			dictionary["oauth_timestamp"] = "1222665749";
