@@ -11,6 +11,8 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 	using System.Linq;
 	using System.Security.Cryptography;
 	using System.Text;
+	using System.Threading.Tasks;
+
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2;
 	using DotNetOpenAuth.OAuth2.ChannelElements;
@@ -28,7 +30,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 				{ "Authorization", "Bearer " },
 			};
 			var request = new HttpRequestInfo("GET", new Uri("http://localhost/resource"), headers: requestHeaders);
-			Assert.That(() => resourceServer.GetAccessToken(request), Throws.InstanceOf<ProtocolException>());
+			Assert.That(() => resourceServer.GetAccessTokenAsync(request).GetAwaiter().GetResult(), Throws.InstanceOf<ProtocolException>());
 		}
 
 		[Test]
@@ -39,7 +41,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 				{ "Authorization", "Bearer " },
 			};
 			var request = new HttpRequestInfo("GET", new Uri("http://localhost/resource"), headers: requestHeaders);
-			Assert.That(() => resourceServer.GetPrincipal(request), Throws.InstanceOf<ProtocolException>());
+			Assert.That(() => resourceServer.GetPrincipalAsync(request).GetAwaiter().GetResult(), Throws.InstanceOf<ProtocolException>());
 		}
 
 		[Test]
@@ -50,12 +52,12 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 				{ "Authorization", "Bearer foobar" },
 			};
 			var request = new HttpRequestInfo("GET", new Uri("http://localhost/resource"), headers: requestHeaders);
-			Assert.That(() => resourceServer.GetAccessToken(request), Throws.InstanceOf<ProtocolException>());
+			Assert.That(() => resourceServer.GetAccessTokenAsync(request).GetAwaiter().GetResult(), Throws.InstanceOf<ProtocolException>());
 		}
 
 		[Test]
-		public void GetAccessTokenWithCorruptedToken() {
-			var accessToken = this.ObtainValidAccessToken();
+		public async Task GetAccessTokenWithCorruptedToken() {
+			var accessToken = await this.ObtainValidAccessTokenAsync();
 
 			var resourceServer = new ResourceServer(new StandardAccessTokenAnalyzer(AsymmetricKey, null));
 
@@ -63,12 +65,12 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 				{ "Authorization", "Bearer " + accessToken.Substring(0, accessToken.Length - 1) + "zzz" },
 			};
 			var request = new HttpRequestInfo("GET", new Uri("http://localhost/resource"), headers: requestHeaders);
-			Assert.That(() => resourceServer.GetAccessToken(request), Throws.InstanceOf<ProtocolException>());
+			Assert.That(() => resourceServer.GetAccessTokenAsync(request).GetAwaiter().GetResult(), Throws.InstanceOf<ProtocolException>());
 		}
 
 		[Test]
-		public void GetAccessTokenWithValidToken() {
-			var accessToken = this.ObtainValidAccessToken();
+		public async Task GetAccessTokenWithValidToken() {
+			var accessToken = await this.ObtainValidAccessTokenAsync();
 
 			var resourceServer = new ResourceServer(new StandardAccessTokenAnalyzer(AsymmetricKey, null));
 
@@ -76,11 +78,11 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 				{ "Authorization", "Bearer " + accessToken },
 			};
 			var request = new HttpRequestInfo("GET", new Uri("http://localhost/resource"), headers: requestHeaders);
-			var resourceServerDecodedToken = resourceServer.GetAccessToken(request);
+			var resourceServerDecodedToken = await resourceServer.GetAccessTokenAsync(request);
 			Assert.That(resourceServerDecodedToken, Is.Not.Null);
 		}
 
-		private string ObtainValidAccessToken() {
+		private async Task<string> ObtainValidAccessTokenAsync() {
 			string accessToken = null;
 			var authServer = CreateAuthorizationServerMock();
 			authServer.Setup(
@@ -89,20 +91,19 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 			authServer.Setup(
 				a => a.CheckAuthorizeClientCredentialsGrant(It.Is<IAccessTokenRequest>(d => d.ClientIdentifier == ClientId && MessagingUtilities.AreEquivalent(d.Scope, TestScopes))))
 				.Returns<IAccessTokenRequest>(req => new AutomatedAuthorizationCheckResponse(req, true));
-			var coordinator = new OAuth2Coordinator<WebServerClient>(
-				AuthorizationServerDescription,
-				authServer.Object,
-				new WebServerClient(AuthorizationServerDescription),
-				client => {
-					var authState = client.GetClientAccessToken(TestScopes);
+			var coordinator = new CoordinatorBase(
+				async (hostFactories, ct) => {
+					var client = new WebServerClient(AuthorizationServerDescription);
+					var authState = await client.GetClientAccessTokenAsync(TestScopes, ct);
 					Assert.That(authState.AccessToken, Is.Not.Null.And.Not.Empty);
 					Assert.That(authState.RefreshToken, Is.Null);
 					accessToken = authState.AccessToken;
 				},
-				server => {
-					server.HandleTokenRequest().Respond();
-				});
-			coordinator.Run();
+				CoordinatorBase.Handle(AuthorizationServerDescription.TokenEndpoint).By(async (req, ct) => {
+					var server = new AuthorizationServer(authServer.Object);
+					return await server.HandleTokenRequestAsync(req, ct);
+				}));
+			await coordinator.RunAsync();
 
 			return accessToken;
 		}

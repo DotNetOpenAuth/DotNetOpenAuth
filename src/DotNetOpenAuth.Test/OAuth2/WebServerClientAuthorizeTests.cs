@@ -22,31 +22,42 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 	[TestFixture]
 	public class WebServerClientAuthorizeTests : OAuth2TestBase {
 		[Test]
-		public void AuthorizationCodeGrant() {
-			var coordinator = new OAuth2Coordinator<WebServerClient>(
-				AuthorizationServerDescription,
-				AuthorizationServerMock,
-				new WebServerClient(AuthorizationServerDescription),
-				client => {
+		public async Task AuthorizationCodeGrant() {
+			var coordinator = new CoordinatorBase(
+				async (hostFactories, ct) => {
+					var client = new WebServerClient(AuthorizationServerDescription);
 					var authState = new AuthorizationState(TestScopes) {
 						Callback = ClientCallback,
 					};
-					client.PrepareRequestUserAuthorization(authState).Respond();
-					var result = client.ProcessUserAuthorization();
+					var authRequestRedirect = await client.PrepareRequestUserAuthorizationAsync(authState, ct);
+					Uri authRequestResponse;
+					using (var httpClient = hostFactories.CreateHttpClient()) {
+						using (var httpResponse = await httpClient.GetAsync(authRequestRedirect.Headers.Location, ct)) {
+							authRequestResponse = httpResponse.Headers.Location;
+						}
+					}
+
+					var result = await client.ProcessUserAuthorizationAsync(new HttpRequestMessage(HttpMethod.Get, authRequestResponse), ct);
 					Assert.That(result.AccessToken, Is.Not.Null.And.Not.Empty);
 					Assert.That(result.RefreshToken, Is.Not.Null.And.Not.Empty);
 				},
-				server => {
-					var request = server.ReadAuthorizationRequest();
-					Assert.That(request, Is.Not.Null);
-					server.ApproveAuthorizationRequest(request, ResourceOwnerUsername);
-					server.HandleTokenRequest().Respond();
-				});
-			coordinator.Run();
+				CoordinatorBase.Handle(AuthorizationServerDescription.AuthorizationEndpoint).By(
+					async (req, ct) => {
+						var server = new AuthorizationServer(AuthorizationServerMock);
+						var request = await server.ReadAuthorizationRequestAsync(req, ct);
+						Assert.That(request, Is.Not.Null);
+						var response = server.PrepareApproveAuthorizationRequest(request, ResourceOwnerUsername);
+						return await server.Channel.PrepareResponseAsync(response, ct);
+					}),
+					CoordinatorBase.Handle(AuthorizationServerDescription.TokenEndpoint).By(async (req, ct) => {
+						var server = new AuthorizationServer(AuthorizationServerMock);
+						return await server.HandleTokenRequestAsync(req, ct);
+					}));
+			await coordinator.RunAsync();
 		}
 
 		[Theory]
-		public void ResourceOwnerPasswordCredentialGrant(bool anonymousClient) {
+		public async Task ResourceOwnerPasswordCredentialGrant(bool anonymousClient) {
 			var authHostMock = CreateAuthorizationServerMock();
 			if (anonymousClient) {
 				authHostMock.Setup(
@@ -58,27 +69,26 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 							MessagingUtilities.AreEquivalent(d.Scope, TestScopes)))).Returns(true);
 			}
 
-			var coordinator = new OAuth2Coordinator<WebServerClient>(
-				AuthorizationServerDescription,
-				authHostMock.Object,
-				new WebServerClient(AuthorizationServerDescription),
-				client => {
+			var coordinator = new CoordinatorBase(
+				async (hostFactories, ct) => {
+					var client = new WebServerClient(AuthorizationServerDescription);
 					if (anonymousClient) {
 						client.ClientIdentifier = null;
 					}
 
-					var authState = client.ExchangeUserCredentialForToken(ResourceOwnerUsername, ResourceOwnerPassword, TestScopes);
+					var authState = await client.ExchangeUserCredentialForTokenAsync(ResourceOwnerUsername, ResourceOwnerPassword, TestScopes, ct);
 					Assert.That(authState.AccessToken, Is.Not.Null.And.Not.Empty);
 					Assert.That(authState.RefreshToken, Is.Not.Null.And.Not.Empty);
 				},
-				server => {
-					server.HandleTokenRequest().Respond();
-				});
-			coordinator.Run();
+				CoordinatorBase.Handle(AuthorizationServerDescription.TokenEndpoint).By(async (req, ct) => {
+					var server = new AuthorizationServer(authHostMock.Object);
+					return await server.HandleTokenRequestAsync(req, ct);
+				}));
+			await coordinator.RunAsync();
 		}
 
 		[Test]
-		public void ClientCredentialGrant() {
+		public async Task ClientCredentialGrant() {
 			var authServer = CreateAuthorizationServerMock();
 			authServer.Setup(
 				a => a.IsAuthorizationValid(It.Is<IAuthorizationDescription>(d => d.User == null && d.ClientIdentifier == ClientId && MessagingUtilities.AreEquivalent(d.Scope, TestScopes))))
@@ -86,23 +96,22 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 			authServer.Setup(
 				a => a.CheckAuthorizeClientCredentialsGrant(It.Is<IAccessTokenRequest>(d => d.ClientIdentifier == ClientId && MessagingUtilities.AreEquivalent(d.Scope, TestScopes))))
 				.Returns<IAccessTokenRequest>(req => new AutomatedAuthorizationCheckResponse(req, true));
-			var coordinator = new OAuth2Coordinator<WebServerClient>(
-				AuthorizationServerDescription,
-				authServer.Object,
-				new WebServerClient(AuthorizationServerDescription),
-				client => {
-					var authState = client.GetClientAccessToken(TestScopes);
+			var coordinator = new CoordinatorBase(
+				async (hostFactories, ct) => {
+					var client = new WebServerClient(AuthorizationServerDescription);
+					var authState = await client.GetClientAccessTokenAsync(TestScopes, ct);
 					Assert.That(authState.AccessToken, Is.Not.Null.And.Not.Empty);
 					Assert.That(authState.RefreshToken, Is.Null);
 				},
-				server => {
-					server.HandleTokenRequest().Respond();
-				});
-			coordinator.Run();
+				CoordinatorBase.Handle(AuthorizationServerDescription.TokenEndpoint).By(async (req, ct) => {
+					var server = new AuthorizationServer(authServer.Object);
+					return await server.HandleTokenRequestAsync(req, ct);
+				}));
+			await coordinator.RunAsync();
 		}
 
 		[Test]
-		public void GetClientAccessTokenReturnsApprovedScope() {
+		public async Task GetClientAccessTokenReturnsApprovedScope() {
 			string[] approvedScopes = new[] { "Scope2", "Scope3" };
 			var authServer = CreateAuthorizationServerMock();
 			authServer.Setup(
@@ -111,22 +120,21 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 			authServer.Setup(
 				a => a.CheckAuthorizeClientCredentialsGrant(It.Is<IAccessTokenRequest>(d => d.ClientIdentifier == ClientId && MessagingUtilities.AreEquivalent(d.Scope, TestScopes))))
 					  .Returns<IAccessTokenRequest>(req => {
-						var response = new AutomatedAuthorizationCheckResponse(req, true);
-						response.ApprovedScope.ResetContents(approvedScopes);
-						return response;
-					});
-			var coordinator = new OAuth2Coordinator<WebServerClient>(
-				AuthorizationServerDescription,
-				authServer.Object,
-				new WebServerClient(AuthorizationServerDescription),
-				client => {
-					var authState = client.GetClientAccessToken(TestScopes);
+						  var response = new AutomatedAuthorizationCheckResponse(req, true);
+						  response.ApprovedScope.ResetContents(approvedScopes);
+						  return response;
+					  });
+			var coordinator = new CoordinatorBase(
+				async (hostFactories, ct) => {
+					var client = new WebServerClient(AuthorizationServerDescription);
+					var authState = await client.GetClientAccessTokenAsync(TestScopes, ct);
 					Assert.That(authState.Scope, Is.EquivalentTo(approvedScopes));
 				},
-				server => {
-					server.HandleTokenRequest().Respond();
-				});
-			coordinator.Run();
+				CoordinatorBase.Handle(AuthorizationServerDescription.TokenEndpoint).By(async (req, ct) => {
+					var server = new AuthorizationServer(authServer.Object);
+					return await server.HandleTokenRequestAsync(req, ct);
+				}));
+			await coordinator.RunAsync();
 		}
 
 		[Test]
