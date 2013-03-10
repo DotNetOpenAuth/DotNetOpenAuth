@@ -41,7 +41,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <param name="nonVerifying">A value indicating whether the channel is set up with no functional security binding elements.</param>
 		/// <param name="hostFactories">The host factories.</param>
 		private OpenIdRelyingPartyChannel(ICryptoKeyStore cryptoKeyStore, INonceStore nonceStore, IMessageFactory messageTypeProvider, RelyingPartySecuritySettings securitySettings, bool nonVerifying, IHostFactories hostFactories) :
-			base(messageTypeProvider, InitializeBindingElements(cryptoKeyStore, nonceStore, securitySettings, nonVerifying, hostFactories)) {
+			base(messageTypeProvider, InitializeBindingElements(cryptoKeyStore, nonceStore, securitySettings, nonVerifying), hostFactories) {
 			Requires.NotNull(messageTypeProvider, "messageTypeProvider");
 			Requires.NotNull(securitySettings, "securitySettings");
 			Assumes.True(!nonVerifying || securitySettings is RelyingPartySecuritySettings);
@@ -60,7 +60,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// messages, and will validate them later.</para>
 		/// </remarks>
 		internal static OpenIdChannel CreateNonVerifyingChannel() {
-			return new OpenIdRelyingPartyChannel(null, null, new OpenIdRelyingPartyMessageFactory(), new RelyingPartySecuritySettings(), true);
+			return new OpenIdRelyingPartyChannel(null, null, new OpenIdRelyingPartyMessageFactory(), new RelyingPartySecuritySettings(), true, new DefaultOpenIdHostFactories());
 		}
 
 		/// <summary>

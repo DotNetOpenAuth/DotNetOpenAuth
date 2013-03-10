@@ -36,6 +36,11 @@ namespace DotNetOpenAuth.Test {
 			this.handlers = handlers;
 		}
 
+		internal static Task RunAsync(Func<IHostFactories, CancellationToken, Task> driver, params Handler[] handlers) {
+			var coordinator = new CoordinatorBase(driver, handlers);
+			return coordinator.RunAsync();
+		}
+
 		protected internal virtual async Task RunAsync(CancellationToken cancellationToken = default(CancellationToken)) {
 			IHostFactories hostFactories = new MyHostFactories(this.handlers);
 
@@ -53,7 +58,14 @@ namespace DotNetOpenAuth.Test {
 			};
 		}
 
-		internal static Handler HandleProvider(Func<OpenIdProvider, HttpRequestMessage, CancellationToken, Task<HttpResponseMessage> provider) {
+		internal static Func<IHostFactories, CancellationToken, Task> ProviderDriver(Func<OpenIdProvider, CancellationToken, Task> providerDriver) {
+			return async (hostFactories, ct) => {
+				var op = new OpenIdProvider(new StandardProviderApplicationStore(), hostFactories);
+				await providerDriver(op, ct);
+			};
+		}
+
+		internal static Handler HandleProvider(Func<OpenIdProvider, HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> provider) {
 			return Handle(OpenIdTestBase.OPUri).By(async (req, ct) => {
 				var op = new OpenIdProvider(new StandardProviderApplicationStore());
 				return await provider(op, req, ct);
@@ -68,10 +80,14 @@ namespace DotNetOpenAuth.Test {
 
 			public Uri Uri { get; private set; }
 
-			public Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> MessageHandler { get; private set; }
+			public Func<IHostFactories, HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> MessageHandler { get; private set; }
+
+			internal Handler By(Func<IHostFactories, HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> handler) {
+				return new Handler(this.Uri) { MessageHandler = handler };
+			}
 
 			internal Handler By(Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> handler) {
-				return new Handler(this.Uri) { MessageHandler = handler };
+				return By((hf, req, ct) => handler(req, ct));
 			}
 
 			internal Handler By(Func<HttpRequestMessage, HttpResponseMessage> handler) {
@@ -97,7 +113,7 @@ namespace DotNetOpenAuth.Test {
 			}
 
 			public HttpMessageHandler CreateHttpMessageHandler() {
-				return new ForwardingMessageHandler(this.handlers);
+				return new ForwardingMessageHandler(this.handlers, this);
 			}
 
 			public HttpClient CreateHttpClient(HttpMessageHandler handler = null) {
@@ -108,14 +124,17 @@ namespace DotNetOpenAuth.Test {
 		private class ForwardingMessageHandler : HttpMessageHandler {
 			private readonly Handler[] handlers;
 
-			public ForwardingMessageHandler(Handler[] handlers) {
+			private readonly IHostFactories hostFactories;
+
+			public ForwardingMessageHandler(Handler[] handlers, IHostFactories hostFactories) {
 				this.handlers = handlers;
+				this.hostFactories = hostFactories;
 			}
 
 			protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken) {
 				foreach (var handler in this.handlers) {
 					if (handler.Uri.IsBaseOf(request.RequestUri) && handler.Uri.AbsolutePath == request.RequestUri.AbsolutePath) {
-						var response = await handler.MessageHandler(request, cancellationToken);
+						var response = await handler.MessageHandler(this.hostFactories, request, cancellationToken);
 						if (response != null) {
 							return response;
 						}

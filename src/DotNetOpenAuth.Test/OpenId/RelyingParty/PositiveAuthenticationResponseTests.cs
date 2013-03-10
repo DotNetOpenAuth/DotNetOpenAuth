@@ -7,6 +7,8 @@
 namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 	using System;
 	using System.Collections.Generic;
+	using System.Threading.Tasks;
+
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
@@ -124,20 +126,22 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// Verifies that certain problematic claimed identifiers pass through to the RP response correctly.
 		/// </summary>
 		[Test]
-		public void ProblematicClaimedId() {
+		public async Task ProblematicClaimedId() {
 			var providerEndpoint = new ProviderEndpointDescription(OpenIdTestBase.OPUri, Protocol.Default.Version);
 			string claimed_id = BaseMockUri + "a./b.";
 			var se = IdentifierDiscoveryResult.CreateForClaimedIdentifier(claimed_id, claimed_id, providerEndpoint, null, null);
-			UriIdentifier identityUri = (UriIdentifier)se.ClaimedIdentifier;
-			var mockId = new MockIdentifier(identityUri, this.MockResponder, new IdentifierDiscoveryResult[] { se });
-
-			var positiveAssertion = this.GetPositiveAssertion();
-			positiveAssertion.ClaimedIdentifier = mockId;
-			positiveAssertion.LocalIdentifier = mockId;
-			var rp = CreateRelyingParty();
-			var authResponse = new PositiveAuthenticationResponse(positiveAssertion, rp);
-			Assert.AreEqual(AuthenticationStatus.Authenticated, authResponse.Status);
-			Assert.AreEqual(claimed_id, authResponse.ClaimedIdentifier.ToString());
+			var identityUri = (UriIdentifier)se.ClaimedIdentifier;
+			var coordinator = new CoordinatorBase(
+				CoordinatorBase.RelyingPartyDriver(async (rp, ct) => {
+					var positiveAssertion = this.GetPositiveAssertion();
+					positiveAssertion.ClaimedIdentifier = claimed_id;
+					positiveAssertion.LocalIdentifier = claimed_id;
+					var authResponse = new PositiveAuthenticationResponse(positiveAssertion, rp);
+					Assert.AreEqual(AuthenticationStatus.Authenticated, authResponse.Status);
+					Assert.AreEqual(claimed_id, authResponse.ClaimedIdentifier.ToString());
+				}),
+				MockHttpRequest.RegisterMockXrdsResponse(se));
+			await coordinator.RunAsync();
 		}
 
 		private PositiveAssertionResponse GetPositiveAssertion() {

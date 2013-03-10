@@ -7,11 +7,18 @@
 namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 	using System;
 	using System.Linq;
+	using System.Net.Http;
+	using System.Threading.Tasks;
+	using System.Web;
+
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Extensions;
 	using DotNetOpenAuth.OpenId.Messages;
+	using DotNetOpenAuth.OpenId.Provider;
 	using DotNetOpenAuth.OpenId.RelyingParty;
+	using DotNetOpenAuth.Test.Mocks;
+
 	using NUnit.Framework;
 
 	[TestFixture]
@@ -22,12 +29,13 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		}
 
 		[Test]
-		public void CreateRequestDumbMode() {
+		public async Task CreateRequestDumbMode() {
 			var rp = this.CreateRelyingParty(true);
 			Identifier id = this.GetMockIdentifier(ProtocolVersion.V20);
-			var authReq = rp.CreateRequest(id, RPRealmUri, RPUri);
-			CheckIdRequest requestMessage = (CheckIdRequest)authReq.RedirectingResponse.OriginalMessage;
-			Assert.IsNull(requestMessage.AssociationHandle);
+			var authReq = await rp.CreateRequestAsync(id, RPRealmUri, RPUri);
+			var httpMessage = await authReq.GetRedirectingResponseAsync();
+			var data = HttpUtility.ParseQueryString(httpMessage.GetDirectUriRequest().Query);
+			Assert.IsNull(data[Protocol.Default.openid.assoc_handle]);
 		}
 
 		[Test, ExpectedException(typeof(ArgumentNullException))]
@@ -46,53 +54,61 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		}
 
 		[Test]
-		public void CreateRequest() {
+		public async Task CreateRequest() {
 			var rp = this.CreateRelyingParty();
 			StoreAssociation(rp, OPUri, HmacShaAssociation.Create("somehandle", new byte[20], TimeSpan.FromDays(1)));
 			Identifier id = Identifier.Parse(GetMockIdentifier(ProtocolVersion.V20));
-			var req = rp.CreateRequest(id, RPRealmUri, RPUri);
+			var req = await rp.CreateRequestAsync(id, RPRealmUri, RPUri);
 			Assert.IsNotNull(req);
 		}
 
 		[Test]
-		public void CreateRequests() {
+		public async Task CreateRequests() {
 			var rp = this.CreateRelyingParty();
 			StoreAssociation(rp, OPUri, HmacShaAssociation.Create("somehandle", new byte[20], TimeSpan.FromDays(1)));
 			Identifier id = Identifier.Parse(GetMockIdentifier(ProtocolVersion.V20));
-			var requests = rp.CreateRequests(id, RPRealmUri, RPUri);
+			var requests = await rp.CreateRequestsAsync(id, RPRealmUri, RPUri);
 			Assert.AreEqual(1, requests.Count());
 		}
 
 		[Test]
-		public void CreateRequestsWithEndpointFilter() {
+		public async Task CreateRequestsWithEndpointFilter() {
 			var rp = this.CreateRelyingParty();
 			StoreAssociation(rp, OPUri, HmacShaAssociation.Create("somehandle", new byte[20], TimeSpan.FromDays(1)));
 			Identifier id = Identifier.Parse(GetMockIdentifier(ProtocolVersion.V20));
 
 			rp.EndpointFilter = opendpoint => true;
-			var requests = rp.CreateRequests(id, RPRealmUri, RPUri);
+			var requests = await rp.CreateRequestsAsync(id, RPRealmUri, RPUri);
 			Assert.AreEqual(1, requests.Count());
 
 			rp.EndpointFilter = opendpoint => false;
-			requests = rp.CreateRequests(id, RPRealmUri, RPUri);
+			requests = await rp.CreateRequestsAsync(id, RPRealmUri, RPUri);
 			Assert.AreEqual(0, requests.Count());
 		}
 
 		[Test, ExpectedException(typeof(ProtocolException))]
-		public void CreateRequestOnNonOpenID() {
-			Uri nonOpenId = new Uri("http://www.microsoft.com/");
-			var rp = this.CreateRelyingParty();
-			this.MockResponder.RegisterMockResponse(nonOpenId, "text/html", "<html/>");
-			rp.CreateRequest(nonOpenId, RPRealmUri, RPUri);
+		public async Task CreateRequestOnNonOpenID() {
+			var nonOpenId = new Uri("http://www.microsoft.com/");
+			var coordinator = new CoordinatorBase(
+				CoordinatorBase.RelyingPartyDriver(
+					async (rp, ct) => {
+						await rp.CreateRequestAsync(nonOpenId, RPRealmUri, RPUri);
+					}),
+				CoordinatorBase.Handle(nonOpenId).By("<html/>", "text/html"));
+			await coordinator.RunAsync();
 		}
 
 		[Test]
-		public void CreateRequestsOnNonOpenID() {
-			Uri nonOpenId = new Uri("http://www.microsoft.com/");
-			var rp = this.CreateRelyingParty();
-			this.MockResponder.RegisterMockResponse(nonOpenId, "text/html", "<html/>");
-			var requests = rp.CreateRequests(nonOpenId, RPRealmUri, RPUri);
-			Assert.AreEqual(0, requests.Count());
+		public async Task CreateRequestsOnNonOpenID() {
+			var nonOpenId = new Uri("http://www.microsoft.com/");
+			var coordinator = new CoordinatorBase(
+				CoordinatorBase.RelyingPartyDriver(
+					async (rp, ct) => {
+						var requests = await rp.CreateRequestsAsync(nonOpenId, RPRealmUri, RPUri);
+						Assert.AreEqual(0, requests.Count());
+					}),
+				CoordinatorBase.Handle(nonOpenId).By("<html/>", "text/html"));
+			await coordinator.RunAsync();
 		}
 
 		/// <summary>
@@ -100,25 +116,37 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// OPs that are not approved by <see cref="OpenIdRelyingParty.EndpointFilter"/>.
 		/// </summary>
 		[Test]
-		public void AssertionWithEndpointFilter() {
-			var coordinator = new OpenIdCoordinator(
-				rp => {
-					// register with RP so that id discovery passes
-					rp.Channel.WebRequestHandler = this.MockResponder.MockWebRequestHandler;
-
-					// Rig it to always deny the incoming OP
-					rp.EndpointFilter = op => false;
-
-					// Receive the unsolicited assertion
-					var response = rp.GetResponse();
-					Assert.AreEqual(AuthenticationStatus.Failed, response.Status);
-				},
-				op => {
+		public async Task AssertionWithEndpointFilter() {
+			var opStore = new StandardProviderApplicationStore();
+			var coordinator = new CoordinatorBase(
+				async (hostFactories, ct) => {
+					var op = new OpenIdProvider(opStore);
 					Identifier id = GetMockIdentifier(ProtocolVersion.V20);
-					op.SendUnsolicitedAssertion(OPUri, GetMockRealm(false), id, id);
-					AutoProvider(op);
-				});
-			coordinator.Run();
+					var assertion = await op.PrepareUnsolicitedAssertionAsync(OPUri, GetMockRealm(false), id, id, ct);
+					using (var httpClient = hostFactories.CreateHttpClient()) {
+						using (var response = await httpClient.GetAsync(assertion.Headers.Location, ct)) {
+							response.EnsureSuccessStatusCode();
+						}
+					}
+				},
+				CoordinatorBase.Handle(RPRealmUri).By(
+					async (hostFactories, req, ct) => {
+						var rp = new OpenIdRelyingParty(new StandardRelyingPartyApplicationStore());
+
+						// register with RP so that id discovery passes
+						// TODO: Fix this
+						////rp.Channel.WebRequestHandler = this.MockResponder.MockWebRequestHandler;
+
+						// Rig it to always deny the incoming OP
+						rp.EndpointFilter = op => false;
+
+						// Receive the unsolicited assertion
+						var response = await rp.GetResponseAsync(req, ct);
+						Assert.AreEqual(AuthenticationStatus.Failed, response.Status);
+						return new HttpResponseMessage();
+					}),
+				AutoProvider);
+			await coordinator.RunAsync();
 		}
 	}
 }

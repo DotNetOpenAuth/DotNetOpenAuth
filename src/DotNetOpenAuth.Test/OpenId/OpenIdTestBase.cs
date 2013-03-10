@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 	using System;
 	using System.Collections.Generic;
 	using System.IO;
+	using System.Net.Http;
 	using System.Reflection;
 	using System.Threading;
 	using System.Threading.Tasks;
@@ -149,34 +150,45 @@ namespace DotNetOpenAuth.Test.OpenId {
 				return CoordinatorBase.Handle(OPUri).By(
 					async (req, ct) => {
 						var provider = new OpenIdProvider(new StandardProviderApplicationStore());
-						IRequest request = await provider.GetRequestAsync(req, ct);
-						Assert.That(request, Is.Not.Null);
-
-						if (!request.IsResponseReady) {
-							var authRequest = (DotNetOpenAuth.OpenId.Provider.IAuthenticationRequest)request;
-							switch (this.AutoProviderScenario) {
-								case Scenarios.AutoApproval:
-									authRequest.IsAuthenticated = true;
-									break;
-								case Scenarios.AutoApprovalAddFragment:
-									authRequest.SetClaimedIdentifierFragment("frag");
-									authRequest.IsAuthenticated = true;
-									break;
-								case Scenarios.ApproveOnSetup:
-									authRequest.IsAuthenticated = !authRequest.Immediate;
-									break;
-								case Scenarios.AlwaysDeny:
-									authRequest.IsAuthenticated = false;
-									break;
-								default:
-									// All other scenarios are done programmatically only.
-									throw new InvalidOperationException("Unrecognized scenario");
-							}
-						}
-
-						return await provider.PrepareResponseAsync(request, ct);
+						return await this.AutoProviderActionAsync(provider, req, ct);
 					});
 			}
+		}
+
+		/// <summary>
+		/// Gets a default implementation of a simple provider that responds to authentication requests
+		/// per the scenario that is being simulated.
+		/// </summary>
+		/// <remarks>
+		/// This is a very useful method to pass to the OpenIdCoordinator constructor for the Provider argument.
+		/// </remarks>
+		internal async Task<HttpResponseMessage> AutoProviderActionAsync(OpenIdProvider provider, HttpRequestMessage req, CancellationToken ct) {
+			IRequest request = await provider.GetRequestAsync(req, ct);
+			Assert.That(request, Is.Not.Null);
+
+			if (!request.IsResponseReady) {
+				var authRequest = (DotNetOpenAuth.OpenId.Provider.IAuthenticationRequest)request;
+				switch (this.AutoProviderScenario) {
+					case Scenarios.AutoApproval:
+						authRequest.IsAuthenticated = true;
+						break;
+					case Scenarios.AutoApprovalAddFragment:
+						authRequest.SetClaimedIdentifierFragment("frag");
+						authRequest.IsAuthenticated = true;
+						break;
+					case Scenarios.ApproveOnSetup:
+						authRequest.IsAuthenticated = !authRequest.Immediate;
+						break;
+					case Scenarios.AlwaysDeny:
+						authRequest.IsAuthenticated = false;
+						break;
+					default:
+						// All other scenarios are done programmatically only.
+						throw new InvalidOperationException("Unrecognized scenario");
+				}
+			}
+
+			return await provider.PrepareResponseAsync(request, ct);
 		}
 
 		internal IEnumerable<IdentifierDiscoveryResult> Discover(Identifier identifier) {

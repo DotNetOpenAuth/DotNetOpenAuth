@@ -31,6 +31,7 @@
     <Compile Include="Messaging\Bindings\ICryptoKeyStore.cs" />
     <Compile Include="Messaging\Bindings\MemoryCryptoKeyStore.cs" />
     <Compile Include="Messaging\BinaryDataBagFormatter.cs" />
+    <Compile Include="Messaging\HttpResponseMessageWithOriginal.cs" />
     <Compile Include="Messaging\MessageProtectionTasks.cs" />
     <Compile Include="Messaging\MultipartContentMember.cs" />
     <Compile Include="Messaging\DataBagFormatterBase.cs" />

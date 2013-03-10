@@ -26,7 +26,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="response">The positive assertion response that was just received by the Relying Party.</param>
 		/// <param name="relyingParty">The relying party.</param>
-		private PositiveAuthenticationResponse(PositiveAssertionResponse response, OpenIdRelyingParty relyingParty)
+		internal PositiveAuthenticationResponse(PositiveAssertionResponse response, OpenIdRelyingParty relyingParty)
 			: base(response) {
 			Requires.NotNull(relyingParty, "relyingParty");
 

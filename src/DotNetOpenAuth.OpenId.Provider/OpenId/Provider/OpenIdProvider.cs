@@ -59,20 +59,22 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="OpenIdProvider"/> class.
+		/// Initializes a new instance of the <see cref="OpenIdProvider" /> class.
 		/// </summary>
 		/// <param name="applicationStore">The application store to use.  Cannot be null.</param>
-		public OpenIdProvider(IOpenIdApplicationStore applicationStore)
-			: this((INonceStore)applicationStore, (ICryptoKeyStore)applicationStore) {
+		/// <param name="hostFactories">The host factories.</param>
+		public OpenIdProvider(IOpenIdApplicationStore applicationStore, IHostFactories hostFactories = null)
+			: this((INonceStore)applicationStore, (ICryptoKeyStore)applicationStore, hostFactories) {
 			Requires.NotNull(applicationStore, "applicationStore");
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="OpenIdProvider"/> class.
+		/// Initializes a new instance of the <see cref="OpenIdProvider" /> class.
 		/// </summary>
 		/// <param name="nonceStore">The nonce store to use.  Cannot be null.</param>
 		/// <param name="cryptoKeyStore">The crypto key store.  Cannot be null.</param>
-		private OpenIdProvider(INonceStore nonceStore, ICryptoKeyStore cryptoKeyStore) {
+		/// <param name="hostFactories">The host factories.</param>
+		private OpenIdProvider(INonceStore nonceStore, ICryptoKeyStore cryptoKeyStore, IHostFactories hostFactories) {
 			Requires.NotNull(nonceStore, "nonceStore");
 			Requires.NotNull(cryptoKeyStore, "cryptoKeyStore");
 
@@ -83,7 +85,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			}
 
 			this.AssociationStore = new SwitchingAssociationStore(cryptoKeyStore, this.SecuritySettings);
-			this.Channel = new OpenIdProviderChannel(this.AssociationStore, nonceStore, this.SecuritySettings);
+			this.Channel = new OpenIdProviderChannel(this.AssociationStore, nonceStore, this.SecuritySettings, hostFactories);
 			this.CryptoKeyStore = cryptoKeyStore;
 			this.discoveryServices = new IdentifierDiscoveryServices(this);
 
@@ -214,7 +216,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// on its own user database and policies.</para>
 		///   <para>Requires an <see cref="HttpContext.Current">HttpContext.Current</see> context.</para>
 		/// </remarks>
-		public Task<IRequest> GetRequestAsync(HttpRequestBase request, CancellationToken cancellationToken) {
+		public Task<IRequest> GetRequestAsync(HttpRequestBase request = null, CancellationToken cancellationToken = default(CancellationToken)) {
 			request = request ?? this.Channel.GetRequestFromContext();
 			return this.GetRequestAsync(request.AsHttpRequestMessage(), cancellationToken);
 		}

@@ -8,12 +8,17 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Net.Http;
 	using System.Text.RegularExpressions;
+	using System.Threading;
+	using System.Threading.Tasks;
+
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.Extensions;
 	using DotNetOpenAuth.OpenId.Messages;
+	using DotNetOpenAuth.OpenId.Provider;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using DotNetOpenAuth.Test.Mocks;
 	using DotNetOpenAuth.Test.OpenId.Extensions;
@@ -53,23 +58,23 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		}
 
 		[Test]
-		public void PrepareMessageForSendingNull() {
-			Assert.IsNull(this.rpElement.ProcessOutgoingMessage(null));
+		public async Task PrepareMessageForSendingNull() {
+			Assert.IsNull(await this.rpElement.ProcessOutgoingMessageAsync(null, CancellationToken.None));
 		}
 
 		/// <summary>
 		/// Verifies that false is returned when a non-extendable message is sent.
 		/// </summary>
 		[Test]
-		public void PrepareMessageForSendingNonExtendableMessage() {
+		public async Task PrepareMessageForSendingNonExtendableMessage() {
 			IProtocolMessage request = new AssociateDiffieHellmanRequest(Protocol.Default.Version, OpenIdTestBase.OPUri);
-			Assert.IsNull(this.rpElement.ProcessOutgoingMessage(request));
+			Assert.IsNull(await this.rpElement.ProcessOutgoingMessageAsync(request, CancellationToken.None));
 		}
 
 		[Test]
-		public void PrepareMessageForSending() {
+		public async Task PrepareMessageForSending() {
 			this.request.Extensions.Add(new MockOpenIdExtension("part", "extra"));
-			Assert.IsNotNull(this.rpElement.ProcessOutgoingMessage(this.request));
+			Assert.IsNotNull(await this.rpElement.ProcessOutgoingMessageAsync(this.request, CancellationToken.None));
 
 			string alias = GetAliases(this.request.ExtraData).Single();
 			Assert.AreEqual(MockOpenIdExtension.MockTypeUri, this.request.ExtraData["openid.ns." + alias]);
@@ -78,11 +83,11 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		}
 
 		[Test]
-		public void PrepareMessageForReceiving() {
+		public async Task PrepareMessageForReceiving() {
 			this.request.ExtraData["openid.ns.mock"] = MockOpenIdExtension.MockTypeUri;
 			this.request.ExtraData["openid.mock.Part"] = "part";
 			this.request.ExtraData["openid.mock.data"] = "extra";
-			Assert.IsNotNull(this.rpElement.ProcessIncomingMessage(this.request));
+			Assert.IsNotNull(await this.rpElement.ProcessIncomingMessageAsync(this.request, CancellationToken.None));
 			MockOpenIdExtension ext = this.request.Extensions.OfType<MockOpenIdExtension>().Single();
 			Assert.AreEqual("part", ext.Part);
 			Assert.AreEqual("extra", ext.Data);
@@ -92,12 +97,12 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		/// Verifies that extension responses are included in the OP's signature.
 		/// </summary>
 		[Test]
-		public void ExtensionResponsesAreSigned() {
+		public async Task ExtensionResponsesAreSigned() {
 			Protocol protocol = Protocol.Default;
 			var op = this.CreateProvider();
 			IndirectSignedResponse response = this.CreateResponseWithExtensions(protocol);
-			op.Channel.PrepareResponse(response);
-			ITamperResistantOpenIdMessage signedResponse = (ITamperResistantOpenIdMessage)response;
+			await op.Channel.PrepareResponseAsync(response);
+			ITamperResistantOpenIdMessage signedResponse = response;
 			string extensionAliasKey = signedResponse.ExtraData.Single(kv => kv.Value == MockOpenIdExtension.MockTypeUri).Key;
 			Assert.IsTrue(extensionAliasKey.StartsWith("openid.ns."));
 			string extensionAlias = extensionAliasKey.Substring("openid.ns.".Length);
@@ -114,27 +119,56 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		/// Verifies that unsigned extension responses (where any or all fields are unsigned) are ignored.
 		/// </summary>
 		[Test]
-		public void ExtensionsAreIdentifiedAsSignedOrUnsigned() {
+		public async Task ExtensionsAreIdentifiedAsSignedOrUnsigned() {
 			Protocol protocol = Protocol.Default;
-			OpenIdCoordinator coordinator = new OpenIdCoordinator(
-				rp => {
-					RegisterMockExtension(rp.Channel);
-					var response = rp.Channel.ReadFromRequest<IndirectSignedResponse>();
-					Assert.AreEqual(1, response.SignedExtensions.Count(), "Signed extension should have been received.");
-					Assert.AreEqual(0, response.UnsignedExtensions.Count(), "No unsigned extension should be present.");
-					response = rp.Channel.ReadFromRequest<IndirectSignedResponse>();
-					Assert.AreEqual(0, response.SignedExtensions.Count(), "No signed extension should have been received.");
-					Assert.AreEqual(1, response.UnsignedExtensions.Count(), "Unsigned extension should have been received.");
-				},
-				op => {
+			var opStore = new StandardProviderApplicationStore();
+			int rpStep = 0;
+			var coordinator = new CoordinatorBase(
+				async (hostFactories, ct) => {
+					var op = new OpenIdProvider(opStore);
 					RegisterMockExtension(op.Channel);
-					op.Channel.Respond(CreateResponseWithExtensions(protocol));
-					op.Respond(op.GetRequest()); // check_auth
+					var redirectingResponse = await op.Channel.PrepareResponseAsync(CreateResponseWithExtensions(protocol));
+					using (var httpClient = hostFactories.CreateHttpClient()) {
+						using (var response = await httpClient.GetAsync(redirectingResponse.Headers.Location)) {
+							response.EnsureSuccessStatusCode();
+						}
+					}
+
 					op.SecuritySettings.SignOutgoingExtensions = false;
-					op.Channel.Respond(CreateResponseWithExtensions(protocol));
-					op.Respond(op.GetRequest()); // check_auth
-				});
-			coordinator.Run();
+					redirectingResponse = await op.Channel.PrepareResponseAsync(CreateResponseWithExtensions(protocol));
+					using (var httpClient = hostFactories.CreateHttpClient()) {
+						using (var response = await httpClient.GetAsync(redirectingResponse.Headers.Location)) {
+							response.EnsureSuccessStatusCode();
+						}
+					}
+				},
+				CoordinatorBase.Handle(RPRealmUri).By(async (hostFactories, req, ct) => {
+					var rp = new OpenIdRelyingParty(new StandardRelyingPartyApplicationStore(), hostFactories);
+					RegisterMockExtension(rp.Channel);
+
+					switch (++rpStep) {
+						case 1:
+							var response = await rp.Channel.ReadFromRequestAsync<IndirectSignedResponse>(req, ct);
+							Assert.AreEqual(1, response.SignedExtensions.Count(), "Signed extension should have been received.");
+							Assert.AreEqual(0, response.UnsignedExtensions.Count(), "No unsigned extension should be present.");
+							break;
+						case 2:
+							response = await rp.Channel.ReadFromRequestAsync<IndirectSignedResponse>(req, ct);
+							Assert.AreEqual(0, response.SignedExtensions.Count(), "No signed extension should have been received.");
+							Assert.AreEqual(1, response.UnsignedExtensions.Count(), "Unsigned extension should have been received.");
+							break;
+
+						default:
+							throw Assumes.NotReachable();
+					}
+
+					return new HttpResponseMessage();
+				}),
+				CoordinatorBase.Handle(OPUri).By(async (hostFactories, req, ct) => {
+					var op = new OpenIdProvider(opStore);
+					return await AutoProviderActionAsync(op, req, ct);
+				}));
+			await coordinator.RunAsync();
 		}
 
 		/// <summary>
@@ -181,7 +215,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		private IndirectSignedResponse CreateResponseWithExtensions(Protocol protocol) {
 			Requires.NotNull(protocol, "protocol");
 
-			IndirectSignedResponse response = new IndirectSignedResponse(protocol.Version, RPUri);
+			var response = new IndirectSignedResponse(protocol.Version, RPUri);
 			response.ProviderEndpoint = OPUri;
 			response.Extensions.Add(new MockOpenIdExtension("pv", "ev"));
 			return response;

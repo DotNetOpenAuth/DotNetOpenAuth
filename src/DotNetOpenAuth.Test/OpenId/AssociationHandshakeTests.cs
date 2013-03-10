@@ -24,13 +24,13 @@ namespace DotNetOpenAuth.Test.OpenId {
 		}
 
 		[Test]
-		public void AssociateUnencrypted() {
-			this.ParameterizedAssociationTest(new Uri("https://host"));
+		public async Task AssociateUnencrypted() {
+			await this.ParameterizedAssociationTestAsync(new Uri("https://host"));
 		}
 
 		[Test]
-		public void AssociateDiffieHellmanOverHttp() {
-			this.ParameterizedAssociationTest(new Uri("http://host"));
+		public async Task AssociateDiffieHellmanOverHttp() {
+			await this.ParameterizedAssociationTestAsync(new Uri("http://host"));
 		}
 
 		/// <summary>
@@ -124,15 +124,15 @@ namespace DotNetOpenAuth.Test.OpenId {
 		public async Task OPRejectsHttpNoEncryptionAssociateRequests() {
 			Protocol protocol = Protocol.V20;
 			var coordinator = new CoordinatorBase(
-				rp => {
+				CoordinatorBase.RelyingPartyDriver(async (rp, ct) => {
 					// We have to formulate the associate request manually,
-					// since the DNOI RP won't voluntarily suggest no encryption at all.
+					// since the DNOA RP won't voluntarily suggest no encryption at all.
 					var request = new AssociateUnencryptedRequestNoSslCheck(protocol.Version, OPUri);
 					request.AssociationType = protocol.Args.SignatureAlgorithm.HMAC_SHA256;
 					request.SessionType = protocol.Args.SessionType.NoEncryption;
-					var response = rp.Channel.Request<DirectErrorResponse>(request);
+					var response = await rp.Channel.RequestAsync<DirectErrorResponse>(request, ct);
 					Assert.IsNotNull(response);
-				},
+				}),
 				AutoProvider);
 			await coordinator.RunAsync();
 		}
@@ -145,18 +145,18 @@ namespace DotNetOpenAuth.Test.OpenId {
 		public async Task OPRejectsMismatchingAssociationAndSessionTypes() {
 			Protocol protocol = Protocol.V20;
 			var coordinator = new CoordinatorBase(
-				rp => {
+				CoordinatorBase.RelyingPartyDriver(async (rp, ct) => {
 					// We have to formulate the associate request manually,
 					// since the DNOI RP won't voluntarily mismatch the association and session types.
 					AssociateDiffieHellmanRequest request = new AssociateDiffieHellmanRequest(protocol.Version, new Uri("https://Provider"));
 					request.AssociationType = protocol.Args.SignatureAlgorithm.HMAC_SHA256;
 					request.SessionType = protocol.Args.SessionType.DH_SHA1;
 					request.InitializeRequest();
-					var response = rp.Channel.Request<AssociateUnsuccessfulResponse>(request);
+					var response = await rp.Channel.RequestAsync<AssociateUnsuccessfulResponse>(request, ct);
 					Assert.IsNotNull(response);
 					Assert.AreEqual(protocol.Args.SignatureAlgorithm.HMAC_SHA1, response.AssociationType);
 					Assert.AreEqual(protocol.Args.SessionType.DH_SHA1, response.SessionType);
-				},
+				}),
 				AutoProvider);
 			await coordinator.RunAsync();
 		}
@@ -168,20 +168,20 @@ namespace DotNetOpenAuth.Test.OpenId {
 		public async Task RPRejectsUnrecognizedAssociationType() {
 			Protocol protocol = Protocol.V20;
 			var coordinator = new CoordinatorBase(
-				rp => {
-					var association = rp.AssociationManager.GetOrCreateAssociation(new ProviderEndpointDescription(OPUri, protocol.Version));
+				CoordinatorBase.RelyingPartyDriver(async (rp, ct) => {
+					var association = await rp.AssociationManager.GetOrCreateAssociationAsync(new ProviderEndpointDescription(OPUri, protocol.Version), ct);
 					Assert.IsNull(association, "The RP should quietly give up when the OP misbehaves.");
-				},
-				op => {
+				}),
+				CoordinatorBase.HandleProvider(async (op, req, ct) => {
 					// Receive initial request.
-					var request = op.Channel.ReadFromRequest<AssociateRequest>();
+					var request = await op.Channel.ReadFromRequestAsync<AssociateRequest>(req, ct);
 
 					// Send a response that suggests a foreign association type.
-					AssociateUnsuccessfulResponse renegotiateResponse = new AssociateUnsuccessfulResponse(request.Version, request);
+					var renegotiateResponse = new AssociateUnsuccessfulResponse(request.Version, request);
 					renegotiateResponse.AssociationType = "HMAC-UNKNOWN";
 					renegotiateResponse.SessionType = "DH-UNKNOWN";
-					op.Channel.Respond(renegotiateResponse);
-				});
+					return await op.Channel.PrepareResponseAsync(renegotiateResponse, ct);
+				}));
 			await coordinator.RunAsync();
 		}
 
@@ -195,20 +195,20 @@ namespace DotNetOpenAuth.Test.OpenId {
 		public async Task RPRejectsUnencryptedSuggestion() {
 			Protocol protocol = Protocol.V20;
 			var coordinator = new CoordinatorBase(
-				rp => {
-					var association = rp.AssociationManager.GetOrCreateAssociation(new ProviderEndpointDescription(OPUri, protocol.Version));
+				CoordinatorBase.RelyingPartyDriver(async (rp, ct) => {
+					var association = await rp.AssociationManager.GetOrCreateAssociationAsync(new ProviderEndpointDescription(OPUri, protocol.Version), ct);
 					Assert.IsNull(association, "The RP should quietly give up when the OP misbehaves.");
-				},
-				op => {
+				}),
+				CoordinatorBase.HandleProvider(async (op, req, ct) => {
 					// Receive initial request.
-					var request = op.Channel.ReadFromRequest<AssociateRequest>();
+					var request = await op.Channel.ReadFromRequestAsync<AssociateRequest>(req, ct);
 
 					// Send a response that suggests a no encryption.
-					AssociateUnsuccessfulResponse renegotiateResponse = new AssociateUnsuccessfulResponse(request.Version, request);
+					var renegotiateResponse = new AssociateUnsuccessfulResponse(request.Version, request);
 					renegotiateResponse.AssociationType = protocol.Args.SignatureAlgorithm.HMAC_SHA1;
 					renegotiateResponse.SessionType = protocol.Args.SessionType.NoEncryption;
-					op.Channel.Respond(renegotiateResponse);
-				});
+					return await op.Channel.PrepareResponseAsync(renegotiateResponse, ct);
+				}));
 			await coordinator.RunAsync();
 		}
 
@@ -220,20 +220,20 @@ namespace DotNetOpenAuth.Test.OpenId {
 		public async Task RPRejectsMismatchingAssociationAndSessionBitLengths() {
 			Protocol protocol = Protocol.V20;
 			var coordinator = new CoordinatorBase(
-				rp => {
-					var association = rp.AssociationManager.GetOrCreateAssociation(new ProviderEndpointDescription(OPUri, protocol.Version));
+				CoordinatorBase.RelyingPartyDriver(async (rp, ct) => {
+					var association = await rp.AssociationManager.GetOrCreateAssociationAsync(new ProviderEndpointDescription(OPUri, protocol.Version), ct);
 					Assert.IsNull(association, "The RP should quietly give up when the OP misbehaves.");
-				},
-				op => {
+				}),
+				CoordinatorBase.HandleProvider(async (op, req, ct) => {
 					// Receive initial request.
-					var request = op.Channel.ReadFromRequest<AssociateRequest>();
+					var request = await op.Channel.ReadFromRequestAsync<AssociateRequest>(req, ct);
 
 					// Send a mismatched response
 					AssociateUnsuccessfulResponse renegotiateResponse = new AssociateUnsuccessfulResponse(request.Version, request);
 					renegotiateResponse.AssociationType = protocol.Args.SignatureAlgorithm.HMAC_SHA1;
 					renegotiateResponse.SessionType = protocol.Args.SessionType.DH_SHA256;
-					op.Channel.Respond(renegotiateResponse);
-				});
+					return await op.Channel.PrepareResponseAsync(renegotiateResponse, ct);
+				}));
 			await coordinator.RunAsync();
 		}
 
@@ -244,30 +244,35 @@ namespace DotNetOpenAuth.Test.OpenId {
 		[Test]
 		public async Task RPOnlyRenegotiatesOnce() {
 			Protocol protocol = Protocol.V20;
+			int opStep = 0;
 			var coordinator = new CoordinatorBase(
-				rp => {
-					var association = rp.AssociationManager.GetOrCreateAssociation(new ProviderEndpointDescription(OPUri, protocol.Version));
+				CoordinatorBase.RelyingPartyDriver(async (rp, ct) => {
+					var association = await rp.AssociationManager.GetOrCreateAssociationAsync(new ProviderEndpointDescription(OPUri, protocol.Version), ct);
 					Assert.IsNull(association, "The RP should quietly give up when the OP misbehaves.");
-				},
-				op => {
-					// Receive initial request.
-					var request = op.Channel.ReadFromRequest<AssociateRequest>();
+				}),
+				CoordinatorBase.HandleProvider(async (op, req, ct) => {
+					switch (++opStep) {
+						case 1:
+							// Receive initial request.
+							var request = await op.Channel.ReadFromRequestAsync<AssociateRequest>(req, ct);
 
-					// Send a renegotiate response
-					AssociateUnsuccessfulResponse renegotiateResponse = new AssociateUnsuccessfulResponse(request.Version, request);
-					renegotiateResponse.AssociationType = protocol.Args.SignatureAlgorithm.HMAC_SHA1;
-					renegotiateResponse.SessionType = protocol.Args.SessionType.DH_SHA1;
-					op.Channel.Respond(renegotiateResponse);
+							// Send a renegotiate response
+							var renegotiateResponse = new AssociateUnsuccessfulResponse(request.Version, request);
+							renegotiateResponse.AssociationType = protocol.Args.SignatureAlgorithm.HMAC_SHA1;
+							renegotiateResponse.SessionType = protocol.Args.SessionType.DH_SHA1;
+							return await op.Channel.PrepareResponseAsync(renegotiateResponse, ct);
 
-					// Receive second-try
-					request = op.Channel.ReadFromRequest<AssociateRequest>();
+						case 2:
+							// Receive second-try
+							request = await op.Channel.ReadFromRequestAsync<AssociateRequest>(req, ct);
 
-					// Send ANOTHER renegotiate response, at which point the DNOI RP should give up.
-					renegotiateResponse = new AssociateUnsuccessfulResponse(request.Version, request);
-					renegotiateResponse.AssociationType = protocol.Args.SignatureAlgorithm.HMAC_SHA256;
-					renegotiateResponse.SessionType = protocol.Args.SessionType.DH_SHA256;
-					op.Channel.Respond(renegotiateResponse);
-				});
+							// Send ANOTHER renegotiate response, at which point the DNOI RP should give up.
+							renegotiateResponse = new AssociateUnsuccessfulResponse(request.Version, request);
+							renegotiateResponse.AssociationType = protocol.Args.SignatureAlgorithm.HMAC_SHA256;
+							renegotiateResponse.SessionType = protocol.Args.SessionType.DH_SHA256;
+							return await op.Channel.PrepareResponseAsync(renegotiateResponse, ct);
+					}
+				}));
 			await coordinator.RunAsync();
 		}
 
@@ -278,15 +283,15 @@ namespace DotNetOpenAuth.Test.OpenId {
 		public async Task AssociateRenegotiateLimitedByRPSecuritySettings() {
 			Protocol protocol = Protocol.V20;
 			var coordinator = new CoordinatorBase(
-				rp => {
+				CoordinatorBase.RelyingPartyDriver(async (rp, ct) => {
 					rp.SecuritySettings.MinimumHashBitLength = 256;
-					var association = rp.AssociationManager.GetOrCreateAssociation(new ProviderEndpointDescription(OPUri, protocol.Version));
+					var association = await rp.AssociationManager.GetOrCreateAssociationAsync(new ProviderEndpointDescription(OPUri, protocol.Version), ct);
 					Assert.IsNull(association, "No association should have been created when RP and OP could not agree on association strength.");
-				},
-				op => {
+				}),
+				CoordinatorBase.HandleProvider(async (op, req, ct) => {
 					op.SecuritySettings.MaximumHashBitLength = 160;
-					AutoProvider(op);
-				});
+					return await AutoProviderActionAsync(op, req, ct);
+				}));
 			await coordinator.RunAsync();
 		}
 
@@ -298,7 +303,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 		public async Task AssociateQuietlyFailsAfterHttpError() {
 			this.MockResponder.RegisterMockNotFound(OPUri);
 			var rp = this.CreateRelyingParty();
-			var association = rp.AssociationManager.GetOrCreateAssociation(new ProviderEndpointDescription(OPUri, Protocol.V20.Version));
+			var association = await rp.AssociationManager.GetOrCreateAssociationAsync(new ProviderEndpointDescription(OPUri, Protocol.V20.Version));
 			Assert.IsNull(association);
 		}
 
@@ -306,11 +311,11 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// Runs a parameterized association flow test using all supported OpenID versions.
 		/// </summary>
 		/// <param name="opEndpoint">The OP endpoint to simulate using.</param>
-		private void ParameterizedAssociationTest(Uri opEndpoint) {
+		private async Task ParameterizedAssociationTestAsync(Uri opEndpoint) {
 			foreach (Protocol protocol in Protocol.AllPracticalVersions) {
 				var endpoint = new ProviderEndpointDescription(opEndpoint, protocol.Version);
 				var associationType = protocol.Version.Major < 2 ? protocol.Args.SignatureAlgorithm.HMAC_SHA1 : protocol.Args.SignatureAlgorithm.HMAC_SHA256;
-				this.ParameterizedAssociationTest(endpoint, associationType);
+				await this.ParameterizedAssociationTestAsync(endpoint, associationType);
 			}
 		}
 
@@ -325,7 +330,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// The value of the openid.assoc_type parameter expected,
 		/// or null if a failure is anticipated.
 		/// </param>
-		private void ParameterizedAssociationTest(
+		private async Task ParameterizedAssociationTestAsync(
 			ProviderEndpointDescription opDescription,
 			string expectedAssociationType) {
 			Protocol protocol = Protocol.Lookup(Protocol.Lookup(opDescription.Version).ProtocolVersion);
@@ -335,17 +340,17 @@ namespace DotNetOpenAuth.Test.OpenId {
 			AssociateSuccessfulResponse associateSuccessfulResponse = null;
 			AssociateUnsuccessfulResponse associateUnsuccessfulResponse = null;
 			var coordinator = new CoordinatorBase(
-				rp => {
+				CoordinatorBase.RelyingPartyDriver(async (rp, ct) => {
 					rp.SecuritySettings = this.RelyingPartySecuritySettings;
-					rpAssociation = rp.AssociationManager.GetOrCreateAssociation(opDescription);
-				},
-				op => {
+					rpAssociation = await rp.AssociationManager.GetOrCreateAssociationAsync(opDescription, ct);
+				}),
+				CoordinatorBase.HandleProvider(async (op, request, ct) => {
 					op.SecuritySettings = this.ProviderSecuritySettings;
-					IRequest req = op.GetRequest();
+					IRequest req = await op.GetRequestAsync(request, ct);
 					Assert.IsNotNull(req, "Expected incoming request but did not receive it.");
 					Assert.IsTrue(req.IsResponseReady);
-					op.Respond(req);
-				});
+					return await op.PrepareResponseAsync(req, ct);
+				}));
 			coordinator.IncomingMessageFilter = message => {
 				Assert.AreSame(opDescription.Version, message.Version, "The message was recognized as version {0} but was expected to be {1}.", message.Version, Protocol.Lookup(opDescription.Version).ProtocolVersion);
 				var associateSuccess = message as AssociateSuccessfulResponse;

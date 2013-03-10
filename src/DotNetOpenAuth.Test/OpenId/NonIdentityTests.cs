@@ -5,6 +5,11 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.Test.OpenId {
+	using System;
+	using System.Net.Http;
+	using System.Threading.Tasks;
+
+	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.Provider;
@@ -14,44 +19,62 @@ namespace DotNetOpenAuth.Test.OpenId {
 	[TestFixture]
 	public class NonIdentityTests : OpenIdTestBase {
 		[Test]
-		public void ExtensionOnlyChannelLevel() {
+		public async Task ExtensionOnlyChannelLevel() {
 			Protocol protocol = Protocol.V20;
-			AuthenticationRequestMode mode = AuthenticationRequestMode.Setup;
+			var mode = AuthenticationRequestMode.Setup;
 
-			var coordinator = new OpenIdCoordinator(
-				rp => {
+			await CoordinatorBase.RunAsync(
+				CoordinatorBase.RelyingPartyDriver(async (rp, ct) => {
 					var request = new SignedResponseRequest(protocol.Version, OPUri, mode);
-					rp.Channel.Respond(request);
-				},
-				op => {
-					var request = op.Channel.ReadFromRequest<SignedResponseRequest>();
+					var authRequest = await rp.Channel.PrepareResponseAsync(request);
+					using (var httpClient = rp.Channel.HostFactories.CreateHttpClient()) {
+						using (var response = await httpClient.GetAsync(authRequest.Headers.Location, ct)) {
+							response.EnsureSuccessStatusCode();
+						}
+					}
+				}),
+				CoordinatorBase.HandleProvider(async (op, req, ct) => {
+					var request = await op.Channel.ReadFromRequestAsync<SignedResponseRequest>(req, ct);
 					Assert.IsNotInstanceOf<CheckIdRequest>(request);
-				});
-			coordinator.Run();
+					return new HttpResponseMessage();
+				}));
 		}
 
 		[Test]
-		public void ExtensionOnlyFacadeLevel() {
+		public async Task ExtensionOnlyFacadeLevel() {
 			Protocol protocol = Protocol.V20;
-			var coordinator = new OpenIdCoordinator(
-				rp => {
-					var request = rp.CreateRequest(GetMockIdentifier(protocol.ProtocolVersion), RPRealmUri, RPUri);
+			int opStep = 0;
+			await CoordinatorBase.RunAsync(
+				CoordinatorBase.RelyingPartyDriver(async (rp, ct) => {
+					var request = await rp.CreateRequestAsync(GetMockIdentifier(protocol.ProtocolVersion), RPRealmUri, RPUri, ct);
 
 					request.IsExtensionOnly = true;
-					rp.Channel.Respond(request.RedirectingResponse.OriginalMessage);
-					IAuthenticationResponse response = rp.GetResponse();
-					Assert.AreEqual(AuthenticationStatus.ExtensionsOnly, response.Status);
-				},
-				op => {
-					var assocRequest = op.GetRequest();
-					op.Respond(assocRequest);
+					var redirectRequest = await request.GetRedirectingResponseAsync(ct);
+					Uri redirectResponseUrl;
+					using (var httpClient = rp.Channel.HostFactories.CreateHttpClient()) {
+						using (var redirectResponse = await httpClient.GetAsync(redirectRequest.Headers.Location, ct)) {
+							redirectResponse.EnsureSuccessStatusCode();
+							redirectResponseUrl = redirectRequest.Headers.Location;
+						}
+					}
 
-					var request = (IAnonymousRequest)op.GetRequest();
-					request.IsApproved = true;
-					Assert.IsNotInstanceOf<CheckIdRequest>(request);
-					op.Respond(request);
-				});
-			coordinator.Run();
+					IAuthenticationResponse response = await rp.GetResponseAsync(new HttpRequestMessage(HttpMethod.Get, redirectResponseUrl));
+					Assert.AreEqual(AuthenticationStatus.ExtensionsOnly, response.Status);
+				}),
+				CoordinatorBase.HandleProvider(async (op, req, ct) => {
+					switch (++opStep) {
+						case 1:
+							var assocRequest = await op.GetRequestAsync(req, ct);
+							return await op.PrepareResponseAsync(assocRequest, ct);
+						case 2:
+							var request = (IAnonymousRequest)await op.GetRequestAsync(req, ct);
+							request.IsApproved = true;
+							Assert.IsNotInstanceOf<CheckIdRequest>(request);
+							return await op.PrepareResponseAsync(request, ct);
+						default:
+							throw Assumes.NotReachable();
+					}
+				}));
 		}
 	}
 }
