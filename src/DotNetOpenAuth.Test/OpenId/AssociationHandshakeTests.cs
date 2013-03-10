@@ -41,23 +41,24 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// putting the two together, so we verify that DNOI can handle it.
 		/// </remarks>
 		[Test]
-		public void AssociateDiffieHellmanOverHttps() {
+		public async Task AssociateDiffieHellmanOverHttps() {
 			Protocol protocol = Protocol.V20;
-			OpenIdCoordinator coordinator = new OpenIdCoordinator(
-				(rp, ct) => {
+			var coordinator = new CoordinatorBase(
+				CoordinatorBase.RelyingPartyDriver(async (rp, ct) => {
 					// We have to formulate the associate request manually,
 					// since the DNOI RP won't voluntarily use DH on HTTPS.
-					AssociateDiffieHellmanRequest request = new AssociateDiffieHellmanRequest(protocol.Version, new Uri("https://Provider"));
-					request.AssociationType = protocol.Args.SignatureAlgorithm.HMAC_SHA256;
-					request.SessionType = protocol.Args.SessionType.DH_SHA256;
+					var request = new AssociateDiffieHellmanRequest(protocol.Version, OPUri) {
+						AssociationType = protocol.Args.SignatureAlgorithm.HMAC_SHA256,
+						SessionType = protocol.Args.SessionType.DH_SHA256
+					};
 					request.InitializeRequest();
 					var response = await rp.Channel.RequestAsync<AssociateSuccessfulResponse>(request, CancellationToken.None);
 					Assert.IsNotNull(response);
 					Assert.AreEqual(request.AssociationType, response.AssociationType);
 					Assert.AreEqual(request.SessionType, response.SessionType);
-				},
+				}),
 				AutoProvider);
-			coordinator.Run();
+			await coordinator.RunAsync();
 		}
 
 		/// <summary>
@@ -65,44 +66,52 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// initial request for an association is for a type the OP doesn't support.
 		/// </summary>
 		[Test]
-		public void AssociateRenegotiateBitLength() {
+		public async Task AssociateRenegotiateBitLength() {
 			Protocol protocol = Protocol.V20;
 
 			// The strategy is to make a simple request of the RP to establish an association,
 			// and to more carefully observe the Provider-side of things to make sure that both
 			// the OP and RP are behaving as expected.
-			OpenIdCoordinator coordinator = new OpenIdCoordinator(
-				rp => {
+			int providerAttemptCount = 0;
+			var coordinator = new CoordinatorBase(
+				CoordinatorBase.RelyingPartyDriver(async (rp, ct) => {
 					var opDescription = new ProviderEndpointDescription(OPUri, protocol.Version);
-					Association association = rp.AssociationManager.GetOrCreateAssociation(opDescription);
+					Association association = await rp.AssociationManager.GetOrCreateAssociationAsync(opDescription, ct);
 					Assert.IsNotNull(association, "Association failed to be created.");
 					Assert.AreEqual(protocol.Args.SignatureAlgorithm.HMAC_SHA1, association.GetAssociationType(protocol));
-				},
-				op => {
+				}),
+				CoordinatorBase.HandleProvider(async (op, request, ct) => {
 					op.SecuritySettings.MaximumHashBitLength = 160; // Force OP to reject HMAC-SHA256
 
-					// Receive initial request for an HMAC-SHA256 association.
-					AutoResponsiveRequest req = (AutoResponsiveRequest)op.GetRequest();
-					AssociateRequest associateRequest = (AssociateRequest)req.RequestMessage;
-					Assert.That(associateRequest, Is.Not.Null);
-					Assert.AreEqual(protocol.Args.SignatureAlgorithm.HMAC_SHA256, associateRequest.AssociationType);
+					switch (++providerAttemptCount) {
+						case 1:
+							// Receive initial request for an HMAC-SHA256 association.
+							var req = (AutoResponsiveRequest)await op.GetRequestAsync(request, ct);
+							var associateRequest = (AssociateRequest)req.RequestMessage;
+							Assert.That(associateRequest, Is.Not.Null);
+							Assert.AreEqual(protocol.Args.SignatureAlgorithm.HMAC_SHA256, associateRequest.AssociationType);
 
-					// Ensure that the response is a suggestion that the RP try again with HMAC-SHA1
-					AssociateUnsuccessfulResponse renegotiateResponse = (AssociateUnsuccessfulResponse)req.ResponseMessageTestHook;
-					Assert.AreEqual(protocol.Args.SignatureAlgorithm.HMAC_SHA1, renegotiateResponse.AssociationType);
-					op.Respond(req);
+							// Ensure that the response is a suggestion that the RP try again with HMAC-SHA1
+							var renegotiateResponse = (AssociateUnsuccessfulResponse)await req.GetResponseMessageAsyncTestHook(ct);
+							Assert.AreEqual(protocol.Args.SignatureAlgorithm.HMAC_SHA1, renegotiateResponse.AssociationType);
+							return await op.PrepareResponseAsync(req, ct);
 
-					// Receive second attempt request for an HMAC-SHA1 association.
-					req = (AutoResponsiveRequest)op.GetRequest();
-					associateRequest = (AssociateRequest)req.RequestMessage;
-					Assert.AreEqual(protocol.Args.SignatureAlgorithm.HMAC_SHA1, associateRequest.AssociationType);
+						case 2:
+							// Receive second attempt request for an HMAC-SHA1 association.
+							req = (AutoResponsiveRequest)await op.GetRequestAsync(request);
+							associateRequest = (AssociateRequest)req.RequestMessage;
+							Assert.AreEqual(protocol.Args.SignatureAlgorithm.HMAC_SHA1, associateRequest.AssociationType);
 
-					// Ensure that the response is a success response.
-					AssociateSuccessfulResponse successResponse = (AssociateSuccessfulResponse)req.ResponseMessageTestHook;
-					Assert.AreEqual(protocol.Args.SignatureAlgorithm.HMAC_SHA1, successResponse.AssociationType);
-					op.Respond(req);
-				});
-			coordinator.Run();
+							// Ensure that the response is a success response.
+							var successResponse = (AssociateSuccessfulResponse)await req.GetResponseMessageAsyncTestHook(ct);
+							Assert.AreEqual(protocol.Args.SignatureAlgorithm.HMAC_SHA1, successResponse.AssociationType);
+							return await op.PrepareResponseAsync(req, ct);
+
+						default:
+							throw Assumes.NotReachable();
+					}
+				}));
+			await coordinator.RunAsync();
 		}
 
 		/// <summary>
@@ -112,9 +121,9 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// Verifies OP's compliance with OpenID 2.0 section 8.4.1.
 		/// </remarks>
 		[Test]
-		public void OPRejectsHttpNoEncryptionAssociateRequests() {
+		public async Task OPRejectsHttpNoEncryptionAssociateRequests() {
 			Protocol protocol = Protocol.V20;
-			OpenIdCoordinator coordinator = new OpenIdCoordinator(
+			var coordinator = new CoordinatorBase(
 				rp => {
 					// We have to formulate the associate request manually,
 					// since the DNOI RP won't voluntarily suggest no encryption at all.
@@ -125,7 +134,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 					Assert.IsNotNull(response);
 				},
 				AutoProvider);
-			coordinator.Run();
+			await coordinator.RunAsync();
 		}
 
 		/// <summary>
@@ -133,9 +142,9 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// when the HMAC and DH bit lengths do not match.
 		/// </summary>
 		[Test]
-		public void OPRejectsMismatchingAssociationAndSessionTypes() {
+		public async Task OPRejectsMismatchingAssociationAndSessionTypes() {
 			Protocol protocol = Protocol.V20;
-			OpenIdCoordinator coordinator = new OpenIdCoordinator(
+			var coordinator = new CoordinatorBase(
 				rp => {
 					// We have to formulate the associate request manually,
 					// since the DNOI RP won't voluntarily mismatch the association and session types.
@@ -149,16 +158,16 @@ namespace DotNetOpenAuth.Test.OpenId {
 					Assert.AreEqual(protocol.Args.SessionType.DH_SHA1, response.SessionType);
 				},
 				AutoProvider);
-			coordinator.Run();
+			await coordinator.RunAsync();
 		}
 
 		/// <summary>
 		/// Verifies that the RP quietly rejects an OP that suggests an unknown association type.
 		/// </summary>
 		[Test]
-		public void RPRejectsUnrecognizedAssociationType() {
+		public async Task RPRejectsUnrecognizedAssociationType() {
 			Protocol protocol = Protocol.V20;
-			OpenIdCoordinator coordinator = new OpenIdCoordinator(
+			var coordinator = new CoordinatorBase(
 				rp => {
 					var association = rp.AssociationManager.GetOrCreateAssociation(new ProviderEndpointDescription(OPUri, protocol.Version));
 					Assert.IsNull(association, "The RP should quietly give up when the OP misbehaves.");
@@ -173,7 +182,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 					renegotiateResponse.SessionType = "DH-UNKNOWN";
 					op.Channel.Respond(renegotiateResponse);
 				});
-			coordinator.Run();
+			await coordinator.RunAsync();
 		}
 
 		/// <summary>
@@ -183,9 +192,9 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// Verifies RP's compliance with OpenID 2.0 section 8.4.1.
 		/// </remarks>
 		[Test]
-		public void RPRejectsUnencryptedSuggestion() {
+		public async Task RPRejectsUnencryptedSuggestion() {
 			Protocol protocol = Protocol.V20;
-			OpenIdCoordinator coordinator = new OpenIdCoordinator(
+			var coordinator = new CoordinatorBase(
 				rp => {
 					var association = rp.AssociationManager.GetOrCreateAssociation(new ProviderEndpointDescription(OPUri, protocol.Version));
 					Assert.IsNull(association, "The RP should quietly give up when the OP misbehaves.");
@@ -200,7 +209,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 					renegotiateResponse.SessionType = protocol.Args.SessionType.NoEncryption;
 					op.Channel.Respond(renegotiateResponse);
 				});
-			coordinator.Run();
+			await coordinator.RunAsync();
 		}
 
 		/// <summary>
@@ -208,9 +217,9 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// when the HMAC and DH bit lengths do not match.
 		/// </summary>
 		[Test]
-		public void RPRejectsMismatchingAssociationAndSessionBitLengths() {
+		public async Task RPRejectsMismatchingAssociationAndSessionBitLengths() {
 			Protocol protocol = Protocol.V20;
-			OpenIdCoordinator coordinator = new OpenIdCoordinator(
+			var coordinator = new CoordinatorBase(
 				rp => {
 					var association = rp.AssociationManager.GetOrCreateAssociation(new ProviderEndpointDescription(OPUri, protocol.Version));
 					Assert.IsNull(association, "The RP should quietly give up when the OP misbehaves.");
@@ -225,7 +234,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 					renegotiateResponse.SessionType = protocol.Args.SessionType.DH_SHA256;
 					op.Channel.Respond(renegotiateResponse);
 				});
-			coordinator.Run();
+			await coordinator.RunAsync();
 		}
 
 		/// <summary>
@@ -233,9 +242,9 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// keeps sending it association retry messages.
 		/// </summary>
 		[Test]
-		public void RPOnlyRenegotiatesOnce() {
+		public async Task RPOnlyRenegotiatesOnce() {
 			Protocol protocol = Protocol.V20;
-			OpenIdCoordinator coordinator = new OpenIdCoordinator(
+			var coordinator = new CoordinatorBase(
 				rp => {
 					var association = rp.AssociationManager.GetOrCreateAssociation(new ProviderEndpointDescription(OPUri, protocol.Version));
 					Assert.IsNull(association, "The RP should quietly give up when the OP misbehaves.");
@@ -259,16 +268,16 @@ namespace DotNetOpenAuth.Test.OpenId {
 					renegotiateResponse.SessionType = protocol.Args.SessionType.DH_SHA256;
 					op.Channel.Respond(renegotiateResponse);
 				});
-			coordinator.Run();
+			await coordinator.RunAsync();
 		}
 
 		/// <summary>
 		/// Verifies security settings limit RP's acceptance of OP's counter-suggestion
 		/// </summary>
 		[Test]
-		public void AssociateRenegotiateLimitedByRPSecuritySettings() {
+		public async Task AssociateRenegotiateLimitedByRPSecuritySettings() {
 			Protocol protocol = Protocol.V20;
-			OpenIdCoordinator coordinator = new OpenIdCoordinator(
+			var coordinator = new CoordinatorBase(
 				rp => {
 					rp.SecuritySettings.MinimumHashBitLength = 256;
 					var association = rp.AssociationManager.GetOrCreateAssociation(new ProviderEndpointDescription(OPUri, protocol.Version));
@@ -278,7 +287,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 					op.SecuritySettings.MaximumHashBitLength = 160;
 					AutoProvider(op);
 				});
-			coordinator.Run();
+			await coordinator.RunAsync();
 		}
 
 		/// <summary>
@@ -286,7 +295,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// response from the OP, for example in the HTTP timeout case.
 		/// </summary>
 		[Test]
-		public void AssociateQuietlyFailsAfterHttpError() {
+		public async Task AssociateQuietlyFailsAfterHttpError() {
 			this.MockResponder.RegisterMockNotFound(OPUri);
 			var rp = this.CreateRelyingParty();
 			var association = rp.AssociationManager.GetOrCreateAssociation(new ProviderEndpointDescription(OPUri, Protocol.V20.Version));
@@ -325,7 +334,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Association rpAssociation = null, opAssociation;
 			AssociateSuccessfulResponse associateSuccessfulResponse = null;
 			AssociateUnsuccessfulResponse associateUnsuccessfulResponse = null;
-			OpenIdCoordinator coordinator = new OpenIdCoordinator(
+			var coordinator = new CoordinatorBase(
 				rp => {
 					rp.SecuritySettings = this.RelyingPartySecuritySettings;
 					rpAssociation = rp.AssociationManager.GetOrCreateAssociation(opDescription);
@@ -351,7 +360,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			coordinator.OutgoingMessageFilter = message => {
 				Assert.AreEqual(opDescription.Version, message.Version, "The message was for version {0} but was expected to be for {1}.", message.Version, opDescription.Version);
 			};
-			coordinator.Run();
+			await coordinator.RunAsync();
 
 			if (expectSuccess) {
 				Assert.IsNotNull(rpAssociation);

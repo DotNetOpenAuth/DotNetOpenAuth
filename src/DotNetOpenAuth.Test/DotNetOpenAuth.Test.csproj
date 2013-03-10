@@ -205,7 +205,6 @@
     <Compile Include="OpenId\Messages\PositiveAssertionResponseTests.cs" />
     <Compile Include="OpenId\Messages\SignedResponseRequestTests.cs" />
     <Compile Include="OpenId\NonIdentityTests.cs" />
-    <Compile Include="OpenId\OpenIdCoordinator.cs" />
     <Compile Include="OpenId\AssociationHandshakeTests.cs" />
     <Compile Include="OpenId\OpenIdTestBase.cs" />
     <Compile Include="OpenId\OpenIdUtilitiesTests.cs" />

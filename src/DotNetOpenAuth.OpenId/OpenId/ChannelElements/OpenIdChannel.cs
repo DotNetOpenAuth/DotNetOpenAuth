@@ -53,7 +53,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// message types can deserialize from it.</param>
 		/// <param name="bindingElements">The binding elements to use in sending and receiving messages.</param>
 		/// <param name="hostFactories">The host factories.</param>
-		protected OpenIdChannel(IMessageFactory messageTypeProvider, IChannelBindingElement[] bindingElements, IHostFactories hostFactories = null)
+		protected OpenIdChannel(IMessageFactory messageTypeProvider, IChannelBindingElement[] bindingElements, IHostFactories hostFactories)
 			: base(messageTypeProvider, bindingElements, hostFactories ?? new DefaultOpenIdHostFactories()) {
 			Requires.NotNull(messageTypeProvider, "messageTypeProvider");
 

@@ -101,20 +101,22 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="OpenIdRelyingParty"/> class.
+		/// Initializes a new instance of the <see cref="OpenIdRelyingParty" /> class.
 		/// </summary>
 		/// <param name="applicationStore">The application store.  If <c>null</c>, the relying party will always operate in "stateless/dumb mode".</param>
-		public OpenIdRelyingParty(IOpenIdApplicationStore applicationStore)
-			: this(applicationStore, applicationStore) {
+		/// <param name="hostFactories">The host factories.</param>
+		public OpenIdRelyingParty(IOpenIdApplicationStore applicationStore, IHostFactories hostFactories = null)
+			: this(applicationStore, applicationStore, hostFactories) {
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="OpenIdRelyingParty"/> class.
+		/// Initializes a new instance of the <see cref="OpenIdRelyingParty" /> class.
 		/// </summary>
 		/// <param name="cryptoKeyStore">The association store.  If <c>null</c>, the relying party will always operate in "stateless/dumb mode".</param>
 		/// <param name="nonceStore">The nonce store to use.  If <c>null</c>, the relying party will always operate in "stateless/dumb mode".</param>
+		/// <param name="hostFactories">The host factories.</param>
 		[SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = "Unavoidable")]
-		private OpenIdRelyingParty(ICryptoKeyStore cryptoKeyStore, INonceStore nonceStore) {
+		private OpenIdRelyingParty(ICryptoKeyStore cryptoKeyStore, INonceStore nonceStore, IHostFactories hostFactories) {
 			// If we are a smart-mode RP (supporting associations), then we MUST also be 
 			// capable of storing nonces to prevent replay attacks.
 			// If we're a dumb-mode RP, then 2.0 OPs are responsible for preventing replays.
@@ -137,7 +139,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				this.SecuritySettings.MinimumRequiredOpenIdVersion = ProtocolVersion.V20;
 			}
 
-			this.channel = new OpenIdRelyingPartyChannel(cryptoKeyStore, nonceStore, this.SecuritySettings);
+			this.channel = new OpenIdRelyingPartyChannel(cryptoKeyStore, nonceStore, this.SecuritySettings, hostFactories);
 			var associationStore = cryptoKeyStore != null ? new CryptoKeyStoreAsRelyingPartyAssociationStore(cryptoKeyStore) : null;
 			this.AssociationManager = new AssociationManager(this.Channel, associationStore, this.SecuritySettings);
 			this.discoveryServices = new IdentifierDiscoveryServices(this);
