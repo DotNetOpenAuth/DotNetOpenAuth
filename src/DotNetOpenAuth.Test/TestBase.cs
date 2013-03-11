@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.Test {
 	using System;
 	using System.IO;
 	using System.Reflection;
+	using System.Threading.Tasks;
 	using System.Web;
 	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.OAuth.Messages;
@@ -67,7 +68,7 @@ namespace DotNetOpenAuth.Test {
 			log4net.LogManager.Shutdown();
 		}
 
-		internal static Stats MeasurePerformance(Action action, float maximumAllowedUnitTime, int samples = 10, int iterations = 100, string name = null) {
+		internal static Stats MeasurePerformance(Func<Task> action, float maximumAllowedUnitTime, int samples = 10, int iterations = 100, string name = null) {
 			if (!PerformanceTestUtilities.IsOptimized(typeof(OpenIdRelyingParty).Assembly)) {
 				Assert.Inconclusive("Unoptimized code.");
 			}
@@ -75,7 +76,7 @@ namespace DotNetOpenAuth.Test {
 			var timer = new MultiSampleCodeTimer(samples, iterations);
 			Stats stats;
 			using (new HighPerformance()) {
-				stats = timer.Measure(name ?? TestContext.CurrentContext.Test.FullName, action);
+				stats = timer.Measure(name ?? TestContext.CurrentContext.Test.FullName, action().Wait());
 			}
 
 			stats.AdjustForScale(PerformanceTestUtilities.Baseline.Median);

@@ -34,7 +34,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// Initializes a new instance of the <see cref="NegativeAssertionResponse"/> class.
 		/// </summary>
 		/// <param name="request">The request.</param>
-		private NegativeAssertionResponse(SignedResponseRequest request)
+		internal NegativeAssertionResponse(SignedResponseRequest request)
 			: base(request, GetMode(request)) {
 		}
 
