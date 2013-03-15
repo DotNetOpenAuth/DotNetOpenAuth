@@ -203,7 +203,13 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 					if (!string.IsNullOrEmpty(this.Country)) {
 						cultureString += "-" + this.Country;
 					}
-					this.culture = CultureInfo.GetCultureInfo(cultureString);
+					//Language + Country not neccessarily make a valid culture identifier
+					try {
+						this.culture = CultureInfo.GetCultureInfo(cultureString);
+					}
+					catch(CultureNotFoundException) {
+						this.culture = CultureInfo.GetCultureInfo(this.Language);
+					}
 				}
 
 				return this.culture;
