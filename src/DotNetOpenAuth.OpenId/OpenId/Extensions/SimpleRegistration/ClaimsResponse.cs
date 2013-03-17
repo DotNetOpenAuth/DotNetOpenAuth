@@ -192,7 +192,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 		}
 
 		/// <summary>
-		/// Gets or sets a combination o the language and country of the user.
+		/// Gets or sets a combination of the language and country of the user.
 		/// </summary>
 		[XmlIgnore]
 		public CultureInfo Culture {
@@ -203,11 +203,14 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 					if (!string.IsNullOrEmpty(this.Country)) {
 						cultureString += "-" + this.Country;
 					}
-					//Language + Country not neccessarily make a valid culture identifier
+
+					// language-country may not always form a recongized valid culture.
+					// For instance, a Google OpenID Provider can return a random combination
+					// of language and country based on user settings.
 					try {
 						this.culture = CultureInfo.GetCultureInfo(cultureString);
-					}
-					catch(CultureNotFoundException) {
+					} catch (CultureNotFoundException) {
+						// Fallback to just reporting a culture based on language.
 						this.culture = CultureInfo.GetCultureInfo(this.Language);
 					}
 				}
