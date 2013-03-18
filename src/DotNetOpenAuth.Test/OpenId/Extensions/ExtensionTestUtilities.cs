@@ -8,6 +8,9 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Net.Http;
+	using System.Threading.Tasks;
+
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId;
@@ -30,7 +33,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 		/// This method relies on the extension objects' Equals methods to verify
 		/// accurate transport.  The Equals methods should be verified by separate tests.
 		/// </remarks>
-		internal static void Roundtrip(
+		internal static async Task RoundtripAsync(
 			Protocol protocol,
 			IEnumerable<IOpenIdMessageExtension> requests,
 			IEnumerable<IOpenIdMessageExtension> responses) {
@@ -38,8 +41,8 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			var cryptoKeyStore = new MemoryCryptoKeyStore();
 			var associationStore = new ProviderAssociationHandleEncoder(cryptoKeyStore);
 			Association association = HmacShaAssociationProvider.Create(protocol, protocol.Args.SignatureAlgorithm.Best, AssociationRelyingPartyType.Smart, associationStore, securitySettings);
-			var coordinator = new OpenIdCoordinator(
-				rp => {
+			await CoordinatorBase.RunAsync(
+				CoordinatorBase.RelyingPartyDriver(async (rp, ct) => {
 					RegisterExtension(rp.Channel, Mocks.MockOpenIdExtension.Factory);
 					var requestBase = new CheckIdRequest(protocol.Version, OpenIdTestBase.OPUri, AuthenticationRequestMode.Immediate);
 					OpenIdTestBase.StoreAssociation(rp, OpenIdTestBase.OPUri, association);
@@ -52,17 +55,24 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 						requestBase.Extensions.Add(extension);
 					}
 
-					rp.Channel.Respond(requestBase);
-					var response = rp.Channel.ReadFromRequest<PositiveAssertionResponse>();
+					var redirectingRequest = await rp.Channel.PrepareResponseAsync(requestBase);
+					Uri redirectingResponseUri;
+					using (var httpClient = rp.Channel.HostFactories.CreateHttpClient()) {
+						using (var redirectingResponse = await httpClient.GetAsync(redirectingRequest.Headers.Location, ct)) {
+							redirectingResponse.EnsureSuccessStatusCode();
+							redirectingResponseUri = redirectingResponse.Headers.Location;
+						}
+					}
 
+					var response = await rp.Channel.ReadFromRequestAsync<PositiveAssertionResponse>(new HttpRequestMessage(HttpMethod.Get, redirectingResponseUri), ct);
 					var receivedResponses = response.Extensions.Cast<IOpenIdMessageExtension>();
 					CollectionAssert<IOpenIdMessageExtension>.AreEquivalentByEquality(responses.ToArray(), receivedResponses.ToArray());
-				},
-				op => {
+				}),
+				CoordinatorBase.HandleProvider(async (op, req, ct) => {
 					RegisterExtension(op.Channel, Mocks.MockOpenIdExtension.Factory);
 					var key = cryptoKeyStore.GetCurrentKey(ProviderAssociationHandleEncoder.AssociationHandleEncodingSecretBucket, TimeSpan.FromSeconds(1));
 					op.CryptoKeyStore.StoreKey(ProviderAssociationHandleEncoder.AssociationHandleEncodingSecretBucket, key.Key, key.Value);
-					var request = op.Channel.ReadFromRequest<CheckIdRequest>();
+					var request = await op.Channel.ReadFromRequestAsync<CheckIdRequest>(req, ct);
 					var response = new PositiveAssertionResponse(request);
 					var receivedRequests = request.Extensions.Cast<IOpenIdMessageExtension>();
 					CollectionAssert<IOpenIdMessageExtension>.AreEquivalentByEquality(requests.ToArray(), receivedRequests.ToArray());
@@ -71,9 +81,8 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 						response.Extensions.Add(extensionResponse);
 					}
 
-					op.Channel.Respond(response);
-				});
-			coordinator.Run();
+					return await op.Channel.PrepareResponseAsync(response, ct);
+				}));
 		}
 
 		internal static void RegisterExtension(Channel channel, StandardOpenIdExtensionFactory.CreateDelegate extensionFactory) {

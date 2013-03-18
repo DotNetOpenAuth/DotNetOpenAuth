@@ -125,6 +125,7 @@
     <Compile Include="Messaging\Reflection\MessagePartTests.cs" />
     <Compile Include="Messaging\Reflection\ValueMappingTests.cs" />
     <Compile Include="Messaging\StandardMessageFactoryTests.cs" />
+    <Compile Include="MockingHostFactories.cs" />
     <Compile Include="Mocks\AssociateUnencryptedRequestNoSslCheck.cs" />
     <Compile Include="Mocks\IBaseMessageExplicitMembers.cs" />
     <Compile Include="Mocks\InMemoryTokenManager.cs" />

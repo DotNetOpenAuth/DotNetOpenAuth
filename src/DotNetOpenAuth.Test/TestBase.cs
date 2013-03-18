@@ -76,7 +76,7 @@ namespace DotNetOpenAuth.Test {
 			var timer = new MultiSampleCodeTimer(samples, iterations);
 			Stats stats;
 			using (new HighPerformance()) {
-				stats = timer.Measure(name ?? TestContext.CurrentContext.Test.FullName, action().Wait());
+				stats = timer.Measure(name ?? TestContext.CurrentContext.Test.FullName, () => action().Wait());
 			}
 
 			stats.AdjustForScale(PerformanceTestUtilities.Baseline.Median);

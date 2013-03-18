@@ -42,7 +42,7 @@ namespace DotNetOpenAuth.Test {
 		}
 
 		protected internal virtual async Task RunAsync(CancellationToken cancellationToken = default(CancellationToken)) {
-			IHostFactories hostFactories = new MyHostFactories(this.handlers);
+			IHostFactories hostFactories = new MockingHostFactories(this.handlers);
 
 			await this.driver(hostFactories, cancellationToken);
 		}
@@ -102,46 +102,6 @@ namespace DotNetOpenAuth.Test {
 						response.Content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
 						return response;
 					});
-			}
-		}
-
-		private class MyHostFactories : IHostFactories {
-			private readonly Handler[] handlers;
-
-			public MyHostFactories(Handler[] handlers) {
-				this.handlers = handlers;
-			}
-
-			public HttpMessageHandler CreateHttpMessageHandler() {
-				return new ForwardingMessageHandler(this.handlers, this);
-			}
-
-			public HttpClient CreateHttpClient(HttpMessageHandler handler = null) {
-				return new HttpClient(handler ?? this.CreateHttpMessageHandler());
-			}
-		}
-
-		private class ForwardingMessageHandler : HttpMessageHandler {
-			private readonly Handler[] handlers;
-
-			private readonly IHostFactories hostFactories;
-
-			public ForwardingMessageHandler(Handler[] handlers, IHostFactories hostFactories) {
-				this.handlers = handlers;
-				this.hostFactories = hostFactories;
-			}
-
-			protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken) {
-				foreach (var handler in this.handlers) {
-					if (handler.Uri.IsBaseOf(request.RequestUri) && handler.Uri.AbsolutePath == request.RequestUri.AbsolutePath) {
-						var response = await handler.MessageHandler(this.hostFactories, request, cancellationToken);
-						if (response != null) {
-							return response;
-						}
-					}
-				}
-
-				return new HttpResponseMessage(HttpStatusCode.NotFound);
 			}
 		}
 	}

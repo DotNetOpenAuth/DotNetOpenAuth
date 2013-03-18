@@ -84,7 +84,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 		internal static CoordinatorBase.Handler RegisterMockXrdsResponse(string embeddedResourcePath, out Identifier id) {
 			id = new Uri(new Uri("http://localhost/"), embeddedResourcePath);
 			return CoordinatorBase.Handle(new Uri(id))
-			                      .By(OpenIdTestBase.LoadEmbeddedFile(embeddedResourcePath), "application/xrds+xml");
+								  .By(OpenIdTestBase.LoadEmbeddedFile(embeddedResourcePath), "application/xrds+xml");
 		}
 
 		internal static CoordinatorBase.Handler RegisterMockRPDiscovery(bool ssl) {
@@ -112,6 +112,18 @@ namespace DotNetOpenAuth.Test.Mocks {
 			var response = new HttpResponseMessage(HttpStatusCode.Redirect);
 			response.Headers.Location = redirectLocation;
 			return new CoordinatorBase.Handler(origin).By(req => response);
+		}
+
+		internal static CoordinatorBase.Handler[] RegisterMockXrdsResponses(
+			IEnumerable<KeyValuePair<string, string>> urlXrdsPairs) {
+			Requires.NotNull(urlXrdsPairs, "urlXrdsPairs");
+
+			var results = new List<CoordinatorBase.Handler>();
+			foreach (var keyValuePair in urlXrdsPairs) {
+				results.Add(CoordinatorBase.Handle(new Uri(keyValuePair.Key)).By(keyValuePair.Value, ContentTypes.Xrds));
+			}
+
+			return results.ToArray();
 		}
 	}
 }

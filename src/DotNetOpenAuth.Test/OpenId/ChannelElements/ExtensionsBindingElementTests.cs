@@ -43,10 +43,10 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		}
 
 		[Test]
-		public void RoundTripFullStackTest() {
+		public async Task RoundTripFullStackTest() {
 			IOpenIdMessageExtension request = new MockOpenIdExtension("requestPart", "requestData");
 			IOpenIdMessageExtension response = new MockOpenIdExtension("responsePart", "responseData");
-			ExtensionTestUtilities.Roundtrip(
+			await ExtensionTestUtilities.RoundtripAsync(
 				Protocol.Default,
 				new IOpenIdMessageExtension[] { request },
 				new IOpenIdMessageExtension[] { response });
@@ -179,11 +179,11 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		/// "A namespace MUST NOT be assigned more than one alias in the same message".
 		/// </remarks>
 		[Test]
-		public void TwoExtensionsSameTypeUri() {
+		public async Task TwoExtensionsSameTypeUri() {
 			IOpenIdMessageExtension request1 = new MockOpenIdExtension("requestPart1", "requestData1");
 			IOpenIdMessageExtension request2 = new MockOpenIdExtension("requestPart2", "requestData2");
 			try {
-				ExtensionTestUtilities.Roundtrip(
+				await ExtensionTestUtilities.RoundtripAsync(
 					Protocol.Default,
 					new IOpenIdMessageExtension[] { request1, request2 },
 					new IOpenIdMessageExtension[0]);

@@ -245,7 +245,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 		public async Task RPOnlyRenegotiatesOnce() {
 			Protocol protocol = Protocol.V20;
 			int opStep = 0;
-			var coordinator = new CoordinatorBase(
+			await CoordinatorBase.RunAsync(
 				CoordinatorBase.RelyingPartyDriver(async (rp, ct) => {
 					var association = await rp.AssociationManager.GetOrCreateAssociationAsync(new ProviderEndpointDescription(OPUri, protocol.Version), ct);
 					Assert.IsNull(association, "The RP should quietly give up when the OP misbehaves.");
@@ -271,9 +271,11 @@ namespace DotNetOpenAuth.Test.OpenId {
 							renegotiateResponse.AssociationType = protocol.Args.SignatureAlgorithm.HMAC_SHA256;
 							renegotiateResponse.SessionType = protocol.Args.SessionType.DH_SHA256;
 							return await op.Channel.PrepareResponseAsync(renegotiateResponse, ct);
+
+						default:
+							throw Assumes.NotReachable();
 					}
 				}));
-			await coordinator.RunAsync();
 		}
 
 		/// <summary>
@@ -301,9 +303,9 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// </summary>
 		[Test]
 		public async Task AssociateQuietlyFailsAfterHttpError() {
-			this.MockResponder.RegisterMockNotFound(OPUri);
+			// Without wiring up a mock HTTP handler, the RP will get a 404 Not Found error.
 			var rp = this.CreateRelyingParty();
-			var association = await rp.AssociationManager.GetOrCreateAssociationAsync(new ProviderEndpointDescription(OPUri, Protocol.V20.Version));
+			var association = await rp.AssociationManager.GetOrCreateAssociationAsync(new ProviderEndpointDescription(OPUri, Protocol.V20.Version), CancellationToken.None);
 			Assert.IsNull(association);
 		}
 

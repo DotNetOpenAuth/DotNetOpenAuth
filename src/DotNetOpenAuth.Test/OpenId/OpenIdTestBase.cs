@@ -23,9 +23,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 	using NUnit.Framework;
 
 	public class OpenIdTestBase : TestBase {
-		internal IDirectWebRequestHandler RequestHandler;
-
-		internal MockHttpRequest MockResponder;
+		internal MockingHostFactories HostFactories;
 
 		protected internal const string IdentifierSelect = "http://specs.openid.net/auth/2.0/identifier_select";
 
@@ -73,8 +71,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			this.RelyingPartySecuritySettings = OpenIdElement.Configuration.RelyingParty.SecuritySettings.CreateSecuritySettings();
 			this.ProviderSecuritySettings = OpenIdElement.Configuration.Provider.SecuritySettings.CreateSecuritySettings();
 
-			this.MockResponder = MockHttpRequest.CreateUntrustedMockHttpHandler();
-			this.RequestHandler = this.MockResponder.MockWebRequestHandler;
+			this.HostFactories = new MockingHostFactories();
 			this.AutoProviderScenario = Scenarios.AutoApproval;
 			Identifier.EqualityOnStrings = true;
 		}
@@ -191,10 +188,9 @@ namespace DotNetOpenAuth.Test.OpenId {
 			return await provider.PrepareResponseAsync(request, ct);
 		}
 
-		internal IEnumerable<IdentifierDiscoveryResult> Discover(Identifier identifier) {
+		internal Task<IEnumerable<IdentifierDiscoveryResult>> DiscoverAsync(Identifier identifier, CancellationToken cancellationToken = default(CancellationToken)) {
 			var rp = this.CreateRelyingParty(true);
-			rp.Channel.WebRequestHandler = this.RequestHandler;
-			return rp.Discover(identifier);
+			return rp.DiscoverAsync(identifier, cancellationToken);
 		}
 
 		protected Realm GetMockRealm(bool useSsl) {
@@ -212,8 +208,8 @@ namespace DotNetOpenAuth.Test.OpenId {
 
 		protected Identifier GetMockIdentifier(ProtocolVersion providerVersion, bool useSsl, bool delegating) {
 			var se = GetServiceEndpoint(0, providerVersion, 10, useSsl, delegating);
-			UriIdentifier identityUri = (UriIdentifier)se.ClaimedIdentifier;
-			return new MockIdentifier(identityUri, this.MockResponder, new IdentifierDiscoveryResult[] { se });
+			this.HostFactories.Handlers.Add(MockHttpRequest.RegisterMockXrdsResponse(se));
+			return se.ClaimedIdentifier;
 		}
 
 		protected Identifier GetMockDualIdentifier() {
@@ -224,8 +220,8 @@ namespace DotNetOpenAuth.Test.OpenId {
 				IdentifierDiscoveryResult.CreateForProviderIdentifier(protocol.ClaimedIdentifierForOPIdentifier, opDesc, 20, 20),
 			};
 
-			Identifier dualId = new MockIdentifier(VanityUri, this.MockResponder, dualResults);
-			return dualId;
+			this.HostFactories.Handlers.Add(MockHttpRequest.RegisterMockXrdsResponse(VanityUri, dualResults));
+			return VanityUri;
 		}
 
 		/// <summary>
@@ -242,9 +238,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// <param name="stateless">if set to <c>true</c> a stateless RP is created.</param>
 		/// <returns>The new instance.</returns>
 		protected OpenIdRelyingParty CreateRelyingParty(bool stateless) {
-			var rp = new OpenIdRelyingParty(stateless ? null : new StandardRelyingPartyApplicationStore());
-			rp.Channel.WebRequestHandler = this.MockResponder.MockWebRequestHandler;
-			rp.DiscoveryServices.Add(new MockIdentifierDiscoveryService());
+			var rp = new OpenIdRelyingParty(stateless ? null : new StandardRelyingPartyApplicationStore(), this.HostFactories);
 			return rp;
 		}
 
@@ -253,9 +247,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// </summary>
 		/// <returns>The new instance.</returns>
 		protected OpenIdProvider CreateProvider() {
-			var op = new OpenIdProvider(new StandardProviderApplicationStore());
-			op.Channel.WebRequestHandler = this.MockResponder.MockWebRequestHandler;
-			op.DiscoveryServices.Add(new MockIdentifierDiscoveryService());
+			var op = new OpenIdProvider(new StandardProviderApplicationStore(), this.HostFactories);
 			return op;
 		}
 	}
