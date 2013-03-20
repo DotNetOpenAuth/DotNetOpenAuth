@@ -26,15 +26,15 @@ namespace DotNetOpenAuth.Test {
 	internal class CoordinatorBase {
 		private Func<IHostFactories, CancellationToken, Task> driver;
 
-		private Handler[] handlers;
-
 		internal CoordinatorBase(Func<IHostFactories, CancellationToken, Task> driver, params Handler[] handlers) {
 			Requires.NotNull(driver, "driver");
 			Requires.NotNull(handlers, "handlers");
 
 			this.driver = driver;
-			this.handlers = handlers;
+			this.HostFactories = new MockingHostFactories(handlers.ToList());
 		}
+
+		internal MockingHostFactories HostFactories { get; set; }
 
 		internal static Task RunAsync(Func<IHostFactories, CancellationToken, Task> driver, params Handler[] handlers) {
 			var coordinator = new CoordinatorBase(driver, handlers);
@@ -42,9 +42,7 @@ namespace DotNetOpenAuth.Test {
 		}
 
 		protected internal virtual async Task RunAsync(CancellationToken cancellationToken = default(CancellationToken)) {
-			IHostFactories hostFactories = new MockingHostFactories(this.handlers);
-
-			await this.driver(hostFactories, cancellationToken);
+			await this.driver(this.HostFactories, cancellationToken);
 		}
 
 		internal static Handler Handle(Uri uri) {

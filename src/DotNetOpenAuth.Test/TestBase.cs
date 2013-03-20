@@ -49,6 +49,8 @@ namespace DotNetOpenAuth.Test {
 			get { return this.messageDescriptions; }
 		}
 
+		internal MockingHostFactories HostFactories;
+
 		/// <summary>
 		/// The TestInitialize method for the test cases.
 		/// </summary>
@@ -57,6 +59,7 @@ namespace DotNetOpenAuth.Test {
 			log4net.Config.XmlConfigurator.Configure(Assembly.GetExecutingAssembly().GetManifestResourceStream("DotNetOpenAuth.Test.Logging.config"));
 			MessageBase.LowSecurityMode = true;
 			this.messageDescriptions = new MessageDescriptionCollection();
+			this.HostFactories = new MockingHostFactories();
 			SetMockHttpContext();
 		}
 

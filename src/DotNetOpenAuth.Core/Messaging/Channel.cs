@@ -669,6 +669,10 @@ namespace DotNetOpenAuth.Messaging {
 			Requires.NotNull(request, "request");
 			Requires.That(request.Recipient != null, "request", MessagingStrings.DirectedMessageMissingRecipient);
 
+			if (this.OutgoingMessageFilter != null) {
+				this.OutgoingMessageFilter(request);
+			}
+
 			var webRequest = this.CreateHttpRequest(request);
 			var directRequest = request as IHttpDirectRequest;
 			if (directRequest != null) {
@@ -975,6 +979,10 @@ namespace DotNetOpenAuth.Messaging {
 			return dictionary;
 		}
 
+		internal Action<IProtocolMessage> OutgoingMessageFilter { get; set; }
+
+		internal Action<IProtocolMessage> IncomingMessageFilter { get; set; }
+
 		/// <summary>
 		/// Prepares a message for transmit by applying signatures, nonces, etc.
 		/// </summary>
@@ -1023,6 +1031,10 @@ namespace DotNetOpenAuth.Messaging {
 
 			this.EnsureValidMessageParts(message);
 			message.EnsureValidMessage();
+
+			if (this.OutgoingMessageFilter != null) {
+				this.OutgoingMessageFilter(message);
+			}
 
 			if (Logger.Channel.IsInfoEnabled) {
 				var directedMessage = message as IDirectedProtocolMessage;
@@ -1223,6 +1235,10 @@ namespace DotNetOpenAuth.Messaging {
 			// message deserializer did for us.  It would be too late to do it here since
 			// they might look initialized by the time we have an IProtocolMessage instance.
 			message.EnsureValidMessage();
+
+			if (this.IncomingMessageFilter != null) {
+				this.IncomingMessageFilter(message);
+			}
 		}
 
 		/// <summary>

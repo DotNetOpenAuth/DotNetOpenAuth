@@ -699,28 +699,6 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
-		/// Adds a Set-Cookie HTTP header for the specified cookie.
-		/// WARNING: support for cookie properties is currently VERY LIMITED.
-		/// </summary>
-		/// <param name="headers">The headers.</param>
-		/// <param name="cookie">The cookie.</param>
-		internal static void SetCookie(this HttpResponseHeaders headers, Cookie cookie) {
-			Requires.NotNull(headers, "headers");
-			Requires.NotNull(cookie, "cookie");
-
-			var cookieBuilder = new StringBuilder(HttpUtility.UrlEncode(cookie.Name) + "=" + HttpUtility.UrlEncode(cookie.Value));
-			if (cookie.HttpOnly) {
-				cookieBuilder.Append("; HttpOnly");
-			}
-
-			if (cookie.Secure) {
-				cookieBuilder.Append("; Secure");
-			}
-
-			headers.Add("Set-Cookie", cookieBuilder.ToString());
-		}
-
-		/// <summary>
 		/// Gets a random string made up of a given set of allowable characters.
 		/// </summary>
 		/// <param name="length">The length of the desired random string.</param>

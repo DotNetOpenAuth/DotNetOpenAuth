@@ -23,8 +23,6 @@ namespace DotNetOpenAuth.Test.OpenId {
 	using NUnit.Framework;
 
 	public class OpenIdTestBase : TestBase {
-		internal MockingHostFactories HostFactories;
-
 		protected internal const string IdentifierSelect = "http://specs.openid.net/auth/2.0/identifier_select";
 
 		protected internal static readonly Uri BaseMockUri = new Uri("http://localhost/");
@@ -71,7 +69,6 @@ namespace DotNetOpenAuth.Test.OpenId {
 			this.RelyingPartySecuritySettings = OpenIdElement.Configuration.RelyingParty.SecuritySettings.CreateSecuritySettings();
 			this.ProviderSecuritySettings = OpenIdElement.Configuration.Provider.SecuritySettings.CreateSecuritySettings();
 
-			this.HostFactories = new MockingHostFactories();
 			this.AutoProviderScenario = Scenarios.AutoApproval;
 			Identifier.EqualityOnStrings = true;
 		}

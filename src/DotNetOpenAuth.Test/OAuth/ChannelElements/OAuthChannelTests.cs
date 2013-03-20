@@ -27,7 +27,6 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 	[TestFixture]
 	public class OAuthChannelTests : TestBase {
 		private OAuthChannel channel;
-		private TestWebRequestHandler webRequestHandler;
 		private SigningBindingElementBase signingElement;
 		private INonceStore nonceStore;
 		private DotNetOpenAuth.OAuth.ServiceProviderSecuritySettings serviceProviderSecuritySettings = DotNetOpenAuth.Configuration.OAuthElement.Configuration.ServiceProvider.SecuritySettings.CreateSecuritySettings();
@@ -36,11 +35,9 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 		public override void SetUp() {
 			base.SetUp();
 
-			this.webRequestHandler = new TestWebRequestHandler();
 			this.signingElement = new RsaSha1ServiceProviderSigningBindingElement(new InMemoryTokenManager());
 			this.nonceStore = new NonceMemoryStore(StandardExpirationBindingElement.MaximumMessageAge);
-			this.channel = new OAuthServiceProviderChannel(this.signingElement, this.nonceStore, new InMemoryTokenManager(), this.serviceProviderSecuritySettings, new TestMessageFactory());
-			this.channel.WebRequestHandler = this.webRequestHandler;
+			this.channel = new OAuthServiceProviderChannel(this.signingElement, this.nonceStore, new InMemoryTokenManager(), this.serviceProviderSecuritySettings, new TestMessageFactory(), this.HostFactories);
 		}
 
 		[Test, ExpectedException(typeof(ArgumentException))]
@@ -212,7 +209,7 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 				};
 
 			Assert.AreEqual(CreateAuthorizationHeader(declaredParts), webRequest.Headers.Authorization.ToString());
-			Assert.AreEqual("appearinform=formish", this.webRequestHandler.RequestEntityAsString);
+			Assert.AreEqual("appearinform=formish", await webRequest.Content.ReadAsStringAsync());
 		}
 
 		[Test]
@@ -295,7 +292,7 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 		}
 
 		private async Task ParameterizedRequestTestAsync(HttpDeliveryMethods scheme) {
-			TestDirectedMessage request = new TestDirectedMessage(MessageTransport.Direct) {
+			var request = new TestDirectedMessage(MessageTransport.Direct) {
 				Age = 15,
 				Name = "Andrew",
 				Location = new Uri("http://hostb/pathB"),
@@ -304,36 +301,36 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 				HttpMethods = scheme,
 			};
 
-			HttpResponseMessage rawResponse = null;
-			this.webRequestHandler.Callback = async req => {
-				Assert.IsNotNull(req);
-				HttpRequestMessage reqInfo = ConvertToRequestInfo(req, this.webRequestHandler.RequestEntityStream);
-				Assert.AreEqual(MessagingUtilities.GetHttpVerb(scheme), reqInfo.Method);
-				var incomingMessage = (await this.channel.ReadFromRequestAsync(reqInfo, CancellationToken.None)) as TestMessage;
-				Assert.IsNotNull(incomingMessage);
-				Assert.AreEqual(request.Age, incomingMessage.Age);
-				Assert.AreEqual(request.Name, incomingMessage.Name);
-				Assert.AreEqual(request.Location, incomingMessage.Location);
-				Assert.AreEqual(request.Timestamp, incomingMessage.Timestamp);
+			await CoordinatorBase.RunAsync(
+				async (hostFactories, CancellationToken) => {
+					IProtocolMessage response = await this.channel.RequestAsync(request, CancellationToken.None);
+					Assert.IsNotNull(response);
+					Assert.IsInstanceOf<TestMessage>(response);
+					TestMessage responseMessage = (TestMessage)response;
+					Assert.AreEqual(request.Age, responseMessage.Age);
+					Assert.AreEqual(request.Name, responseMessage.Name);
+					Assert.AreEqual(request.Location, responseMessage.Location);
+				},
+				CoordinatorBase.Handle(request.Location).By(async (req, ct) => {
+					Assert.IsNotNull(req);
+					Assert.AreEqual(MessagingUtilities.GetHttpVerb(scheme), req.Method);
+					var incomingMessage = (await this.channel.ReadFromRequestAsync(req, CancellationToken.None)) as TestMessage;
+					Assert.IsNotNull(incomingMessage);
+					Assert.AreEqual(request.Age, incomingMessage.Age);
+					Assert.AreEqual(request.Name, incomingMessage.Name);
+					Assert.AreEqual(request.Location, incomingMessage.Location);
+					Assert.AreEqual(request.Timestamp, incomingMessage.Timestamp);
 
-				var responseFields = new Dictionary<string, string> {
-					{ "age", request.Age.ToString() },
-					{ "Name", request.Name },
-					{ "Location", request.Location.AbsoluteUri },
-					{ "Timestamp", XmlConvert.ToString(request.Timestamp, XmlDateTimeSerializationMode.Utc) },
-				};
-				rawResponse = new HttpResponseMessage();
-				rawResponse.Content = new StringContent(MessagingUtilities.CreateQueryString(responseFields));
-				return rawResponse;
-			};
-
-			IProtocolMessage response = await this.channel.RequestAsync(request, CancellationToken.None);
-			Assert.IsNotNull(response);
-			Assert.IsInstanceOf<TestMessage>(response);
-			TestMessage responseMessage = (TestMessage)response;
-			Assert.AreEqual(request.Age, responseMessage.Age);
-			Assert.AreEqual(request.Name, responseMessage.Name);
-			Assert.AreEqual(request.Location, responseMessage.Location);
+					var responseFields = new Dictionary<string, string> {
+						{ "age", request.Age.ToString() },
+						{ "Name", request.Name },
+						{ "Location", request.Location.AbsoluteUri },
+						{ "Timestamp", XmlConvert.ToString(request.Timestamp, XmlDateTimeSerializationMode.Utc) },
+					};
+					var rawResponse = new HttpResponseMessage();
+					rawResponse.Content = new StringContent(MessagingUtilities.CreateQueryString(responseFields));
+					return rawResponse;
+				}));
 		}
 
 		private async Task ParameterizedReceiveTestAsync(HttpDeliveryMethods scheme) {

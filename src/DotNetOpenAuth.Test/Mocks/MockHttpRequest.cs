@@ -125,5 +125,33 @@ namespace DotNetOpenAuth.Test.Mocks {
 
 			return results.ToArray();
 		}
+
+		internal static CoordinatorBase.Handler RegisterMockResponse(Uri url, string contentType, string content) {
+			return CoordinatorBase.Handle(url).By(content, contentType);
+		}
+
+		internal static CoordinatorBase.Handler RegisterMockResponse(Uri requestUri, Uri responseUri, string contentType, string content) {
+			return RegisterMockResponse(requestUri, responseUri, contentType, null, content);
+		}
+
+		internal static CoordinatorBase.Handler RegisterMockResponse(Uri requestUri, Uri responseUri, string contentType, WebHeaderCollection headers, string content) {
+			return CoordinatorBase.Handle(requestUri).By(req => {
+				var response = new HttpResponseMessage();
+				response.CopyHeadersFrom(headers);
+				response.Content = new StringContent(content, Encoding.Default, contentType);
+				return response;
+			});
+		}
+
+		private static void CopyHeadersFrom(this HttpResponseMessage message, WebHeaderCollection headers) {
+			if (headers != null) {
+				foreach (string headerName in headers) {
+					string[] headerValues = headers.GetValues(headerName);
+					if (!message.Headers.TryAddWithoutValidation(headerName, headerValues)) {
+						message.Content.Headers.TryAddWithoutValidation(headerName, headerValues);
+					}
+				}
+			}
+		}
 	}
 }

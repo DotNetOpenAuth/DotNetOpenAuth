@@ -341,19 +341,24 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Association rpAssociation = null, opAssociation;
 			AssociateSuccessfulResponse associateSuccessfulResponse = null;
 			AssociateUnsuccessfulResponse associateUnsuccessfulResponse = null;
+			var relyingParty = new OpenIdRelyingParty(new StandardRelyingPartyApplicationStore(), this.HostFactories);
+			var provider = new OpenIdProvider(new StandardProviderApplicationStore(), this.HostFactories) {
+				SecuritySettings = this.ProviderSecuritySettings
+			};
 			var coordinator = new CoordinatorBase(
-				CoordinatorBase.RelyingPartyDriver(async (rp, ct) => {
-					rp.SecuritySettings = this.RelyingPartySecuritySettings;
-					rpAssociation = await rp.AssociationManager.GetOrCreateAssociationAsync(opDescription, ct);
-				}),
-				CoordinatorBase.HandleProvider(async (op, request, ct) => {
-					op.SecuritySettings = this.ProviderSecuritySettings;
-					IRequest req = await op.GetRequestAsync(request, ct);
+				async (hostFactories, ct) => {
+					relyingParty.SecuritySettings = this.RelyingPartySecuritySettings;
+					rpAssociation = await relyingParty.AssociationManager.GetOrCreateAssociationAsync(opDescription, ct);
+				},
+				CoordinatorBase.Handle(opDescription.Uri).By(async (request, ct) => {
+					IRequest req = await provider.GetRequestAsync(request, ct);
 					Assert.IsNotNull(req, "Expected incoming request but did not receive it.");
 					Assert.IsTrue(req.IsResponseReady);
-					return await op.PrepareResponseAsync(req, ct);
+					return await provider.PrepareResponseAsync(req, ct);
 				}));
-			coordinator.IncomingMessageFilter = message => {
+			this.HostFactories.Handlers.AddRange(coordinator.HostFactories.Handlers);
+			coordinator.HostFactories = this.HostFactories;
+			relyingParty.Channel.IncomingMessageFilter = message => {
 				Assert.AreSame(opDescription.Version, message.Version, "The message was recognized as version {0} but was expected to be {1}.", message.Version, Protocol.Lookup(opDescription.Version).ProtocolVersion);
 				var associateSuccess = message as AssociateSuccessfulResponse;
 				var associateFailed = message as AssociateUnsuccessfulResponse;
@@ -364,16 +369,16 @@ namespace DotNetOpenAuth.Test.OpenId {
 					associateUnsuccessfulResponse = associateFailed;
 				}
 			};
-			coordinator.OutgoingMessageFilter = message => {
+			relyingParty.Channel.OutgoingMessageFilter = message => {
 				Assert.AreEqual(opDescription.Version, message.Version, "The message was for version {0} but was expected to be for {1}.", message.Version, opDescription.Version);
 			};
 			await coordinator.RunAsync();
 
 			if (expectSuccess) {
 				Assert.IsNotNull(rpAssociation);
-				Association actual = coordinator.RelyingParty.AssociationManager.AssociationStoreTestHook.GetAssociation(opDescription.Uri, rpAssociation.Handle);
+				Association actual = relyingParty.AssociationManager.AssociationStoreTestHook.GetAssociation(opDescription.Uri, rpAssociation.Handle);
 				Assert.AreEqual(rpAssociation, actual);
-				opAssociation = coordinator.Provider.AssociationStore.Deserialize(new TestSignedDirectedMessage(), false, rpAssociation.Handle);
+				opAssociation = provider.AssociationStore.Deserialize(new TestSignedDirectedMessage(), false, rpAssociation.Handle);
 				Assert.IsNotNull(opAssociation, "The Provider could not decode the association handle.");
 
 				Assert.AreEqual(opAssociation.Handle, rpAssociation.Handle);
@@ -391,7 +396,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 					var unencryptedResponse = (AssociateUnencryptedResponse)associateSuccessfulResponse;
 				}
 			} else {
-				Assert.IsNull(coordinator.RelyingParty.AssociationManager.AssociationStoreTestHook.GetAssociation(opDescription.Uri, new RelyingPartySecuritySettings()));
+				Assert.IsNull(relyingParty.AssociationManager.AssociationStoreTestHook.GetAssociation(opDescription.Uri, new RelyingPartySecuritySettings()));
 			}
 		}
 	}
