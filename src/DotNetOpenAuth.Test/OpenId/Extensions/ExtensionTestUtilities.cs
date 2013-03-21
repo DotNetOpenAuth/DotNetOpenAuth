@@ -42,7 +42,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			var associationStore = new ProviderAssociationHandleEncoder(cryptoKeyStore);
 			Association association = HmacShaAssociationProvider.Create(protocol, protocol.Args.SignatureAlgorithm.Best, AssociationRelyingPartyType.Smart, associationStore, securitySettings);
 			await CoordinatorBase.RunAsync(
-				CoordinatorBase.RelyingPartyDriver(async (rp, ct) => {
+				OpenIdTestBase.RelyingPartyDriver(async (rp, ct) => {
 					RegisterExtension(rp.Channel, Mocks.MockOpenIdExtension.Factory);
 					var requestBase = new CheckIdRequest(protocol.Version, OpenIdTestBase.OPUri, AuthenticationRequestMode.Immediate);
 					OpenIdTestBase.StoreAssociation(rp, OpenIdTestBase.OPUri, association);
@@ -68,7 +68,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 					var receivedResponses = response.Extensions.Cast<IOpenIdMessageExtension>();
 					CollectionAssert<IOpenIdMessageExtension>.AreEquivalentByEquality(responses.ToArray(), receivedResponses.ToArray());
 				}),
-				CoordinatorBase.HandleProvider(async (op, req, ct) => {
+				OpenIdTestBase.HandleProvider(async (op, req, ct) => {
 					RegisterExtension(op.Channel, Mocks.MockOpenIdExtension.Factory);
 					var key = cryptoKeyStore.GetCurrentKey(ProviderAssociationHandleEncoder.AssociationHandleEncodingSecretBucket, TimeSpan.FromSeconds(1));
 					op.CryptoKeyStore.StoreKey(ProviderAssociationHandleEncoder.AssociationHandleEncodingSecretBucket, key.Key, key.Value);

@@ -74,7 +74,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		[Test]
 		public async Task CreateRequestMessage() {
 			var coordinator = new CoordinatorBase(
-				CoordinatorBase.RelyingPartyDriver(async (rp, ct) => {
+				RelyingPartyDriver(async (rp, ct) => {
 					Identifier id = this.GetMockIdentifier(ProtocolVersion.V20);
 					IAuthenticationRequest authRequest = await rp.CreateRequestAsync(id, this.realm, this.returnTo);
 

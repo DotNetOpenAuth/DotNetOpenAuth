@@ -22,6 +22,8 @@ namespace DotNetOpenAuth.Test.OpenId {
 	using DotNetOpenAuth.Test.Mocks;
 	using NUnit.Framework;
 
+	using IAuthenticationRequest = DotNetOpenAuth.OpenId.Provider.IAuthenticationRequest;
+
 	public class OpenIdTestBase : TestBase {
 		protected internal const string IdentifierSelect = "http://specs.openid.net/auth/2.0/identifier_select";
 
@@ -119,7 +121,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 
 		internal static IdentifierDiscoveryResult GetServiceEndpoint(int user, ProtocolVersion providerVersion, int servicePriority, bool useSsl, bool delegating) {
 			var providerEndpoint = new ProviderEndpointDescription(
-				useSsl ? OpenIdTestBase.OPUriSsl : OpenIdTestBase.OPUri,
+				useSsl ? OPUriSsl : OPUri,
 				new string[] { Protocol.Lookup(providerVersion).ClaimedIdentifierServiceTypeURI });
 			var local_id = useSsl ? OPLocalIdentifiersSsl[user] : OPLocalIdentifiers[user];
 			var claimed_id = delegating ? (useSsl ? VanityUriSsl : VanityUri) : local_id;
@@ -161,7 +163,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Assert.That(request, Is.Not.Null);
 
 			if (!request.IsResponseReady) {
-				var authRequest = (DotNetOpenAuth.OpenId.Provider.IAuthenticationRequest)request;
+				var authRequest = (IAuthenticationRequest)request;
 				switch (this.AutoProviderScenario) {
 					case Scenarios.AutoApproval:
 						authRequest.IsAuthenticated = true;
@@ -246,6 +248,27 @@ namespace DotNetOpenAuth.Test.OpenId {
 		protected OpenIdProvider CreateProvider() {
 			var op = new OpenIdProvider(new StandardProviderApplicationStore(), this.HostFactories);
 			return op;
+		}
+
+		protected internal static Func<IHostFactories, CancellationToken, Task> RelyingPartyDriver(Func<OpenIdRelyingParty, CancellationToken, Task> relyingPartyDriver) {
+			return async (hostFactories, ct) => {
+				var rp = new OpenIdRelyingParty(new StandardRelyingPartyApplicationStore(), hostFactories);
+				await relyingPartyDriver(rp, ct);
+			};
+		}
+
+		protected internal static Func<IHostFactories, CancellationToken, Task> ProviderDriver(Func<OpenIdProvider, CancellationToken, Task> providerDriver) {
+			return async (hostFactories, ct) => {
+				var op = new OpenIdProvider(new StandardProviderApplicationStore(), hostFactories);
+				await providerDriver(op, ct);
+			};
+		}
+
+		internal static CoordinatorBase.Handler HandleProvider(Func<OpenIdProvider, HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> provider) {
+			return CoordinatorBase.Handle(OPUri).By(async (req, ct) => {
+				var op = new OpenIdProvider(new StandardProviderApplicationStore());
+				return await provider(op, req, ct);
+			});
 		}
 	}
 }

@@ -24,7 +24,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			var mode = AuthenticationRequestMode.Setup;
 
 			await CoordinatorBase.RunAsync(
-				CoordinatorBase.RelyingPartyDriver(async (rp, ct) => {
+				RelyingPartyDriver(async (rp, ct) => {
 					var request = new SignedResponseRequest(protocol.Version, OPUri, mode);
 					var authRequest = await rp.Channel.PrepareResponseAsync(request);
 					using (var httpClient = rp.Channel.HostFactories.CreateHttpClient()) {
@@ -33,7 +33,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 						}
 					}
 				}),
-				CoordinatorBase.HandleProvider(async (op, req, ct) => {
+				HandleProvider(async (op, req, ct) => {
 					var request = await op.Channel.ReadFromRequestAsync<SignedResponseRequest>(req, ct);
 					Assert.IsNotInstanceOf<CheckIdRequest>(request);
 					return new HttpResponseMessage();
@@ -45,7 +45,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Protocol protocol = Protocol.V20;
 			int opStep = 0;
 			await CoordinatorBase.RunAsync(
-				CoordinatorBase.RelyingPartyDriver(async (rp, ct) => {
+				RelyingPartyDriver(async (rp, ct) => {
 					var request = await rp.CreateRequestAsync(GetMockIdentifier(protocol.ProtocolVersion), RPRealmUri, RPUri, ct);
 
 					request.IsExtensionOnly = true;
@@ -61,7 +61,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 					IAuthenticationResponse response = await rp.GetResponseAsync(new HttpRequestMessage(HttpMethod.Get, redirectResponseUrl));
 					Assert.AreEqual(AuthenticationStatus.ExtensionsOnly, response.Status);
 				}),
-				CoordinatorBase.HandleProvider(async (op, req, ct) => {
+				HandleProvider(async (op, req, ct) => {
 					switch (++opStep) {
 						case 1:
 							var assocRequest = await op.GetRequestAsync(req, ct);

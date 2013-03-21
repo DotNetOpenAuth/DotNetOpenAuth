@@ -49,27 +49,6 @@ namespace DotNetOpenAuth.Test {
 			return new Handler(uri);
 		}
 
-		internal static Func<IHostFactories, CancellationToken, Task> RelyingPartyDriver(Func<OpenIdRelyingParty, CancellationToken, Task> relyingPartyDriver) {
-			return async (hostFactories, ct) => {
-				var rp = new OpenIdRelyingParty(new StandardRelyingPartyApplicationStore(), hostFactories);
-				await relyingPartyDriver(rp, ct);
-			};
-		}
-
-		internal static Func<IHostFactories, CancellationToken, Task> ProviderDriver(Func<OpenIdProvider, CancellationToken, Task> providerDriver) {
-			return async (hostFactories, ct) => {
-				var op = new OpenIdProvider(new StandardProviderApplicationStore(), hostFactories);
-				await providerDriver(op, ct);
-			};
-		}
-
-		internal static Handler HandleProvider(Func<OpenIdProvider, HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> provider) {
-			return Handle(OpenIdTestBase.OPUri).By(async (req, ct) => {
-				var op = new OpenIdProvider(new StandardProviderApplicationStore());
-				return await provider(op, req, ct);
-			});
-		}
-
 		internal struct Handler {
 			internal Handler(Uri uri)
 				: this() {

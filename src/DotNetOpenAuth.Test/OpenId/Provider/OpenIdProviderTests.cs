@@ -101,10 +101,10 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 
 			// Test some non-empty request scenario.
 			var coordinator = new CoordinatorBase(
-				CoordinatorBase.RelyingPartyDriver(async (rp, ct) => {
+				RelyingPartyDriver(async (rp, ct) => {
 					await rp.Channel.RequestAsync(AssociateRequestRelyingParty.Create(rp.SecuritySettings, providerDescription), ct);
 				}),
-				CoordinatorBase.HandleProvider(async (op, req, ct) => {
+				HandleProvider(async (op, req, ct) => {
 					IRequest request = await op.GetRequestAsync(req);
 					Assert.IsInstanceOf<AutoResponsiveRequest>(request);
 					return await op.PrepareResponseAsync(request, ct);
@@ -115,7 +115,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 		[Test]
 		public async Task BadRequestsGenerateValidErrorResponses() {
 			var coordinator = new CoordinatorBase(
-				CoordinatorBase.RelyingPartyDriver(async (rp, ct) => {
+				RelyingPartyDriver(async (rp, ct) => {
 					var nonOpenIdMessage = new Mocks.TestDirectedMessage {
 						Recipient = OPUri,
 						HttpMethods = HttpDeliveryMethods.PostRequest

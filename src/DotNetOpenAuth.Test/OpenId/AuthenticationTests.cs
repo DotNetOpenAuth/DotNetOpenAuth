@@ -179,7 +179,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Association association = sharedAssociation ? HmacShaAssociationProvider.Create(protocol, protocol.Args.SignatureAlgorithm.Best, AssociationRelyingPartyType.Smart, associationStore, securitySettings) : null;
 			int opStep = 0;
 			var coordinator = new CoordinatorBase(
-				CoordinatorBase.RelyingPartyDriver(async (rp, ct) => {
+				RelyingPartyDriver(async (rp, ct) => {
 					if (statelessRP) {
 						rp = new OpenIdRelyingParty(null, rp.Channel.HostFactories);
 					}
@@ -246,7 +246,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 						}
 					}
 				}),
-				CoordinatorBase.HandleProvider(async (op, req, ct) => {
+				HandleProvider(async (op, req, ct) => {
 					if (association != null) {
 						var key = cryptoKeyStore.GetCurrentKey(ProviderAssociationHandleEncoder.AssociationHandleEncodingSecretBucket, TimeSpan.FromSeconds(1));
 						op.CryptoKeyStore.StoreKey(ProviderAssociationHandleEncoder.AssociationHandleEncodingSecretBucket, key.Key, key.Value);

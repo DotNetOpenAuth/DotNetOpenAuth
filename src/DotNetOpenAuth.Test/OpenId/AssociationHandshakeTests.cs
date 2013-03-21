@@ -44,7 +44,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 		public async Task AssociateDiffieHellmanOverHttps() {
 			Protocol protocol = Protocol.V20;
 			var coordinator = new CoordinatorBase(
-				CoordinatorBase.RelyingPartyDriver(async (rp, ct) => {
+				RelyingPartyDriver(async (rp, ct) => {
 					// We have to formulate the associate request manually,
 					// since the DNOI RP won't voluntarily use DH on HTTPS.
 					var request = new AssociateDiffieHellmanRequest(protocol.Version, OPUri) {
@@ -74,13 +74,13 @@ namespace DotNetOpenAuth.Test.OpenId {
 			// the OP and RP are behaving as expected.
 			int providerAttemptCount = 0;
 			var coordinator = new CoordinatorBase(
-				CoordinatorBase.RelyingPartyDriver(async (rp, ct) => {
+				RelyingPartyDriver(async (rp, ct) => {
 					var opDescription = new ProviderEndpointDescription(OPUri, protocol.Version);
 					Association association = await rp.AssociationManager.GetOrCreateAssociationAsync(opDescription, ct);
 					Assert.IsNotNull(association, "Association failed to be created.");
 					Assert.AreEqual(protocol.Args.SignatureAlgorithm.HMAC_SHA1, association.GetAssociationType(protocol));
 				}),
-				CoordinatorBase.HandleProvider(async (op, request, ct) => {
+				HandleProvider(async (op, request, ct) => {
 					op.SecuritySettings.MaximumHashBitLength = 160; // Force OP to reject HMAC-SHA256
 
 					switch (++providerAttemptCount) {
@@ -124,7 +124,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 		public async Task OPRejectsHttpNoEncryptionAssociateRequests() {
 			Protocol protocol = Protocol.V20;
 			var coordinator = new CoordinatorBase(
-				CoordinatorBase.RelyingPartyDriver(async (rp, ct) => {
+				RelyingPartyDriver(async (rp, ct) => {
 					// We have to formulate the associate request manually,
 					// since the DNOA RP won't voluntarily suggest no encryption at all.
 					var request = new AssociateUnencryptedRequestNoSslCheck(protocol.Version, OPUri);
@@ -145,7 +145,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 		public async Task OPRejectsMismatchingAssociationAndSessionTypes() {
 			Protocol protocol = Protocol.V20;
 			var coordinator = new CoordinatorBase(
-				CoordinatorBase.RelyingPartyDriver(async (rp, ct) => {
+				RelyingPartyDriver(async (rp, ct) => {
 					// We have to formulate the associate request manually,
 					// since the DNOI RP won't voluntarily mismatch the association and session types.
 					AssociateDiffieHellmanRequest request = new AssociateDiffieHellmanRequest(protocol.Version, new Uri("https://Provider"));
@@ -168,11 +168,11 @@ namespace DotNetOpenAuth.Test.OpenId {
 		public async Task RPRejectsUnrecognizedAssociationType() {
 			Protocol protocol = Protocol.V20;
 			var coordinator = new CoordinatorBase(
-				CoordinatorBase.RelyingPartyDriver(async (rp, ct) => {
+				RelyingPartyDriver(async (rp, ct) => {
 					var association = await rp.AssociationManager.GetOrCreateAssociationAsync(new ProviderEndpointDescription(OPUri, protocol.Version), ct);
 					Assert.IsNull(association, "The RP should quietly give up when the OP misbehaves.");
 				}),
-				CoordinatorBase.HandleProvider(async (op, req, ct) => {
+				HandleProvider(async (op, req, ct) => {
 					// Receive initial request.
 					var request = await op.Channel.ReadFromRequestAsync<AssociateRequest>(req, ct);
 
@@ -195,11 +195,11 @@ namespace DotNetOpenAuth.Test.OpenId {
 		public async Task RPRejectsUnencryptedSuggestion() {
 			Protocol protocol = Protocol.V20;
 			var coordinator = new CoordinatorBase(
-				CoordinatorBase.RelyingPartyDriver(async (rp, ct) => {
+				RelyingPartyDriver(async (rp, ct) => {
 					var association = await rp.AssociationManager.GetOrCreateAssociationAsync(new ProviderEndpointDescription(OPUri, protocol.Version), ct);
 					Assert.IsNull(association, "The RP should quietly give up when the OP misbehaves.");
 				}),
-				CoordinatorBase.HandleProvider(async (op, req, ct) => {
+				HandleProvider(async (op, req, ct) => {
 					// Receive initial request.
 					var request = await op.Channel.ReadFromRequestAsync<AssociateRequest>(req, ct);
 
@@ -220,11 +220,11 @@ namespace DotNetOpenAuth.Test.OpenId {
 		public async Task RPRejectsMismatchingAssociationAndSessionBitLengths() {
 			Protocol protocol = Protocol.V20;
 			var coordinator = new CoordinatorBase(
-				CoordinatorBase.RelyingPartyDriver(async (rp, ct) => {
+				RelyingPartyDriver(async (rp, ct) => {
 					var association = await rp.AssociationManager.GetOrCreateAssociationAsync(new ProviderEndpointDescription(OPUri, protocol.Version), ct);
 					Assert.IsNull(association, "The RP should quietly give up when the OP misbehaves.");
 				}),
-				CoordinatorBase.HandleProvider(async (op, req, ct) => {
+				HandleProvider(async (op, req, ct) => {
 					// Receive initial request.
 					var request = await op.Channel.ReadFromRequestAsync<AssociateRequest>(req, ct);
 
@@ -246,11 +246,11 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Protocol protocol = Protocol.V20;
 			int opStep = 0;
 			await CoordinatorBase.RunAsync(
-				CoordinatorBase.RelyingPartyDriver(async (rp, ct) => {
+				RelyingPartyDriver(async (rp, ct) => {
 					var association = await rp.AssociationManager.GetOrCreateAssociationAsync(new ProviderEndpointDescription(OPUri, protocol.Version), ct);
 					Assert.IsNull(association, "The RP should quietly give up when the OP misbehaves.");
 				}),
-				CoordinatorBase.HandleProvider(async (op, req, ct) => {
+				HandleProvider(async (op, req, ct) => {
 					switch (++opStep) {
 						case 1:
 							// Receive initial request.
@@ -285,12 +285,12 @@ namespace DotNetOpenAuth.Test.OpenId {
 		public async Task AssociateRenegotiateLimitedByRPSecuritySettings() {
 			Protocol protocol = Protocol.V20;
 			var coordinator = new CoordinatorBase(
-				CoordinatorBase.RelyingPartyDriver(async (rp, ct) => {
+				RelyingPartyDriver(async (rp, ct) => {
 					rp.SecuritySettings.MinimumHashBitLength = 256;
 					var association = await rp.AssociationManager.GetOrCreateAssociationAsync(new ProviderEndpointDescription(OPUri, protocol.Version), ct);
 					Assert.IsNull(association, "No association should have been created when RP and OP could not agree on association strength.");
 				}),
-				CoordinatorBase.HandleProvider(async (op, req, ct) => {
+				HandleProvider(async (op, req, ct) => {
 					op.SecuritySettings.MaximumHashBitLength = 160;
 					return await AutoProviderActionAsync(op, req, ct);
 				}));

@@ -90,7 +90,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		public async Task CreateRequestOnNonOpenID() {
 			var nonOpenId = new Uri("http://www.microsoft.com/");
 			var coordinator = new CoordinatorBase(
-				CoordinatorBase.RelyingPartyDriver(
+				RelyingPartyDriver(
 					async (rp, ct) => {
 						await rp.CreateRequestAsync(nonOpenId, RPRealmUri, RPUri);
 					}),
@@ -102,7 +102,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		public async Task CreateRequestsOnNonOpenID() {
 			var nonOpenId = new Uri("http://www.microsoft.com/");
 			var coordinator = new CoordinatorBase(
-				CoordinatorBase.RelyingPartyDriver(
+				RelyingPartyDriver(
 					async (rp, ct) => {
 						var requests = await rp.CreateRequestsAsync(nonOpenId, RPRealmUri, RPUri);
 						Assert.AreEqual(0, requests.Count());

@@ -132,7 +132,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			var se = IdentifierDiscoveryResult.CreateForClaimedIdentifier(claimed_id, claimed_id, providerEndpoint, null, null);
 			var identityUri = (UriIdentifier)se.ClaimedIdentifier;
 			var coordinator = new CoordinatorBase(
-				CoordinatorBase.RelyingPartyDriver(async (rp, ct) => {
+				RelyingPartyDriver(async (rp, ct) => {
 					var positiveAssertion = this.GetPositiveAssertion();
 					positiveAssertion.ClaimedIdentifier = claimed_id;
 					positiveAssertion.LocalIdentifier = claimed_id;
