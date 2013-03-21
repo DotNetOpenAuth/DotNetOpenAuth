@@ -18,6 +18,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.OAuth.Messages;
+	using System.Collections.Specialized;
 
 	/// <summary>
 	/// Represents LinkedIn authentication client.
@@ -77,7 +78,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 							string lastName = document.Root.Element("last-name").Value;
 							string userName = firstName + " " + lastName;
 
-							var extraData = new Dictionary<string, string>();
+							var extraData = new NameValueCollection();
 							extraData.Add("accesstoken", accessToken.Token);
 							extraData.Add("accesstokensecret", accessToken.Secret);
 							extraData.Add("name", userName);

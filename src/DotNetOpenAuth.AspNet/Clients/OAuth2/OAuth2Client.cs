@@ -15,6 +15,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 	using DotNetOpenAuth.Messaging;
 
 	using Validation;
+	using System.Collections.Specialized;
 
 	/// <summary>
 	/// Represents the base class for OAuth 2.0 clients
@@ -112,19 +113,15 @@ namespace DotNetOpenAuth.AspNet.Clients {
 				return AuthenticationResult.Failed;
 			}
 
-			IDictionary<string, string> userData = this.GetUserData(accessToken);
+			var userData = this.GetUserData(accessToken);
 			if (userData == null) {
 				return AuthenticationResult.Failed;
 			}
 
-			string id = userData["id"];
-			string name;
-
 			// Some oAuth providers do not return value for the 'username' attribute. 
 			// In that case, try the 'name' attribute. If it's still unavailable, fall back to 'id'
-			if (!userData.TryGetValue("username", out name) && !userData.TryGetValue("name", out name)) {
-				name = id;
-			}
+			string id = userData["id"];
+			string name = userData["username"] ?? userData["name"] ?? id;
 
 			// add the access token to the user data dictionary just in case page developers want to use it
 			userData["accesstoken"] = accessToken;
@@ -159,7 +156,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <returns>
 		/// A dictionary contains key-value pairs of user data 
 		/// </returns>
-		protected abstract IDictionary<string, string> GetUserData(string accessToken);
+		protected abstract NameValueCollection GetUserData(string accessToken);
 
 		/// <summary>
 		/// Queries the access token from the specified authorization code.

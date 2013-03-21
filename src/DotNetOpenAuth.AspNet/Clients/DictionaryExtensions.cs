@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.AspNet.Clients {
 	using System;
 	using System.Collections.Generic;
+	using System.Collections.Specialized;
 	using System.Xml.Linq;
 
 	/// <summary>
@@ -25,8 +26,8 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <param name="elementName">
 		/// Name of the element. 
 		/// </param>
-		public static void AddDataIfNotEmpty(
-			this Dictionary<string, string> dictionary, XDocument document, string elementName) {
+		internal static void AddDataIfNotEmpty(
+			this NameValueCollection dictionary, XDocument document, string elementName) {
 			var element = document.Root.Element(elementName);
 			if (element != null) {
 				dictionary.AddItemIfNotEmpty(elementName, element.Value);
@@ -45,7 +46,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <param name="value">
 		/// The value. 
 		/// </param>
-		public static void AddItemIfNotEmpty(this IDictionary<string, string> dictionary, string key, string value) {
+		internal static void AddItemIfNotEmpty(this NameValueCollection dictionary, string key, string value) {
 			if (key == null) {
 				throw new ArgumentNullException("key");
 			}

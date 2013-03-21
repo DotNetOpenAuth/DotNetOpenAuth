@@ -18,6 +18,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.OAuth.Messages;
+	using System.Collections.Specialized;
 
 	/// <summary>
 	/// Represents a Twitter client
@@ -69,7 +70,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 									   + MessagingUtilities.EscapeUriDataStringRfc3986(userId));
 			var authorizingHandler = this.WebWorker.CreateMessageHandler(response.AccessToken);
 
-			var extraData = new Dictionary<string, string>();
+			var extraData = new NameValueCollection();
 			extraData.Add("accesstoken", response.AccessToken.Token);
 			extraData.Add("accesstokensecret", response.AccessToken.Secret);
 			try {

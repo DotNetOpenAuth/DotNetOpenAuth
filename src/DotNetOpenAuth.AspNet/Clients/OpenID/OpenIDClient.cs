@@ -15,6 +15,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using Validation;
+	using System.Collections.Specialized;
 
 	/// <summary>
 	/// Base classes for OpenID clients.
@@ -118,14 +119,10 @@ namespace DotNetOpenAuth.AspNet.Clients {
 
 			if (response.Status == AuthenticationStatus.Authenticated) {
 				string id = response.ClaimedIdentifier;
-				string username;
-
-				Dictionary<string, string> extraData = this.GetExtraData(response) ?? new Dictionary<string, string>();
+				var extraData = this.GetExtraData(response) ?? new NameValueCollection();
 
 				// try to look up username from the 'username' or 'email' property. If not found, fall back to 'friendly id'
-				if (!extraData.TryGetValue("username", out username) && !extraData.TryGetValue("email", out username)) {
-					username = response.FriendlyIdentifierForDisplay;
-				}
+				string username = extraData["username"] ?? extraData["email"] ?? response.FriendlyIdentifierForDisplay;
 
 				return new AuthenticationResult(true, this.ProviderName, id, username, extraData);
 			}
@@ -144,7 +141,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// The response message. 
 		/// </param>
 		/// <returns>Always null.</returns>
-		protected virtual Dictionary<string, string> GetExtraData(IAuthenticationResponse response) {
+		protected virtual NameValueCollection GetExtraData(IAuthenticationResponse response) {
 			return null;
 		}
 

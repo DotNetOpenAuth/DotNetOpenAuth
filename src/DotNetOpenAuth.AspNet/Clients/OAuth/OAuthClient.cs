@@ -19,6 +19,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.OAuth.Messages;
 	using Validation;
+	using System.Collections.Specialized;
 
 	/// <summary>
 	/// Represents base class for OAuth 1.0 clients
@@ -116,9 +117,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 			AuthenticationResult result = await this.VerifyAuthenticationCoreAsync(response, cancellationToken);
 			if (result.IsSuccessful && result.ExtraData != null) {
 				// add the access token to the user data dictionary just in case page developers want to use it
-				var wrapExtraData = result.ExtraData.IsReadOnly
-					? new Dictionary<string, string>(result.ExtraData)
-					: result.ExtraData;
+				var wrapExtraData = new NameValueCollection(result.ExtraData);
 				wrapExtraData["accesstoken"] = response.AccessToken.Token;
 				wrapExtraData["accesstokensecret"] = response.AccessToken.Secret;
 
@@ -155,14 +154,14 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <summary>
 		/// Check if authentication succeeded after user is redirected back from the service provider.
 		/// </summary>
-		/// <param name="accessToken">
+		/// <param name="response">
 		/// The access token returned from service provider 
 		/// </param>
 		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// Authentication result 
 		/// </returns>
-		protected abstract Task<AuthenticationResult> VerifyAuthenticationCoreAsync(AccessTokenResponse accessToken, CancellationToken cancellationToken);
+		protected abstract Task<AuthenticationResult> VerifyAuthenticationCoreAsync(AccessTokenResponse response, CancellationToken cancellationToken);
 		#endregion
 	}
 }
