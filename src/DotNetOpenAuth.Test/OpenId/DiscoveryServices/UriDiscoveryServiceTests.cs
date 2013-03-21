@@ -112,7 +112,7 @@ namespace DotNetOpenAuth.Test.OpenId.DiscoveryServices {
 				HttpUtility.HtmlEncode(insecureXrdsSource),
 				HttpUtility.HtmlEncode(OPUriSsl.AbsoluteUri),
 				HttpUtility.HtmlEncode(OPLocalIdentifiersSsl[1].AbsoluteUri));
-			this.HostFactories.Handlers.Add(CoordinatorBase.Handle(VanityUriSsl).By(html, "text/html"));
+			this.HostFactories.Handlers.Add(Handle(VanityUriSsl).By(html, "text/html"));
 
 			Identifier userSuppliedIdentifier = new UriIdentifier(VanityUriSsl, true);
 

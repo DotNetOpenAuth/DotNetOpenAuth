@@ -26,7 +26,7 @@ namespace DotNetOpenAuth.Test {
 	internal class CoordinatorBase {
 		private Func<IHostFactories, CancellationToken, Task> driver;
 
-		internal CoordinatorBase(Func<IHostFactories, CancellationToken, Task> driver, params Handler[] handlers) {
+		internal CoordinatorBase(Func<IHostFactories, CancellationToken, Task> driver, params TestBase.Handler[] handlers) {
 			Requires.NotNull(driver, "driver");
 			Requires.NotNull(handlers, "handlers");
 
@@ -36,50 +36,8 @@ namespace DotNetOpenAuth.Test {
 
 		internal MockingHostFactories HostFactories { get; set; }
 
-		internal static Task RunAsync(Func<IHostFactories, CancellationToken, Task> driver, params Handler[] handlers) {
-			var coordinator = new CoordinatorBase(driver, handlers);
-			return coordinator.RunAsync();
-		}
-
 		protected internal virtual async Task RunAsync(CancellationToken cancellationToken = default(CancellationToken)) {
 			await this.driver(this.HostFactories, cancellationToken);
-		}
-
-		internal static Handler Handle(Uri uri) {
-			return new Handler(uri);
-		}
-
-		internal struct Handler {
-			internal Handler(Uri uri)
-				: this() {
-				this.Uri = uri;
-			}
-
-			public Uri Uri { get; private set; }
-
-			public Func<IHostFactories, HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> MessageHandler { get; private set; }
-
-			internal Handler By(Func<IHostFactories, HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> handler) {
-				return new Handler(this.Uri) { MessageHandler = handler };
-			}
-
-			internal Handler By(Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> handler) {
-				return By((hf, req, ct) => handler(req, ct));
-			}
-
-			internal Handler By(Func<HttpRequestMessage, HttpResponseMessage> handler) {
-				return By((req, ct) => Task.FromResult(handler(req)));
-			}
-
-			internal Handler By(string responseContent, string contentType, HttpStatusCode statusCode = HttpStatusCode.OK) {
-				return By(
-					req => {
-						var response = new HttpResponseMessage(statusCode);
-						response.Content = new StringContent(responseContent);
-						response.Content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
-						return response;
-					});
-			}
 		}
 	}
 }

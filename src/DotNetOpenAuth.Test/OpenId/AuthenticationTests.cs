@@ -77,13 +77,13 @@ namespace DotNetOpenAuth.Test.OpenId {
 						}
 					}
 				},
-				CoordinatorBase.Handle(RPRealmUri).By(async (hostFactories, req, ct) => {
+				Handle(RPRealmUri).By(async (hostFactories, req, ct) => {
 					var rp = new OpenIdRelyingParty(new StandardRelyingPartyApplicationStore(), hostFactories);
 					IAuthenticationResponse response = await rp.GetResponseAsync();
 					Assert.AreEqual(AuthenticationStatus.Authenticated, response.Status);
 					return new HttpResponseMessage();
 				}),
-				CoordinatorBase.Handle(OPUri).By(
+				Handle(OPUri).By(
 					async (req, ct) => {
 						var op = new OpenIdProvider(opStore);
 						return await this.AutoProviderActionAsync(op, req, ct);
@@ -106,14 +106,14 @@ namespace DotNetOpenAuth.Test.OpenId {
 						}
 					}
 				},
-				CoordinatorBase.Handle(RPRealmUri).By(async (hostFactories, req, ct) => {
+				Handle(RPRealmUri).By(async (hostFactories, req, ct) => {
 					var rp = new OpenIdRelyingParty(new StandardRelyingPartyApplicationStore(), hostFactories);
 					rp.SecuritySettings.RejectUnsolicitedAssertions = true;
 					IAuthenticationResponse response = await rp.GetResponseAsync(req, ct);
 					Assert.AreEqual(AuthenticationStatus.Failed, response.Status);
 					return new HttpResponseMessage();
 				}),
-				CoordinatorBase.Handle(OPUri).By(async (hostFactories, req, ct) => {
+				Handle(OPUri).By(async (hostFactories, req, ct) => {
 					var op = new OpenIdProvider(opStore);
 					return await this.AutoProviderActionAsync(op, req, ct);
 				}),
@@ -139,14 +139,14 @@ namespace DotNetOpenAuth.Test.OpenId {
 						}
 					}
 				},
-				CoordinatorBase.Handle(RPRealmUri).By(async (hostFactories, req, ct) => {
+				Handle(RPRealmUri).By(async (hostFactories, req, ct) => {
 					var rp = new OpenIdRelyingParty(new StandardRelyingPartyApplicationStore(), hostFactories);
 					rp.SecuritySettings.RejectDelegatingIdentifiers = true;
 					IAuthenticationResponse response = await rp.GetResponseAsync(req, ct);
 					Assert.AreEqual(AuthenticationStatus.Failed, response.Status);
 					return new HttpResponseMessage();
 				}),
-				CoordinatorBase.Handle(OPUri).By(async (hostFactories, req, ct) => {
+				Handle(OPUri).By(async (hostFactories, req, ct) => {
 					var op = new OpenIdProvider(opStore);
 					return await this.AutoProviderActionAsync(op, req, ct);
 				}),

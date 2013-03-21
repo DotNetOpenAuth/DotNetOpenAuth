@@ -41,7 +41,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 
 		[Test]
 		public async Task IsReturnUrlDiscoverableValidResponse() {
-			await CoordinatorBase.RunAsync(
+			await RunAsync(
 				async (hostFactories, ct) => {
 					this.request = new AuthenticationRequest(this.provider, this.checkIdRequest);
 					Assert.AreEqual(RelyingPartyDiscoveryResult.Success, await this.request.IsReturnUrlDiscoverableAsync(this.provider.Channel.HostFactories, CancellationToken.None));
@@ -55,7 +55,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 		/// </summary>
 		[Test]
 		public async Task IsReturnUrlDiscoverableNotSsl() {
-			await CoordinatorBase.RunAsync(
+			await RunAsync(
 				async (hostFactories, ct) => {
 					this.provider.SecuritySettings.RequireSsl = true;
 					Assert.AreEqual(RelyingPartyDiscoveryResult.NoServiceDocument, await this.request.IsReturnUrlDiscoverableAsync(this.provider.Channel.HostFactories, CancellationToken.None));
@@ -68,7 +68,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 		/// </summary>
 		[Test]
 		public async Task IsReturnUrlDiscoverableRequireSsl() {
-			await CoordinatorBase.RunAsync(
+			await RunAsync(
 				async (hostFactories, ct) => {
 					this.checkIdRequest.Realm = RPRealmUriSsl;
 					this.checkIdRequest.ReturnTo = RPUriSsl;
@@ -88,7 +88,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 
 		[Test]
 		public async Task IsReturnUrlDiscoverableValidButNoMatch() {
-			await CoordinatorBase.RunAsync(
+			await RunAsync(
 				async (hostFactories, ct) => {
 					this.provider.SecuritySettings.RequireSsl = false; // reset for another failure test case
 					this.checkIdRequest.ReturnTo = new Uri("http://somerandom/host");

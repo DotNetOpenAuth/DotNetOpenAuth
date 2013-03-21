@@ -22,7 +22,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 	using Validation;
 
 	internal static class MockHttpRequest {
-		internal static CoordinatorBase.Handler RegisterMockXrdsResponse(IdentifierDiscoveryResult endpoint) {
+		internal static TestBase.Handler RegisterMockXrdsResponse(IdentifierDiscoveryResult endpoint) {
 			Requires.NotNull(endpoint, "endpoint");
 
 			string identityUri;
@@ -35,7 +35,7 @@ namespace DotNetOpenAuth.Test.Mocks {
 			return RegisterMockXrdsResponse(new Uri(identityUri), new IdentifierDiscoveryResult[] { endpoint });
 		}
 
-		internal static CoordinatorBase.Handler RegisterMockXrdsResponse(Uri respondingUri, IEnumerable<IdentifierDiscoveryResult> endpoints) {
+		internal static TestBase.Handler RegisterMockXrdsResponse(Uri respondingUri, IEnumerable<IdentifierDiscoveryResult> endpoints) {
 			Requires.NotNull(endpoints, "endpoints");
 
 			var xrds = new StringBuilder();
@@ -67,10 +67,10 @@ namespace DotNetOpenAuth.Test.Mocks {
 	</XRD>
 </xrds:XRDS>");
 
-			return CoordinatorBase.Handle(respondingUri).By(xrds.ToString(), ContentTypes.Xrds);
+			return TestBase.Handle(respondingUri).By(xrds.ToString(), ContentTypes.Xrds);
 		}
 
-		internal static CoordinatorBase.Handler RegisterMockXrdsResponse(UriIdentifier directedIdentityAssignedIdentifier, IdentifierDiscoveryResult providerEndpoint) {
+		internal static TestBase.Handler RegisterMockXrdsResponse(UriIdentifier directedIdentityAssignedIdentifier, IdentifierDiscoveryResult providerEndpoint) {
 			IdentifierDiscoveryResult identityEndpoint = IdentifierDiscoveryResult.CreateForClaimedIdentifier(
 				directedIdentityAssignedIdentifier,
 				directedIdentityAssignedIdentifier,
@@ -81,13 +81,13 @@ namespace DotNetOpenAuth.Test.Mocks {
 			return RegisterMockXrdsResponse(identityEndpoint);
 		}
 
-		internal static CoordinatorBase.Handler RegisterMockXrdsResponse(string embeddedResourcePath, out Identifier id) {
+		internal static TestBase.Handler RegisterMockXrdsResponse(string embeddedResourcePath, out Identifier id) {
 			id = new Uri(new Uri("http://localhost/"), embeddedResourcePath);
-			return CoordinatorBase.Handle(new Uri(id))
+			return TestBase.Handle(new Uri(id))
 								  .By(OpenIdTestBase.LoadEmbeddedFile(embeddedResourcePath), "application/xrds+xml");
 		}
 
-		internal static CoordinatorBase.Handler RegisterMockRPDiscovery(bool ssl) {
+		internal static TestBase.Handler RegisterMockRPDiscovery(bool ssl) {
 			string template = @"<xrds:XRDS xmlns:xrds='xri://$xrds' xmlns:openid='http://openid.net/xmlns/1.0' xmlns='xri://$xrd*($v*2.0)'>
 	<XRD>
 		<Service priority='10'>
@@ -104,38 +104,38 @@ namespace DotNetOpenAuth.Test.Mocks {
 				HttpUtility.HtmlEncode(OpenIdTestBase.RPRealmUri.AbsoluteUri),
 				HttpUtility.HtmlEncode(OpenIdTestBase.RPRealmUriSsl.AbsoluteUri));
 
-			return new CoordinatorBase.Handler(ssl ? OpenIdTestBase.RPRealmUriSsl : OpenIdTestBase.RPRealmUri)
+			return new TestBase.Handler(ssl ? OpenIdTestBase.RPRealmUriSsl : OpenIdTestBase.RPRealmUri)
 				.By(xrds, ContentTypes.Xrds);
 		}
 
-		internal static CoordinatorBase.Handler RegisterMockRedirect(Uri origin, Uri redirectLocation) {
+		internal static TestBase.Handler RegisterMockRedirect(Uri origin, Uri redirectLocation) {
 			var response = new HttpResponseMessage(HttpStatusCode.Redirect);
 			response.Headers.Location = redirectLocation;
-			return new CoordinatorBase.Handler(origin).By(req => response);
+			return new TestBase.Handler(origin).By(req => response);
 		}
 
-		internal static CoordinatorBase.Handler[] RegisterMockXrdsResponses(
+		internal static TestBase.Handler[] RegisterMockXrdsResponses(
 			IEnumerable<KeyValuePair<string, string>> urlXrdsPairs) {
 			Requires.NotNull(urlXrdsPairs, "urlXrdsPairs");
 
-			var results = new List<CoordinatorBase.Handler>();
+			var results = new List<TestBase.Handler>();
 			foreach (var keyValuePair in urlXrdsPairs) {
-				results.Add(CoordinatorBase.Handle(new Uri(keyValuePair.Key)).By(keyValuePair.Value, ContentTypes.Xrds));
+				results.Add(TestBase.Handle(new Uri(keyValuePair.Key)).By(keyValuePair.Value, ContentTypes.Xrds));
 			}
 
 			return results.ToArray();
 		}
 
-		internal static CoordinatorBase.Handler RegisterMockResponse(Uri url, string contentType, string content) {
-			return CoordinatorBase.Handle(url).By(content, contentType);
+		internal static TestBase.Handler RegisterMockResponse(Uri url, string contentType, string content) {
+			return TestBase.Handle(url).By(content, contentType);
 		}
 
-		internal static CoordinatorBase.Handler RegisterMockResponse(Uri requestUri, Uri responseUri, string contentType, string content) {
+		internal static TestBase.Handler RegisterMockResponse(Uri requestUri, Uri responseUri, string contentType, string content) {
 			return RegisterMockResponse(requestUri, responseUri, contentType, null, content);
 		}
 
-		internal static CoordinatorBase.Handler RegisterMockResponse(Uri requestUri, Uri responseUri, string contentType, WebHeaderCollection headers, string content) {
-			return CoordinatorBase.Handle(requestUri).By(req => {
+		internal static TestBase.Handler RegisterMockResponse(Uri requestUri, Uri responseUri, string contentType, WebHeaderCollection headers, string content) {
+			return TestBase.Handle(requestUri).By(req => {
 				var response = new HttpResponseMessage();
 				response.CopyHeadersFrom(headers);
 				response.Content = new StringContent(content, Encoding.Default, contentType);

@@ -142,7 +142,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 						}
 					}
 				},
-				CoordinatorBase.Handle(RPRealmUri).By(async (hostFactories, req, ct) => {
+				Handle(RPRealmUri).By(async (hostFactories, req, ct) => {
 					var rp = new OpenIdRelyingParty(new StandardRelyingPartyApplicationStore(), hostFactories);
 					RegisterMockExtension(rp.Channel);
 
@@ -164,7 +164,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 
 					return new HttpResponseMessage();
 				}),
-				CoordinatorBase.Handle(OPUri).By(async (hostFactories, req, ct) => {
+				Handle(OPUri).By(async (hostFactories, req, ct) => {
 					var op = new OpenIdProvider(opStore);
 					return await AutoProviderActionAsync(op, req, ct);
 				}));

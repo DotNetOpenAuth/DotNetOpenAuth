@@ -301,7 +301,7 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 				HttpMethods = scheme,
 			};
 
-			await CoordinatorBase.RunAsync(
+			await RunAsync(
 				async (hostFactories, CancellationToken) => {
 					IProtocolMessage response = await this.channel.RequestAsync(request, CancellationToken.None);
 					Assert.IsNotNull(response);
@@ -311,7 +311,7 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 					Assert.AreEqual(request.Name, responseMessage.Name);
 					Assert.AreEqual(request.Location, responseMessage.Location);
 				},
-				CoordinatorBase.Handle(request.Location).By(async (req, ct) => {
+				Handle(request.Location).By(async (req, ct) => {
 					Assert.IsNotNull(req);
 					Assert.AreEqual(MessagingUtilities.GetHttpVerb(scheme), req.Method);
 					var incomingMessage = (await this.channel.ReadFromRequestAsync(req, CancellationToken.None)) as TestMessage;

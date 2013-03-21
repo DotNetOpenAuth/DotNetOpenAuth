@@ -245,7 +245,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 		public async Task RPOnlyRenegotiatesOnce() {
 			Protocol protocol = Protocol.V20;
 			int opStep = 0;
-			await CoordinatorBase.RunAsync(
+			await RunAsync(
 				RelyingPartyDriver(async (rp, ct) => {
 					var association = await rp.AssociationManager.GetOrCreateAssociationAsync(new ProviderEndpointDescription(OPUri, protocol.Version), ct);
 					Assert.IsNull(association, "The RP should quietly give up when the OP misbehaves.");
@@ -350,7 +350,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 					relyingParty.SecuritySettings = this.RelyingPartySecuritySettings;
 					rpAssociation = await relyingParty.AssociationManager.GetOrCreateAssociationAsync(opDescription, ct);
 				},
-				CoordinatorBase.Handle(opDescription.Uri).By(async (request, ct) => {
+				Handle(opDescription.Uri).By(async (request, ct) => {
 					IRequest req = await provider.GetRequestAsync(request, ct);
 					Assert.IsNotNull(req, "Expected incoming request but did not receive it.");
 					Assert.IsTrue(req.IsResponseReady);

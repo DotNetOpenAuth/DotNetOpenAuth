@@ -141,9 +141,9 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// <remarks>
 		/// This is a very useful method to pass to the OpenIdCoordinator constructor for the Provider argument.
 		/// </remarks>
-		internal CoordinatorBase.Handler AutoProvider {
+		internal TestBase.Handler AutoProvider {
 			get {
-				return CoordinatorBase.Handle(OPUri).By(
+				return Handle(OPUri).By(
 					async (req, ct) => {
 						var provider = new OpenIdProvider(new StandardProviderApplicationStore());
 						return await this.AutoProviderActionAsync(provider, req, ct);
@@ -264,8 +264,8 @@ namespace DotNetOpenAuth.Test.OpenId {
 			};
 		}
 
-		internal static CoordinatorBase.Handler HandleProvider(Func<OpenIdProvider, HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> provider) {
-			return CoordinatorBase.Handle(OPUri).By(async (req, ct) => {
+		protected internal static Handler HandleProvider(Func<OpenIdProvider, HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> provider) {
+			return Handle(OPUri).By(async (req, ct) => {
 				var op = new OpenIdProvider(new StandardProviderApplicationStore());
 				return await provider(op, req, ct);
 			});

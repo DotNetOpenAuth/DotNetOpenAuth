@@ -41,7 +41,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			var cryptoKeyStore = new MemoryCryptoKeyStore();
 			var associationStore = new ProviderAssociationHandleEncoder(cryptoKeyStore);
 			Association association = HmacShaAssociationProvider.Create(protocol, protocol.Args.SignatureAlgorithm.Best, AssociationRelyingPartyType.Smart, associationStore, securitySettings);
-			await CoordinatorBase.RunAsync(
+			await TestBase.RunAsync(
 				OpenIdTestBase.RelyingPartyDriver(async (rp, ct) => {
 					RegisterExtension(rp.Channel, Mocks.MockOpenIdExtension.Factory);
 					var requestBase = new CheckIdRequest(protocol.Version, OpenIdTestBase.OPUri, AuthenticationRequestMode.Immediate);

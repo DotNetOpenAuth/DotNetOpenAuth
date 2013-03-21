@@ -67,23 +67,23 @@ namespace DotNetOpenAuth.Test.OAuth {
 						}
 					}
 				},
-				CoordinatorBase.Handle(serviceDescription.TemporaryCredentialsRequestEndpoint).By(
+				Handle(serviceDescription.TemporaryCredentialsRequestEndpoint).By(
 					async (request, ct) => {
 						var requestTokenMessage = await sp.ReadTokenRequestAsync(request, ct);
 						return await sp.Channel.PrepareResponseAsync(sp.PrepareUnauthorizedTokenMessage(requestTokenMessage));
 					}),
-				CoordinatorBase.Handle(serviceDescription.ResourceOwnerAuthorizationEndpoint).By(
+				Handle(serviceDescription.ResourceOwnerAuthorizationEndpoint).By(
 					async (request, ct) => {
 						var authRequest = await sp.ReadAuthorizationRequestAsync(request, ct);
 						((InMemoryTokenManager)sp.TokenManager).AuthorizeRequestToken(authRequest.RequestToken);
 						return await sp.Channel.PrepareResponseAsync(sp.PrepareAuthorizationResponse(authRequest));
 					}),
-				CoordinatorBase.Handle(serviceDescription.TokenRequestEndpoint).By(
+				Handle(serviceDescription.TokenRequestEndpoint).By(
 					async (request, ct) => {
 						var accessRequest = await sp.ReadAccessTokenRequestAsync(request, ct);
 						return await sp.Channel.PrepareResponseAsync(sp.PrepareAccessTokenMessage(accessRequest), ct);
 					}),
-				CoordinatorBase.Handle(accessPhotoEndpoint).By(
+				Handle(accessPhotoEndpoint).By(
 					async (request, ct) => {
 						string accessToken = (await sp.ReadProtectedResourceAuthorizationAsync(request)).AccessToken;
 						Assert.That(accessToken, Is.Not.Null.And.Not.Empty);

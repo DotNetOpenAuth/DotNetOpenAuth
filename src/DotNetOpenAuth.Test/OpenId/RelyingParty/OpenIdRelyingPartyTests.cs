@@ -94,7 +94,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 					async (rp, ct) => {
 						await rp.CreateRequestAsync(nonOpenId, RPRealmUri, RPUri);
 					}),
-				CoordinatorBase.Handle(nonOpenId).By("<html/>", "text/html"));
+				Handle(nonOpenId).By("<html/>", "text/html"));
 			await coordinator.RunAsync();
 		}
 
@@ -107,7 +107,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 						var requests = await rp.CreateRequestsAsync(nonOpenId, RPRealmUri, RPUri);
 						Assert.AreEqual(0, requests.Count());
 					}),
-				CoordinatorBase.Handle(nonOpenId).By("<html/>", "text/html"));
+				Handle(nonOpenId).By("<html/>", "text/html"));
 			await coordinator.RunAsync();
 		}
 
@@ -129,7 +129,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 						}
 					}
 				},
-				CoordinatorBase.Handle(RPRealmUri).By(
+				Handle(RPRealmUri).By(
 					async (hostFactories, req, ct) => {
 						var rp = new OpenIdRelyingParty(new StandardRelyingPartyApplicationStore());
 

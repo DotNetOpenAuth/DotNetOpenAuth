@@ -23,7 +23,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Protocol protocol = Protocol.V20;
 			var mode = AuthenticationRequestMode.Setup;
 
-			await CoordinatorBase.RunAsync(
+			await RunAsync(
 				RelyingPartyDriver(async (rp, ct) => {
 					var request = new SignedResponseRequest(protocol.Version, OPUri, mode);
 					var authRequest = await rp.Channel.PrepareResponseAsync(request);
@@ -44,7 +44,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 		public async Task ExtensionOnlyFacadeLevel() {
 			Protocol protocol = Protocol.V20;
 			int opStep = 0;
-			await CoordinatorBase.RunAsync(
+			await RunAsync(
 				RelyingPartyDriver(async (rp, ct) => {
 					var request = await rp.CreateRequestAsync(GetMockIdentifier(protocol.ProtocolVersion), RPRealmUri, RPUri, ct);
 

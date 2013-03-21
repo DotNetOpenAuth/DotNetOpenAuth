@@ -41,7 +41,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 					Assert.That(result.AccessToken, Is.Not.Null.And.Not.Empty);
 					Assert.That(result.RefreshToken, Is.Not.Null.And.Not.Empty);
 				},
-				CoordinatorBase.Handle(AuthorizationServerDescription.AuthorizationEndpoint).By(
+				Handle(AuthorizationServerDescription.AuthorizationEndpoint).By(
 					async (req, ct) => {
 						var server = new AuthorizationServer(AuthorizationServerMock);
 						var request = await server.ReadAuthorizationRequestAsync(req, ct);
@@ -49,7 +49,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 						var response = server.PrepareApproveAuthorizationRequest(request, ResourceOwnerUsername);
 						return await server.Channel.PrepareResponseAsync(response, ct);
 					}),
-					CoordinatorBase.Handle(AuthorizationServerDescription.TokenEndpoint).By(async (req, ct) => {
+					Handle(AuthorizationServerDescription.TokenEndpoint).By(async (req, ct) => {
 						var server = new AuthorizationServer(AuthorizationServerMock);
 						return await server.HandleTokenRequestAsync(req, ct);
 					}));
@@ -80,7 +80,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 					Assert.That(authState.AccessToken, Is.Not.Null.And.Not.Empty);
 					Assert.That(authState.RefreshToken, Is.Not.Null.And.Not.Empty);
 				},
-				CoordinatorBase.Handle(AuthorizationServerDescription.TokenEndpoint).By(async (req, ct) => {
+				Handle(AuthorizationServerDescription.TokenEndpoint).By(async (req, ct) => {
 					var server = new AuthorizationServer(authHostMock.Object);
 					return await server.HandleTokenRequestAsync(req, ct);
 				}));
@@ -103,7 +103,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 					Assert.That(authState.AccessToken, Is.Not.Null.And.Not.Empty);
 					Assert.That(authState.RefreshToken, Is.Null);
 				},
-				CoordinatorBase.Handle(AuthorizationServerDescription.TokenEndpoint).By(async (req, ct) => {
+				Handle(AuthorizationServerDescription.TokenEndpoint).By(async (req, ct) => {
 					var server = new AuthorizationServer(authServer.Object);
 					return await server.HandleTokenRequestAsync(req, ct);
 				}));
@@ -130,7 +130,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 					var authState = await client.GetClientAccessTokenAsync(TestScopes, ct);
 					Assert.That(authState.Scope, Is.EquivalentTo(approvedScopes));
 				},
-				CoordinatorBase.Handle(AuthorizationServerDescription.TokenEndpoint).By(async (req, ct) => {
+				Handle(AuthorizationServerDescription.TokenEndpoint).By(async (req, ct) => {
 					var server = new AuthorizationServer(authServer.Object);
 					return await server.HandleTokenRequestAsync(req, ct);
 				}));

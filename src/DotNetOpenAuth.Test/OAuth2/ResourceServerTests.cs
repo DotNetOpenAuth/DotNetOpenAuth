@@ -99,7 +99,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 					Assert.That(authState.RefreshToken, Is.Null);
 					accessToken = authState.AccessToken;
 				},
-				CoordinatorBase.Handle(AuthorizationServerDescription.TokenEndpoint).By(async (req, ct) => {
+				Handle(AuthorizationServerDescription.TokenEndpoint).By(async (req, ct) => {
 					var server = new AuthorizationServer(authServer.Object);
 					return await server.HandleTokenRequestAsync(req, ct);
 				}));
