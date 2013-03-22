@@ -91,19 +91,18 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 			authServer.Setup(
 				a => a.CheckAuthorizeClientCredentialsGrant(It.Is<IAccessTokenRequest>(d => d.ClientIdentifier == ClientId && MessagingUtilities.AreEquivalent(d.Scope, TestScopes))))
 				.Returns<IAccessTokenRequest>(req => new AutomatedAuthorizationCheckResponse(req, true));
-			var coordinator = new CoordinatorBase(
-				async (hostFactories, ct) => {
-					var client = new WebServerClient(AuthorizationServerDescription);
-					var authState = await client.GetClientAccessTokenAsync(TestScopes, ct);
-					Assert.That(authState.AccessToken, Is.Not.Null.And.Not.Empty);
-					Assert.That(authState.RefreshToken, Is.Null);
-					accessToken = authState.AccessToken;
-				},
-				Handle(AuthorizationServerDescription.TokenEndpoint).By(async (req, ct) => {
+
+			Handle(AuthorizationServerDescription.TokenEndpoint).By(
+				async (req, ct) => {
 					var server = new AuthorizationServer(authServer.Object);
 					return await server.HandleTokenRequestAsync(req, ct);
-				}));
-			await coordinator.RunAsync();
+				});
+
+			var client = new WebServerClient(AuthorizationServerDescription, hostFactories: this.HostFactories);
+			var authState = await client.GetClientAccessTokenAsync(TestScopes);
+			Assert.That(authState.AccessToken, Is.Not.Null.And.Not.Empty);
+			Assert.That(authState.RefreshToken, Is.Null);
+			accessToken = authState.AccessToken;
 
 			return accessToken;
 		}

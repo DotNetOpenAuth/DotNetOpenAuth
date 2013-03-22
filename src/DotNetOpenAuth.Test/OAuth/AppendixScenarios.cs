@@ -38,61 +38,57 @@ namespace DotNetOpenAuth.Test.OAuth {
 			tokenManager.AddConsumer(consumerDescription);
 			var sp = new ServiceProvider(serviceHostDescription, tokenManager);
 
-			var coordinator = new CoordinatorBase(
-				async (hostFactories, ct) => {
-					var consumer = new Consumer(
-						consumerDescription.ConsumerKey,
-						consumerDescription.ConsumerSecret,
-						serviceDescription,
-						new MemoryTemporaryCredentialStorage());
-					consumer.HostFactories = hostFactories;
-					var authorizeUrl = await consumer.RequestUserAuthorizationAsync(new Uri("http://printer.example.com/request_token_ready"));
-					Uri authorizeResponseUri;
-					using (var httpClient = hostFactories.CreateHttpClient()) {
-						using (var response = await httpClient.GetAsync(authorizeUrl, ct)) {
-							Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Redirect));
-							authorizeResponseUri = response.Headers.Location;
-						}
-					}
+			Handle(serviceDescription.TemporaryCredentialsRequestEndpoint).By(
+				async (request, ct) => {
+					var requestTokenMessage = await sp.ReadTokenRequestAsync(request, ct);
+					return await sp.Channel.PrepareResponseAsync(sp.PrepareUnauthorizedTokenMessage(requestTokenMessage));
+				});
+			Handle(serviceDescription.ResourceOwnerAuthorizationEndpoint).By(
+				async (request, ct) => {
+					var authRequest = await sp.ReadAuthorizationRequestAsync(request, ct);
+					((InMemoryTokenManager)sp.TokenManager).AuthorizeRequestToken(authRequest.RequestToken);
+					return await sp.Channel.PrepareResponseAsync(sp.PrepareAuthorizationResponse(authRequest));
+				});
+			Handle(serviceDescription.TokenRequestEndpoint).By(
+				async (request, ct) => {
+					var accessRequest = await sp.ReadAccessTokenRequestAsync(request, ct);
+					return await sp.Channel.PrepareResponseAsync(sp.PrepareAccessTokenMessage(accessRequest), ct);
+				});
+			Handle(accessPhotoEndpoint).By(
+				async (request, ct) => {
+					string accessToken = (await sp.ReadProtectedResourceAuthorizationAsync(request)).AccessToken;
+					Assert.That(accessToken, Is.Not.Null.And.Not.Empty);
+					var responseMessage = new HttpResponseMessage { Content = new ByteArrayContent(new byte[] { 0x33, 0x66 }), };
+					responseMessage.Content.Headers.ContentType = new MediaTypeHeaderValue("image/jpeg");
+					return responseMessage;
+				});
 
-					var accessTokenResponse = await consumer.ProcessUserAuthorizationAsync(authorizeResponseUri, ct);
-					Assert.That(accessTokenResponse, Is.Not.Null);
+			var consumer = new Consumer(
+				consumerDescription.ConsumerKey,
+				consumerDescription.ConsumerSecret,
+				serviceDescription,
+				new MemoryTemporaryCredentialStorage());
+			consumer.HostFactories = this.HostFactories;
+			var authorizeUrl = await consumer.RequestUserAuthorizationAsync(new Uri("http://printer.example.com/request_token_ready"));
+			Uri authorizeResponseUri;
+			using (var httpClient = this.HostFactories.CreateHttpClient()) {
+				using (var response = await httpClient.GetAsync(authorizeUrl)) {
+					Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Redirect));
+					authorizeResponseUri = response.Headers.Location;
+				}
+			}
 
-					using (var authorizingClient = consumer.CreateHttpClient(accessTokenResponse.AccessToken)) {
-						using (var protectedPhoto = await authorizingClient.GetAsync(accessPhotoEndpoint, ct)) {
-							Assert.That(protectedPhoto, Is.Not.Null);
-							protectedPhoto.EnsureSuccessStatusCode();
-							Assert.That("image/jpeg", Is.EqualTo(protectedPhoto.Content.Headers.ContentType.MediaType));
-							Assert.That(protectedPhoto.Content.Headers.ContentLength, Is.Not.EqualTo(0));
-						}
-					}
-				},
-				Handle(serviceDescription.TemporaryCredentialsRequestEndpoint).By(
-					async (request, ct) => {
-						var requestTokenMessage = await sp.ReadTokenRequestAsync(request, ct);
-						return await sp.Channel.PrepareResponseAsync(sp.PrepareUnauthorizedTokenMessage(requestTokenMessage));
-					}),
-				Handle(serviceDescription.ResourceOwnerAuthorizationEndpoint).By(
-					async (request, ct) => {
-						var authRequest = await sp.ReadAuthorizationRequestAsync(request, ct);
-						((InMemoryTokenManager)sp.TokenManager).AuthorizeRequestToken(authRequest.RequestToken);
-						return await sp.Channel.PrepareResponseAsync(sp.PrepareAuthorizationResponse(authRequest));
-					}),
-				Handle(serviceDescription.TokenRequestEndpoint).By(
-					async (request, ct) => {
-						var accessRequest = await sp.ReadAccessTokenRequestAsync(request, ct);
-						return await sp.Channel.PrepareResponseAsync(sp.PrepareAccessTokenMessage(accessRequest), ct);
-					}),
-				Handle(accessPhotoEndpoint).By(
-					async (request, ct) => {
-						string accessToken = (await sp.ReadProtectedResourceAuthorizationAsync(request)).AccessToken;
-						Assert.That(accessToken, Is.Not.Null.And.Not.Empty);
-						var responseMessage = new HttpResponseMessage { Content = new ByteArrayContent(new byte[] { 0x33, 0x66 }), };
-						responseMessage.Content.Headers.ContentType = new MediaTypeHeaderValue("image/jpeg");
-						return responseMessage;
-					}));
+			var accessTokenResponse = await consumer.ProcessUserAuthorizationAsync(authorizeResponseUri);
+			Assert.That(accessTokenResponse, Is.Not.Null);
 
-			await coordinator.RunAsync();
+			using (var authorizingClient = consumer.CreateHttpClient(accessTokenResponse.AccessToken)) {
+				using (var protectedPhoto = await authorizingClient.GetAsync(accessPhotoEndpoint)) {
+					Assert.That(protectedPhoto, Is.Not.Null);
+					protectedPhoto.EnsureSuccessStatusCode();
+					Assert.That("image/jpeg", Is.EqualTo(protectedPhoto.Content.Headers.ContentType.MediaType));
+					Assert.That(protectedPhoto.Content.Headers.ContentLength, Is.Not.EqualTo(0));
+				}
+			}
 		}
 	}
 }

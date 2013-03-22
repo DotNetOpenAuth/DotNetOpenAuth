@@ -30,8 +30,8 @@ namespace DotNetOpenAuth.Test.OpenId.DiscoveryServices {
 			// Add a couple of chained redirect pages that lead to the claimedId.
 			Uri userSuppliedUri = new Uri("https://localhost/someSecurePage");
 			Uri insecureMidpointUri = new Uri("http://localhost/insecureStop");
-			this.HostFactories.Handlers.Add(MockHttpRequest.RegisterMockRedirect(userSuppliedUri, insecureMidpointUri));
-			this.HostFactories.Handlers.Add(MockHttpRequest.RegisterMockRedirect(insecureMidpointUri, new Uri(claimedId.ToString())));
+			this.RegisterMockRedirect(userSuppliedUri, insecureMidpointUri);
+			this.RegisterMockRedirect(insecureMidpointUri, new Uri(claimedId.ToString()));
 
 			// don't require secure SSL discovery for this test.
 			Identifier userSuppliedIdentifier = new UriIdentifier(userSuppliedUri, false);
@@ -47,8 +47,8 @@ namespace DotNetOpenAuth.Test.OpenId.DiscoveryServices {
 			// All redirects should be secure.
 			Uri userSuppliedUri = new Uri("https://localhost/someSecurePage");
 			Uri secureMidpointUri = new Uri("https://localhost/secureStop");
-			this.HostFactories.Handlers.Add(MockHttpRequest.RegisterMockRedirect(userSuppliedUri, secureMidpointUri));
-			this.HostFactories.Handlers.Add(MockHttpRequest.RegisterMockRedirect(secureMidpointUri, new Uri(claimedId.ToString())));
+			this.RegisterMockRedirect(userSuppliedUri, secureMidpointUri);
+			this.RegisterMockRedirect(secureMidpointUri, new Uri(claimedId.ToString()));
 
 			Identifier userSuppliedIdentifier = new UriIdentifier(userSuppliedUri, true);
 			var discoveryResult = await this.DiscoverAsync(userSuppliedIdentifier);
@@ -64,8 +64,8 @@ namespace DotNetOpenAuth.Test.OpenId.DiscoveryServices {
 			// the ultimate endpoint is never found as a result of high security profile.
 			Uri userSuppliedUri = new Uri("https://localhost/someSecurePage");
 			Uri insecureMidpointUri = new Uri("http://localhost/insecureStop");
-			this.HostFactories.Handlers.Add(MockHttpRequest.RegisterMockRedirect(userSuppliedUri, insecureMidpointUri));
-			this.HostFactories.Handlers.Add(MockHttpRequest.RegisterMockRedirect(insecureMidpointUri, new Uri(claimedId.ToString())));
+			this.RegisterMockRedirect(userSuppliedUri, insecureMidpointUri);
+			this.RegisterMockRedirect(insecureMidpointUri, new Uri(claimedId.ToString()));
 
 			Identifier userSuppliedIdentifier = new UriIdentifier(userSuppliedUri, true);
 			await this.DiscoverAsync(userSuppliedIdentifier);
@@ -77,7 +77,7 @@ namespace DotNetOpenAuth.Test.OpenId.DiscoveryServices {
 			Uri secureClaimedUri = new Uri("https://localhost/secureId");
 
 			string html = string.Format("<html><head><meta http-equiv='X-XRDS-Location' content='{0}'/></head><body></body></html>", insecureXrdsSource);
-			this.HostFactories.Handlers.Add(MockHttpRequest.RegisterMockResponse(secureClaimedUri, "text/html", html));
+			this.RegisterMockResponse(secureClaimedUri, "text/html", html);
 
 			Identifier userSuppliedIdentifier = new UriIdentifier(secureClaimedUri, true);
 			var discoveryResult = await this.DiscoverAsync(userSuppliedIdentifier);
@@ -92,7 +92,7 @@ namespace DotNetOpenAuth.Test.OpenId.DiscoveryServices {
 			WebHeaderCollection headers = new WebHeaderCollection {
 				{ "X-XRDS-Location", insecureXrdsSource }
 			};
-			this.HostFactories.Handlers.Add(MockHttpRequest.RegisterMockResponse(VanityUriSsl, VanityUriSsl, "text/html", headers, html));
+			this.RegisterMockResponse(VanityUriSsl, VanityUriSsl, "text/html", headers, html);
 
 			Identifier userSuppliedIdentifier = new UriIdentifier(VanityUriSsl, true);
 			var discoveryResult = await this.DiscoverAsync(userSuppliedIdentifier);
@@ -112,7 +112,7 @@ namespace DotNetOpenAuth.Test.OpenId.DiscoveryServices {
 				HttpUtility.HtmlEncode(insecureXrdsSource),
 				HttpUtility.HtmlEncode(OPUriSsl.AbsoluteUri),
 				HttpUtility.HtmlEncode(OPLocalIdentifiersSsl[1].AbsoluteUri));
-			this.HostFactories.Handlers.Add(Handle(VanityUriSsl).By(html, "text/html"));
+			this.Handle(VanityUriSsl).By(html, "text/html");
 
 			Identifier userSuppliedIdentifier = new UriIdentifier(VanityUriSsl, true);
 
@@ -127,7 +127,7 @@ namespace DotNetOpenAuth.Test.OpenId.DiscoveryServices {
 			var insecureEndpoint = GetServiceEndpoint(0, ProtocolVersion.V20, 10, false);
 			var secureEndpoint = GetServiceEndpoint(1, ProtocolVersion.V20, 20, true);
 			UriIdentifier secureClaimedId = new UriIdentifier(VanityUriSsl, true);
-			this.HostFactories.Handlers.Add(MockHttpRequest.RegisterMockXrdsResponse(secureClaimedId, new IdentifierDiscoveryResult[] { insecureEndpoint, secureEndpoint }));
+			this.RegisterMockXrdsResponse(secureClaimedId, new[] { insecureEndpoint, secureEndpoint });
 			var discoverResult = await this.DiscoverAsync(secureClaimedId);
 			Assert.AreEqual(secureEndpoint.ProviderLocalIdentifier, discoverResult.Single().ProviderLocalIdentifier);
 		}
@@ -176,7 +176,10 @@ namespace DotNetOpenAuth.Test.OpenId.DiscoveryServices {
 
 		[Test]
 		public async Task XrdsDiscoveryFromHead() {
-			this.HostFactories.Handlers.Add(MockHttpRequest.RegisterMockResponse(new Uri("http://localhost/xrds1020.xml"), "application/xrds+xml", LoadEmbeddedFile("/Discovery/xrdsdiscovery/xrds1020.xml")));
+			this.RegisterMockResponse(
+				new Uri("http://localhost/xrds1020.xml"),
+				"application/xrds+xml",
+				LoadEmbeddedFile("/Discovery/xrdsdiscovery/xrds1020.xml"));
 			await this.DiscoverXrdsAsync("XrdsReferencedInHead.html", ProtocolVersion.V10, null, "http://a/b");
 		}
 
@@ -184,7 +187,7 @@ namespace DotNetOpenAuth.Test.OpenId.DiscoveryServices {
 		public async Task XrdsDiscoveryFromHttpHeader() {
 			WebHeaderCollection headers = new WebHeaderCollection();
 			headers.Add("X-XRDS-Location", new Uri("http://localhost/xrds1020.xml").AbsoluteUri);
-			this.HostFactories.Handlers.Add(MockHttpRequest.RegisterMockResponse(new Uri("http://localhost/xrds1020.xml"), "application/xrds+xml", LoadEmbeddedFile("/Discovery/xrdsdiscovery/xrds1020.xml")));
+			this.RegisterMockResponse(new Uri("http://localhost/xrds1020.xml"), "application/xrds+xml", LoadEmbeddedFile("/Discovery/xrdsdiscovery/xrds1020.xml"));
 			await this.DiscoverXrdsAsync("XrdsReferencedInHttpHeader.html", ProtocolVersion.V10, null, "http://a/b", headers);
 		}
 
@@ -193,7 +196,7 @@ namespace DotNetOpenAuth.Test.OpenId.DiscoveryServices {
 		/// </summary>
 		[Test]
 		public async Task HtmlDiscoveryProceedsIfXrdsIsEmpty() {
-			this.HostFactories.Handlers.Add(MockHttpRequest.RegisterMockResponse(new Uri("http://localhost/xrds-irrelevant.xml"), "application/xrds+xml", LoadEmbeddedFile("/Discovery/xrdsdiscovery/xrds-irrelevant.xml")));
+			this.RegisterMockResponse(new Uri("http://localhost/xrds-irrelevant.xml"), "application/xrds+xml", LoadEmbeddedFile("/Discovery/xrdsdiscovery/xrds-irrelevant.xml"));
 			await this.DiscoverHtmlAsync("html20provWithEmptyXrds", ProtocolVersion.V20, null, "http://a/b");
 		}
 
@@ -210,7 +213,7 @@ namespace DotNetOpenAuth.Test.OpenId.DiscoveryServices {
 		/// </summary>
 		[Test]
 		public async Task DualIdentifierOffByDefault() {
-			this.HostFactories.Handlers.Add(MockHttpRequest.RegisterMockResponse(VanityUri, "application/xrds+xml", LoadEmbeddedFile("/Discovery/xrdsdiscovery/xrds20dual.xml")));
+			this.RegisterMockResponse(VanityUri, "application/xrds+xml", LoadEmbeddedFile("/Discovery/xrdsdiscovery/xrds20dual.xml"));
 			var results = (await this.DiscoverAsync(VanityUri)).ToList();
 			Assert.AreEqual(1, results.Count(r => r.ClaimedIdentifier == r.Protocol.ClaimedIdentifierForOPIdentifier), "OP Identifier missing from discovery results.");
 			Assert.AreEqual(1, results.Count, "Unexpected additional services discovered.");
@@ -221,7 +224,7 @@ namespace DotNetOpenAuth.Test.OpenId.DiscoveryServices {
 		/// </summary>
 		[Test]
 		public async Task DualIdentifier() {
-			this.HostFactories.Handlers.Add(MockHttpRequest.RegisterMockResponse(VanityUri, "application/xrds+xml", LoadEmbeddedFile("/Discovery/xrdsdiscovery/xrds20dual.xml")));
+			this.RegisterMockResponse(VanityUri, "application/xrds+xml", LoadEmbeddedFile("/Discovery/xrdsdiscovery/xrds20dual.xml"));
 			var rp = this.CreateRelyingParty(true);
 			rp.SecuritySettings.AllowDualPurposeIdentifiers = true;
 			var results = (await rp.DiscoverAsync(VanityUri, CancellationToken.None)).ToList();
@@ -252,7 +255,7 @@ namespace DotNetOpenAuth.Test.OpenId.DiscoveryServices {
 			} else {
 				throw new InvalidOperationException();
 			}
-			this.HostFactories.Handlers.Add(MockHttpRequest.RegisterMockResponse(new Uri(idToDiscover), claimedId, contentType, headers ?? new WebHeaderCollection(), LoadEmbeddedFile(url)));
+			this.RegisterMockResponse(new Uri(idToDiscover), claimedId, contentType, headers ?? new WebHeaderCollection(), LoadEmbeddedFile(url));
 
 			IdentifierDiscoveryResult expected = IdentifierDiscoveryResult.CreateForClaimedIdentifier(
 				claimedId,
@@ -297,7 +300,7 @@ namespace DotNetOpenAuth.Test.OpenId.DiscoveryServices {
 		private async Task FailDiscoverAsync(string url) {
 			UriIdentifier userSuppliedId = new Uri(new Uri("http://localhost"), url);
 
-			this.HostFactories.Handlers.Add(MockHttpRequest.RegisterMockResponse(new Uri(userSuppliedId), userSuppliedId, "text/html", LoadEmbeddedFile(url)));
+			this.RegisterMockResponse(new Uri(userSuppliedId), userSuppliedId, "text/html", LoadEmbeddedFile(url));
 
 			var discoveryResult = await this.DiscoverAsync(userSuppliedId);
 			Assert.AreEqual(0, discoveryResult.Count()); // ... but that no endpoint info is discoverable

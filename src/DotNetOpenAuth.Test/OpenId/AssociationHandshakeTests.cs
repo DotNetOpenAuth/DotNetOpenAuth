@@ -43,22 +43,20 @@ namespace DotNetOpenAuth.Test.OpenId {
 		[Test]
 		public async Task AssociateDiffieHellmanOverHttps() {
 			Protocol protocol = Protocol.V20;
-			var coordinator = new CoordinatorBase(
-				RelyingPartyDriver(async (rp, ct) => {
-					// We have to formulate the associate request manually,
-					// since the DNOI RP won't voluntarily use DH on HTTPS.
-					var request = new AssociateDiffieHellmanRequest(protocol.Version, OPUri) {
-						AssociationType = protocol.Args.SignatureAlgorithm.HMAC_SHA256,
-						SessionType = protocol.Args.SessionType.DH_SHA256
-					};
-					request.InitializeRequest();
-					var response = await rp.Channel.RequestAsync<AssociateSuccessfulResponse>(request, CancellationToken.None);
-					Assert.IsNotNull(response);
-					Assert.AreEqual(request.AssociationType, response.AssociationType);
-					Assert.AreEqual(request.SessionType, response.SessionType);
-				}),
-				AutoProvider);
-			await coordinator.RunAsync();
+			this.RegisterAutoProvider();
+			var rp = this.CreateRelyingParty();
+
+			// We have to formulate the associate request manually,
+			// since the DNOI RP won't voluntarily use DH on HTTPS.
+			var request = new AssociateDiffieHellmanRequest(protocol.Version, OPUri) {
+				AssociationType = protocol.Args.SignatureAlgorithm.HMAC_SHA256,
+				SessionType = protocol.Args.SessionType.DH_SHA256
+			};
+			request.InitializeRequest();
+			var response = await rp.Channel.RequestAsync<AssociateSuccessfulResponse>(request, CancellationToken.None);
+			Assert.IsNotNull(response);
+			Assert.AreEqual(request.AssociationType, response.AssociationType);
+			Assert.AreEqual(request.SessionType, response.SessionType);
 		}
 
 		/// <summary>
@@ -73,28 +71,23 @@ namespace DotNetOpenAuth.Test.OpenId {
 			// and to more carefully observe the Provider-side of things to make sure that both
 			// the OP and RP are behaving as expected.
 			int providerAttemptCount = 0;
-			var coordinator = new CoordinatorBase(
-				RelyingPartyDriver(async (rp, ct) => {
-					var opDescription = new ProviderEndpointDescription(OPUri, protocol.Version);
-					Association association = await rp.AssociationManager.GetOrCreateAssociationAsync(opDescription, ct);
-					Assert.IsNotNull(association, "Association failed to be created.");
-					Assert.AreEqual(protocol.Args.SignatureAlgorithm.HMAC_SHA1, association.GetAssociationType(protocol));
-				}),
-				HandleProvider(async (op, request, ct) => {
+			HandleProvider(
+				async (op, request) => {
 					op.SecuritySettings.MaximumHashBitLength = 160; // Force OP to reject HMAC-SHA256
 
 					switch (++providerAttemptCount) {
 						case 1:
 							// Receive initial request for an HMAC-SHA256 association.
-							var req = (AutoResponsiveRequest)await op.GetRequestAsync(request, ct);
+							var req = (AutoResponsiveRequest)await op.GetRequestAsync(request);
 							var associateRequest = (AssociateRequest)req.RequestMessage;
 							Assert.That(associateRequest, Is.Not.Null);
 							Assert.AreEqual(protocol.Args.SignatureAlgorithm.HMAC_SHA256, associateRequest.AssociationType);
 
 							// Ensure that the response is a suggestion that the RP try again with HMAC-SHA1
-							var renegotiateResponse = (AssociateUnsuccessfulResponse)await req.GetResponseMessageAsyncTestHook(ct);
+							var renegotiateResponse =
+								(AssociateUnsuccessfulResponse)await req.GetResponseMessageAsyncTestHook(CancellationToken.None);
 							Assert.AreEqual(protocol.Args.SignatureAlgorithm.HMAC_SHA1, renegotiateResponse.AssociationType);
-							return await op.PrepareResponseAsync(req, ct);
+							return await op.PrepareResponseAsync(req);
 
 						case 2:
 							// Receive second attempt request for an HMAC-SHA1 association.
@@ -103,15 +96,20 @@ namespace DotNetOpenAuth.Test.OpenId {
 							Assert.AreEqual(protocol.Args.SignatureAlgorithm.HMAC_SHA1, associateRequest.AssociationType);
 
 							// Ensure that the response is a success response.
-							var successResponse = (AssociateSuccessfulResponse)await req.GetResponseMessageAsyncTestHook(ct);
+							var successResponse =
+								(AssociateSuccessfulResponse)await req.GetResponseMessageAsyncTestHook(CancellationToken.None);
 							Assert.AreEqual(protocol.Args.SignatureAlgorithm.HMAC_SHA1, successResponse.AssociationType);
-							return await op.PrepareResponseAsync(req, ct);
+							return await op.PrepareResponseAsync(req);
 
 						default:
 							throw Assumes.NotReachable();
 					}
-				}));
-			await coordinator.RunAsync();
+				});
+			var rp = this.CreateRelyingParty();
+			var opDescription = new ProviderEndpointDescription(OPUri, protocol.Version);
+			Association association = await rp.AssociationManager.GetOrCreateAssociationAsync(opDescription, CancellationToken.None);
+			Assert.IsNotNull(association, "Association failed to be created.");
+			Assert.AreEqual(protocol.Args.SignatureAlgorithm.HMAC_SHA1, association.GetAssociationType(protocol));
 		}
 
 		/// <summary>
@@ -123,18 +121,16 @@ namespace DotNetOpenAuth.Test.OpenId {
 		[Test]
 		public async Task OPRejectsHttpNoEncryptionAssociateRequests() {
 			Protocol protocol = Protocol.V20;
-			var coordinator = new CoordinatorBase(
-				RelyingPartyDriver(async (rp, ct) => {
-					// We have to formulate the associate request manually,
-					// since the DNOA RP won't voluntarily suggest no encryption at all.
-					var request = new AssociateUnencryptedRequestNoSslCheck(protocol.Version, OPUri);
-					request.AssociationType = protocol.Args.SignatureAlgorithm.HMAC_SHA256;
-					request.SessionType = protocol.Args.SessionType.NoEncryption;
-					var response = await rp.Channel.RequestAsync<DirectErrorResponse>(request, ct);
-					Assert.IsNotNull(response);
-				}),
-				AutoProvider);
-			await coordinator.RunAsync();
+			this.RegisterAutoProvider();
+			var rp = this.CreateRelyingParty();
+
+			// We have to formulate the associate request manually,
+			// since the DNOA RP won't voluntarily suggest no encryption at all.
+			var request = new AssociateUnencryptedRequestNoSslCheck(protocol.Version, OPUri);
+			request.AssociationType = protocol.Args.SignatureAlgorithm.HMAC_SHA256;
+			request.SessionType = protocol.Args.SessionType.NoEncryption;
+			var response = await rp.Channel.RequestAsync<DirectErrorResponse>(request, CancellationToken.None);
+			Assert.IsNotNull(response);
 		}
 
 		/// <summary>
@@ -144,21 +140,19 @@ namespace DotNetOpenAuth.Test.OpenId {
 		[Test]
 		public async Task OPRejectsMismatchingAssociationAndSessionTypes() {
 			Protocol protocol = Protocol.V20;
-			var coordinator = new CoordinatorBase(
-				RelyingPartyDriver(async (rp, ct) => {
-					// We have to formulate the associate request manually,
-					// since the DNOI RP won't voluntarily mismatch the association and session types.
-					AssociateDiffieHellmanRequest request = new AssociateDiffieHellmanRequest(protocol.Version, new Uri("https://Provider"));
-					request.AssociationType = protocol.Args.SignatureAlgorithm.HMAC_SHA256;
-					request.SessionType = protocol.Args.SessionType.DH_SHA1;
-					request.InitializeRequest();
-					var response = await rp.Channel.RequestAsync<AssociateUnsuccessfulResponse>(request, ct);
-					Assert.IsNotNull(response);
-					Assert.AreEqual(protocol.Args.SignatureAlgorithm.HMAC_SHA1, response.AssociationType);
-					Assert.AreEqual(protocol.Args.SessionType.DH_SHA1, response.SessionType);
-				}),
-				AutoProvider);
-			await coordinator.RunAsync();
+			this.RegisterAutoProvider();
+			var rp = this.CreateRelyingParty();
+
+			// We have to formulate the associate request manually,
+			// since the DNOI RP won't voluntarily mismatch the association and session types.
+			var request = new AssociateDiffieHellmanRequest(protocol.Version, new Uri("https://Provider"));
+			request.AssociationType = protocol.Args.SignatureAlgorithm.HMAC_SHA256;
+			request.SessionType = protocol.Args.SessionType.DH_SHA1;
+			request.InitializeRequest();
+			var response = await rp.Channel.RequestAsync<AssociateUnsuccessfulResponse>(request, CancellationToken.None);
+			Assert.IsNotNull(response);
+			Assert.AreEqual(protocol.Args.SignatureAlgorithm.HMAC_SHA1, response.AssociationType);
+			Assert.AreEqual(protocol.Args.SessionType.DH_SHA1, response.SessionType);
 		}
 
 		/// <summary>
@@ -167,22 +161,20 @@ namespace DotNetOpenAuth.Test.OpenId {
 		[Test]
 		public async Task RPRejectsUnrecognizedAssociationType() {
 			Protocol protocol = Protocol.V20;
-			var coordinator = new CoordinatorBase(
-				RelyingPartyDriver(async (rp, ct) => {
-					var association = await rp.AssociationManager.GetOrCreateAssociationAsync(new ProviderEndpointDescription(OPUri, protocol.Version), ct);
-					Assert.IsNull(association, "The RP should quietly give up when the OP misbehaves.");
-				}),
-				HandleProvider(async (op, req, ct) => {
+			HandleProvider(
+				async (op, req) => {
 					// Receive initial request.
-					var request = await op.Channel.ReadFromRequestAsync<AssociateRequest>(req, ct);
+					var request = await op.Channel.ReadFromRequestAsync<AssociateRequest>(req, CancellationToken.None);
 
 					// Send a response that suggests a foreign association type.
 					var renegotiateResponse = new AssociateUnsuccessfulResponse(request.Version, request);
 					renegotiateResponse.AssociationType = "HMAC-UNKNOWN";
 					renegotiateResponse.SessionType = "DH-UNKNOWN";
-					return await op.Channel.PrepareResponseAsync(renegotiateResponse, ct);
-				}));
-			await coordinator.RunAsync();
+					return await op.Channel.PrepareResponseAsync(renegotiateResponse);
+				});
+			var rp = this.CreateRelyingParty();
+			var association = await rp.AssociationManager.GetOrCreateAssociationAsync(new ProviderEndpointDescription(OPUri, protocol.Version), CancellationToken.None);
+			Assert.IsNull(association, "The RP should quietly give up when the OP misbehaves.");
 		}
 
 		/// <summary>
@@ -194,22 +186,21 @@ namespace DotNetOpenAuth.Test.OpenId {
 		[Test]
 		public async Task RPRejectsUnencryptedSuggestion() {
 			Protocol protocol = Protocol.V20;
-			var coordinator = new CoordinatorBase(
-				RelyingPartyDriver(async (rp, ct) => {
-					var association = await rp.AssociationManager.GetOrCreateAssociationAsync(new ProviderEndpointDescription(OPUri, protocol.Version), ct);
-					Assert.IsNull(association, "The RP should quietly give up when the OP misbehaves.");
-				}),
-				HandleProvider(async (op, req, ct) => {
+			this.HandleProvider(
+				async (op, req) => {
 					// Receive initial request.
-					var request = await op.Channel.ReadFromRequestAsync<AssociateRequest>(req, ct);
+					var request = await op.Channel.ReadFromRequestAsync<AssociateRequest>(req, CancellationToken.None);
 
 					// Send a response that suggests a no encryption.
 					var renegotiateResponse = new AssociateUnsuccessfulResponse(request.Version, request);
 					renegotiateResponse.AssociationType = protocol.Args.SignatureAlgorithm.HMAC_SHA1;
 					renegotiateResponse.SessionType = protocol.Args.SessionType.NoEncryption;
-					return await op.Channel.PrepareResponseAsync(renegotiateResponse, ct);
-				}));
-			await coordinator.RunAsync();
+					return await op.Channel.PrepareResponseAsync(renegotiateResponse);
+				});
+
+			var rp = this.CreateRelyingParty();
+			var association = await rp.AssociationManager.GetOrCreateAssociationAsync(new ProviderEndpointDescription(OPUri, protocol.Version), CancellationToken.None);
+			Assert.IsNull(association, "The RP should quietly give up when the OP misbehaves.");
 		}
 
 		/// <summary>
@@ -219,22 +210,20 @@ namespace DotNetOpenAuth.Test.OpenId {
 		[Test]
 		public async Task RPRejectsMismatchingAssociationAndSessionBitLengths() {
 			Protocol protocol = Protocol.V20;
-			var coordinator = new CoordinatorBase(
-				RelyingPartyDriver(async (rp, ct) => {
-					var association = await rp.AssociationManager.GetOrCreateAssociationAsync(new ProviderEndpointDescription(OPUri, protocol.Version), ct);
-					Assert.IsNull(association, "The RP should quietly give up when the OP misbehaves.");
-				}),
-				HandleProvider(async (op, req, ct) => {
+			this.HandleProvider(
+				async (op, req) => {
 					// Receive initial request.
-					var request = await op.Channel.ReadFromRequestAsync<AssociateRequest>(req, ct);
+					var request = await op.Channel.ReadFromRequestAsync<AssociateRequest>(req, CancellationToken.None);
 
 					// Send a mismatched response
 					AssociateUnsuccessfulResponse renegotiateResponse = new AssociateUnsuccessfulResponse(request.Version, request);
 					renegotiateResponse.AssociationType = protocol.Args.SignatureAlgorithm.HMAC_SHA1;
 					renegotiateResponse.SessionType = protocol.Args.SessionType.DH_SHA256;
-					return await op.Channel.PrepareResponseAsync(renegotiateResponse, ct);
-				}));
-			await coordinator.RunAsync();
+					return await op.Channel.PrepareResponseAsync(renegotiateResponse);
+				});
+			var rp = this.CreateRelyingParty();
+			var association = await rp.AssociationManager.GetOrCreateAssociationAsync(new ProviderEndpointDescription(OPUri, protocol.Version), CancellationToken.None);
+			Assert.IsNull(association, "The RP should quietly give up when the OP misbehaves.");
 		}
 
 		/// <summary>
@@ -245,37 +234,36 @@ namespace DotNetOpenAuth.Test.OpenId {
 		public async Task RPOnlyRenegotiatesOnce() {
 			Protocol protocol = Protocol.V20;
 			int opStep = 0;
-			await RunAsync(
-				RelyingPartyDriver(async (rp, ct) => {
-					var association = await rp.AssociationManager.GetOrCreateAssociationAsync(new ProviderEndpointDescription(OPUri, protocol.Version), ct);
-					Assert.IsNull(association, "The RP should quietly give up when the OP misbehaves.");
-				}),
-				HandleProvider(async (op, req, ct) => {
+			HandleProvider(
+				async (op, req) => {
 					switch (++opStep) {
 						case 1:
 							// Receive initial request.
-							var request = await op.Channel.ReadFromRequestAsync<AssociateRequest>(req, ct);
+							var request = await op.Channel.ReadFromRequestAsync<AssociateRequest>(req, CancellationToken.None);
 
 							// Send a renegotiate response
 							var renegotiateResponse = new AssociateUnsuccessfulResponse(request.Version, request);
 							renegotiateResponse.AssociationType = protocol.Args.SignatureAlgorithm.HMAC_SHA1;
 							renegotiateResponse.SessionType = protocol.Args.SessionType.DH_SHA1;
-							return await op.Channel.PrepareResponseAsync(renegotiateResponse, ct);
+							return await op.Channel.PrepareResponseAsync(renegotiateResponse, CancellationToken.None);
 
 						case 2:
 							// Receive second-try
-							request = await op.Channel.ReadFromRequestAsync<AssociateRequest>(req, ct);
+							request = await op.Channel.ReadFromRequestAsync<AssociateRequest>(req, CancellationToken.None);
 
 							// Send ANOTHER renegotiate response, at which point the DNOI RP should give up.
 							renegotiateResponse = new AssociateUnsuccessfulResponse(request.Version, request);
 							renegotiateResponse.AssociationType = protocol.Args.SignatureAlgorithm.HMAC_SHA256;
 							renegotiateResponse.SessionType = protocol.Args.SessionType.DH_SHA256;
-							return await op.Channel.PrepareResponseAsync(renegotiateResponse, ct);
+							return await op.Channel.PrepareResponseAsync(renegotiateResponse, CancellationToken.None);
 
 						default:
 							throw Assumes.NotReachable();
 					}
-				}));
+				});
+			var rp = this.CreateRelyingParty();
+			var association = await rp.AssociationManager.GetOrCreateAssociationAsync(new ProviderEndpointDescription(OPUri, protocol.Version), CancellationToken.None);
+			Assert.IsNull(association, "The RP should quietly give up when the OP misbehaves.");
 		}
 
 		/// <summary>
@@ -284,17 +272,15 @@ namespace DotNetOpenAuth.Test.OpenId {
 		[Test]
 		public async Task AssociateRenegotiateLimitedByRPSecuritySettings() {
 			Protocol protocol = Protocol.V20;
-			var coordinator = new CoordinatorBase(
-				RelyingPartyDriver(async (rp, ct) => {
-					rp.SecuritySettings.MinimumHashBitLength = 256;
-					var association = await rp.AssociationManager.GetOrCreateAssociationAsync(new ProviderEndpointDescription(OPUri, protocol.Version), ct);
-					Assert.IsNull(association, "No association should have been created when RP and OP could not agree on association strength.");
-				}),
-				HandleProvider(async (op, req, ct) => {
+			HandleProvider(
+				async (op, req) => {
 					op.SecuritySettings.MaximumHashBitLength = 160;
-					return await AutoProviderActionAsync(op, req, ct);
-				}));
-			await coordinator.RunAsync();
+					return await AutoProviderActionAsync(op, req, CancellationToken.None);
+				});
+			var rp = this.CreateRelyingParty();
+			rp.SecuritySettings.MinimumHashBitLength = 256;
+			var association = await rp.AssociationManager.GetOrCreateAssociationAsync(new ProviderEndpointDescription(OPUri, protocol.Version), CancellationToken.None);
+			Assert.IsNull(association, "No association should have been created when RP and OP could not agree on association strength.");
 		}
 
 		/// <summary>
@@ -345,19 +331,13 @@ namespace DotNetOpenAuth.Test.OpenId {
 			var provider = new OpenIdProvider(new StandardProviderApplicationStore(), this.HostFactories) {
 				SecuritySettings = this.ProviderSecuritySettings
 			};
-			var coordinator = new CoordinatorBase(
-				async (hostFactories, ct) => {
-					relyingParty.SecuritySettings = this.RelyingPartySecuritySettings;
-					rpAssociation = await relyingParty.AssociationManager.GetOrCreateAssociationAsync(opDescription, ct);
-				},
-				Handle(opDescription.Uri).By(async (request, ct) => {
+			Handle(opDescription.Uri).By(
+				async (request, ct) => {
 					IRequest req = await provider.GetRequestAsync(request, ct);
 					Assert.IsNotNull(req, "Expected incoming request but did not receive it.");
 					Assert.IsTrue(req.IsResponseReady);
 					return await provider.PrepareResponseAsync(req, ct);
-				}));
-			this.HostFactories.Handlers.AddRange(coordinator.HostFactories.Handlers);
-			coordinator.HostFactories = this.HostFactories;
+				});
 			relyingParty.Channel.IncomingMessageFilter = message => {
 				Assert.AreSame(opDescription.Version, message.Version, "The message was recognized as version {0} but was expected to be {1}.", message.Version, Protocol.Lookup(opDescription.Version).ProtocolVersion);
 				var associateSuccess = message as AssociateSuccessfulResponse;
@@ -372,7 +352,9 @@ namespace DotNetOpenAuth.Test.OpenId {
 			relyingParty.Channel.OutgoingMessageFilter = message => {
 				Assert.AreEqual(opDescription.Version, message.Version, "The message was for version {0} but was expected to be for {1}.", message.Version, opDescription.Version);
 			};
-			await coordinator.RunAsync();
+
+			relyingParty.SecuritySettings = this.RelyingPartySecuritySettings;
+			rpAssociation = await relyingParty.AssociationManager.GetOrCreateAssociationAsync(opDescription, CancellationToken.None);
 
 			if (expectSuccess) {
 				Assert.IsNotNull(rpAssociation);

@@ -104,7 +104,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\SectionTests.cs" />
-    <Compile Include="CoordinatorBase.cs" />
     <Compile Include="Hosting\AspNetHost.cs" />
     <Compile Include="Hosting\HostingTests.cs" />
     <Compile Include="Hosting\HttpHost.cs" />

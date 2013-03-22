@@ -100,34 +100,28 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 			var providerDescription = new ProviderEndpointDescription(OPUri, Protocol.Default.Version);
 
 			// Test some non-empty request scenario.
-			var coordinator = new CoordinatorBase(
-				RelyingPartyDriver(async (rp, ct) => {
-					await rp.Channel.RequestAsync(AssociateRequestRelyingParty.Create(rp.SecuritySettings, providerDescription), ct);
-				}),
-				HandleProvider(async (op, req, ct) => {
+			HandleProvider(
+				async (op, req) => {
 					IRequest request = await op.GetRequestAsync(req);
 					Assert.IsInstanceOf<AutoResponsiveRequest>(request);
-					return await op.PrepareResponseAsync(request, ct);
-				}));
-			await coordinator.RunAsync();
+					return await op.PrepareResponseAsync(request);
+				});
+			var rp = this.CreateRelyingParty();
+			await rp.Channel.RequestAsync(AssociateRequestRelyingParty.Create(rp.SecuritySettings, providerDescription), CancellationToken.None);
 		}
 
 		[Test]
 		public async Task BadRequestsGenerateValidErrorResponses() {
-			var coordinator = new CoordinatorBase(
-				RelyingPartyDriver(async (rp, ct) => {
-					var nonOpenIdMessage = new Mocks.TestDirectedMessage {
-						Recipient = OPUri,
-						HttpMethods = HttpDeliveryMethods.PostRequest
-					};
-					MessagingTestBase.GetStandardTestMessage(MessagingTestBase.FieldFill.AllRequired, nonOpenIdMessage);
-					var response = await rp.Channel.RequestAsync<DirectErrorResponse>(nonOpenIdMessage, ct);
-					Assert.IsNotNull(response.ErrorMessage);
-					Assert.AreEqual(Protocol.Default.Version, response.Version);
-				}),
-				AutoProvider);
-
-			await coordinator.RunAsync();
+			this.RegisterAutoProvider();
+			var rp = this.CreateRelyingParty();
+			var nonOpenIdMessage = new Mocks.TestDirectedMessage {
+				Recipient = OPUri,
+				HttpMethods = HttpDeliveryMethods.PostRequest
+			};
+			MessagingTestBase.GetStandardTestMessage(MessagingTestBase.FieldFill.AllRequired, nonOpenIdMessage);
+			var response = await rp.Channel.RequestAsync<DirectErrorResponse>(nonOpenIdMessage, CancellationToken.None);
+			Assert.IsNotNull(response.ErrorMessage);
+			Assert.AreEqual(Protocol.Default.Version, response.Version);
 		}
 
 		[Test, Category("HostASPNET")]

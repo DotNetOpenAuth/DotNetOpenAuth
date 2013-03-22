@@ -19,7 +19,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.ProviderAuthenticationPolicy {
 		public async Task Trivial() {
 			var request = new PolicyRequest();
 			var response = new PolicyResponse();
-			await ExtensionTestUtilities.RoundtripAsync(Protocol.Default, new[] { request }, new[] { response });
+			await this.RoundtripAsync(Protocol.Default, new[] { request }, new[] { response });
 		}
 
 		[Test]
@@ -39,7 +39,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.ProviderAuthenticationPolicy {
 			response.AssuranceLevels["customlevel"] = "ABC";
 			response.NistAssuranceLevel = NistAssuranceLevel.Level2;
 
-			await ExtensionTestUtilities.RoundtripAsync(Protocol.Default, new[] { request }, new[] { response });
+			await this.RoundtripAsync(Protocol.Default, new[] { request }, new[] { response });
 		}
 	}
 }

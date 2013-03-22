@@ -49,7 +49,7 @@ namespace DotNetOpenAuth.Test {
 			protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken) {
 				foreach (var handler in this.handlers) {
 					if (handler.Uri.IsBaseOf(request.RequestUri) && handler.Uri.AbsolutePath == request.RequestUri.AbsolutePath) {
-						var response = await handler.MessageHandler(this.hostFactories, request, cancellationToken);
+						var response = await handler.MessageHandler(request);
 						if (response != null) {
 							return response;
 						}

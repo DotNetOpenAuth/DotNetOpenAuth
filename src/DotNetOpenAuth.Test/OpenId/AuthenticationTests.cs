@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.Test.OpenId {
 	using System;
 	using System.Net.Http;
+	using System.Threading;
 	using System.Threading.Tasks;
 
 	using DotNetOpenAuth.Messaging;
@@ -65,60 +66,61 @@ namespace DotNetOpenAuth.Test.OpenId {
 		[Test]
 		public async Task UnsolicitedAssertion() {
 			var opStore = new StandardProviderApplicationStore();
-			var coordinator = new CoordinatorBase(
-				async (hostFactories, ct) => {
-					var op = new OpenIdProvider(opStore);
-					Identifier id = GetMockIdentifier(ProtocolVersion.V20);
-					var assertion = await op.PrepareUnsolicitedAssertionAsync(OPUri, RPRealmUri, id, OPLocalIdentifiers[0], ct);
-
-					using (var httpClient = hostFactories.CreateHttpClient()) {
-						using (var response = await httpClient.GetAsync(assertion.Headers.Location)) {
-							response.EnsureSuccessStatusCode();
-						}
-					}
-				},
-				Handle(RPRealmUri).By(async (hostFactories, req, ct) => {
-					var rp = new OpenIdRelyingParty(new StandardRelyingPartyApplicationStore(), hostFactories);
+			Handle(RPRealmUri).By(
+				async req => {
+					var rp = new OpenIdRelyingParty(new StandardRelyingPartyApplicationStore(), this.HostFactories);
 					IAuthenticationResponse response = await rp.GetResponseAsync();
 					Assert.AreEqual(AuthenticationStatus.Authenticated, response.Status);
 					return new HttpResponseMessage();
-				}),
-				Handle(OPUri).By(
-					async (req, ct) => {
-						var op = new OpenIdProvider(opStore);
-						return await this.AutoProviderActionAsync(op, req, ct);
-					}),
-				MockHttpRequest.RegisterMockRPDiscovery(ssl: false));
-			await coordinator.RunAsync();
+				});
+			Handle(OPUri).By(
+				async (req, ct) => {
+					var op = new OpenIdProvider(opStore);
+					return await this.AutoProviderActionAsync(op, req, ct);
+				});
+			this.RegisterMockRPDiscovery(ssl: false);
+
+			{
+				var op = new OpenIdProvider(opStore);
+				Identifier id = GetMockIdentifier(ProtocolVersion.V20);
+				var assertion = await op.PrepareUnsolicitedAssertionAsync(OPUri, RPRealmUri, id, OPLocalIdentifiers[0]);
+
+				using (var httpClient = this.HostFactories.CreateHttpClient()) {
+					using (var response = await httpClient.GetAsync(assertion.Headers.Location)) {
+						response.EnsureSuccessStatusCode();
+					}
+				}
+			}
 		}
 
 		[Test]
 		public async Task UnsolicitedAssertionRejected() {
 			var opStore = new StandardProviderApplicationStore();
-			var coordinator = new CoordinatorBase(
-				async (hostFactories, ct) => {
-					var op = new OpenIdProvider(opStore);
-					Identifier id = GetMockIdentifier(ProtocolVersion.V20);
-					var assertion = await op.PrepareUnsolicitedAssertionAsync(OPUri, RPRealmUri, id, OPLocalIdentifiers[0], ct);
-					using (var httpClient = hostFactories.CreateHttpClient()) {
-						using (var response = await httpClient.GetAsync(assertion.Headers.Location, ct)) {
-							response.EnsureSuccessStatusCode();
-						}
-					}
-				},
-				Handle(RPRealmUri).By(async (hostFactories, req, ct) => {
-					var rp = new OpenIdRelyingParty(new StandardRelyingPartyApplicationStore(), hostFactories);
+			Handle(RPRealmUri).By(
+				async req => {
+					var rp = new OpenIdRelyingParty(new StandardRelyingPartyApplicationStore(), this.HostFactories);
 					rp.SecuritySettings.RejectUnsolicitedAssertions = true;
-					IAuthenticationResponse response = await rp.GetResponseAsync(req, ct);
+					IAuthenticationResponse response = await rp.GetResponseAsync(req);
 					Assert.AreEqual(AuthenticationStatus.Failed, response.Status);
 					return new HttpResponseMessage();
-				}),
-				Handle(OPUri).By(async (hostFactories, req, ct) => {
+				});
+			Handle(OPUri).By(
+				async req => {
 					var op = new OpenIdProvider(opStore);
-					return await this.AutoProviderActionAsync(op, req, ct);
-				}),
-				MockHttpRequest.RegisterMockRPDiscovery(false));
-			await coordinator.RunAsync();
+					return await this.AutoProviderActionAsync(op, req, CancellationToken.None);
+				});
+			this.RegisterMockRPDiscovery(ssl: false);
+
+			{
+				var op = new OpenIdProvider(opStore);
+				Identifier id = GetMockIdentifier(ProtocolVersion.V20);
+				var assertion = await op.PrepareUnsolicitedAssertionAsync(OPUri, RPRealmUri, id, OPLocalIdentifiers[0]);
+				using (var httpClient = this.HostFactories.CreateHttpClient()) {
+					using (var response = await httpClient.GetAsync(assertion.Headers.Location)) {
+						response.EnsureSuccessStatusCode();
+					}
+				}
+			}
 		}
 
 		/// <summary>
@@ -128,30 +130,31 @@ namespace DotNetOpenAuth.Test.OpenId {
 		[Test]
 		public async Task UnsolicitedDelegatingIdentifierRejection() {
 			var opStore = new StandardProviderApplicationStore();
-			var coordinator = new CoordinatorBase(
-				async (hostFactories, ct) => {
-					var op = new OpenIdProvider(opStore);
-					Identifier id = GetMockIdentifier(ProtocolVersion.V20, false, true);
-					var assertion = await op.PrepareUnsolicitedAssertionAsync(OPUri, RPRealmUri, id, OPLocalIdentifiers[0], ct);
-					using (var httpClient = hostFactories.CreateHttpClient()) {
-						using (var response = await httpClient.GetAsync(assertion.Headers.Location, ct)) {
-							response.EnsureSuccessStatusCode();
-						}
-					}
-				},
-				Handle(RPRealmUri).By(async (hostFactories, req, ct) => {
-					var rp = new OpenIdRelyingParty(new StandardRelyingPartyApplicationStore(), hostFactories);
+			Handle(RPRealmUri).By(
+				async req => {
+					var rp = this.CreateRelyingParty();
 					rp.SecuritySettings.RejectDelegatingIdentifiers = true;
-					IAuthenticationResponse response = await rp.GetResponseAsync(req, ct);
+					IAuthenticationResponse response = await rp.GetResponseAsync(req);
 					Assert.AreEqual(AuthenticationStatus.Failed, response.Status);
 					return new HttpResponseMessage();
-				}),
-				Handle(OPUri).By(async (hostFactories, req, ct) => {
-					var op = new OpenIdProvider(opStore);
-					return await this.AutoProviderActionAsync(op, req, ct);
-				}),
-				MockHttpRequest.RegisterMockRPDiscovery(false));
-			await coordinator.RunAsync();
+				});
+			Handle(OPUri).By(
+				async req => {
+					var op = new OpenIdProvider(opStore, this.HostFactories);
+					return await this.AutoProviderActionAsync(op, req, CancellationToken.None);
+				});
+			this.RegisterMockRPDiscovery(ssl: false);
+
+			{
+				var op = new OpenIdProvider(opStore);
+				Identifier id = GetMockIdentifier(ProtocolVersion.V20, false, true);
+				var assertion = await op.PrepareUnsolicitedAssertionAsync(OPUri, RPRealmUri, id, OPLocalIdentifiers[0]);
+				using (var httpClient = this.HostFactories.CreateHttpClient()) {
+					using (var response = await httpClient.GetAsync(assertion.Headers.Location)) {
+						response.EnsureSuccessStatusCode();
+					}
+				}
+			}
 		}
 
 		private async Task ParameterizedAuthenticationTestAsync(bool sharedAssociation, bool positive, bool tamper) {
@@ -178,83 +181,18 @@ namespace DotNetOpenAuth.Test.OpenId {
 			var associationStore = new ProviderAssociationHandleEncoder(cryptoKeyStore);
 			Association association = sharedAssociation ? HmacShaAssociationProvider.Create(protocol, protocol.Args.SignatureAlgorithm.Best, AssociationRelyingPartyType.Smart, associationStore, securitySettings) : null;
 			int opStep = 0;
-			var coordinator = new CoordinatorBase(
-				RelyingPartyDriver(async (rp, ct) => {
-					if (statelessRP) {
-						rp = new OpenIdRelyingParty(null, rp.Channel.HostFactories);
-					}
-
-					var request = new CheckIdRequest(protocol.Version, OPUri, immediate ? AuthenticationRequestMode.Immediate : AuthenticationRequestMode.Setup);
-
+			HandleProvider(
+				async (op, req) => {
 					if (association != null) {
-						StoreAssociation(rp, OPUri, association);
-						request.AssociationHandle = association.Handle;
-					}
-
-					request.ClaimedIdentifier = "http://claimedid";
-					request.LocalIdentifier = "http://localid";
-					request.ReturnTo = RPUri;
-					request.Realm = RPUri;
-					var redirectRequest = await rp.Channel.PrepareResponseAsync(request, ct);
-					Uri redirectResponse;
-					using (var httpClient = rp.Channel.HostFactories.CreateHttpClient()) {
-						using (var response = await httpClient.GetAsync(redirectRequest.Headers.Location)) {
-							redirectResponse = response.Headers.Location;
-						}
-					}
-
-					var assertionMessage = new HttpRequestMessage(HttpMethod.Get, redirectResponse.AbsoluteUri);
-					if (positive) {
-						if (tamper) {
-							try {
-								await rp.Channel.ReadFromRequestAsync<PositiveAssertionResponse>(assertionMessage, ct);
-								Assert.Fail("Expected exception {0} not thrown.", typeof(InvalidSignatureException).Name);
-							} catch (InvalidSignatureException) {
-								TestLogger.InfoFormat("Caught expected {0} exception after tampering with signed data.", typeof(InvalidSignatureException).Name);
-							}
-						} else {
-							var response = await rp.Channel.ReadFromRequestAsync<PositiveAssertionResponse>(assertionMessage, ct);
-							Assert.IsNotNull(response);
-							Assert.AreEqual(request.ClaimedIdentifier, response.ClaimedIdentifier);
-							Assert.AreEqual(request.LocalIdentifier, response.LocalIdentifier);
-							Assert.AreEqual(request.ReturnTo, response.ReturnTo);
-
-							// Attempt to replay the message and verify that it fails.
-							// Because in various scenarios and protocol versions different components
-							// notice the replay, we can get one of two exceptions thrown.
-							// When the OP notices the replay we get a generic InvalidSignatureException.
-							// When the RP notices the replay we get a specific ReplayMessageException.
-							try {
-								// TODO: fix this.
-								////CoordinatingChannel channel = (CoordinatingChannel)rp.Channel;
-								////await channel.ReplayAsync(response);
-								Assert.Fail("Expected ProtocolException was not thrown.");
-							} catch (ProtocolException ex) {
-								Assert.IsTrue(ex is ReplayedMessageException || ex is InvalidSignatureException, "A {0} exception was thrown instead of the expected {1} or {2}.", ex.GetType(), typeof(ReplayedMessageException).Name, typeof(InvalidSignatureException).Name);
-							}
-						}
-					} else {
-						var response = await rp.Channel.ReadFromRequestAsync<NegativeAssertionResponse>(assertionMessage, ct);
-						Assert.IsNotNull(response);
-						if (immediate) {
-							// Only 1.1 was required to include user_setup_url
-							if (protocol.Version.Major < 2) {
-								Assert.IsNotNull(response.UserSetupUrl);
-							}
-						} else {
-							Assert.IsNull(response.UserSetupUrl);
-						}
-					}
-				}),
-				HandleProvider(async (op, req, ct) => {
-					if (association != null) {
-						var key = cryptoKeyStore.GetCurrentKey(ProviderAssociationHandleEncoder.AssociationHandleEncodingSecretBucket, TimeSpan.FromSeconds(1));
-						op.CryptoKeyStore.StoreKey(ProviderAssociationHandleEncoder.AssociationHandleEncodingSecretBucket, key.Key, key.Value);
+						var key = cryptoKeyStore.GetCurrentKey(
+							ProviderAssociationHandleEncoder.AssociationHandleEncodingSecretBucket, TimeSpan.FromSeconds(1));
+						op.CryptoKeyStore.StoreKey(
+							ProviderAssociationHandleEncoder.AssociationHandleEncodingSecretBucket, key.Key, key.Value);
 					}
 
 					switch (++opStep) {
 						case 1:
-							var request = await op.Channel.ReadFromRequestAsync<CheckIdRequest>(req, ct);
+							var request = await op.Channel.ReadFromRequestAsync<CheckIdRequest>(req, CancellationToken.None);
 							Assert.IsNotNull(request);
 							IProtocolMessage response;
 							if (positive) {
@@ -263,13 +201,14 @@ namespace DotNetOpenAuth.Test.OpenId {
 								response = new NegativeAssertionResponse(request.Version, request.ReturnTo, request.Mode);
 							}
 
-							return await op.Channel.PrepareResponseAsync(response, ct);
+							return await op.Channel.PrepareResponseAsync(response);
 						case 2:
 							if (positive && (statelessRP || !sharedAssociation)) {
-								var checkauthRequest = await op.Channel.ReadFromRequestAsync<CheckAuthenticationRequest>(req, ct);
+								var checkauthRequest =
+									await op.Channel.ReadFromRequestAsync<CheckAuthenticationRequest>(req, CancellationToken.None);
 								var checkauthResponse = new CheckAuthenticationResponse(checkauthRequest.Version, checkauthRequest);
 								checkauthResponse.IsValid = checkauthRequest.IsValid;
-								return await op.Channel.PrepareResponseAsync(checkauthResponse, ct);
+								return await op.Channel.PrepareResponseAsync(checkauthResponse);
 							}
 
 							throw Assumes.NotReachable();
@@ -277,10 +216,11 @@ namespace DotNetOpenAuth.Test.OpenId {
 							if (positive && (statelessRP || !sharedAssociation)) {
 								if (!tamper) {
 									// Respond to the replay attack.
-									var checkauthRequest = await op.Channel.ReadFromRequestAsync<CheckAuthenticationRequest>(req, ct);
+									var checkauthRequest =
+										await op.Channel.ReadFromRequestAsync<CheckAuthenticationRequest>(req, CancellationToken.None);
 									var checkauthResponse = new CheckAuthenticationResponse(checkauthRequest.Version, checkauthRequest);
 									checkauthResponse.IsValid = checkauthRequest.IsValid;
-									return await op.Channel.PrepareResponseAsync(checkauthResponse, ct);
+									return await op.Channel.PrepareResponseAsync(checkauthResponse);
 								}
 							}
 
@@ -288,21 +228,93 @@ namespace DotNetOpenAuth.Test.OpenId {
 						default:
 							throw Assumes.NotReachable();
 					}
-				}));
-			if (tamper) {
-				// TODO: fix this.
-				////coordinator.IncomingMessageFilter = message => {
-				////	var assertion = message as PositiveAssertionResponse;
-				////	if (assertion != null) {
-				////		// Alter the Local Identifier between the Provider and the Relying Party.
-				////		// If the signature binding element does its job, this should cause the RP
-				////		// to throw.
-				////		assertion.LocalIdentifier = "http://victim";
-				////	}
-				////};
-			}
+				});
 
-			await coordinator.RunAsync();
+			{
+				var rp = this.CreateRelyingParty(statelessRP);
+				if (tamper) {
+					rp.Channel.IncomingMessageFilter = message => {
+						var assertion = message as PositiveAssertionResponse;
+						if (assertion != null) {
+							// Alter the Local Identifier between the Provider and the Relying Party.
+							// If the signature binding element does its job, this should cause the RP
+							// to throw.
+							assertion.LocalIdentifier = "http://victim";
+						}
+					};
+				}
+
+				var request = new CheckIdRequest(
+					protocol.Version, OPUri, immediate ? AuthenticationRequestMode.Immediate : AuthenticationRequestMode.Setup);
+
+				if (association != null) {
+					StoreAssociation(rp, OPUri, association);
+					request.AssociationHandle = association.Handle;
+				}
+
+				request.ClaimedIdentifier = "http://claimedid";
+				request.LocalIdentifier = "http://localid";
+				request.ReturnTo = RPUri;
+				request.Realm = RPUri;
+				var redirectRequest = await rp.Channel.PrepareResponseAsync(request);
+				Uri redirectResponse;
+				using (var httpClient = rp.Channel.HostFactories.CreateHttpClient()) {
+					using (var response = await httpClient.GetAsync(redirectRequest.Headers.Location)) {
+						redirectResponse = response.Headers.Location;
+					}
+				}
+
+				var assertionMessage = new HttpRequestMessage(HttpMethod.Get, redirectResponse.AbsoluteUri);
+				if (positive) {
+					if (tamper) {
+						try {
+							await rp.Channel.ReadFromRequestAsync<PositiveAssertionResponse>(assertionMessage, CancellationToken.None);
+							Assert.Fail("Expected exception {0} not thrown.", typeof(InvalidSignatureException).Name);
+						} catch (InvalidSignatureException) {
+							TestLogger.InfoFormat(
+								"Caught expected {0} exception after tampering with signed data.", typeof(InvalidSignatureException).Name);
+						}
+					} else {
+						var response =
+							await rp.Channel.ReadFromRequestAsync<PositiveAssertionResponse>(assertionMessage, CancellationToken.None);
+						Assert.IsNotNull(response);
+						Assert.AreEqual(request.ClaimedIdentifier, response.ClaimedIdentifier);
+						Assert.AreEqual(request.LocalIdentifier, response.LocalIdentifier);
+						Assert.AreEqual(request.ReturnTo, response.ReturnTo);
+
+						// Attempt to replay the message and verify that it fails.
+						// Because in various scenarios and protocol versions different components
+						// notice the replay, we can get one of two exceptions thrown.
+						// When the OP notices the replay we get a generic InvalidSignatureException.
+						// When the RP notices the replay we get a specific ReplayMessageException.
+						try {
+							// TODO: fix this.
+							////CoordinatingChannel channel = (CoordinatingChannel)rp.Channel;
+							////await channel.ReplayAsync(response);
+							Assert.Fail("Expected ProtocolException was not thrown.");
+						} catch (ProtocolException ex) {
+							Assert.IsTrue(
+								ex is ReplayedMessageException || ex is InvalidSignatureException,
+								"A {0} exception was thrown instead of the expected {1} or {2}.",
+								ex.GetType(),
+								typeof(ReplayedMessageException).Name,
+								typeof(InvalidSignatureException).Name);
+						}
+					}
+				} else {
+					var response =
+						await rp.Channel.ReadFromRequestAsync<NegativeAssertionResponse>(assertionMessage, CancellationToken.None);
+					Assert.IsNotNull(response);
+					if (immediate) {
+						// Only 1.1 was required to include user_setup_url
+						if (protocol.Version.Major < 2) {
+							Assert.IsNotNull(response.UserSetupUrl);
+						}
+					} else {
+						Assert.IsNull(response.UserSetupUrl);
+					}
+				}
+			}
 		}
 	}
 }

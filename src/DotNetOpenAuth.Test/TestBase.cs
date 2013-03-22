@@ -114,45 +114,52 @@ namespace DotNetOpenAuth.Test {
 				new HttpResponse(new StringWriter()));
 		}
 
-		protected internal static Task RunAsync(Func<IHostFactories, CancellationToken, Task> driver, params Handler[] handlers) {
-			var coordinator = new CoordinatorBase(driver, handlers);
-			return coordinator.RunAsync();
+		protected internal Handler Handle(string uri) {
+			return new Handler(this, new Uri(uri));
 		}
 
-		protected internal static Handler Handle(Uri uri) {
-			return new Handler(uri);
+		protected internal Handler Handle(Uri uri) {
+			return new Handler(this, uri);
 		}
 
 		protected internal struct Handler {
-			internal Handler(Uri uri)
+			private TestBase test;
+
+			internal Handler(TestBase test, Uri uri)
 				: this() {
+				this.test = test;
 				this.Uri = uri;
 			}
 
-			public Uri Uri { get; private set; }
-
-			public Func<IHostFactories, HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> MessageHandler { get; private set; }
-
-			internal Handler By(Func<IHostFactories, HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> handler) {
-				return new Handler(this.Uri) { MessageHandler = handler };
+			private Handler(Handler previous, Func<HttpRequestMessage, Task<HttpResponseMessage>> handler)
+				: this(previous.test, previous.Uri) {
+				this.MessageHandler = handler;
 			}
 
-			internal Handler By(Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> handler) {
-				return this.By((hf, req, ct) => handler(req, ct));
+			internal Uri Uri { get; private set; }
+
+			internal Func<HttpRequestMessage, Task<HttpResponseMessage>> MessageHandler { get; private set; }
+
+			internal void By(Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> handler) {
+				this.test.HostFactories.Handlers.Add(new Handler(this, req => handler(req, CancellationToken.None)));
 			}
 
-			internal Handler By(Func<HttpRequestMessage, HttpResponseMessage> handler) {
-				return this.By((req, ct) => Task.FromResult(handler(req)));
+			internal void By(Func<HttpRequestMessage, Task<HttpResponseMessage>> handler) {
+				this.test.HostFactories.Handlers.Add(new Handler(this, handler));
 			}
 
-			internal Handler By(string responseContent, string contentType, HttpStatusCode statusCode = HttpStatusCode.OK) {
-				return this.By(
-					req => {
-						var response = new HttpResponseMessage(statusCode);
-						response.Content = new StringContent(responseContent);
-						response.Content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
-						return response;
-					});
+			internal void By(Func<HttpRequestMessage, HttpResponseMessage> handler) {
+				this.By(req => Task.FromResult(handler(req)));
+			}
+
+			internal void By(string responseContent, string contentType, HttpStatusCode statusCode = HttpStatusCode.OK) {
+				this.By(
+				   req => {
+					   var response = new HttpResponseMessage(statusCode);
+					   response.Content = new StringContent(responseContent);
+					   response.Content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
+					   return response;
+				   });
 			}
 		}
 	}
