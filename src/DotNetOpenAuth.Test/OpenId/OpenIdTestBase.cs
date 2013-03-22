@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 	using System.Collections.Generic;
 	using System.IO;
 	using System.Linq;
+	using System.Net;
 	using System.Net.Http;
 	using System.Reflection;
 	using System.Threading;
@@ -319,7 +320,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 					Uri redirectingResponseUri;
 					using (var httpClient = rp.Channel.HostFactories.CreateHttpClient()) {
 						using (var redirectingResponse = await httpClient.GetAsync(redirectingRequest.Headers.Location)) {
-							redirectingResponse.EnsureSuccessStatusCode();
+							Assert.AreEqual(HttpStatusCode.Found, redirectingResponse.StatusCode);
 							redirectingResponseUri = redirectingResponse.Headers.Location;
 						}
 					}
