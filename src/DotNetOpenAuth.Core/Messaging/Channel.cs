@@ -706,7 +706,7 @@ namespace DotNetOpenAuth.Messaging {
 
 							return responseMessage;
 						} else {
-							var errorContent = await response.Content.ReadAsStringAsync();
+							var errorContent = (response.Content != null) ? await response.Content.ReadAsStringAsync() : null;
 							Logger.Http.ErrorFormat(
 								"Error received in HTTP response: {0} {1}\n{2}", (int)response.StatusCode, response.ReasonPhrase, errorContent);
 							response.EnsureSuccessStatusCode(); // throw so we can wrap it in our catch block.
