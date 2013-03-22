@@ -55,7 +55,7 @@ namespace DotNetOpenAuth.Test {
 		public override void SetUp() {
 			base.SetUp();
 
-			////this.Channel = new TestChannel();
+			this.Channel = new TestChannel(this.HostFactories);
 		}
 
 		internal static HttpRequestMessage CreateHttpRequestInfo(HttpMethod method, IDictionary<string, string> fields) {
