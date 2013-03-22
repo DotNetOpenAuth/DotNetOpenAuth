@@ -147,21 +147,21 @@ namespace DotNetOpenAuth.Test.Messaging {
 		/// </summary>
 		[Test]
 		public void GetHttpVerbTest() {
-			Assert.AreEqual("GET", MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.GetRequest));
-			Assert.AreEqual("POST", MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.PostRequest));
-			Assert.AreEqual("HEAD", MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.HeadRequest));
-			Assert.AreEqual("DELETE", MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.DeleteRequest));
-			Assert.AreEqual("PUT", MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.PutRequest));
-			Assert.AreEqual("PATCH", MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.PatchRequest));
-			Assert.AreEqual("OPTIONS", MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.OptionsRequest));
+			Assert.AreEqual(HttpMethod.Get, MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.GetRequest));
+			Assert.AreEqual(HttpMethod.Post, MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.PostRequest));
+			Assert.AreEqual(HttpMethod.Head, MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.HeadRequest));
+			Assert.AreEqual(HttpMethod.Delete, MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.DeleteRequest));
+			Assert.AreEqual(HttpMethod.Put, MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.PutRequest));
+			Assert.AreEqual(new HttpMethod("PATCH"), MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.PatchRequest));
+			Assert.AreEqual(HttpMethod.Options, MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.OptionsRequest));
 
-			Assert.AreEqual("GET", MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.GetRequest | HttpDeliveryMethods.AuthorizationHeaderRequest));
-			Assert.AreEqual("POST", MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.PostRequest | HttpDeliveryMethods.AuthorizationHeaderRequest));
-			Assert.AreEqual("HEAD", MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.HeadRequest | HttpDeliveryMethods.AuthorizationHeaderRequest));
-			Assert.AreEqual("DELETE", MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.DeleteRequest | HttpDeliveryMethods.AuthorizationHeaderRequest));
-			Assert.AreEqual("PUT", MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.PutRequest | HttpDeliveryMethods.AuthorizationHeaderRequest));
-			Assert.AreEqual("PATCH", MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.PatchRequest | HttpDeliveryMethods.AuthorizationHeaderRequest));
-			Assert.AreEqual("OPTIONS", MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.OptionsRequest | HttpDeliveryMethods.AuthorizationHeaderRequest));
+			Assert.AreEqual(HttpMethod.Get, MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.GetRequest | HttpDeliveryMethods.AuthorizationHeaderRequest));
+			Assert.AreEqual(HttpMethod.Post, MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.PostRequest | HttpDeliveryMethods.AuthorizationHeaderRequest));
+			Assert.AreEqual(HttpMethod.Head, MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.HeadRequest | HttpDeliveryMethods.AuthorizationHeaderRequest));
+			Assert.AreEqual(HttpMethod.Delete, MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.DeleteRequest | HttpDeliveryMethods.AuthorizationHeaderRequest));
+			Assert.AreEqual(HttpMethod.Put, MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.PutRequest | HttpDeliveryMethods.AuthorizationHeaderRequest));
+			Assert.AreEqual(new HttpMethod("PATCH"), MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.PatchRequest | HttpDeliveryMethods.AuthorizationHeaderRequest));
+			Assert.AreEqual(HttpMethod.Options, MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.OptionsRequest | HttpDeliveryMethods.AuthorizationHeaderRequest));
 		}
 
 		/// <summary>
