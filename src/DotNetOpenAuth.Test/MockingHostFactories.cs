@@ -51,6 +51,10 @@ namespace DotNetOpenAuth.Test {
 					if (handler.Uri.IsBaseOf(request.RequestUri) && handler.Uri.AbsolutePath == request.RequestUri.AbsolutePath) {
 						var response = await handler.MessageHandler(request);
 						if (response != null) {
+							if (response.RequestMessage == null) {
+								response.RequestMessage = request;
+							}
+
 							return response;
 						}
 					}
