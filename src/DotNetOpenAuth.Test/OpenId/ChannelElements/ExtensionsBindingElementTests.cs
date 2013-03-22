@@ -46,7 +46,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		public async Task RoundTripFullStackTest() {
 			IOpenIdMessageExtension request = new MockOpenIdExtension("requestPart", "requestData");
 			IOpenIdMessageExtension response = new MockOpenIdExtension("responsePart", "responseData");
-			await ExtensionTestUtilities.RoundtripAsync(
+			await this.RoundtripAsync(
 				Protocol.Default,
 				new IOpenIdMessageExtension[] { request },
 				new IOpenIdMessageExtension[] { response });
@@ -123,37 +123,21 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 			Protocol protocol = Protocol.Default;
 			var opStore = new StandardProviderApplicationStore();
 			int rpStep = 0;
-			var coordinator = new CoordinatorBase(
-				async (hostFactories, ct) => {
-					var op = new OpenIdProvider(opStore);
-					RegisterMockExtension(op.Channel);
-					var redirectingResponse = await op.Channel.PrepareResponseAsync(CreateResponseWithExtensions(protocol));
-					using (var httpClient = hostFactories.CreateHttpClient()) {
-						using (var response = await httpClient.GetAsync(redirectingResponse.Headers.Location)) {
-							response.EnsureSuccessStatusCode();
-						}
-					}
 
-					op.SecuritySettings.SignOutgoingExtensions = false;
-					redirectingResponse = await op.Channel.PrepareResponseAsync(CreateResponseWithExtensions(protocol));
-					using (var httpClient = hostFactories.CreateHttpClient()) {
-						using (var response = await httpClient.GetAsync(redirectingResponse.Headers.Location)) {
-							response.EnsureSuccessStatusCode();
-						}
-					}
-				},
-				CoordinatorBase.Handle(RPRealmUri).By(async (hostFactories, req, ct) => {
-					var rp = new OpenIdRelyingParty(new StandardRelyingPartyApplicationStore(), hostFactories);
+
+			Handle(RPRealmUri).By(
+				async req => {
+					var rp = new OpenIdRelyingParty(new StandardRelyingPartyApplicationStore(), this.HostFactories);
 					RegisterMockExtension(rp.Channel);
 
 					switch (++rpStep) {
 						case 1:
-							var response = await rp.Channel.ReadFromRequestAsync<IndirectSignedResponse>(req, ct);
+							var response = await rp.Channel.ReadFromRequestAsync<IndirectSignedResponse>(req, CancellationToken.None);
 							Assert.AreEqual(1, response.SignedExtensions.Count(), "Signed extension should have been received.");
 							Assert.AreEqual(0, response.UnsignedExtensions.Count(), "No unsigned extension should be present.");
 							break;
 						case 2:
-							response = await rp.Channel.ReadFromRequestAsync<IndirectSignedResponse>(req, ct);
+							response = await rp.Channel.ReadFromRequestAsync<IndirectSignedResponse>(req, CancellationToken.None);
 							Assert.AreEqual(0, response.SignedExtensions.Count(), "No signed extension should have been received.");
 							Assert.AreEqual(1, response.UnsignedExtensions.Count(), "Unsigned extension should have been received.");
 							break;
@@ -163,12 +147,31 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 					}
 
 					return new HttpResponseMessage();
-				}),
-				CoordinatorBase.Handle(OPUri).By(async (hostFactories, req, ct) => {
+				});
+			Handle(OPUri).By(
+				async req => {
 					var op = new OpenIdProvider(opStore);
-					return await AutoProviderActionAsync(op, req, ct);
-				}));
-			await coordinator.RunAsync();
+					return await AutoProviderActionAsync(op, req, CancellationToken.None);
+				});
+
+			{
+				var op = new OpenIdProvider(opStore);
+				RegisterMockExtension(op.Channel);
+				var redirectingResponse = await op.Channel.PrepareResponseAsync(CreateResponseWithExtensions(protocol));
+				using (var httpClient = this.HostFactories.CreateHttpClient()) {
+					using (var response = await httpClient.GetAsync(redirectingResponse.Headers.Location)) {
+						response.EnsureSuccessStatusCode();
+					}
+				}
+
+				op.SecuritySettings.SignOutgoingExtensions = false;
+				redirectingResponse = await op.Channel.PrepareResponseAsync(CreateResponseWithExtensions(protocol));
+				using (var httpClient = this.HostFactories.CreateHttpClient()) {
+					using (var response = await httpClient.GetAsync(redirectingResponse.Headers.Location)) {
+						response.EnsureSuccessStatusCode();
+					}
+				}
+			}
 		}
 
 		/// <summary>
@@ -183,7 +186,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 			IOpenIdMessageExtension request1 = new MockOpenIdExtension("requestPart1", "requestData1");
 			IOpenIdMessageExtension request2 = new MockOpenIdExtension("requestPart2", "requestData2");
 			try {
-				await ExtensionTestUtilities.RoundtripAsync(
+				await this.RoundtripAsync(
 					Protocol.Default,
 					new IOpenIdMessageExtension[] { request1, request2 },
 					new IOpenIdMessageExtension[0]);

@@ -28,7 +28,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			response.Attributes.Add(new AttributeValues(NicknameTypeUri, "Andrew"));
 			response.Attributes.Add(new AttributeValues(EmailTypeUri, "a@a.com", "b@b.com"));
 
-			await ExtensionTestUtilities.RoundtripAsync(Protocol.Default, new[] { request }, new[] { response });
+			await this.RoundtripAsync(Protocol.Default, new[] { request }, new[] { response });
 		}
 
 		[Test]
@@ -43,13 +43,13 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			var successResponse = new StoreResponse();
 			successResponse.Succeeded = true;
 
-			await ExtensionTestUtilities.RoundtripAsync(Protocol.Default, new[] { request }, new[] { successResponse });
+			await this.RoundtripAsync(Protocol.Default, new[] { request }, new[] { successResponse });
 
 			var failureResponse = new StoreResponse();
 			failureResponse.Succeeded = false;
 			failureResponse.FailureReason = "Some error";
 
-			await ExtensionTestUtilities.RoundtripAsync(Protocol.Default, new[] { request }, new[] { failureResponse });
+			await this.RoundtripAsync(Protocol.Default, new[] { request }, new[] { failureResponse });
 		}
 	}
 }

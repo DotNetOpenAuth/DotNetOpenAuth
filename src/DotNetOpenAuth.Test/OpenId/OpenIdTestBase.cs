@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 	using System;
 	using System.Collections.Generic;
 	using System.IO;
+	using System.Linq;
 	using System.Net.Http;
 	using System.Reflection;
 	using System.Threading;
@@ -17,10 +18,16 @@ namespace DotNetOpenAuth.Test.OpenId {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId;
+	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.Provider;
 	using DotNetOpenAuth.OpenId.RelyingParty;
+	using DotNetOpenAuth.Test.Messaging;
 	using DotNetOpenAuth.Test.Mocks;
+	using DotNetOpenAuth.Test.OpenId.Extensions;
+
 	using NUnit.Framework;
+
+	using IAuthenticationRequest = DotNetOpenAuth.OpenId.Provider.IAuthenticationRequest;
 
 	public class OpenIdTestBase : TestBase {
 		protected internal const string IdentifierSelect = "http://specs.openid.net/auth/2.0/identifier_select";
@@ -119,7 +126,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 
 		internal static IdentifierDiscoveryResult GetServiceEndpoint(int user, ProtocolVersion providerVersion, int servicePriority, bool useSsl, bool delegating) {
 			var providerEndpoint = new ProviderEndpointDescription(
-				useSsl ? OpenIdTestBase.OPUriSsl : OpenIdTestBase.OPUri,
+				useSsl ? OPUriSsl : OPUri,
 				new string[] { Protocol.Lookup(providerVersion).ClaimedIdentifierServiceTypeURI });
 			var local_id = useSsl ? OPLocalIdentifiersSsl[user] : OPLocalIdentifiers[user];
 			var claimed_id = delegating ? (useSsl ? VanityUriSsl : VanityUri) : local_id;
@@ -139,14 +146,12 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// <remarks>
 		/// This is a very useful method to pass to the OpenIdCoordinator constructor for the Provider argument.
 		/// </remarks>
-		internal CoordinatorBase.Handler AutoProvider {
-			get {
-				return CoordinatorBase.Handle(OPUri).By(
-					async (req, ct) => {
-						var provider = new OpenIdProvider(new StandardProviderApplicationStore());
-						return await this.AutoProviderActionAsync(provider, req, ct);
-					});
-			}
+		internal void RegisterAutoProvider() {
+			this.Handle(OPUri).By(
+				async (req, ct) => {
+					var provider = new OpenIdProvider(new StandardProviderApplicationStore(), this.HostFactories);
+					return await this.AutoProviderActionAsync(provider, req, ct);
+				});
 		}
 
 		/// <summary>
@@ -161,7 +166,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Assert.That(request, Is.Not.Null);
 
 			if (!request.IsResponseReady) {
-				var authRequest = (DotNetOpenAuth.OpenId.Provider.IAuthenticationRequest)request;
+				var authRequest = (IAuthenticationRequest)request;
 				switch (this.AutoProviderScenario) {
 					case Scenarios.AutoApproval:
 						authRequest.IsAuthenticated = true;
@@ -205,7 +210,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 
 		protected Identifier GetMockIdentifier(ProtocolVersion providerVersion, bool useSsl, bool delegating) {
 			var se = GetServiceEndpoint(0, providerVersion, 10, useSsl, delegating);
-			this.HostFactories.Handlers.Add(MockHttpRequest.RegisterMockXrdsResponse(se));
+			this.RegisterMockXrdsResponse(se);
 			return se.ClaimedIdentifier;
 		}
 
@@ -217,7 +222,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 				IdentifierDiscoveryResult.CreateForProviderIdentifier(protocol.ClaimedIdentifierForOPIdentifier, opDesc, 20, 20),
 			};
 
-			this.HostFactories.Handlers.Add(MockHttpRequest.RegisterMockXrdsResponse(VanityUri, dualResults));
+			this.RegisterMockXrdsResponse(VanityUri, dualResults);
 			return VanityUri;
 		}
 
@@ -246,6 +251,86 @@ namespace DotNetOpenAuth.Test.OpenId {
 		protected OpenIdProvider CreateProvider() {
 			var op = new OpenIdProvider(new StandardProviderApplicationStore(), this.HostFactories);
 			return op;
+		}
+
+		protected internal void HandleProvider(Func<OpenIdProvider, HttpRequestMessage, Task<HttpResponseMessage>> provider) {
+			this.Handle(OPUri).By(async req => {
+				var op = new OpenIdProvider(new StandardProviderApplicationStore());
+				return await provider(op, req);
+			});
+		}
+
+		/// <summary>
+		/// Simulates an extension request and response.
+		/// </summary>
+		/// <param name="protocol">The protocol to use in the roundtripping.</param>
+		/// <param name="requests">The extensions to add to the request message.</param>
+		/// <param name="responses">The extensions to add to the response message.</param>
+		/// <remarks>
+		/// This method relies on the extension objects' Equals methods to verify
+		/// accurate transport.  The Equals methods should be verified by separate tests.
+		/// </remarks>
+		internal async Task RoundtripAsync(
+			Protocol protocol, IEnumerable<IOpenIdMessageExtension> requests, IEnumerable<IOpenIdMessageExtension> responses) {
+			var securitySettings = new ProviderSecuritySettings();
+			var cryptoKeyStore = new MemoryCryptoKeyStore();
+			var associationStore = new ProviderAssociationHandleEncoder(cryptoKeyStore);
+			Association association = HmacShaAssociationProvider.Create(
+				protocol,
+				protocol.Args.SignatureAlgorithm.Best,
+				AssociationRelyingPartyType.Smart,
+				associationStore,
+				securitySettings);
+
+			this.HandleProvider(
+				async (op, req) => {
+					ExtensionTestUtilities.RegisterExtension(op.Channel, Mocks.MockOpenIdExtension.Factory);
+					var key = cryptoKeyStore.GetCurrentKey(
+						ProviderAssociationHandleEncoder.AssociationHandleEncodingSecretBucket, TimeSpan.FromSeconds(1));
+					op.CryptoKeyStore.StoreKey(
+						ProviderAssociationHandleEncoder.AssociationHandleEncodingSecretBucket, key.Key, key.Value);
+					var request = await op.Channel.ReadFromRequestAsync<CheckIdRequest>(req, CancellationToken.None);
+					var response = new PositiveAssertionResponse(request);
+					var receivedRequests = request.Extensions.Cast<IOpenIdMessageExtension>();
+					CollectionAssert<IOpenIdMessageExtension>.AreEquivalentByEquality(requests.ToArray(), receivedRequests.ToArray());
+
+					foreach (var extensionResponse in responses) {
+						response.Extensions.Add(extensionResponse);
+					}
+
+					return await op.Channel.PrepareResponseAsync(response);
+				});
+
+				{
+					var rp = this.CreateRelyingParty();
+					ExtensionTestUtilities.RegisterExtension(rp.Channel, Mocks.MockOpenIdExtension.Factory);
+					var requestBase = new CheckIdRequest(protocol.Version, OpenIdTestBase.OPUri, AuthenticationRequestMode.Immediate);
+					OpenIdTestBase.StoreAssociation(rp, OpenIdTestBase.OPUri, association);
+					requestBase.AssociationHandle = association.Handle;
+					requestBase.ClaimedIdentifier = "http://claimedid";
+					requestBase.LocalIdentifier = "http://localid";
+					requestBase.ReturnTo = OpenIdTestBase.RPUri;
+
+					foreach (IOpenIdMessageExtension extension in requests) {
+						requestBase.Extensions.Add(extension);
+					}
+
+					var redirectingRequest = await rp.Channel.PrepareResponseAsync(requestBase);
+					Uri redirectingResponseUri;
+					using (var httpClient = rp.Channel.HostFactories.CreateHttpClient()) {
+						using (var redirectingResponse = await httpClient.GetAsync(redirectingRequest.Headers.Location)) {
+							redirectingResponse.EnsureSuccessStatusCode();
+							redirectingResponseUri = redirectingResponse.Headers.Location;
+						}
+					}
+
+					var response =
+						await
+						rp.Channel.ReadFromRequestAsync<PositiveAssertionResponse>(
+							new HttpRequestMessage(HttpMethod.Get, redirectingResponseUri), CancellationToken.None);
+					var receivedResponses = response.Extensions.Cast<IOpenIdMessageExtension>();
+					CollectionAssert<IOpenIdMessageExtension>.AreEquivalentByEquality(responses.ToArray(), receivedResponses.ToArray());
+				}
 		}
 	}
 }

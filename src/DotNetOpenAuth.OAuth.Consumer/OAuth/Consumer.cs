@@ -39,21 +39,24 @@ namespace DotNetOpenAuth.OAuth {
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Consumer"/> class.
+		/// Initializes a new instance of the <see cref="Consumer" /> class.
 		/// </summary>
 		/// <param name="consumerKey">The consumer key.</param>
 		/// <param name="consumerSecret">The consumer secret.</param>
 		/// <param name="serviceProvider">The service provider.</param>
 		/// <param name="temporaryCredentialStorage">The temporary credential storage.</param>
+		/// <param name="hostFactories">The host factories.</param>
 		public Consumer(
 			string consumerKey,
 			string consumerSecret,
 			ServiceProviderDescription serviceProvider,
-			ITemporaryCredentialStorage temporaryCredentialStorage) {
+			ITemporaryCredentialStorage temporaryCredentialStorage,
+			IHostFactories hostFactories = null) {
 			this.ConsumerKey = consumerKey;
 			this.ConsumerSecret = consumerSecret;
 			this.ServiceProvider = serviceProvider;
 			this.TemporaryCredentialStorage = temporaryCredentialStorage;
+			this.HostFactories = hostFactories ?? new DefaultOAuthHostFactories();
 		}
 
 		/// <summary>

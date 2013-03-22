@@ -16,13 +16,13 @@ namespace DotNetOpenAuth.Test {
 	using Validation;
 
 	internal class MockingHostFactories : IHostFactories {
-		private readonly List<CoordinatorBase.Handler> handlers;
+		private readonly List<TestBase.Handler> handlers;
 
-		public MockingHostFactories(List<CoordinatorBase.Handler> handlers = null) {
-			this.handlers = handlers ?? new List<CoordinatorBase.Handler>();
+		public MockingHostFactories(List<TestBase.Handler> handlers = null) {
+			this.handlers = handlers ?? new List<TestBase.Handler>();
 		}
 
-		public List<CoordinatorBase.Handler> Handlers {
+		public List<TestBase.Handler> Handlers {
 			get { return this.handlers; }
 		}
 
@@ -35,11 +35,11 @@ namespace DotNetOpenAuth.Test {
 		}
 
 		private class ForwardingMessageHandler : HttpMessageHandler {
-			private readonly IEnumerable<CoordinatorBase.Handler> handlers;
+			private readonly IEnumerable<TestBase.Handler> handlers;
 
 			private readonly IHostFactories hostFactories;
 
-			public ForwardingMessageHandler(IEnumerable<CoordinatorBase.Handler> handlers, IHostFactories hostFactories) {
+			public ForwardingMessageHandler(IEnumerable<TestBase.Handler> handlers, IHostFactories hostFactories) {
 				Requires.NotNull(handlers, "handlers");
 
 				this.handlers = handlers;
@@ -49,7 +49,7 @@ namespace DotNetOpenAuth.Test {
 			protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken) {
 				foreach (var handler in this.handlers) {
 					if (handler.Uri.IsBaseOf(request.RequestUri) && handler.Uri.AbsolutePath == request.RequestUri.AbsolutePath) {
-						var response = await handler.MessageHandler(this.hostFactories, request, cancellationToken);
+						var response = await handler.MessageHandler(request);
 						if (response != null) {
 							return response;
 						}

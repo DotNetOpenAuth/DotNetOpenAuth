@@ -54,7 +54,7 @@ namespace DotNetOpenAuth.Test.OpenId.DiscoveryServices {
 				{ "https://xri.net/=Arnott?_xrd_r=application/xrd%2Bxml;sep=false", xrds },
 				{ "https://xri.net/=!9B72.7DD1.50A9.5CCD?_xrd_r=application/xrd%2Bxml;sep=false", xrds },
 			};
-			this.HostFactories.Handlers.AddRange(MockHttpRequest.RegisterMockXrdsResponses(mocks));
+			this.RegisterMockXrdsResponses(mocks);
 
 			string expectedCanonicalId = "=!9B72.7DD1.50A9.5CCD";
 			IdentifierDiscoveryResult se = await this.VerifyCanonicalIdAsync("=Arnott", expectedCanonicalId);
@@ -280,14 +280,13 @@ uEyb50RJ7DWmXctSC0b3eymZ2lSXxAWNOsNy
   </X509Data>
  </KeyInfo>
 </XRD>";
-			this.HostFactories.Handlers.AddRange(
-				MockHttpRequest.RegisterMockXrdsResponses(new Dictionary<string, string> {
-					{ "https://xri.net/@llli?_xrd_r=application/xrd%2Bxml;sep=false", llliResponse },
-					{ "https://xri.net/@llli*area?_xrd_r=application/xrd%2Bxml;sep=false", llliAreaResponse },
-					{ "https://xri.net/@llli*area*canada.unattached?_xrd_r=application/xrd%2Bxml;sep=false", llliAreaCanadaUnattachedResponse },
-					{ "https://xri.net/@llli*area*canada.unattached*ada?_xrd_r=application/xrd%2Bxml;sep=false", llliAreaCanadaUnattachedAdaResponse },
-					{ "https://xri.net/=Web?_xrd_r=application/xrd%2Bxml;sep=false", webResponse },
-				}));
+			this.RegisterMockXrdsResponses(new Dictionary<string, string> {
+				{ "https://xri.net/@llli?_xrd_r=application/xrd%2Bxml;sep=false", llliResponse },
+				{ "https://xri.net/@llli*area?_xrd_r=application/xrd%2Bxml;sep=false", llliAreaResponse },
+				{ "https://xri.net/@llli*area*canada.unattached?_xrd_r=application/xrd%2Bxml;sep=false", llliAreaCanadaUnattachedResponse },
+				{ "https://xri.net/@llli*area*canada.unattached*ada?_xrd_r=application/xrd%2Bxml;sep=false", llliAreaCanadaUnattachedAdaResponse },
+				{ "https://xri.net/=Web?_xrd_r=application/xrd%2Bxml;sep=false", webResponse },
+			});
 			await this.VerifyCanonicalIdAsync("@llli", "@!72CD.A072.157E.A9C6");
 			await this.VerifyCanonicalIdAsync("@llli*area", "@!72CD.A072.157E.A9C6!0000.0000.3B9A.CA0C");
 			await this.VerifyCanonicalIdAsync("@llli*area*canada.unattached", "@!72CD.A072.157E.A9C6!0000.0000.3B9A.CA0C!0000.0000.3B9A.CA41");
@@ -297,8 +296,7 @@ uEyb50RJ7DWmXctSC0b3eymZ2lSXxAWNOsNy
 
 		[Test]
 		public async Task DiscoveryCommunityInameDelegateWithoutCanonicalID() {
-			this.HostFactories.Handlers.AddRange(
-				MockHttpRequest.RegisterMockXrdsResponses(new Dictionary<string, string> {
+			this.RegisterMockXrdsResponses(new Dictionary<string, string> {
 				{ "https://xri.net/=Web*andrew.arnott?_xrd_r=application/xrd%2Bxml;sep=false", @"<?xml version='1.0' encoding='UTF-8'?>
 <XRD xmlns='xri://$xrd*($v*2.0)'>
  <Query>*andrew.arnott</Query>
@@ -376,7 +374,7 @@ uEyb50RJ7DWmXctSC0b3eymZ2lSXxAWNOsNy
  </Service>
  <ServedBy>OpenXRI</ServedBy>
 </XRD>" },
-			}));
+			});
 			// Consistent with spec section 7.3.2.3, we do not permit
 			// delegation on XRI discovery when there is no CanonicalID present.
 			await this.VerifyCanonicalIdAsync("=Web*andrew.arnott", null);

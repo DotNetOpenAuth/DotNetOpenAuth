@@ -7,7 +7,11 @@
 namespace DotNetOpenAuth.Test {
 	using System;
 	using System.IO;
+	using System.Net;
+	using System.Net.Http;
+	using System.Net.Http.Headers;
 	using System.Reflection;
+	using System.Threading;
 	using System.Threading.Tasks;
 	using System.Web;
 	using DotNetOpenAuth.Messaging.Reflection;
@@ -16,6 +20,8 @@ namespace DotNetOpenAuth.Test {
 	using DotNetOpenAuth.Test.Performance;
 	using log4net;
 	using NUnit.Framework;
+
+	using log4net.Config;
 
 	/// <summary>
 	/// The base class that all test classes inherit from.
@@ -56,7 +62,7 @@ namespace DotNetOpenAuth.Test {
 		/// </summary>
 		[SetUp]
 		public virtual void SetUp() {
-			log4net.Config.XmlConfigurator.Configure(Assembly.GetExecutingAssembly().GetManifestResourceStream("DotNetOpenAuth.Test.Logging.config"));
+			XmlConfigurator.Configure(Assembly.GetExecutingAssembly().GetManifestResourceStream("DotNetOpenAuth.Test.Logging.config"));
 			MessageBase.LowSecurityMode = true;
 			this.messageDescriptions = new MessageDescriptionCollection();
 			this.HostFactories = new MockingHostFactories();
@@ -68,7 +74,7 @@ namespace DotNetOpenAuth.Test {
 		/// </summary>
 		[TearDown]
 		public virtual void Cleanup() {
-			log4net.LogManager.Shutdown();
+			LogManager.Shutdown();
 		}
 
 		internal static Stats MeasurePerformance(Func<Task> action, float maximumAllowedUnitTime, int samples = 10, int iterations = 100, string name = null) {
@@ -106,6 +112,55 @@ namespace DotNetOpenAuth.Test {
 			HttpContext.Current = new HttpContext(
 				new HttpRequest("mock", "http://mock", "mock"),
 				new HttpResponse(new StringWriter()));
+		}
+
+		protected internal Handler Handle(string uri) {
+			return new Handler(this, new Uri(uri));
+		}
+
+		protected internal Handler Handle(Uri uri) {
+			return new Handler(this, uri);
+		}
+
+		protected internal struct Handler {
+			private TestBase test;
+
+			internal Handler(TestBase test, Uri uri)
+				: this() {
+				this.test = test;
+				this.Uri = uri;
+			}
+
+			private Handler(Handler previous, Func<HttpRequestMessage, Task<HttpResponseMessage>> handler)
+				: this(previous.test, previous.Uri) {
+				this.MessageHandler = handler;
+			}
+
+			internal Uri Uri { get; private set; }
+
+			internal Func<HttpRequestMessage, Task<HttpResponseMessage>> MessageHandler { get; private set; }
+
+			internal void By(Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> handler) {
+				this.test.HostFactories.Handlers.Add(new Handler(this, req => handler(req, CancellationToken.None)));
+			}
+
+			internal void By(Func<HttpRequestMessage, Task<HttpResponseMessage>> handler) {
+				this.test.HostFactories.Handlers.Add(new Handler(this, handler));
+			}
+
+			internal void By(Func<HttpRequestMessage, HttpResponseMessage> handler) {
+				this.By(req => Task.FromResult(handler(req)));
+			}
+
+			internal void By(string responseContent, string contentType, HttpStatusCode statusCode = HttpStatusCode.OK) {
+				this.By(
+				   req => {
+					   var response = new HttpResponseMessage(statusCode);
+					   response.Content = new StringContent(responseContent);
+					   response.Content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
+					   return response;
+				   });
+			}
 		}
 	}
 }

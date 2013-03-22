@@ -131,17 +131,15 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			string claimed_id = BaseMockUri + "a./b.";
 			var se = IdentifierDiscoveryResult.CreateForClaimedIdentifier(claimed_id, claimed_id, providerEndpoint, null, null);
 			var identityUri = (UriIdentifier)se.ClaimedIdentifier;
-			var coordinator = new CoordinatorBase(
-				CoordinatorBase.RelyingPartyDriver(async (rp, ct) => {
-					var positiveAssertion = this.GetPositiveAssertion();
-					positiveAssertion.ClaimedIdentifier = claimed_id;
-					positiveAssertion.LocalIdentifier = claimed_id;
-					var authResponse = new PositiveAuthenticationResponse(positiveAssertion, rp);
-					Assert.AreEqual(AuthenticationStatus.Authenticated, authResponse.Status);
-					Assert.AreEqual(claimed_id, authResponse.ClaimedIdentifier.ToString());
-				}),
-				MockHttpRequest.RegisterMockXrdsResponse(se));
-			await coordinator.RunAsync();
+			this.RegisterMockXrdsResponse(se);
+
+			var rp = this.CreateRelyingParty();
+			var positiveAssertion = this.GetPositiveAssertion();
+			positiveAssertion.ClaimedIdentifier = claimed_id;
+			positiveAssertion.LocalIdentifier = claimed_id;
+			var authResponse = new PositiveAuthenticationResponse(positiveAssertion, rp);
+			Assert.AreEqual(AuthenticationStatus.Authenticated, authResponse.Status);
+			Assert.AreEqual(claimed_id, authResponse.ClaimedIdentifier.ToString());
 		}
 
 		private PositiveAssertionResponse GetPositiveAssertion() {

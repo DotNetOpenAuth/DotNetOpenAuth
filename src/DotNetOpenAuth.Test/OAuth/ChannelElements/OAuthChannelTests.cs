@@ -301,17 +301,8 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 				HttpMethods = scheme,
 			};
 
-			await CoordinatorBase.RunAsync(
-				async (hostFactories, CancellationToken) => {
-					IProtocolMessage response = await this.channel.RequestAsync(request, CancellationToken.None);
-					Assert.IsNotNull(response);
-					Assert.IsInstanceOf<TestMessage>(response);
-					TestMessage responseMessage = (TestMessage)response;
-					Assert.AreEqual(request.Age, responseMessage.Age);
-					Assert.AreEqual(request.Name, responseMessage.Name);
-					Assert.AreEqual(request.Location, responseMessage.Location);
-				},
-				CoordinatorBase.Handle(request.Location).By(async (req, ct) => {
+			Handle(request.Location).By(
+				async (req, ct) => {
 					Assert.IsNotNull(req);
 					Assert.AreEqual(MessagingUtilities.GetHttpVerb(scheme), req.Method);
 					var incomingMessage = (await this.channel.ReadFromRequestAsync(req, CancellationToken.None)) as TestMessage;
@@ -330,7 +321,15 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 					var rawResponse = new HttpResponseMessage();
 					rawResponse.Content = new StringContent(MessagingUtilities.CreateQueryString(responseFields));
 					return rawResponse;
-				}));
+				});
+
+			IProtocolMessage response = await this.channel.RequestAsync(request, CancellationToken.None);
+			Assert.IsNotNull(response);
+			Assert.IsInstanceOf<TestMessage>(response);
+			TestMessage responseMessage = (TestMessage)response;
+			Assert.AreEqual(request.Age, responseMessage.Age);
+			Assert.AreEqual(request.Name, responseMessage.Name);
+			Assert.AreEqual(request.Location, responseMessage.Location);
 		}
 
 		private async Task ParameterizedReceiveTestAsync(HttpDeliveryMethods scheme) {

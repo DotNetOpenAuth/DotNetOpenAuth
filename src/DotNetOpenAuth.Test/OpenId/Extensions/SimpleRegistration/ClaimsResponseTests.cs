@@ -17,7 +17,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 	using NUnit.Framework;
 
 	[TestFixture]
-	public class ClaimsResponseTests {
+	public class ClaimsResponseTests : OpenIdTestBase {
 		[Test]
 		public void EmptyMailAddress() {
 			ClaimsResponse response = new ClaimsResponse(Constants.TypeUris.Standard);
@@ -140,7 +140,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			var response = new ClaimsResponse(Constants.TypeUris.Variant10);
 			response.Email = "a@b.com";
 
-			await ExtensionTestUtilities.RoundtripAsync(Protocol.Default, new[] { request }, new[] { response });
+			await this.RoundtripAsync(Protocol.Default, new[] { request }, new[] { response });
 		}
 
 		private ClaimsResponse GetFilledData() {
