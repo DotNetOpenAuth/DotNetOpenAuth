@@ -154,6 +154,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="hostFactories">The host factories.</param>
 		protected Channel(IMessageFactory messageTypeProvider, IChannelBindingElement[] bindingElements, IHostFactories hostFactories) {
 			Requires.NotNull(messageTypeProvider, "messageTypeProvider");
+			Requires.NotNull(bindingElements, "bindingElements");
 			Requires.NotNull(hostFactories, "hostFactories");
 
 			this.messageTypeProvider = messageTypeProvider;
