@@ -104,6 +104,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AutoRedirectHandler.cs" />
     <Compile Include="Configuration\SectionTests.cs" />
     <Compile Include="Hosting\AspNetHost.cs" />
     <Compile Include="Hosting\HostingTests.cs" />

@@ -131,8 +131,21 @@ namespace DotNetOpenAuth.Test.Mocks {
 		}
 
 		internal static void RegisterMockResponse(this TestBase test, Uri requestUri, Uri responseUri, string contentType, WebHeaderCollection headers, string content) {
+			Requires.NotNull(requestUri, "requestUri");
+			Requires.NotNull(responseUri, "responseUri");
+			Requires.NotNullOrEmpty(contentType, "contentType");
+
 			test.Handle(requestUri).By(req => {
 				var response = new HttpResponseMessage();
+				response.RequestMessage = req;
+
+				if (requestUri != responseUri) {
+					// Simulate having followed redirects to get the final response.
+					var clonedRequest = MessagingUtilities.Clone(req);
+					clonedRequest.RequestUri = responseUri;
+					response.RequestMessage = clonedRequest;
+				}
+
 				response.CopyHeadersFrom(headers);
 				response.Content = new StringContent(content, Encoding.Default, contentType);
 				return response;

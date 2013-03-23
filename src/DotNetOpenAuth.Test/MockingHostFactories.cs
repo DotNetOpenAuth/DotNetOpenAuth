@@ -28,7 +28,7 @@ namespace DotNetOpenAuth.Test {
 		public CookieContainer CookieContainer { get; set; }
 
 		public HttpMessageHandler CreateHttpMessageHandler() {
-			return new CookieDelegatingHandler(new ForwardingMessageHandler(this.handlers, this), this.CookieContainer);
+			return new AutoRedirectHandler(new CookieDelegatingHandler(new ForwardingMessageHandler(this.handlers, this), this.CookieContainer));
 		}
 
 		public HttpClient CreateHttpClient(HttpMessageHandler handler = null) {

@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.Test.OpenId.DiscoveryServices {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Net;
+	using System.Net.Http;
 	using System.Text;
 	using System.Threading;
 	using System.Threading.Tasks;
@@ -237,11 +238,25 @@ namespace DotNetOpenAuth.Test.OpenId.DiscoveryServices {
 			await this.DiscoverAsync(url, version, expectedLocalId, providerEndpoint, expectSreg, useRedirect, null);
 		}
 
+		private string RegisterDiscoveryRedirector(Uri baseUrl) {
+			var redirectorUrl = new Uri(baseUrl, "Discovery/htmldiscovery/redirect.aspx");
+			this.Handle(redirectorUrl).By(req => {
+				string redirectTarget = HttpUtility.ParseQueryString(req.RequestUri.Query)["target"];
+				var response = new HttpResponseMessage(HttpStatusCode.Redirect);
+				response.Headers.Location = new Uri(redirectTarget, UriKind.RelativeOrAbsolute);
+				response.RequestMessage = req;
+				return response;
+			});
+
+			return redirectorUrl.AbsoluteUri + "?target=";
+		}
+
 		private async Task DiscoverAsync(string url, ProtocolVersion version, Identifier expectedLocalId, string providerEndpoint, bool expectSreg, bool useRedirect, WebHeaderCollection headers) {
 			Protocol protocol = Protocol.Lookup(version);
 			Uri baseUrl = new Uri("http://localhost/");
+			string redirectBase = this.RegisterDiscoveryRedirector(baseUrl);
 			UriIdentifier claimedId = new Uri(baseUrl, url);
-			UriIdentifier userSuppliedIdentifier = new Uri(baseUrl, "Discovery/htmldiscovery/redirect.aspx?target=" + url);
+			UriIdentifier userSuppliedIdentifier = new Uri(redirectBase + Uri.EscapeDataString(url));
 			if (expectedLocalId == null) {
 				expectedLocalId = claimedId;
 			}
@@ -255,7 +270,7 @@ namespace DotNetOpenAuth.Test.OpenId.DiscoveryServices {
 			} else {
 				throw new InvalidOperationException();
 			}
-			this.RegisterMockResponse(new Uri(idToDiscover), claimedId, contentType, headers ?? new WebHeaderCollection(), LoadEmbeddedFile(url));
+			this.RegisterMockResponse(claimedId, claimedId, contentType, headers ?? new WebHeaderCollection(), LoadEmbeddedFile(url));
 
 			IdentifierDiscoveryResult expected = IdentifierDiscoveryResult.CreateForClaimedIdentifier(
 				claimedId,
