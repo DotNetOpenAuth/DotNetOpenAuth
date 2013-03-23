@@ -112,7 +112,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			var opStore = new StandardProviderApplicationStore();
 			Handle(RPRealmUri).By(
 				async req => {
-					var rp = new OpenIdRelyingParty(new StandardRelyingPartyApplicationStore());
+					var rp = new OpenIdRelyingParty(new StandardRelyingPartyApplicationStore(), this.HostFactories);
 
 					// Rig it to always deny the incoming OP
 					rp.EndpointFilter = op => false;
@@ -124,7 +124,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 				});
 			this.RegisterAutoProvider();
 			{
-				var op = new OpenIdProvider(opStore);
+				var op = new OpenIdProvider(opStore, this.HostFactories);
 				Identifier id = GetMockIdentifier(ProtocolVersion.V20);
 				var assertion = await op.PrepareUnsolicitedAssertionAsync(OPUri, GetMockRealm(false), id, id);
 				using (var httpClient = this.HostFactories.CreateHttpClient()) {

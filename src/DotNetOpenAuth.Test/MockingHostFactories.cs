@@ -10,9 +10,7 @@ namespace DotNetOpenAuth.Test {
 	using System.Net.Http;
 	using System.Threading;
 	using System.Threading.Tasks;
-
 	using System.Linq;
-
 	using Validation;
 
 	internal class MockingHostFactories : IHostFactories {
@@ -20,14 +18,17 @@ namespace DotNetOpenAuth.Test {
 
 		public MockingHostFactories(List<TestBase.Handler> handlers = null) {
 			this.handlers = handlers ?? new List<TestBase.Handler>();
+			this.CookieContainer = new CookieContainer();
 		}
 
 		public List<TestBase.Handler> Handlers {
 			get { return this.handlers; }
 		}
 
+		public CookieContainer CookieContainer { get; set; }
+
 		public HttpMessageHandler CreateHttpMessageHandler() {
-			return new ForwardingMessageHandler(this.handlers, this);
+			return new CookieDelegatingHandler(new ForwardingMessageHandler(this.handlers, this), this.CookieContainer);
 		}
 
 		public HttpClient CreateHttpClient(HttpMessageHandler handler = null) {

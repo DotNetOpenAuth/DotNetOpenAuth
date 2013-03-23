@@ -38,11 +38,12 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 					return await server.HandleTokenRequestAsync(req, ct);
 				});
 
-			var client = new WebServerClient(AuthorizationServerDescription);
+			var client = new WebServerClient(AuthorizationServerDescription, ClientId, ClientSecret, this.HostFactories);
 			var authState = new AuthorizationState(TestScopes) {
 				Callback = ClientCallback,
 			};
 			var authRequestRedirect = await client.PrepareRequestUserAuthorizationAsync(authState);
+			this.HostFactories.CookieContainer.SetCookies(authRequestRedirect, ClientCallback);
 			Uri authRequestResponse;
 			using (var httpClient = this.HostFactories.CreateHttpClient()) {
 				using (var httpResponse = await httpClient.GetAsync(authRequestRedirect.Headers.Location)) {
@@ -50,7 +51,9 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 				}
 			}
 
-			var result = await client.ProcessUserAuthorizationAsync(new HttpRequestMessage(HttpMethod.Get, authRequestResponse), CancellationToken.None);
+			var authorizationResponse = new HttpRequestMessage(HttpMethod.Get, authRequestResponse);
+			this.HostFactories.CookieContainer.ApplyCookies(authorizationResponse);
+			var result = await client.ProcessUserAuthorizationAsync(authorizationResponse, CancellationToken.None);
 			Assert.That(result.AccessToken, Is.Not.Null.And.Not.Empty);
 			Assert.That(result.RefreshToken, Is.Not.Null.And.Not.Empty);
 		}

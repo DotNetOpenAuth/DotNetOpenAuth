@@ -29,7 +29,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <summary>
 		/// The string "Basic ".
 		/// </summary>
-		private const string HttpBasicAuthScheme = "Basic ";
+		private const string HttpBasicAuthScheme = "Basic";
 
 		/// <summary>
 		/// The delimiter between scope elements.
@@ -172,7 +172,7 @@ namespace DotNetOpenAuth.OAuth2 {
 			string concat = userName + ":" + password;
 			byte[] bits = HttpBasicEncoding.GetBytes(concat);
 			string base64 = Convert.ToBase64String(bits);
-			headers.Authorization = new AuthenticationHeaderValue(HttpBasicAuthScheme.TrimEnd(), base64);
+			headers.Authorization = new AuthenticationHeaderValue(HttpBasicAuthScheme, base64);
 		}
 
 		/// <summary>
