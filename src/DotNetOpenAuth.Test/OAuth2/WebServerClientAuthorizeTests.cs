@@ -100,7 +100,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 					var server = new AuthorizationServer(authServer.Object);
 					return await server.HandleTokenRequestAsync(req, ct);
 				});
-			var client = new WebServerClient(AuthorizationServerDescription);
+			var client = new WebServerClient(AuthorizationServerDescription, ClientId, ClientSecret, this.HostFactories);
 			var authState = await client.GetClientAccessTokenAsync(TestScopes);
 			Assert.That(authState.AccessToken, Is.Not.Null.And.Not.Empty);
 			Assert.That(authState.RefreshToken, Is.Null);

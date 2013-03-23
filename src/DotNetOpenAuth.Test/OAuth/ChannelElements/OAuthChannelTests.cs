@@ -301,7 +301,7 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 				HttpMethods = scheme,
 			};
 
-			Handle(request.Location).By(
+			Handle(request.Recipient).By(
 				async (req, ct) => {
 					Assert.IsNotNull(req);
 					Assert.AreEqual(MessagingUtilities.GetHttpVerb(scheme), req.Method);

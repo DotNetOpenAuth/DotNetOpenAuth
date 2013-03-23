@@ -110,7 +110,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		[Test]
 		public async Task AssertionWithEndpointFilter() {
 			var opStore = new StandardProviderApplicationStore();
-			Handle(RPRealmUri).By(
+			Handle(RPUri).By(
 				async req => {
 					var rp = new OpenIdRelyingParty(new StandardRelyingPartyApplicationStore(), this.HostFactories);
 
@@ -119,6 +119,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 
 					// Receive the unsolicited assertion
 					var response = await rp.GetResponseAsync(req);
+					Assert.That(response, Is.Not.Null);
 					Assert.AreEqual(AuthenticationStatus.Failed, response.Status);
 					return new HttpResponseMessage();
 				});

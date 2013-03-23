@@ -685,34 +685,29 @@ namespace DotNetOpenAuth.Messaging {
 			try {
 				using (var httpClient = this.HostFactories.CreateHttpClient()) {
 					using (var response = await httpClient.SendAsync(webRequest, cancellationToken)) {
-						if (response.IsSuccessStatusCode) {
-							if (response.Content == null) {
-								return null;
-							}
-
+						if (response.Content != null) {
 							var responseFields = await this.ReadFromResponseCoreAsync(response, cancellationToken);
-							if (responseFields == null) {
-								return null;
+							if (responseFields != null) {
+								var responseMessage = this.MessageFactory.GetNewResponseMessage(request, responseFields);
+								if (responseMessage != null) {
+									this.OnReceivingDirectResponse(response, responseMessage);
+
+									var messageAccessor = this.MessageDescriptions.GetAccessor(responseMessage);
+									messageAccessor.Deserialize(responseFields);
+
+									return responseMessage;
+								}
 							}
+						}
 
-							var responseMessage = this.MessageFactory.GetNewResponseMessage(request, responseFields);
-							if (responseMessage == null) {
-								return null;
-							}
-
-							this.OnReceivingDirectResponse(response, responseMessage);
-
-							var messageAccessor = this.MessageDescriptions.GetAccessor(responseMessage);
-							messageAccessor.Deserialize(responseFields);
-
-							return responseMessage;
-						} else {
+						if (!response.IsSuccessStatusCode) {
 							var errorContent = (response.Content != null) ? await response.Content.ReadAsStringAsync() : null;
 							Logger.Http.ErrorFormat(
 								"Error received in HTTP response: {0} {1}\n{2}", (int)response.StatusCode, response.ReasonPhrase, errorContent);
 							response.EnsureSuccessStatusCode(); // throw so we can wrap it in our catch block.
-							throw Assumes.NotReachable();
 						}
+
+						return null;
 					}
 				}
 			} catch (HttpRequestException requestException) {
@@ -1338,18 +1333,6 @@ namespace DotNetOpenAuth.Messaging {
 			// Now put the protection ones in the right order.
 			return -((int)protection1).CompareTo((int)protection2); // descending flag ordinal order
 		}
-
-#if CONTRACTS_FULL
-		/// <summary>
-		/// Verifies conditions that should be true for any valid state of this object.
-		/// </summary>
-		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Called by code contracts.")]
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by code contracts.")]
-		[ContractInvariantMethod]
-		private void ObjectInvariant() {
-			Contract.Invariant(this.MessageDescriptions != null);
-		}
-#endif
 
 		/// <summary>
 		/// Verifies that all required message parts are initialized to values
