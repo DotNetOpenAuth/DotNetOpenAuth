@@ -869,7 +869,7 @@ namespace DotNetOpenAuth.Messaging {
 			}
 
 			Logger.Http.DebugFormat("Redirecting to {0}", builder.Uri.AbsoluteUri);
-			HttpResponseMessage response = new HttpResponseMessage {
+			HttpResponseMessage response = new HttpResponseMessageWithOriginal(message) {
 				StatusCode = HttpStatusCode.Redirect,
 				Content = new StringContent(string.Format(CultureInfo.InvariantCulture, RedirectResponseBodyFormat, builder.Uri.AbsoluteUri)),
 			};
@@ -905,7 +905,7 @@ namespace DotNetOpenAuth.Messaging {
 					HttpUtility.HtmlEncode(message.Recipient.AbsoluteUri),
 					hiddenFields);
 				bodyWriter.Flush();
-				HttpResponseMessage response = new HttpResponseMessage {
+				HttpResponseMessage response = new HttpResponseMessageWithOriginal(message) {
 					StatusCode = HttpStatusCode.OK,
 					Content = new StringContent(bodyWriter.ToString()),
 				};
