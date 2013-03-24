@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Net;
 	using System.Net.Http;
 	using System.Text;
 	using System.Threading;
@@ -65,6 +66,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 			try {
 				var authState = new AuthorizationState(TestScopes) { Callback = ClientCallback, };
 				var authRedirectResponse = await client.PrepareRequestUserAuthorizationAsync(authState);
+				this.HostFactories.CookieContainer.SetCookies(authRedirectResponse, ClientCallback);
 				Uri authCompleteUri;
 				using (var httpClient = this.HostFactories.CreateHttpClient()) {
 					using (var response = await httpClient.GetAsync(authRedirectResponse.Headers.Location)) {
@@ -74,7 +76,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 				}
 
 				var authCompleteRequest = new HttpRequestMessage(HttpMethod.Get, authCompleteUri);
-				authCompleteRequest.Headers.Add("Cookie", string.Join("; ", authRedirectResponse.Headers.GetValues("Set-Cookie")));
+				this.HostFactories.CookieContainer.ApplyCookies(authCompleteRequest);
 				var result = await client.ProcessUserAuthorizationAsync(authCompleteRequest);
 				Assert.That(result.AccessToken, Is.Not.Null.And.Not.Empty);
 				Assert.That(result.RefreshToken, Is.Not.Null.And.Not.Empty);
@@ -147,7 +149,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 					return await server.HandleTokenRequestAsync(req, ct);
 				});
 
-			var client = new WebServerClient(AuthorizationServerDescription, hostFactories: this.HostFactories);
+			var client = new WebServerClient(AuthorizationServerDescription, ClientId, ClientSecret, this.HostFactories);
 			var result = await client.GetClientAccessTokenAsync(TestScopes);
 			Assert.That(result.AccessToken, Is.Not.Null);
 		}
@@ -162,7 +164,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 					return true;
 				});
 
-			Handle(AuthorizationServerDescription.TokenEndpoint).By(
+			Handle(AuthorizationServerDescription.AuthorizationEndpoint).By(
 				async (req, ct) => {
 					var server = new AuthorizationServer(authServerMock.Object);
 					var request = await server.ReadAuthorizationRequestAsync(req, ct);
@@ -181,15 +183,18 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 				Callback = ClientCallback,
 			};
 			var authRedirectResponse = await client.PrepareRequestUserAuthorizationAsync(authState);
+			this.HostFactories.CookieContainer.SetCookies(authRedirectResponse, ClientCallback);
 			Uri authCompleteUri;
+			this.HostFactories.AllowAutoRedirects = false;
 			using (var httpClient = this.HostFactories.CreateHttpClient()) {
 				using (var response = await httpClient.GetAsync(authRedirectResponse.Headers.Location)) {
-					response.EnsureSuccessStatusCode();
+					Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Redirect));
 					authCompleteUri = response.Headers.Location;
 				}
 			}
 
 			var authCompleteRequest = new HttpRequestMessage(HttpMethod.Get, authCompleteUri);
+			this.HostFactories.CookieContainer.ApplyCookies(authCompleteRequest);
 			var result = await client.ProcessUserAuthorizationAsync(authCompleteRequest);
 			Assert.That(result.AccessToken, Is.Not.Null.And.Not.Empty);
 			Assert.That(result.RefreshToken, Is.Not.Null.And.Not.Empty);

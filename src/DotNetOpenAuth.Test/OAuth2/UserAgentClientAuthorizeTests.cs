@@ -38,12 +38,13 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 					return await server.HandleTokenRequestAsync(req, ct);
 				});
 			{
-				var client = new UserAgentClient(AuthorizationServerDescription);
+				var client = new UserAgentClient(AuthorizationServerDescription, ClientId, ClientSecret, this.HostFactories);
 				var authState = new AuthorizationState(TestScopes) { Callback = ClientCallback, };
 				var request = client.PrepareRequestUserAuthorization(authState);
 				Assert.AreEqual(EndUserAuthorizationResponseType.AuthorizationCode, request.ResponseType);
 				var authRequestRedirect = await client.Channel.PrepareResponseAsync(request);
 				Uri authRequestResponse;
+				this.HostFactories.AllowAutoRedirects = false;
 				using (var httpClient = this.HostFactories.CreateHttpClient()) {
 					using (var httpResponse = await httpClient.GetAsync(authRequestRedirect.Headers.Location)) {
 						authRequestResponse = httpResponse.Headers.Location;
@@ -74,12 +75,13 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 					return await server.Channel.PrepareResponseAsync(response, ct);
 				});
 			{
-				var client = new UserAgentClient(AuthorizationServerDescription);
+				var client = new UserAgentClient(AuthorizationServerDescription, ClientId, ClientSecret, this.HostFactories);
 				var authState = new AuthorizationState(TestScopes) { Callback = ClientCallback, };
 				var request = client.PrepareRequestUserAuthorization(authState, implicitResponseType: true);
 				Assert.That(request.ResponseType, Is.EqualTo(EndUserAuthorizationResponseType.AccessToken));
 				var authRequestRedirect = await client.Channel.PrepareResponseAsync(request);
 				Uri authRequestResponse;
+				this.HostFactories.AllowAutoRedirects = false;
 				using (var httpClient = this.HostFactories.CreateHttpClient()) {
 					using (var httpResponse = await httpClient.GetAsync(authRequestRedirect.Headers.Location)) {
 						authRequestResponse = httpResponse.Headers.Location;

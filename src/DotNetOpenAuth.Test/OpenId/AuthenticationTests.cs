@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.Test.OpenId {
 	using System;
+	using System.Net;
 	using System.Net.Http;
 	using System.Threading;
 	using System.Threading.Tasks;
@@ -258,8 +259,10 @@ namespace DotNetOpenAuth.Test.OpenId {
 				request.Realm = RPUri;
 				var redirectRequest = await rp.Channel.PrepareResponseAsync(request);
 				Uri redirectResponse;
+				this.HostFactories.AllowAutoRedirects = false;
 				using (var httpClient = rp.Channel.HostFactories.CreateHttpClient()) {
 					using (var response = await httpClient.GetAsync(redirectRequest.Headers.Location)) {
+						Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Redirect));
 						redirectResponse = response.Headers.Location;
 					}
 				}

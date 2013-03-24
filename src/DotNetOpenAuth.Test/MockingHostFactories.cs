@@ -19,6 +19,7 @@ namespace DotNetOpenAuth.Test {
 		public MockingHostFactories(List<TestBase.Handler> handlers = null) {
 			this.handlers = handlers ?? new List<TestBase.Handler>();
 			this.CookieContainer = new CookieContainer();
+			this.AllowAutoRedirects = true;
 		}
 
 		public List<TestBase.Handler> Handlers {
@@ -27,8 +28,16 @@ namespace DotNetOpenAuth.Test {
 
 		public CookieContainer CookieContainer { get; set; }
 
+		public bool AllowAutoRedirects { get; set; }
+
 		public HttpMessageHandler CreateHttpMessageHandler() {
-			return new AutoRedirectHandler(new CookieDelegatingHandler(new ForwardingMessageHandler(this.handlers, this), this.CookieContainer));
+			var forwardingMessageHandler = new ForwardingMessageHandler(this.handlers, this);
+			var cookieDelegatingHandler = new CookieDelegatingHandler(forwardingMessageHandler, this.CookieContainer);
+			if (this.AllowAutoRedirects) {
+				return new AutoRedirectHandler(cookieDelegatingHandler);
+			} else {
+				return cookieDelegatingHandler;
+			}
 		}
 
 		public HttpClient CreateHttpClient(HttpMessageHandler handler = null) {
