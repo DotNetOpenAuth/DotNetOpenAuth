@@ -318,6 +318,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 
 					var redirectingRequest = await rp.Channel.PrepareResponseAsync(requestBase);
 					Uri redirectingResponseUri;
+					this.HostFactories.AllowAutoRedirects = false;
 					using (var httpClient = rp.Channel.HostFactories.CreateHttpClient()) {
 						using (var redirectingResponse = await httpClient.GetAsync(redirectingRequest.Headers.Location)) {
 							Assert.AreEqual(HttpStatusCode.Found, redirectingResponse.StatusCode);
