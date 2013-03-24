@@ -41,7 +41,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 		}
 
 		/// <summary>
-		/// Verifies that the AuthenticationRequest method is serializable.
+		/// Verifies that the AnonymousRequest type is serializable.
 		/// </summary>
 		[Test]
 		public void Serializable() {

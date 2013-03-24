@@ -71,6 +71,7 @@ namespace DotNetOpenAuth.Test.OAuth {
 			consumer.HostFactories = this.HostFactories;
 			var authorizeUrl = await consumer.RequestUserAuthorizationAsync(new Uri("http://printer.example.com/request_token_ready"));
 			Uri authorizeResponseUri;
+			this.HostFactories.AllowAutoRedirects = false;
 			using (var httpClient = this.HostFactories.CreateHttpClient()) {
 				using (var response = await httpClient.GetAsync(authorizeUrl)) {
 					Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Redirect));

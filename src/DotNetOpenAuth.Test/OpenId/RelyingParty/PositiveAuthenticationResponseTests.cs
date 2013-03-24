@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 	using System;
 	using System.Collections.Generic;
+	using System.Threading;
 	using System.Threading.Tasks;
 
 	using DotNetOpenAuth.Messaging;
@@ -31,12 +32,12 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// Verifies good, positive assertions are accepted.
 		/// </summary>
 		[Test]
-		public void Valid() {
+		public async Task Valid() {
 			PositiveAssertionResponse assertion = this.GetPositiveAssertion();
 			ClaimsResponse extension = new ClaimsResponse();
 			assertion.Extensions.Add(extension);
 			var rp = CreateRelyingParty();
-			var authResponse = new PositiveAuthenticationResponse(assertion, rp);
+			var authResponse = await PositiveAuthenticationResponse.CreateAsync(assertion, rp, CancellationToken.None);
 			Assert.AreEqual(AuthenticationStatus.Authenticated, authResponse.Status);
 			Assert.IsNull(authResponse.Exception);
 			Assert.AreEqual((string)assertion.ClaimedIdentifier, (string)authResponse.ClaimedIdentifier);
@@ -51,13 +52,13 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// Verifies that discovery verification of a positive assertion can match a dual identifier.
 		/// </summary>
 		[Test]
-		public void DualIdentifierMatchesInAssertionVerification() {
+		public async Task DualIdentifierMatchesInAssertionVerification() {
 			PositiveAssertionResponse assertion = this.GetPositiveAssertion(true);
 			ClaimsResponse extension = new ClaimsResponse();
 			assertion.Extensions.Add(extension);
 			var rp = CreateRelyingParty();
 			rp.SecuritySettings.AllowDualPurposeIdentifiers = true;
-			new PositiveAuthenticationResponse(assertion, rp); // this will throw if it fails to find a match
+			await PositiveAuthenticationResponse.CreateAsync(assertion, rp, CancellationToken.None); // this will throw if it fails to find a match
 		}
 
 		/// <summary>
@@ -65,12 +66,12 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// if the default settings are in place.
 		/// </summary>
 		[Test, ExpectedException(typeof(ProtocolException))]
-		public void DualIdentifierNoMatchInAssertionVerificationByDefault() {
+		public async Task DualIdentifierNoMatchInAssertionVerificationByDefault() {
 			PositiveAssertionResponse assertion = this.GetPositiveAssertion(true);
 			ClaimsResponse extension = new ClaimsResponse();
 			assertion.Extensions.Add(extension);
 			var rp = CreateRelyingParty();
-			new PositiveAuthenticationResponse(assertion, rp); // this will throw if it fails to find a match
+			await PositiveAuthenticationResponse.CreateAsync(assertion, rp, CancellationToken.None); // this will throw if it fails to find a match
 		}
 
 		/// <summary>
@@ -79,11 +80,11 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// that the OP has no authority to assert positively regarding.
 		/// </summary>
 		[Test, ExpectedException(typeof(ProtocolException))]
-		public void SpoofedClaimedIdDetectionSolicited() {
+		public async Task SpoofedClaimedIdDetectionSolicited() {
 			PositiveAssertionResponse assertion = this.GetPositiveAssertion();
 			assertion.ProviderEndpoint = new Uri("http://rogueOP");
 			var rp = CreateRelyingParty();
-			var authResponse = new PositiveAuthenticationResponse(assertion, rp);
+			var authResponse = await PositiveAuthenticationResponse.CreateAsync(assertion, rp, CancellationToken.None);
 			Assert.AreEqual(AuthenticationStatus.Failed, authResponse.Status);
 		}
 
@@ -92,22 +93,22 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// Cdentifiers when RequireSsl is set to true.
 		/// </summary>
 		[Test, ExpectedException(typeof(ProtocolException))]
-		public void InsecureIdentifiersRejectedWithRequireSsl() {
+		public async Task InsecureIdentifiersRejectedWithRequireSsl() {
 			PositiveAssertionResponse assertion = this.GetPositiveAssertion();
 			var rp = CreateRelyingParty();
 			rp.SecuritySettings.RequireSsl = true;
-			var authResponse = new PositiveAuthenticationResponse(assertion, rp);
+			var authResponse = await PositiveAuthenticationResponse.CreateAsync(assertion, rp, CancellationToken.None);
 		}
 
 		[Test]
-		public void GetCallbackArguments() {
+		public async Task GetCallbackArguments() {
 			PositiveAssertionResponse assertion = this.GetPositiveAssertion();
 			var rp = CreateRelyingParty();
 
 			UriBuilder returnToBuilder = new UriBuilder(assertion.ReturnTo);
 			returnToBuilder.AppendQueryArgs(new Dictionary<string, string> { { "a", "b" } });
 			assertion.ReturnTo = returnToBuilder.Uri;
-			var authResponse = new PositiveAuthenticationResponse(assertion, rp);
+			var authResponse = await PositiveAuthenticationResponse.CreateAsync(assertion, rp, CancellationToken.None);
 
 			// First pretend that the return_to args were signed.
 			assertion.ReturnToParametersSignatureValidated = true;
@@ -137,7 +138,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 			var positiveAssertion = this.GetPositiveAssertion();
 			positiveAssertion.ClaimedIdentifier = claimed_id;
 			positiveAssertion.LocalIdentifier = claimed_id;
-			var authResponse = new PositiveAuthenticationResponse(positiveAssertion, rp);
+			var authResponse = await PositiveAuthenticationResponse.CreateAsync(positiveAssertion, rp, CancellationToken.None);
 			Assert.AreEqual(AuthenticationStatus.Authenticated, authResponse.Status);
 			Assert.AreEqual(claimed_id, authResponse.ClaimedIdentifier.ToString());
 		}

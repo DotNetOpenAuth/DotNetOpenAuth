@@ -22,11 +22,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	[DebuggerDisplay("Status: {Status}, ClaimedIdentifier: {ClaimedIdentifier}")]
 	internal class PositiveAuthenticationResponse : PositiveAnonymousResponse {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="PositiveAuthenticationResponse"/> class.
+		/// Initializes a new instance of the <see cref="PositiveAuthenticationResponse"/> class
 		/// </summary>
 		/// <param name="response">The positive assertion response that was just received by the Relying Party.</param>
 		/// <param name="relyingParty">The relying party.</param>
-		internal PositiveAuthenticationResponse(PositiveAssertionResponse response, OpenIdRelyingParty relyingParty)
+		private PositiveAuthenticationResponse(PositiveAssertionResponse response, OpenIdRelyingParty relyingParty)
 			: base(response) {
 			Requires.NotNull(relyingParty, "relyingParty");
 
