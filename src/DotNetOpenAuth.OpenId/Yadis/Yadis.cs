@@ -72,11 +72,12 @@ namespace DotNetOpenAuth.Yadis {
 				}
 
 				response = await RequestAsync(uri, requireSsl, hostFactories, cancellationToken, ContentTypes.Html, ContentTypes.XHtml, ContentTypes.Xrds);
-				await response.Content.LoadIntoBufferAsync();
 				if (response.StatusCode != System.Net.HttpStatusCode.OK) {
 					Logger.Yadis.ErrorFormat("HTTP error {0} {1} while performing discovery on {2}.", (int)response.StatusCode, response.StatusCode, uri);
 					return null;
 				}
+
+				await response.Content.LoadIntoBufferAsync();
 			} catch (ArgumentException ex) {
 				// Unsafe URLs generate this
 				Logger.Yadis.WarnFormat("Unsafe OpenId URL detected ({0}).  Request aborted.  {1}", uri, ex);
@@ -183,7 +184,6 @@ namespace DotNetOpenAuth.Yadis {
 						}
 					}
 
-					response.EnsureSuccessStatusCode();
 					return response;
 				} catch {
 					response.DisposeIfNotNull();

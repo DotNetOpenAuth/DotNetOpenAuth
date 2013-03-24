@@ -45,8 +45,10 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 			var authRequestRedirect = await client.PrepareRequestUserAuthorizationAsync(authState);
 			this.HostFactories.CookieContainer.SetCookies(authRequestRedirect, ClientCallback);
 			Uri authRequestResponse;
+			this.HostFactories.AllowAutoRedirects = false;
 			using (var httpClient = this.HostFactories.CreateHttpClient()) {
 				using (var httpResponse = await httpClient.GetAsync(authRequestRedirect.Headers.Location)) {
+					Assert.That(httpResponse.StatusCode, Is.EqualTo(HttpStatusCode.Redirect));
 					authRequestResponse = httpResponse.Headers.Location;
 				}
 			}
