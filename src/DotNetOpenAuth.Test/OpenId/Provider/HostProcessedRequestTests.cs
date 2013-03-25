@@ -63,19 +63,20 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 		/// </summary>
 		[Test]
 		public async Task IsReturnUrlDiscoverableRequireSsl() {
-			this.RegisterMockRPDiscovery(false);
+			this.RegisterMockRPDiscovery(ssl: false);
+			this.RegisterMockRPDiscovery(ssl: true);
 			this.checkIdRequest.Realm = RPRealmUriSsl;
 			this.checkIdRequest.ReturnTo = RPUriSsl;
 
 			// Try once with RequireSsl
 			this.provider.SecuritySettings.RequireSsl = true;
 			this.request = new AuthenticationRequest(this.provider, this.checkIdRequest);
-			Assert.AreEqual(RelyingPartyDiscoveryResult.Success, await this.request.IsReturnUrlDiscoverableAsync(this.provider.Channel.HostFactories, CancellationToken.None));
+			Assert.AreEqual(RelyingPartyDiscoveryResult.Success, await this.request.IsReturnUrlDiscoverableAsync(this.HostFactories, CancellationToken.None));
 
 			// And again without RequireSsl
 			this.provider.SecuritySettings.RequireSsl = false;
 			this.request = new AuthenticationRequest(this.provider, this.checkIdRequest);
-			Assert.AreEqual(RelyingPartyDiscoveryResult.Success, await this.request.IsReturnUrlDiscoverableAsync(this.provider.Channel.HostFactories, CancellationToken.None));
+			Assert.AreEqual(RelyingPartyDiscoveryResult.Success, await this.request.IsReturnUrlDiscoverableAsync(this.HostFactories, CancellationToken.None));
 		}
 
 		[Test]
