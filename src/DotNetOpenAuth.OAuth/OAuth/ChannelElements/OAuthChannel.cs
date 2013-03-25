@@ -220,10 +220,9 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		protected override HttpResponseMessage PrepareDirectResponse(IProtocolMessage response) {
 			var messageAccessor = this.MessageDescriptions.GetAccessor(response);
 			var fields = messageAccessor.Serialize();
-			string responseBody = MessagingUtilities.CreateQueryString(fields);
 
-			HttpResponseMessage encodedResponse = new HttpResponseMessage {
-				Content = new StringContent(responseBody),
+			var encodedResponse = new HttpResponseMessage {
+				Content = new FormUrlEncodedContent(fields),
 			};
 
 			ApplyMessageTemplate(response, encodedResponse);
