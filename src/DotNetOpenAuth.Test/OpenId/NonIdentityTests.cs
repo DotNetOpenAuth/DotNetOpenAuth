@@ -70,7 +70,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 				request.IsExtensionOnly = true;
 				var redirectRequest = await request.GetRedirectingResponseAsync();
 				Uri redirectResponseUrl;
-				using (var httpClient = rp.Channel.HostFactories.CreateHttpClient()) {
+				using (var httpClient = this.HostFactories.CreateHttpClient()) {
 					using (var redirectResponse = await httpClient.GetAsync(redirectRequest.Headers.Location)) {
 						redirectResponse.EnsureSuccessStatusCode();
 						redirectResponseUrl = redirectRequest.Headers.Location;

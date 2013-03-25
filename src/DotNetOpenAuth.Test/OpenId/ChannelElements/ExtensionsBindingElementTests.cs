@@ -125,7 +125,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 			int rpStep = 0;
 
 
-			Handle(RPRealmUri).By(
+			Handle(RPUri).By(
 				async req => {
 					var rp = new OpenIdRelyingParty(new StandardRelyingPartyApplicationStore(), this.HostFactories);
 					RegisterMockExtension(rp.Channel);
@@ -150,12 +150,12 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 				});
 			Handle(OPUri).By(
 				async req => {
-					var op = new OpenIdProvider(opStore);
+					var op = new OpenIdProvider(opStore, this.HostFactories);
 					return await AutoProviderActionAsync(op, req, CancellationToken.None);
 				});
 
 			{
-				var op = new OpenIdProvider(opStore);
+				var op = new OpenIdProvider(opStore, this.HostFactories);
 				RegisterMockExtension(op.Channel);
 				var redirectingResponse = await op.Channel.PrepareResponseAsync(CreateResponseWithExtensions(protocol));
 				using (var httpClient = this.HostFactories.CreateHttpClient()) {
