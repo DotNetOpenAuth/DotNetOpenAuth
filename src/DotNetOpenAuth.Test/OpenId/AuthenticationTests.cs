@@ -67,22 +67,23 @@ namespace DotNetOpenAuth.Test.OpenId {
 		[Test]
 		public async Task UnsolicitedAssertion() {
 			var opStore = new StandardProviderApplicationStore();
-			Handle(RPRealmUri).By(
+			Handle(RPUri).By(
 				async req => {
 					var rp = new OpenIdRelyingParty(new StandardRelyingPartyApplicationStore(), this.HostFactories);
-					IAuthenticationResponse response = await rp.GetResponseAsync();
+					IAuthenticationResponse response = await rp.GetResponseAsync(req);
+					Assert.That(response, Is.Not.Null);
 					Assert.AreEqual(AuthenticationStatus.Authenticated, response.Status);
 					return new HttpResponseMessage();
 				});
 			Handle(OPUri).By(
 				async (req, ct) => {
-					var op = new OpenIdProvider(opStore);
+					var op = new OpenIdProvider(opStore, this.HostFactories);
 					return await this.AutoProviderActionAsync(op, req, ct);
 				});
 			this.RegisterMockRPDiscovery(ssl: false);
 
 			{
-				var op = new OpenIdProvider(opStore);
+				var op = new OpenIdProvider(opStore, this.HostFactories);
 				Identifier id = GetMockIdentifier(ProtocolVersion.V20);
 				var assertion = await op.PrepareUnsolicitedAssertionAsync(OPUri, RPRealmUri, id, OPLocalIdentifiers[0]);
 
@@ -97,23 +98,24 @@ namespace DotNetOpenAuth.Test.OpenId {
 		[Test]
 		public async Task UnsolicitedAssertionRejected() {
 			var opStore = new StandardProviderApplicationStore();
-			Handle(RPRealmUri).By(
+			Handle(RPUri).By(
 				async req => {
 					var rp = new OpenIdRelyingParty(new StandardRelyingPartyApplicationStore(), this.HostFactories);
 					rp.SecuritySettings.RejectUnsolicitedAssertions = true;
 					IAuthenticationResponse response = await rp.GetResponseAsync(req);
+					Assert.That(response, Is.Not.Null);
 					Assert.AreEqual(AuthenticationStatus.Failed, response.Status);
 					return new HttpResponseMessage();
 				});
 			Handle(OPUri).By(
 				async req => {
-					var op = new OpenIdProvider(opStore);
+					var op = new OpenIdProvider(opStore, this.HostFactories);
 					return await this.AutoProviderActionAsync(op, req, CancellationToken.None);
 				});
 			this.RegisterMockRPDiscovery(ssl: false);
 
 			{
-				var op = new OpenIdProvider(opStore);
+				var op = new OpenIdProvider(opStore, this.HostFactories);
 				Identifier id = GetMockIdentifier(ProtocolVersion.V20);
 				var assertion = await op.PrepareUnsolicitedAssertionAsync(OPUri, RPRealmUri, id, OPLocalIdentifiers[0]);
 				using (var httpClient = this.HostFactories.CreateHttpClient()) {
@@ -131,11 +133,12 @@ namespace DotNetOpenAuth.Test.OpenId {
 		[Test]
 		public async Task UnsolicitedDelegatingIdentifierRejection() {
 			var opStore = new StandardProviderApplicationStore();
-			Handle(RPRealmUri).By(
+			Handle(RPUri).By(
 				async req => {
 					var rp = this.CreateRelyingParty();
 					rp.SecuritySettings.RejectDelegatingIdentifiers = true;
 					IAuthenticationResponse response = await rp.GetResponseAsync(req);
+					Assert.That(response, Is.Not.Null);
 					Assert.AreEqual(AuthenticationStatus.Failed, response.Status);
 					return new HttpResponseMessage();
 				});
@@ -147,7 +150,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			this.RegisterMockRPDiscovery(ssl: false);
 
 			{
-				var op = new OpenIdProvider(opStore);
+				var op = new OpenIdProvider(opStore, this.HostFactories);
 				Identifier id = GetMockIdentifier(ProtocolVersion.V20, false, true);
 				var assertion = await op.PrepareUnsolicitedAssertionAsync(OPUri, RPRealmUri, id, OPLocalIdentifiers[0]);
 				using (var httpClient = this.HostFactories.CreateHttpClient()) {
