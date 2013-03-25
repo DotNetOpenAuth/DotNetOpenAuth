@@ -79,6 +79,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 
 			this.AutoProviderScenario = Scenarios.AutoApproval;
 			Identifier.EqualityOnStrings = true;
+			this.HostFactories.InstallUntrustedWebReqestHandler = true;
 		}
 
 		[TearDown]
@@ -302,37 +303,37 @@ namespace DotNetOpenAuth.Test.OpenId {
 					return await op.Channel.PrepareResponseAsync(response);
 				});
 
-				{
-					var rp = this.CreateRelyingParty();
-					ExtensionTestUtilities.RegisterExtension(rp.Channel, Mocks.MockOpenIdExtension.Factory);
-					var requestBase = new CheckIdRequest(protocol.Version, OpenIdTestBase.OPUri, AuthenticationRequestMode.Immediate);
-					OpenIdTestBase.StoreAssociation(rp, OpenIdTestBase.OPUri, association);
-					requestBase.AssociationHandle = association.Handle;
-					requestBase.ClaimedIdentifier = "http://claimedid";
-					requestBase.LocalIdentifier = "http://localid";
-					requestBase.ReturnTo = OpenIdTestBase.RPUri;
+			{
+				var rp = this.CreateRelyingParty();
+				ExtensionTestUtilities.RegisterExtension(rp.Channel, Mocks.MockOpenIdExtension.Factory);
+				var requestBase = new CheckIdRequest(protocol.Version, OpenIdTestBase.OPUri, AuthenticationRequestMode.Immediate);
+				OpenIdTestBase.StoreAssociation(rp, OpenIdTestBase.OPUri, association);
+				requestBase.AssociationHandle = association.Handle;
+				requestBase.ClaimedIdentifier = "http://claimedid";
+				requestBase.LocalIdentifier = "http://localid";
+				requestBase.ReturnTo = OpenIdTestBase.RPUri;
 
-					foreach (IOpenIdMessageExtension extension in requests) {
-						requestBase.Extensions.Add(extension);
-					}
-
-					var redirectingRequest = await rp.Channel.PrepareResponseAsync(requestBase);
-					Uri redirectingResponseUri;
-					this.HostFactories.AllowAutoRedirects = false;
-					using (var httpClient = rp.Channel.HostFactories.CreateHttpClient()) {
-						using (var redirectingResponse = await httpClient.GetAsync(redirectingRequest.Headers.Location)) {
-							Assert.AreEqual(HttpStatusCode.Found, redirectingResponse.StatusCode);
-							redirectingResponseUri = redirectingResponse.Headers.Location;
-						}
-					}
-
-					var response =
-						await
-						rp.Channel.ReadFromRequestAsync<PositiveAssertionResponse>(
-							new HttpRequestMessage(HttpMethod.Get, redirectingResponseUri), CancellationToken.None);
-					var receivedResponses = response.Extensions.Cast<IOpenIdMessageExtension>();
-					CollectionAssert<IOpenIdMessageExtension>.AreEquivalentByEquality(responses.ToArray(), receivedResponses.ToArray());
+				foreach (IOpenIdMessageExtension extension in requests) {
+					requestBase.Extensions.Add(extension);
 				}
+
+				var redirectingRequest = await rp.Channel.PrepareResponseAsync(requestBase);
+				Uri redirectingResponseUri;
+				this.HostFactories.AllowAutoRedirects = false;
+				using (var httpClient = rp.Channel.HostFactories.CreateHttpClient()) {
+					using (var redirectingResponse = await httpClient.GetAsync(redirectingRequest.Headers.Location)) {
+						Assert.AreEqual(HttpStatusCode.Found, redirectingResponse.StatusCode);
+						redirectingResponseUri = redirectingResponse.Headers.Location;
+					}
+				}
+
+				var response =
+					await
+					rp.Channel.ReadFromRequestAsync<PositiveAssertionResponse>(
+						new HttpRequestMessage(HttpMethod.Get, redirectingResponseUri), CancellationToken.None);
+				var receivedResponses = response.Extensions.Cast<IOpenIdMessageExtension>();
+				CollectionAssert<IOpenIdMessageExtension>.AreEquivalentByEquality(responses.ToArray(), receivedResponses.ToArray());
+			}
 		}
 	}
 }

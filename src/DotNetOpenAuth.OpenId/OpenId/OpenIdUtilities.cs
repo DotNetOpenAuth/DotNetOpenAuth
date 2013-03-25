@@ -217,6 +217,7 @@ namespace DotNetOpenAuth.OpenId {
 
 			var rootHandler = hostFactories.CreateHttpMessageHandler();
 			var handler = rootHandler;
+			bool sslRequiredSet = false, cachePolicySet = false;
 			do {
 				var webRequestHandler = handler as WebRequestHandler;
 				var untrustedHandler = handler as UntrustedWebRequestHandler;
@@ -224,24 +225,27 @@ namespace DotNetOpenAuth.OpenId {
 				if (webRequestHandler != null) {
 					if (cachePolicy != null) {
 						webRequestHandler.CachePolicy = cachePolicy;
+						cachePolicySet = true;
 					}
-
-					break;
 				} else if (untrustedHandler != null) {
-					if (cachePolicy != null) {
-						untrustedHandler.CachePolicy = cachePolicy;
-					}
-
 					untrustedHandler.IsSslRequired = requireSsl;
-					break;
-				} else if (delegatingHandler != null) {
+					sslRequiredSet = true;
+				}
+
+				if (delegatingHandler != null) {
 					handler = delegatingHandler.InnerHandler;
 				} else {
-					Logger.Http.DebugFormat("Unable to set cache policy on unsupported {0}.", handler.GetType().FullName);
 					break;
 				}
 			}
 			while (true);
+
+			if (cachePolicy != null && !cachePolicySet) {
+				Logger.OpenId.Warn(
+					"Unable to set cache policy due to HttpMessageHandler instances not being of type WebRequestHandler.");
+			}
+
+			ErrorUtilities.VerifyProtocol(!requireSsl || sslRequiredSet, "Unable to set RequireSsl on message handler because no HttpMessageHandler was of type {0}.", typeof(UntrustedWebRequestHandler).FullName);
 
 			return hostFactories.CreateHttpClient(rootHandler);
 		}

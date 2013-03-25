@@ -36,12 +36,7 @@ namespace DotNetOpenAuth.OpenId {
 	/// If a particular host would be permitted but is in the blacklist, it is not allowed.
 	/// If a particular host would not be permitted but is in the whitelist, it is allowed.
 	/// </remarks>
-	public class UntrustedWebRequestHandler : HttpMessageHandler {
-		/// <summary>
-		/// The inner handler.
-		/// </summary>
-		private readonly InternalWebRequestHandler innerHandler;
-
+	public class UntrustedWebRequestHandler : DelegatingHandler {
 		/// <summary>
 		/// The set of URI schemes allowed in untrusted web requests.
 		/// </summary>
@@ -71,7 +66,13 @@ namespace DotNetOpenAuth.OpenId {
 		/// The maximum redirections to follow in the course of a single request.
 		/// </summary>
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-		private int maximumRedirections = Configuration.MaximumRedirections;
+		private int maxAutomaticRedirections = Configuration.MaximumRedirections;
+
+		/// <summary>
+		/// A value indicating whether to automatically follow redirects.
+		/// </summary>
+		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+		private bool allowAutoRedirect = true;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="UntrustedWebRequestHandler" /> class.
@@ -80,9 +81,8 @@ namespace DotNetOpenAuth.OpenId {
 		/// The inner handler. This handler will be modified to suit the purposes of this wrapping handler,
 		/// and should not be used independently of this wrapper after construction of this object.
 		/// </param>
-		public UntrustedWebRequestHandler(WebRequestHandler innerHandler = null) {
-			this.innerHandler = new InternalWebRequestHandler(innerHandler ?? new WebRequestHandler());
-
+		public UntrustedWebRequestHandler(WebRequestHandler innerHandler = null)
+			: base(innerHandler ?? new WebRequestHandler()) {
 			// If SSL is required throughout, we cannot allow auto redirects because
 			// it may include a pass through an unprotected HTTP request.
 			// We have to follow redirects manually.
@@ -101,6 +101,18 @@ namespace DotNetOpenAuth.OpenId {
 		}
 
 		/// <summary>
+		/// Initializes a new instance of the <see cref="UntrustedWebRequestHandler"/> class
+		/// for use in unit testing.
+		/// </summary>
+		/// <param name="innerHandler">
+		/// The inner handler which is responsible for processing the HTTP response messages.
+		/// This handler should NOT automatically follow redirects.
+		/// </param>
+		internal UntrustedWebRequestHandler(HttpMessageHandler innerHandler)
+			: base(innerHandler) {
+		}
+
+		/// <summary>
 		/// Gets or sets a value indicating whether all requests must use SSL.
 		/// </summary>
 		/// <value>
@@ -109,25 +121,36 @@ namespace DotNetOpenAuth.OpenId {
 		public bool IsSslRequired { get; set; }
 
 		/// <summary>
-		/// Gets or sets the cache policy.
-		/// </summary>
-		public RequestCachePolicy CachePolicy {
-			get { return this.InnerWebRequestHandler.CachePolicy; }
-			set { this.InnerWebRequestHandler.CachePolicy = value; }
-		}
-
-		/// <summary>
 		/// Gets or sets the total number of redirections to allow on any one request.
 		/// Default is 10.
 		/// </summary>
 		public int MaxAutomaticRedirections {
 			get {
-				return this.maximumRedirections;
+				return base.InnerHandler is WebRequestHandler ? this.InnerWebRequestHandler.MaxAutomaticRedirections : this.maxAutomaticRedirections;
 			}
 
 			set {
 				Requires.Range(value >= 0, "value");
-				this.maximumRedirections = value;
+				this.maxAutomaticRedirections = value;
+				if (base.InnerHandler is WebRequestHandler) {
+					this.InnerWebRequestHandler.MaxAutomaticRedirections = value;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to automatically follow redirects.
+		/// </summary>
+		public bool AllowAutoRedirect {
+			get {
+				return base.InnerHandler is WebRequestHandler ? this.InnerWebRequestHandler.AllowAutoRedirect : this.allowAutoRedirect;
+			}
+
+			set {
+				this.allowAutoRedirect = value;
+				if (base.InnerHandler is WebRequestHandler) {
+					this.InnerWebRequestHandler.AllowAutoRedirect = value;
+				}
 			}
 		}
 
@@ -190,8 +213,8 @@ namespace DotNetOpenAuth.OpenId {
 		/// <value>
 		/// The inner web request handler.
 		/// </value>
-		protected WebRequestHandler InnerWebRequestHandler {
-			get { return (WebRequestHandler)this.innerHandler.InnerHandler; }
+		public WebRequestHandler InnerWebRequestHandler {
+			get { return (WebRequestHandler)this.InnerHandler; }
 		}
 
 		/// <summary>
@@ -253,7 +276,8 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>
 		/// Returns <see cref="T:System.Threading.Tasks.Task`1" />.The task object representing the asynchronous operation.
 		/// </returns>
-		protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken) {
+		protected override async Task<HttpResponseMessage> SendAsync(
+			HttpRequestMessage request, CancellationToken cancellationToken) {
 			this.EnsureAllowableRequestUri(request.RequestUri);
 
 			// Since we may require SSL for every redirect, we handle each redirect manually
@@ -264,16 +288,20 @@ namespace DotNetOpenAuth.OpenId {
 			int i;
 			for (i = 0; i < this.MaxAutomaticRedirections; i++) {
 				this.EnsureAllowableRequestUri(request.RequestUri);
-				var response = await this.innerHandler.SendAsync(request, cancellationToken);
-				if (response.StatusCode == HttpStatusCode.MovedPermanently || response.StatusCode == HttpStatusCode.Redirect
-					|| response.StatusCode == HttpStatusCode.RedirectMethod || response.StatusCode == HttpStatusCode.RedirectKeepVerb) {
-					// We have no copy of the post entity stream to repeat on our manually
-					// cloned HttpWebRequest, so we have to bail.
-					ErrorUtilities.VerifyProtocol(request.Method != HttpMethod.Post, MessagingStrings.UntrustedRedirectsOnPOSTNotSupported);
-					Uri redirectUri = new Uri(request.RequestUri, response.Headers.Location);
-					request = request.Clone();
-					request.RequestUri = redirectUri;
-					continue;
+				var response = await base.SendAsync(request, cancellationToken);
+				if (this.AllowAutoRedirect) {
+					if (response.StatusCode == HttpStatusCode.MovedPermanently || response.StatusCode == HttpStatusCode.Redirect
+						|| response.StatusCode == HttpStatusCode.RedirectMethod
+						|| response.StatusCode == HttpStatusCode.RedirectKeepVerb) {
+						// We have no copy of the post entity stream to repeat on our manually
+						// cloned HttpWebRequest, so we have to bail.
+						ErrorUtilities.VerifyProtocol(
+							request.Method != HttpMethod.Post, MessagingStrings.UntrustedRedirectsOnPOSTNotSupported);
+						Uri redirectUri = new Uri(request.RequestUri, response.Headers.Location);
+						request = request.Clone();
+						request.RequestUri = redirectUri;
+						continue;
+					}
 				}
 
 				if (response.StatusCode == HttpStatusCode.ExpectationFailed) {
@@ -286,7 +314,9 @@ namespace DotNetOpenAuth.OpenId {
 					// the web site's global behavior when calling that host.
 					// TODO: verify that this still works in DNOA 5.0
 					var servicePoint = ServicePointManager.FindServicePoint(request.RequestUri);
-					Logger.Http.InfoFormat("HTTP POST to {0} resulted in 417 Expectation Failed.  Changing ServicePoint to not use Expect: Continue next time.", request.RequestUri);
+					Logger.Http.InfoFormat(
+						"HTTP POST to {0} resulted in 417 Expectation Failed.  Changing ServicePoint to not use Expect: Continue next time.",
+						request.RequestUri);
 					servicePoint.Expect100Continue = false;
 				}
 
@@ -440,31 +470,6 @@ namespace DotNetOpenAuth.OpenId {
 				return false;
 			}
 			return true;
-		}
-
-		/// <summary>
-		/// A <see cref="DelegatingHandler" /> derived type that makes its SendAsync method available internally.
-		/// </summary>
-		private class InternalWebRequestHandler : DelegatingHandler {
-			/// <summary>
-			/// Initializes a new instance of the <see cref="InternalWebRequestHandler"/> class.
-			/// </summary>
-			/// <param name="innerHandler">The inner handler which is responsible for processing the HTTP response messages.</param>
-			internal InternalWebRequestHandler(HttpMessageHandler innerHandler)
-				: base(innerHandler) {
-			}
-
-			/// <summary>
-			/// Creates an instance of  <see cref="T:System.Net.Http.HttpResponseMessage" /> based on the information provided in the <see cref="T:System.Net.Http.HttpRequestMessage" /> as an operation that will not block.
-			/// </summary>
-			/// <param name="request">The HTTP request message.</param>
-			/// <param name="cancellationToken">A cancellation token to cancel the operation.</param>
-			/// <returns>
-			/// Returns <see cref="T:System.Threading.Tasks.Task`1" />.The task object representing the asynchronous operation.
-			/// </returns>
-			protected internal new Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken) {
-				return base.SendAsync(request, cancellationToken);
-			}
 		}
 	}
 }

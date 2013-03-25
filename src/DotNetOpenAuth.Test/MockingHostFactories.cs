@@ -11,6 +11,9 @@ namespace DotNetOpenAuth.Test {
 	using System.Threading;
 	using System.Threading.Tasks;
 	using System.Linq;
+
+	using DotNetOpenAuth.OpenId;
+
 	using Validation;
 
 	internal class MockingHostFactories : IHostFactories {
@@ -30,10 +33,16 @@ namespace DotNetOpenAuth.Test {
 
 		public bool AllowAutoRedirects { get; set; }
 
+		public bool InstallUntrustedWebReqestHandler { get; set; }
+
 		public HttpMessageHandler CreateHttpMessageHandler() {
 			var forwardingMessageHandler = new ForwardingMessageHandler(this.handlers, this);
 			var cookieDelegatingHandler = new CookieDelegatingHandler(forwardingMessageHandler, this.CookieContainer);
-			if (this.AllowAutoRedirects) {
+			if (this.InstallUntrustedWebReqestHandler) {
+				var untrustedHandler = new UntrustedWebRequestHandler(cookieDelegatingHandler);
+				untrustedHandler.AllowAutoRedirect = this.AllowAutoRedirects;
+				return untrustedHandler;
+			} else if (this.AllowAutoRedirects) {
 				return new AutoRedirectHandler(cookieDelegatingHandler);
 			} else {
 				return cookieDelegatingHandler;

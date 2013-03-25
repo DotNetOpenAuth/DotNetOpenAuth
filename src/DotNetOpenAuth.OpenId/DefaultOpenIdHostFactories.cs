@@ -28,7 +28,7 @@ namespace DotNetOpenAuth.OpenId {
 		/// </remarks>
 		public virtual HttpMessageHandler CreateHttpMessageHandler() {
 			var handler = new UntrustedWebRequestHandler();
-			handler.CachePolicy = new RequestCachePolicy(RequestCacheLevel.NoCacheNoStore);
+			((WebRequestHandler)handler.InnerHandler).CachePolicy = new RequestCachePolicy(RequestCacheLevel.NoCacheNoStore);
 			return handler;
 		}
 
