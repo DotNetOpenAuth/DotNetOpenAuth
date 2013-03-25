@@ -145,7 +145,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 
 			// We have to formulate the associate request manually,
 			// since the DNOI RP won't voluntarily mismatch the association and session types.
-			var request = new AssociateDiffieHellmanRequest(protocol.Version, new Uri("https://Provider"));
+			var request = new AssociateDiffieHellmanRequest(protocol.Version, OPUri);
 			request.AssociationType = protocol.Args.SignatureAlgorithm.HMAC_SHA256;
 			request.SessionType = protocol.Args.SessionType.DH_SHA1;
 			request.InitializeRequest();
