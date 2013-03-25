@@ -73,11 +73,11 @@ namespace DotNetOpenAuth.Test {
 			return result;
 		}
 
-		internal static Channel CreateChannel(MessageProtections capabilityAndRecognition) {
-			return CreateChannel(capabilityAndRecognition, capabilityAndRecognition);
+		internal Channel CreateChannel(MessageProtections capabilityAndRecognition) {
+			return this.CreateChannel(capabilityAndRecognition, capabilityAndRecognition);
 		}
 
-		internal static Channel CreateChannel(MessageProtections capability, MessageProtections recognition) {
+		internal Channel CreateChannel(MessageProtections capability, MessageProtections recognition) {
 			var bindingElements = new List<IChannelBindingElement>();
 			if (capability >= MessageProtections.TamperProtection) {
 				bindingElements.Add(new MockSigningBindingElement());
@@ -101,8 +101,7 @@ namespace DotNetOpenAuth.Test {
 			}
 
 			var typeProvider = new TestMessageFactory(signing, expiration, replay);
-			////return new TestChannel(typeProvider, bindingElements.ToArray());
-			return null;
+			return new TestChannel(typeProvider, bindingElements.ToArray(), this.HostFactories);
 		}
 
 		internal static IDictionary<string, string> GetStandardTestFields(FieldFill fill) {
