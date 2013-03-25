@@ -92,7 +92,9 @@ namespace DotNetOpenAuth.OpenId {
 
 			XrdsDocument doc;
 			using (var xrdsResponse = await Yadis.RequestAsync(GetXrdsUrl(identifier), identifier.IsDiscoverySecureEndToEnd, hostFactories, cancellationToken)) {
+				xrdsResponse.EnsureSuccessStatusCode();
 				var readerSettings = MessagingUtilities.CreateUntrustedXmlReaderSettings();
+				ErrorUtilities.VerifyProtocol(xrdsResponse.Content != null, "XRDS request \"{0}\" returned no response.", GetXrdsUrl(identifier));
 				await xrdsResponse.Content.LoadIntoBufferAsync();
 				using (var xrdsStream = await xrdsResponse.Content.ReadAsStreamAsync()) {
 					doc = new XrdsDocument(XmlReader.Create(xrdsStream, readerSettings));
