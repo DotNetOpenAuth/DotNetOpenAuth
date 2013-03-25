@@ -15,19 +15,16 @@ namespace DotNetOpenAuth.Test {
 	using DotNetOpenAuth.OpenId;
 
 	using Validation;
+	using System;
 
 	internal class MockingHostFactories : IHostFactories {
-		private readonly List<TestBase.Handler> handlers;
-
-		public MockingHostFactories(List<TestBase.Handler> handlers = null) {
-			this.handlers = handlers ?? new List<TestBase.Handler>();
+		public MockingHostFactories(Dictionary<Uri, Func<HttpRequestMessage, Task<HttpResponseMessage>>> handlers = null) {
+			this.Handlers = handlers ?? new Dictionary<Uri, Func<HttpRequestMessage, Task<HttpResponseMessage>>>();
 			this.CookieContainer = new CookieContainer();
 			this.AllowAutoRedirects = true;
 		}
 
-		public List<TestBase.Handler> Handlers {
-			get { return this.handlers; }
-		}
+		public Dictionary<Uri, Func<HttpRequestMessage, Task<HttpResponseMessage>>> Handlers { get; private set; }
 
 		public CookieContainer CookieContainer { get; set; }
 
@@ -36,7 +33,7 @@ namespace DotNetOpenAuth.Test {
 		public bool InstallUntrustedWebReqestHandler { get; set; }
 
 		public HttpMessageHandler CreateHttpMessageHandler() {
-			var forwardingMessageHandler = new ForwardingMessageHandler(this.handlers, this);
+			var forwardingMessageHandler = new ForwardingMessageHandler(this.Handlers, this);
 			var cookieDelegatingHandler = new CookieDelegatingHandler(forwardingMessageHandler, this.CookieContainer);
 			if (this.InstallUntrustedWebReqestHandler) {
 				var untrustedHandler = new UntrustedWebRequestHandler(cookieDelegatingHandler);
@@ -54,11 +51,11 @@ namespace DotNetOpenAuth.Test {
 		}
 
 		private class ForwardingMessageHandler : HttpMessageHandler {
-			private readonly IEnumerable<TestBase.Handler> handlers;
+			private readonly Dictionary<Uri, Func<HttpRequestMessage, Task<HttpResponseMessage>>> handlers;
 
 			private readonly IHostFactories hostFactories;
 
-			public ForwardingMessageHandler(IEnumerable<TestBase.Handler> handlers, IHostFactories hostFactories) {
+			public ForwardingMessageHandler(Dictionary<Uri, Func<HttpRequestMessage, Task<HttpResponseMessage>>> handlers, IHostFactories hostFactories) {
 				Requires.NotNull(handlers, "handlers");
 
 				this.handlers = handlers;
@@ -66,9 +63,9 @@ namespace DotNetOpenAuth.Test {
 			}
 
 			protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken) {
-				foreach (var handler in this.handlers) {
-					if (handler.Uri.IsBaseOf(request.RequestUri) && handler.Uri.AbsolutePath == request.RequestUri.AbsolutePath) {
-						var response = await handler.MessageHandler(request);
+				foreach (var pair in this.handlers) {
+					if (pair.Key.IsBaseOf(request.RequestUri) && pair.Key.AbsolutePath == request.RequestUri.AbsolutePath) {
+						var response = await pair.Value(request);
 						if (response != null) {
 							if (response.RequestMessage == null) {
 								response.RequestMessage = request;

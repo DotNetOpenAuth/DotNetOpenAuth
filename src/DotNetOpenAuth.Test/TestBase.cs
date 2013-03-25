@@ -131,21 +131,16 @@ namespace DotNetOpenAuth.Test {
 				this.Uri = uri;
 			}
 
-			private Handler(Handler previous, Func<HttpRequestMessage, Task<HttpResponseMessage>> handler)
-				: this(previous.test, previous.Uri) {
-				this.MessageHandler = handler;
-			}
-
 			internal Uri Uri { get; private set; }
 
 			internal Func<HttpRequestMessage, Task<HttpResponseMessage>> MessageHandler { get; private set; }
 
 			internal void By(Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> handler) {
-				this.test.HostFactories.Handlers.Add(new Handler(this, req => handler(req, CancellationToken.None)));
+				this.test.HostFactories.Handlers[this.Uri] = req => handler(req, CancellationToken.None);
 			}
 
 			internal void By(Func<HttpRequestMessage, Task<HttpResponseMessage>> handler) {
-				this.test.HostFactories.Handlers.Add(new Handler(this, handler));
+				this.test.HostFactories.Handlers[this.Uri] = handler;
 			}
 
 			internal void By(Func<HttpRequestMessage, HttpResponseMessage> handler) {
