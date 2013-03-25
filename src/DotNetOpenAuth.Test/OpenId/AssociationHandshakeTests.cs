@@ -25,12 +25,12 @@ namespace DotNetOpenAuth.Test.OpenId {
 
 		[Test]
 		public async Task AssociateUnencrypted() {
-			await this.ParameterizedAssociationTestAsync(new Uri("https://host"));
+			await this.ParameterizedAssociationTestAsync(OPUriSsl);
 		}
 
 		[Test]
 		public async Task AssociateDiffieHellmanOverHttp() {
-			await this.ParameterizedAssociationTestAsync(new Uri("http://host"));
+			await this.ParameterizedAssociationTestAsync(OPUri);
 		}
 
 		/// <summary>
