@@ -78,7 +78,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 				return await server.HandleTokenRequestAsync(req, ct);
 			});
 
-			var client = new WebServerClient(AuthorizationServerDescription);
+			var client = new WebServerClient(AuthorizationServerDescription, ClientId, ClientSecret, this.HostFactories);
 			if (anonymousClient) {
 				client.ClientIdentifier = null;
 			}
