@@ -220,11 +220,9 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 					return await server.HandleTokenRequestAsync(req, ct);
 				});
 
-			var client = new WebServerClient(AuthorizationServerDescription, hostFactories: this.HostFactories);
-			////var authState = new AuthorizationState(TestScopes) {
-			////	Callback = ClientCallback,
-			////};
+			var client = new WebServerClient(AuthorizationServerDescription, ClientId, ClientSecret, this.HostFactories);
 			var result = await client.GetClientAccessTokenAsync(clientRequestedScopes);
+			Assert.That(result.AccessToken, Is.Not.Null.And.Not.Empty);
 			Assert.That(result.Scope, Is.EquivalentTo(serverOverriddenScopes));
 		}
 	}
