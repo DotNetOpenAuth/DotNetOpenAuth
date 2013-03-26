@@ -256,8 +256,8 @@ namespace DotNetOpenAuth.Test.OpenId {
 		}
 
 		protected internal void HandleProvider(Func<OpenIdProvider, HttpRequestMessage, Task<HttpResponseMessage>> provider) {
+			var op = this.CreateProvider();
 			this.Handle(OPUri).By(async req => {
-				var op = new OpenIdProvider(new StandardProviderApplicationStore());
 				return await provider(op, req);
 			});
 		}

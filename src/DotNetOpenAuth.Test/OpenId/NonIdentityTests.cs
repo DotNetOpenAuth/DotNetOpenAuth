@@ -16,6 +16,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 	using DotNetOpenAuth.OpenId.Provider;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using NUnit.Framework;
+	using System.Net;
 
 	[TestFixture]
 	public class NonIdentityTests : OpenIdTestBase {
@@ -70,10 +71,11 @@ namespace DotNetOpenAuth.Test.OpenId {
 				request.IsExtensionOnly = true;
 				var redirectRequest = await request.GetRedirectingResponseAsync();
 				Uri redirectResponseUrl;
+				this.HostFactories.AllowAutoRedirects = false;
 				using (var httpClient = this.HostFactories.CreateHttpClient()) {
 					using (var redirectResponse = await httpClient.GetAsync(redirectRequest.Headers.Location)) {
-						redirectResponse.EnsureSuccessStatusCode();
-						redirectResponseUrl = redirectRequest.Headers.Location;
+						Assert.That(redirectResponse.StatusCode, Is.EqualTo(HttpStatusCode.Redirect));
+						redirectResponseUrl = redirectResponse.Headers.Location;
 					}
 				}
 
