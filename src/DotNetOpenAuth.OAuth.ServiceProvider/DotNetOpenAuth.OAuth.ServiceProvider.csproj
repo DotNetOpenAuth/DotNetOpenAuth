@@ -19,18 +19,19 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="OAuthReporting.cs" />
     <Compile Include="OAuth\ChannelElements\IConsumerDescription.cs" />
     <Compile Include="OAuth\ChannelElements\IServiceProviderAccessToken.cs" />
     <Compile Include="OAuth\ChannelElements\IServiceProviderRequestToken.cs" />
     <Compile Include="OAuth\ChannelElements\IServiceProviderTokenManager.cs" />
     <Compile Include="OAuth\ChannelElements\ITokenGenerator.cs" />
-    <Compile Include="OAuth\ChannelElements\OAuth1Principal.cs" />
     <Compile Include="OAuth\ChannelElements\OAuthServiceProviderChannel.cs" />
     <Compile Include="OAuth\ChannelElements\OAuthServiceProviderMessageFactory.cs" />
     <Compile Include="OAuth\ChannelElements\RsaSha1ServiceProviderSigningBindingElement.cs" />
     <Compile Include="OAuth\ChannelElements\StandardTokenGenerator.cs" />
     <Compile Include="OAuth\ChannelElements\TokenHandlingBindingElement.cs" />
     <Compile Include="OAuth\ServiceProvider.cs" />
+    <Compile Include="OAuth\ServiceProviderHostDescription.cs" />
     <Compile Include="OAuth\VerificationCodeFormat.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>
@@ -52,9 +53,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Validation">
-      <HintPath>..\packages\Validation.2.0.1.12362\lib\portable-windows8+net40+sl5+windowsphone8\Validation.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.WebRequest" />
+    <Reference Include="Validation, Version=2.0.0.0, Culture=neutral, PublicKeyToken=2fc06f0d701809a7, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Validation.2.0.2.13022\lib\portable-windows8+net40+sl5+windowsphone8\Validation.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

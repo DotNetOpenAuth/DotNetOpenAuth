@@ -60,6 +60,31 @@ namespace DotNetOpenAuth.OAuth {
 		internal const string AuthorizationHeaderScheme = "OAuth";
 
 		/// <summary>
+		/// The name of the 'oauth_callback' parameter.
+		/// </summary>
+		internal const string CallbackParameter = "oauth_callback";
+
+		/// <summary>
+		/// The name of the 'oauth_callback_confirmed' parameter.
+		/// </summary>
+		internal const string CallbackConfirmedParameter = "oauth_callback_confirmed";
+
+		/// <summary>
+		/// The name of the 'oauth_token' parameter.
+		/// </summary>
+		internal const string TokenParameter = "oauth_token";
+
+		/// <summary>
+		/// The name of the 'oauth_token_secret' parameter.
+		/// </summary>
+		internal const string TokenSecretParameter = "oauth_token_secret";
+
+		/// <summary>
+		/// The name of the 'oauth_verifier' parameter.
+		/// </summary>
+		internal const string VerifierParameter = "oauth_verifier";
+
+		/// <summary>
 		/// Gets the <see cref="Protocol"/> instance with values initialized for V1.0 of the protocol.
 		/// </summary>
 		internal static readonly Protocol V10 = new Protocol {

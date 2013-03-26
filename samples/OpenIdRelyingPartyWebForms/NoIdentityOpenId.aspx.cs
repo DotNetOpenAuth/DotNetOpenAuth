@@ -1,5 +1,8 @@
 ﻿namespace OpenIdRelyingPartyWebForms {
 	using System;
+	using System.Threading;
+	using System.Web;
+	using System.Web.UI;
 	using System.Web.UI.WebControls;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
@@ -7,10 +10,10 @@
 	using DotNetOpenAuth.OpenId.RelyingParty;
 
 	public partial class NoIdentityOpenId : System.Web.UI.Page {
-		protected void Page_Load(object sender, EventArgs e) {
+		protected async void Page_Load(object sender, EventArgs e) {
 			this.openIdBox.Focus();
 			using (OpenIdRelyingParty rp = new OpenIdRelyingParty()) {
-				IAuthenticationResponse response = rp.GetResponse();
+				IAuthenticationResponse response = await rp.GetResponseAsync(new HttpRequestWrapper(this.Request), this.Response.ClientDisconnectedToken);
 				if (response != null) {
 					switch (response.Status) {
 						case AuthenticationStatus.ExtensionsOnly:
@@ -45,32 +48,39 @@
 		}
 
 		protected void beginButton_Click(object sender, EventArgs e) {
-			if (!this.Page.IsValid) {
-				return; // don't login if custom validation failed.
-			}
-			try {
-				using (OpenIdRelyingParty rp = new OpenIdRelyingParty()) {
-					var request = rp.CreateRequest(this.openIdBox.Text);
-					request.IsExtensionOnly = true;
+			this.RegisterAsyncTask(
+				new PageAsyncTask(
+					async ct => {
+						if (!this.Page.IsValid) {
+							return; // don't login if custom validation failed.
+						}
+						try {
+							using (OpenIdRelyingParty rp = new OpenIdRelyingParty()) {
+								var request =
+									await
+									rp.CreateRequestAsync(this.openIdBox.Text, new HttpRequestWrapper(Request), Response.ClientDisconnectedToken);
+								request.IsExtensionOnly = true;
 
-					// This is where you would add any OpenID extensions you wanted
-					// to include in the request.
-					request.AddExtension(new ClaimsRequest {
-						Email = DemandLevel.Request,
-						Country = DemandLevel.Request,
-						Gender = DemandLevel.Require,
-						PostalCode = DemandLevel.Require,
-						TimeZone = DemandLevel.Require,
-					});
+								// This is where you would add any OpenID extensions you wanted
+								// to include in the request.
+								request.AddExtension(
+									new ClaimsRequest {
+										Email = DemandLevel.Request,
+										Country = DemandLevel.Request,
+										Gender = DemandLevel.Require,
+										PostalCode = DemandLevel.Require,
+										TimeZone = DemandLevel.Require,
+									});
 
-					request.RedirectToProvider();
-				}
-			} catch (ProtocolException ex) {
-				// The user probably entered an Identifier that 
-				// was not a valid OpenID endpoint.
-				this.openidValidator.Text = ex.Message;
-				this.openidValidator.IsValid = false;
-			}
+								await request.RedirectToProviderAsync(new HttpContextWrapper(Context), Response.ClientDisconnectedToken);
+							}
+						} catch (ProtocolException ex) {
+							// The user probably entered an Identifier that 
+							// was not a valid OpenID endpoint.
+							this.openidValidator.Text = ex.Message;
+							this.openidValidator.IsValid = false;
+						}
+					}));
 		}
 
 		protected void openidValidator_ServerValidate(object source, ServerValidateEventArgs args) {

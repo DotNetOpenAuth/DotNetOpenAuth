@@ -62,7 +62,7 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		}
 
 		/// <summary>
-		/// Gets or sets the Request Token obtained in the previous step.
+		/// Gets the Request Token obtained in the previous step.
 		/// </summary>
 		/// <remarks>
 		/// The Service Provider MAY declare this parameter as REQUIRED, or 
@@ -70,7 +70,7 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// case it will prompt the User to enter it manually.
 		/// </remarks>
 		[MessagePart("oauth_token", IsRequired = false)]
-		internal string RequestToken { get; set; }
+		public string RequestToken { get; internal set; }
 
 		/// <summary>
 		/// Gets or sets a URL the Service Provider will use to redirect the User back 

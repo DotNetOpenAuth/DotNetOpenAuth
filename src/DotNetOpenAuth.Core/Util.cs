@@ -7,12 +7,14 @@ namespace DotNetOpenAuth {
 	using System;
 	using System.Collections.Generic;
 	using System.Globalization;
+	using System.Linq;
 	using System.Net;
+	using System.Net.Http.Headers;
 	using System.Reflection;
 	using System.Text;
+	using System.Threading.Tasks;
 	using System.Web;
 	using System.Web.UI;
-
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Reflection;
@@ -28,24 +30,44 @@ namespace DotNetOpenAuth {
 		internal const string DefaultNamespace = "DotNetOpenAuth";
 
 		/// <summary>
+		/// A lazily-assembled string that describes the version of the library.
+		/// </summary>
+		private static readonly Lazy<string> libraryVersionLazy = new Lazy<string>(delegate {
+			var assembly = Assembly.GetExecutingAssembly();
+			string assemblyFullName = assembly.FullName;
+			bool official = assemblyFullName.Contains("PublicKeyToken=2780ccd10d57b246");
+			assemblyFullName = assemblyFullName.Replace(assembly.GetName().Version.ToString(), AssemblyFileVersion);
+
+			// We use InvariantCulture since this is used for logging.
+			return string.Format(CultureInfo.InvariantCulture, "{0} ({1})", assemblyFullName, official ? "official" : "private");
+		});
+
+		/// <summary>
+		/// A lazily-assembled string that describes the version of the library.
+		/// </summary>
+		private static readonly Lazy<ProductInfoHeaderValue> libraryVersionHeaderLazy = new Lazy<ProductInfoHeaderValue>(delegate {
+			var assemblyName = Assembly.GetExecutingAssembly().GetName();
+			return new ProductInfoHeaderValue(assemblyName.Name, AssemblyFileVersion);
+		});
+
+		/// <summary>
 		/// The web.config file-specified provider of web resource URLs.
 		/// </summary>
-		private static IEmbeddedResourceRetrieval embeddedResourceRetrieval = MessagingElement.Configuration.EmbeddedResourceRetrievalProvider.CreateInstance(null, false);
+		private static IEmbeddedResourceRetrieval embeddedResourceRetrieval = MessagingElement.Configuration.EmbeddedResourceRetrievalProvider.CreateInstance(null, false, null);
 
 		/// <summary>
 		/// Gets a human-readable description of the library name and version, including
 		/// whether the build is an official or private one.
 		/// </summary>
 		internal static string LibraryVersion {
-			get {
-				var assembly = Assembly.GetExecutingAssembly();
-				string assemblyFullName = assembly.FullName;
-				bool official = assemblyFullName.Contains("PublicKeyToken=2780ccd10d57b246");
-				assemblyFullName = assemblyFullName.Replace(assembly.GetName().Version.ToString(), AssemblyFileVersion);
+			get { return libraryVersionLazy.Value; }
+		}
 
-				// We use InvariantCulture since this is used for logging.
-				return string.Format(CultureInfo.InvariantCulture, "{0} ({1})", assemblyFullName, official ? "official" : "private");
-			}
+		/// <summary>
+		/// Gets an HTTP header that can be included in outbound requests.
+		/// </summary>
+		internal static ProductInfoHeaderValue LibraryVersionHeader {
+			get { return libraryVersionHeaderLazy.Value; }
 		}
 
 		/// <summary>
@@ -109,7 +131,7 @@ namespace DotNetOpenAuth {
 					foreach (var pair in pairs) {
 						var key = pair.Key.ToString();
 						string value = pair.Value.ToString();
-						if (messageDictionary != null && messageDictionary.Description.Mapping[key].IsSecuritySensitive) {
+						if (messageDictionary != null && messageDictionary.Description.Mapping.ContainsKey(key) && messageDictionary.Description.Mapping[key].IsSecuritySensitive) {
 							value = "********";
 						}
 
@@ -209,6 +231,22 @@ namespace DotNetOpenAuth {
 						Strings.EmbeddedResourceUrlProviderRequired,
 						string.Join(", ", new string[] { typeof(Page).FullName, typeof(IEmbeddedResourceRetrieval).FullName })));
 			}
+		}
+
+		/// <summary>
+		/// Creates a dictionary of a sequence of elements and the result of an asynchronous transform,
+		/// allowing the async work to proceed concurrently.
+		/// </summary>
+		/// <typeparam name="TSource">The type of the source.</typeparam>
+		/// <typeparam name="TResult">The type of the result.</typeparam>
+		/// <param name="source">The source.</param>
+		/// <param name="transform">The transform.</param>
+		/// <returns>A dictionary populated with the results of the transforms.</returns>
+		internal static async Task<Dictionary<TSource, TResult>> ToDictionaryAsync<TSource, TResult>(
+			this IEnumerable<TSource> source, Func<TSource, Task<TResult>> transform) {
+			var taskResults = source.ToDictionary(s => s, transform);
+			await Task.WhenAll(taskResults.Values);
+			return taskResults.ToDictionary(p => p.Key, p => p.Value.Result);
 		}
 
 		/// <summary>

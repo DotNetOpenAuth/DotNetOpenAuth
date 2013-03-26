@@ -8,6 +8,8 @@ namespace DotNetOpenAuth.OAuth.Messages {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Net.Http;
+
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
@@ -18,7 +20,7 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// <summary>
 		/// A store for the binary data that is carried in the message.
 		/// </summary>
-		private List<MultipartPostPart> binaryData = new List<MultipartPostPart>();
+		private List<MultipartContentMember> binaryData = new List<MultipartContentMember>();
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AccessProtectedResourceRequest"/> class.
@@ -56,7 +58,7 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// Gets the parts of the message that carry binary data.
 		/// </summary>
 		/// <value>A list of parts.  Never null.</value>
-		public IList<MultipartPostPart> BinaryData {
+		public IList<MultipartContentMember> BinaryData {
 			get { return this.binaryData; }
 		}
 
@@ -64,7 +66,7 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// Gets a value indicating whether this message should be sent as multi-part POST.
 		/// </summary>
 		public bool SendAsMultipart {
-			get { return this.HttpMethod == "POST" && this.BinaryData.Count > 0; }
+			get { return this.HttpMethod == HttpMethod.Post && this.BinaryData.Count > 0; }
 		}
 
 		#endregion

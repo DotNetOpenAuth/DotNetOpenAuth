@@ -6,6 +6,7 @@
 	<PropertyGroup>
 		<VersionCsFile>$(IntermediatePath)\$(AssemblyName).Version.cs</VersionCsFile>
 		<NoWarn>$(NoWarn);1607</NoWarn>
+		<UltimateResourceFallbackLocation Condition=" '$(UltimateResourceFallbackLocation)' == '' ">UltimateResourceFallbackLocation.MainAssembly</UltimateResourceFallbackLocation>
 	</PropertyGroup>
 
 	<UsingTask AssemblyFile="$(ProjectRoot)lib\MSBuild.Community.Tasks.dll" TaskName="AssemblyInfo"/>
@@ -52,7 +53,7 @@
 		              AssemblyTitle="$(AssemblyName)"
 		              AssemblyProduct="DotNetOpenAuth"
 		              NeutralResourcesLanguage="en-US"
-		              UltimateResourceFallbackLocation="UltimateResourceFallbackLocation.MainAssembly"
+		              UltimateResourceFallbackLocation="$(UltimateResourceFallbackLocation)"
 		              GenerateClass="true" />
 		<!-- Avoid applying the newly generated AssemblyInfo.cs file to the build 
 		     unless it has changed in order to allow for incremental building. -->

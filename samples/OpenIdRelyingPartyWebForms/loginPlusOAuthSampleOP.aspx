@@ -1,6 +1,6 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="True" CodeBehind="loginPlusOAuthSampleOP.aspx.cs"
 	Inherits="OpenIdRelyingPartyWebForms.loginPlusOAuthSampleOP" ValidateRequest="false"
-	MasterPageFile="~/Site.Master" %>
+	MasterPageFile="~/Site.Master" Async="true" %>
 
 <%@ Register Assembly="DotNetOpenAuth.OpenId.RelyingParty.UI" Namespace="DotNetOpenAuth.OpenId.RelyingParty"
 	TagPrefix="rp" %>

@@ -6,6 +6,8 @@
 
 namespace DotNetOpenAuth.Test.OpenId.Extensions.ProviderAuthenticationPolicy {
 	using System;
+	using System.Threading.Tasks;
+
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy;
 	using DotNetOpenAuth.Test.OpenId.Extensions;
@@ -14,14 +16,14 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.ProviderAuthenticationPolicy {
 	[TestFixture]
 	public class PapeRoundTripTests : OpenIdTestBase {
 		[Test]
-		public void Trivial() {
+		public async Task Trivial() {
 			var request = new PolicyRequest();
 			var response = new PolicyResponse();
-			ExtensionTestUtilities.Roundtrip(Protocol.Default, new[] { request }, new[] { response });
+			await this.RoundtripAsync(Protocol.Default, new[] { request }, new[] { response });
 		}
 
 		[Test]
-		public void Full() {
+		public async Task Full() {
 			var request = new PolicyRequest();
 			request.MaximumAuthenticationAge = TimeSpan.FromMinutes(10);
 			request.PreferredAuthLevelTypes.Add(Constants.AssuranceLevels.NistTypeUri);
@@ -37,7 +39,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.ProviderAuthenticationPolicy {
 			response.AssuranceLevels["customlevel"] = "ABC";
 			response.NistAssuranceLevel = NistAssuranceLevel.Level2;
 
-			ExtensionTestUtilities.Roundtrip(Protocol.Default, new[] { request }, new[] { response });
+			await this.RoundtripAsync(Protocol.Default, new[] { request }, new[] { response });
 		}
 	}
 }

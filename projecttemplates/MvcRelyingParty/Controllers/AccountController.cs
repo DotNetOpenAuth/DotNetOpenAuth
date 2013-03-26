@@ -5,6 +5,7 @@
 	using System.Linq;
 	using System.Net;
 	using System.Security.Principal;
+	using System.Threading.Tasks;
 	using System.Web;
 	using System.Web.Mvc;
 	using System.Web.Security;
@@ -50,8 +51,8 @@
 
 		[Authorize, AcceptVerbs(HttpVerbs.Get | HttpVerbs.Post)]
 		[HttpHeader("x-frame-options", "SAMEORIGIN")] // mitigates clickjacking
-		public ActionResult Authorize() {
-			var pendingRequest = OAuthServiceProvider.AuthorizationServer.ReadAuthorizationRequest();
+		public async Task<ActionResult> Authorize() {
+			var pendingRequest = await OAuthServiceProvider.AuthorizationServer.ReadAuthorizationRequestAsync(Request, Response.ClientDisconnectedToken);
 			if (pendingRequest == null) {
 				throw new HttpException((int)HttpStatusCode.BadRequest, "Missing authorization request.");
 			}
@@ -61,7 +62,8 @@
 			// Consider auto-approving if safe to do so.
 			if (((OAuthAuthorizationServer)OAuthServiceProvider.AuthorizationServer.AuthorizationServerServices).CanBeAutoApproved(pendingRequest)) {
 				var approval = OAuthServiceProvider.AuthorizationServer.PrepareApproveAuthorizationRequest(pendingRequest, HttpContext.User.Identity.Name);
-				return OAuthServiceProvider.AuthorizationServer.Channel.PrepareResponse(approval).AsActionResult();
+				var response = await OAuthServiceProvider.AuthorizationServer.Channel.PrepareResponseAsync(approval, Response.ClientDisconnectedToken);
+				return response.AsActionResult();
 			}
 
 			var model = new AccountAuthorizeModel {
@@ -74,8 +76,8 @@
 		}
 
 		[Authorize, AcceptVerbs(HttpVerbs.Post), ValidateAntiForgeryToken]
-		public ActionResult AuthorizeResponse(bool isApproved) {
-			var pendingRequest = OAuthServiceProvider.AuthorizationServer.ReadAuthorizationRequest();
+		public async Task<ActionResult> AuthorizeResponse(bool isApproved) {
+			var pendingRequest = await OAuthServiceProvider.AuthorizationServer.ReadAuthorizationRequestAsync(Request, Response.ClientDisconnectedToken);
 			if (pendingRequest == null) {
 				throw new HttpException((int)HttpStatusCode.BadRequest, "Missing authorization request.");
 			}
@@ -95,7 +97,8 @@
 				response = OAuthServiceProvider.AuthorizationServer.PrepareRejectAuthorizationRequest(pendingRequest);
 			}
 
-			return OAuthServiceProvider.AuthorizationServer.Channel.PrepareResponse(response).AsActionResult();
+			var responseMessage = await OAuthServiceProvider.AuthorizationServer.Channel.PrepareResponseAsync(response, Response.ClientDisconnectedToken);
+			return responseMessage.AsActionResult();
 		}
 
 		[Authorize, AcceptVerbs(HttpVerbs.Delete)] // ValidateAntiForgeryToken would be GREAT here, but it's not a FORM POST operation so that doesn't work.

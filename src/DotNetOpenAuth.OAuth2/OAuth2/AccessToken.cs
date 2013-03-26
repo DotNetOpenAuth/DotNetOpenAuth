@@ -57,6 +57,15 @@ namespace DotNetOpenAuth.OAuth2 {
 		}
 
 		/// <summary>
+		/// Creates a formatter capable of serializing/deserializing an access token.
+		/// </summary>
+		/// <returns>An access token serializer.</returns>
+		internal static IDataBagFormatter<AccessToken> CreateFormatter(ICryptoKeyStore symmetricKeyStore) {
+			Requires.NotNull(symmetricKeyStore, "symmetricKeyStore");
+			return new UriStyleMessageFormatter<AccessToken>(symmetricKeyStore, bucket: "AccessTokens", signed: true, encrypted: true);
+		}
+
+		/// <summary>
 		/// Initializes this instance of the <see cref="AccessToken"/> class.
 		/// </summary>
 		/// <param name="authorization">The authorization to apply to this access token.</param>

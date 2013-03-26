@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true"
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" Async="true"
 	CodeBehind="OAuthAuthorize.aspx.cs" Inherits="WebFormsRelyingParty.Members.OAuthAuthorize" %>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="Body" runat="server">

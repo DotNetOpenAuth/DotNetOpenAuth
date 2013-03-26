@@ -1,4 +1,4 @@
-﻿<%@ Page Language="vb" AutoEventWireup="false" CodeBehind="Login.aspx.vb" Inherits="OpenIdRelyingPartyWebFormsVB.Login"
+﻿<%@ Page Language="vb" AutoEventWireup="false" CodeBehind="Login.aspx.vb" Inherits="OpenIdRelyingPartyWebFormsVB.Login" Async="true"
 	ValidateRequest="false" MasterPageFile="~/Site.Master" %>
 
 <%@ Register Assembly="DotNetOpenAuth.OpenId.RelyingParty.UI" Namespace="DotNetOpenAuth.OpenId.RelyingParty" TagPrefix="rp" %>

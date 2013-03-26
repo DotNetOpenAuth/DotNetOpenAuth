@@ -7,6 +7,8 @@
 namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
 	using Validation;
@@ -75,16 +77,16 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		}
 
 		/// <summary>
-		/// Gets the response message, once <see cref="IsResponseReady"/> is <c>true</c>.
+		/// Gets the response message, once <see cref="IsResponseReady" /> is <c>true</c>.
 		/// </summary>
-		protected override IProtocolMessage ResponseMessage {
-			get {
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>The response message.</returns>
+		protected override async Task<IProtocolMessage> GetResponseMessageAsync(CancellationToken cancellationToken) {
 				if (this.IsApproved.HasValue) {
-					return this.IsApproved.Value ? (IProtocolMessage)this.positiveResponse : this.NegativeResponse;
+					return this.IsApproved.Value ? (IProtocolMessage)this.positiveResponse : await this.GetNegativeResponseAsync();
 				} else {
 					return null;
 				}
-			}
 		}
 
 		#endregion

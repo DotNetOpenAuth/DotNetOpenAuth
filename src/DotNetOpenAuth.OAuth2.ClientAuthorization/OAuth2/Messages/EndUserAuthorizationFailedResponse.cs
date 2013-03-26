@@ -40,7 +40,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		}
 
 		/// <summary>
-		/// Gets or sets the error.
+		/// Gets or sets the error. Usually one of <see cref="Protocol.EndUserAuthorizationRequestErrorCodes"/>
 		/// </summary>
 		/// <value>
 		/// One of the values given in <see cref="Protocol.EndUserAuthorizationRequestErrorCodes"/>.

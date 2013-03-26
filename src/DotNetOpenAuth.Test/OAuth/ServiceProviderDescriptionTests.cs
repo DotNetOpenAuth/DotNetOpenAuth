@@ -11,7 +11,7 @@ namespace DotNetOpenAuth.Test.OAuth {
 	using NUnit.Framework;
 
 	/// <summary>
-	/// Tests for the <see cref="ServiceProviderEndpoints"/> class.
+	/// Tests for the <see cref="ServiceProviderHostDescription"/> class.
 	/// </summary>
 	[TestFixture]
 	public class ServiceProviderDescriptionTests : TestBase {
@@ -20,8 +20,8 @@ namespace DotNetOpenAuth.Test.OAuth {
 		/// </summary>
 		[Test]
 		public void UserAuthorizationUriTest() {
-			ServiceProviderDescription target = new ServiceProviderDescription();
-			MessageReceivingEndpoint expected = new MessageReceivingEndpoint("http://localhost/authorization", HttpDeliveryMethods.GetRequest);
+			var target = new ServiceProviderHostDescription();
+			var expected = new MessageReceivingEndpoint("http://localhost/authorization", HttpDeliveryMethods.GetRequest);
 			MessageReceivingEndpoint actual;
 			target.UserAuthorizationEndpoint = expected;
 			actual = target.UserAuthorizationEndpoint;
@@ -36,8 +36,8 @@ namespace DotNetOpenAuth.Test.OAuth {
 		/// </summary>
 		[Test]
 		public void RequestTokenUriTest() {
-			var target = new ServiceProviderDescription();
-			MessageReceivingEndpoint expected = new MessageReceivingEndpoint("http://localhost/requesttoken", HttpDeliveryMethods.GetRequest);
+			var target = new ServiceProviderHostDescription();
+			var expected = new MessageReceivingEndpoint("http://localhost/requesttoken", HttpDeliveryMethods.GetRequest);
 			MessageReceivingEndpoint actual;
 			target.RequestTokenEndpoint = expected;
 			actual = target.RequestTokenEndpoint;
@@ -53,7 +53,7 @@ namespace DotNetOpenAuth.Test.OAuth {
 		/// </summary>
 		[Test, ExpectedException(typeof(ArgumentException))]
 		public void RequestTokenUriWithOAuthParametersTest() {
-			var target = new ServiceProviderDescription();
+			var target = new ServiceProviderHostDescription();
 			target.RequestTokenEndpoint = new MessageReceivingEndpoint("http://localhost/requesttoken?oauth_token=something", HttpDeliveryMethods.GetRequest);
 		}
 
@@ -62,7 +62,7 @@ namespace DotNetOpenAuth.Test.OAuth {
 		/// </summary>
 		[Test]
 		public void AccessTokenUriTest() {
-			var target = new ServiceProviderDescription();
+			var target = new ServiceProviderHostDescription();
 			MessageReceivingEndpoint expected = new MessageReceivingEndpoint("http://localhost/accesstoken", HttpDeliveryMethods.GetRequest);
 			MessageReceivingEndpoint actual;
 			target.AccessTokenEndpoint = expected;

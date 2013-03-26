@@ -15,12 +15,14 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Linq;
 	using System.Net;
 	using System.Net.Http;
+	using System.Net.Http.Headers;
 	using System.Net.Mime;
 	using System.Runtime.Serialization.Json;
 	using System.Security;
 	using System.Security.Cryptography;
 	using System.Text;
 	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
 	using System.Web.Mvc;
 	using System.Xml;
@@ -86,6 +88,11 @@ namespace DotNetOpenAuth.Messaging {
 		private const int SymmetricSecretHandleLength = 4;
 
 		/// <summary>
+		/// A pre-completed task.
+		/// </summary>
+		private static readonly Task CompletedTaskField = Task.FromResult<object>(null);
+
+		/// <summary>
 		/// The default lifetime of a private secret.
 		/// </summary>
 		private static readonly TimeSpan SymmetricSecretKeyLifespan = Configuration.DotNetOpenAuthSection.Messaging.PrivateSecretMaximumAge;
@@ -149,41 +156,17 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Gets a pre-completed task.
+		/// </summary>
+		internal static Task CompletedTask {
+			get { return CompletedTaskField; }
+		}
+
+		/// <summary>
 		/// Gets a random number generator for use on the current thread only.
 		/// </summary>
 		internal static Random NonCryptoRandomDataGenerator {
 			get { return ThreadSafeRandom.RandomNumberGenerator; }
-		}
-
-		/// <summary>
-		/// Transforms an OutgoingWebResponse to an MVC-friendly ActionResult.
-		/// </summary>
-		/// <param name="response">The response to send to the user agent.</param>
-		/// <returns>The <see cref="ActionResult"/> instance to be returned by the Controller's action method.</returns>
-		public static ActionResult AsActionResult(this OutgoingWebResponse response) {
-			Requires.NotNull(response, "response");
-			return new OutgoingWebResponseActionResult(response);
-		}
-
-		/// <summary>
-		/// Transforms an OutgoingWebResponse to a Web API-friendly HttpResponseMessage.
-		/// </summary>
-		/// <param name="outgoingResponse">The response to send to the user agent.</param>
-		/// <returns>The <see cref="HttpResponseMessage"/> instance to be returned by the Web API method.</returns>
-		public static HttpResponseMessage AsHttpResponseMessage(this OutgoingWebResponse outgoingResponse) {
-			HttpResponseMessage response = new HttpResponseMessage(outgoingResponse.Status);
-			if (outgoingResponse.ResponseStream != null) {
-				response.Content = new StreamContent(outgoingResponse.ResponseStream);
-			}
-
-			var responseHeaders = outgoingResponse.Headers;
-			foreach (var header in responseHeaders.AllKeys) {
-				if (!response.Headers.TryAddWithoutValidation(header, responseHeaders[header])) {
-					response.Content.Headers.TryAddWithoutValidation(header, responseHeaders[header]);
-				}
-			}
-
-			return response;
 		}
 
 		/// <summary>
@@ -220,22 +203,6 @@ namespace DotNetOpenAuth.Messaging {
 			} else {
 				return uri;
 			}
-		}
-
-		/// <summary>
-		/// Sends a multipart HTTP POST request (useful for posting files).
-		/// </summary>
-		/// <param name="request">The HTTP request.</param>
-		/// <param name="requestHandler">The request handler.</param>
-		/// <param name="parts">The parts to include in the POST entity.</param>
-		/// <returns>The HTTP response.</returns>
-		public static IncomingWebResponse PostMultipart(this HttpWebRequest request, IDirectWebRequestHandler requestHandler, IEnumerable<MultipartPostPart> parts) {
-			Requires.NotNull(request, "request");
-			Requires.NotNull(requestHandler, "requestHandler");
-			Requires.NotNull(parts, "parts");
-
-			PostMultipartNoGetResponse(request, requestHandler, parts);
-			return requestHandler.GetResponse(request);
 		}
 
 		/// <summary>
@@ -393,7 +360,15 @@ namespace DotNetOpenAuth.Messaging {
 			// HttpRequest.Url gives us the internal URL in a cloud environment,
 			// So we use a variable that (at least from what I can tell) gives us
 			// the public URL:
-			if (serverVariables["HTTP_HOST"] != null) {
+			string httpHost;
+			try {
+				httpHost = serverVariables["HTTP_HOST"];
+			} catch (NullReferenceException) {
+				// The VS dev web server can throw this. :(
+				httpHost = null;
+			}
+
+			if (httpHost != null) {
 				ErrorUtilities.VerifySupported(request.Url.Scheme == Uri.UriSchemeHttps || request.Url.Scheme == Uri.UriSchemeHttp, "Only HTTP and HTTPS are supported protocols.");
 				string scheme = serverVariables["HTTP_X_FORWARDED_PROTO"] ?? request.Url.Scheme;
 				Uri hostAndPort = new Uri(scheme + Uri.SchemeDelimiter + serverVariables["HTTP_HOST"]);
@@ -423,6 +398,115 @@ namespace DotNetOpenAuth.Messaging {
 		public static Uri GetPublicFacingUrl(this HttpRequestBase request) {
 			Requires.NotNull(request, "request");
 			return GetPublicFacingUrl(request, request.ServerVariables);
+		}
+
+		/// <summary>
+		/// Gets the public facing URL for the given incoming HTTP request.
+		/// </summary>
+		/// <returns>The URI that the outside world used to create this request.</returns>
+		public static Uri GetPublicFacingUrl() {
+			ErrorUtilities.VerifyHttpContext();
+			return GetPublicFacingUrl(new HttpRequestWrapper(HttpContext.Current.Request));
+		}
+
+		/// <summary>
+		/// Wraps a response message as an MVC <see cref="ActionResult"/> so it can be conveniently returned from an MVC controller's action method.
+		/// </summary>
+		/// <param name="response">The response message.</param>
+		/// <returns>An <see cref="ActionResult"/> instance.</returns>
+		public static ActionResult AsActionResult(this HttpResponseMessage response) {
+			Requires.NotNull(response, "response");
+			return new HttpResponseMessageActionResult(response);
+		}
+
+		/// <summary>
+		/// Wraps an instance of <see cref="HttpRequestBase"/> as an <see cref="HttpRequestMessage"/> instance.
+		/// </summary>
+		/// <param name="request">The request.</param>
+		/// <returns>An instance of <see cref="HttpRequestMessage"/></returns>
+		public static HttpRequestMessage AsHttpRequestMessage(this HttpRequestBase request) {
+			Requires.NotNull(request, "request");
+
+			Uri publicFacingUrl = request.GetPublicFacingUrl();
+			var httpRequest = new HttpRequestMessage(new HttpMethod(request.HttpMethod), publicFacingUrl);
+
+			if (request.Form != null) {
+				// Avoid a request message that will try to read the request stream twice for already parsed data.
+				httpRequest.Content = new FormUrlEncodedContent(request.Form.AsKeyValuePairs());
+			} else if (request.InputStream != null) {
+				httpRequest.Content = new StreamContent(request.InputStream);
+			}
+
+			httpRequest.CopyHeadersFrom(request);
+			return httpRequest;
+		}
+
+		/// <summary>
+		/// Sends a response message to the HTTP client.
+		/// </summary>
+		/// <param name="response">The response message.</param>
+		/// <param name="context">The HTTP context to send the response with.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// A task that completes with the asynchronous operation.
+		/// </returns>
+		public static async Task SendAsync(this HttpResponseMessage response, HttpContextBase context = null, CancellationToken cancellationToken = default(CancellationToken)) {
+			Requires.NotNull(response, "response");
+			if (context == null) {
+				ErrorUtilities.VerifyHttpContext();
+				context = new HttpContextWrapper(HttpContext.Current);
+			}
+
+			var responseContext = context.Response;
+			responseContext.StatusCode = (int)response.StatusCode;
+			responseContext.StatusDescription = response.ReasonPhrase;
+			foreach (var header in response.Headers) {
+				foreach (var value in header.Value) {
+					responseContext.AddHeader(header.Key, value);
+				}
+			}
+
+			if (response.Content != null) {
+				await response.Content.CopyToAsync(responseContext.OutputStream).ConfigureAwait(false);
+			}
+		}
+
+		/// <summary>
+		/// Disposes a value if it is not null.
+		/// </summary>
+		/// <param name="disposable">The disposable value.</param>
+		internal static void DisposeIfNotNull(this IDisposable disposable) {
+			if (disposable != null) {
+				disposable.Dispose();
+			}
+		}
+
+		/// <summary>
+		/// Clones the specified <see cref="HttpRequestMessage"/> so it can be re-sent.
+		/// </summary>
+		/// <param name="original">The original message.</param>
+		/// <returns>The cloned message</returns>
+		/// <remarks>
+		/// This is useful when an HTTP request fails, and after a little tweaking should be resent.
+		/// Since <see cref="HttpRequestMessage"/> remembers it was already sent, it will not permit being
+		/// sent a second time. This method clones the message so its contents are identical but allows
+		/// re-sending.
+		/// </remarks>
+		internal static HttpRequestMessage Clone(this HttpRequestMessage original) {
+			Requires.NotNull(original, "original");
+
+			var clone = new HttpRequestMessage(original.Method, original.RequestUri);
+			clone.Content = original.Content;
+			foreach (var header in original.Headers) {
+				clone.Headers.Add(header.Key, header.Value);
+			}
+
+			foreach (var property in original.Properties) {
+				clone.Properties[property.Key] = property.Value;
+			}
+
+			clone.Version = original.Version;
+			return clone;
 		}
 
 		/// <summary>
@@ -496,71 +580,16 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
-		/// Sends a multipart HTTP POST request (useful for posting files) but doesn't call GetResponse on it.
-		/// </summary>
-		/// <param name="request">The HTTP request.</param>
-		/// <param name="requestHandler">The request handler.</param>
-		/// <param name="parts">The parts to include in the POST entity.</param>
-		internal static void PostMultipartNoGetResponse(this HttpWebRequest request, IDirectWebRequestHandler requestHandler, IEnumerable<MultipartPostPart> parts) {
-			Requires.NotNull(request, "request");
-			Requires.NotNull(requestHandler, "requestHandler");
-			Requires.NotNull(parts, "parts");
-
-			Reporting.RecordFeatureUse("MessagingUtilities.PostMultipart");
-			parts = parts.CacheGeneratedResults();
-			string boundary = Guid.NewGuid().ToString();
-			string initialPartLeadingBoundary = string.Format(CultureInfo.InvariantCulture, "--{0}\r\n", boundary);
-			string partLeadingBoundary = string.Format(CultureInfo.InvariantCulture, "\r\n--{0}\r\n", boundary);
-			string finalTrailingBoundary = string.Format(CultureInfo.InvariantCulture, "\r\n--{0}--\r\n", boundary);
-			var contentType = new ContentType("multipart/form-data") {
-				Boundary = boundary,
-				CharSet = Channel.PostEntityEncoding.WebName,
-			};
-
-			request.Method = "POST";
-			request.ContentType = contentType.ToString();
-			long contentLength = parts.Sum(p => partLeadingBoundary.Length + p.Length) + finalTrailingBoundary.Length;
-			if (parts.Any()) {
-				contentLength -= 2; // the initial part leading boundary has no leading \r\n
-			}
-			request.ContentLength = contentLength;
-
-			var requestStream = requestHandler.GetRequestStream(request);
-			try {
-				StreamWriter writer = new StreamWriter(requestStream, Channel.PostEntityEncoding);
-				bool firstPart = true;
-				foreach (var part in parts) {
-					writer.Write(firstPart ? initialPartLeadingBoundary : partLeadingBoundary);
-					firstPart = false;
-					part.Serialize(writer);
-					part.Dispose();
-				}
-
-				writer.Write(finalTrailingBoundary);
-				writer.Flush();
-			} finally {
-				// We need to be sure to close the request stream...
-				// unless it is a MemoryStream, which is a clue that we're in
-				// a mock stream situation and closing it would preclude reading it later.
-				if (!(requestStream is MemoryStream)) {
-					requestStream.Dispose();
-				}
-			}
-		}
-
-		/// <summary>
 		/// Assembles the content of the HTTP Authorization or WWW-Authenticate header.
 		/// </summary>
-		/// <param name="scheme">The scheme.</param>
 		/// <param name="fields">The fields to include.</param>
-		/// <returns>A value prepared for an HTTP header.</returns>
-		internal static string AssembleAuthorizationHeader(string scheme, IEnumerable<KeyValuePair<string, string>> fields) {
-			Requires.NotNullOrEmpty(scheme, "scheme");
+		/// <returns>
+		/// A value prepared for an HTTP header.
+		/// </returns>
+		internal static string AssembleAuthorizationHeader(IEnumerable<KeyValuePair<string, string>> fields) {
 			Requires.NotNull(fields, "fields");
 
 			var authorization = new StringBuilder();
-			authorization.Append(scheme);
-			authorization.Append(" ");
 			foreach (var pair in fields) {
 				string key = MessagingUtilities.EscapeUriDataStringRfc3986(pair.Key);
 				string value = MessagingUtilities.EscapeUriDataStringRfc3986(pair.Value);
@@ -579,24 +608,15 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="scheme">The scheme.  Must not be null or empty.</param>
 		/// <param name="authorizationHeader">The authorization header.  May be null or empty.</param>
 		/// <returns>A sequence of key=value pairs discovered in the header.  Never null, but may be empty.</returns>
-		internal static IEnumerable<KeyValuePair<string, string>> ParseAuthorizationHeader(string scheme, string authorizationHeader) {
+		internal static IEnumerable<KeyValuePair<string, string>> ParseAuthorizationHeader(string scheme, AuthenticationHeaderValue authorizationHeader) {
 			Requires.NotNullOrEmpty(scheme, "scheme");
 
-			string prefix = scheme + " ";
-			if (authorizationHeader != null) {
-				// The authorization header may have multiple sections.  Look for the appropriate one.
-				string[] authorizationSections = new string[] { authorizationHeader }; // what is the right delimiter, if any?
-				foreach (string authorization in authorizationSections) {
-					string trimmedAuth = authorization.Trim();
-					if (trimmedAuth.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)) { // RFC 2617 says this is case INsensitive
-						string data = trimmedAuth.Substring(prefix.Length);
-						return from element in data.Split(CommaArray)
-							   let parts = element.Trim().Split(EqualsArray, 2)
-							   let key = Uri.UnescapeDataString(parts[0])
-							   let value = Uri.UnescapeDataString(parts[1].Trim(QuoteArray))
-							   select new KeyValuePair<string, string>(key, value);
-					}
-				}
+			if (authorizationHeader != null && authorizationHeader.Scheme.Equals(scheme, StringComparison.OrdinalIgnoreCase)) { // RFC 2617 says this is case INsensitive
+				return from element in authorizationHeader.Parameter.Split(CommaArray)
+					   let parts = element.Trim().Split(EqualsArray, 2)
+					   let key = Uri.UnescapeDataString(parts[0])
+					   let value = Uri.UnescapeDataString(parts[1].Trim(QuoteArray))
+					   select new KeyValuePair<string, string>(key, value);
 			}
 
 			return Enumerable.Empty<KeyValuePair<string, string>>();
@@ -1104,31 +1124,6 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
-		/// Adds a set of HTTP headers to an <see cref="HttpResponse"/> instance,
-		/// taking care to set some headers to the appropriate properties of
-		/// <see cref="HttpResponse" />
-		/// </summary>
-		/// <param name="headers">The headers to add.</param>
-		/// <param name="response">The <see cref="HttpListenerResponse"/> instance to set the appropriate values to.</param>
-		internal static void ApplyHeadersToResponse(WebHeaderCollection headers, HttpListenerResponse response) {
-			Requires.NotNull(headers, "headers");
-			Requires.NotNull(response, "response");
-
-			foreach (string headerName in headers) {
-				switch (headerName) {
-					case "Content-Type":
-						response.ContentType = headers[HttpResponseHeader.ContentType];
-						break;
-
-					// Add more special cases here as necessary.
-					default:
-						response.AddHeader(headerName, headers[headerName]);
-						break;
-				}
-			}
-		}
-
-		/// <summary>
 		/// Copies the contents of one stream to another.
 		/// </summary>
 		/// <param name="copyFrom">The stream to copy from, at the position where copying should begin.</param>
@@ -1179,80 +1174,20 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
-		/// Clones an <see cref="HttpWebRequest"/> in order to send it again.
+		/// Clones an <see cref="HttpWebRequest" /> in order to send it again.
 		/// </summary>
-		/// <param name="request">The request to clone.</param>
-		/// <returns>The newly created instance.</returns>
-		internal static HttpWebRequest Clone(this HttpWebRequest request) {
+		/// <param name="message">The message to set headers on.</param>
+		/// <param name="request">The request with headers to clone.</param>
+		internal static void CopyHeadersFrom(this HttpRequestMessage message, HttpRequestBase request) {
 			Requires.NotNull(request, "request");
-			Requires.That(request.RequestUri != null, "request", "request.RequestUri cannot be null.");
-			return Clone(request, request.RequestUri);
-		}
+			Requires.NotNull(message, "message");
 
-		/// <summary>
-		/// Clones an <see cref="HttpWebRequest"/> in order to send it again.
-		/// </summary>
-		/// <param name="request">The request to clone.</param>
-		/// <param name="newRequestUri">The new recipient of the request.</param>
-		/// <returns>The newly created instance.</returns>
-		internal static HttpWebRequest Clone(this HttpWebRequest request, Uri newRequestUri) {
-			Requires.NotNull(request, "request");
-			Requires.NotNull(newRequestUri, "newRequestUri");
-
-			var newRequest = (HttpWebRequest)WebRequest.Create(newRequestUri);
-
-			// First copy headers.  Only set those that are explicitly set on the original request,
-			// because some properties (like IfModifiedSince) activate special behavior when set,
-			// even when set to their "original" values.
 			foreach (string headerName in request.Headers) {
-				switch (headerName) {
-					case "Accept": newRequest.Accept = request.Accept; break;
-					case "Connection": break; // Keep-Alive controls this
-					case "Content-Length": newRequest.ContentLength = request.ContentLength; break;
-					case "Content-Type": newRequest.ContentType = request.ContentType; break;
-					case "Expect": newRequest.Expect = request.Expect; break;
-					case "Host": break; // implicitly copied as part of the RequestUri
-					case "If-Modified-Since": newRequest.IfModifiedSince = request.IfModifiedSince; break;
-					case "Keep-Alive": newRequest.KeepAlive = request.KeepAlive; break;
-					case "Proxy-Connection": break; // no property equivalent?
-					case "Referer": newRequest.Referer = request.Referer; break;
-					case "Transfer-Encoding": newRequest.TransferEncoding = request.TransferEncoding; break;
-					case "User-Agent": newRequest.UserAgent = request.UserAgent; break;
-					default: newRequest.Headers[headerName] = request.Headers[headerName]; break;
+				string[] headerValues = request.Headers.GetValues(headerName);
+				if (!message.Headers.TryAddWithoutValidation(headerName, headerValues)) {
+					message.Content.Headers.TryAddWithoutValidation(headerName, headerValues);
 				}
 			}
-
-			newRequest.AllowAutoRedirect = request.AllowAutoRedirect;
-			newRequest.AllowWriteStreamBuffering = request.AllowWriteStreamBuffering;
-			newRequest.AuthenticationLevel = request.AuthenticationLevel;
-			newRequest.AutomaticDecompression = request.AutomaticDecompression;
-			newRequest.CachePolicy = request.CachePolicy;
-			newRequest.ClientCertificates = request.ClientCertificates;
-			newRequest.ConnectionGroupName = request.ConnectionGroupName;
-			newRequest.ContinueDelegate = request.ContinueDelegate;
-			newRequest.CookieContainer = request.CookieContainer;
-			newRequest.Credentials = request.Credentials;
-			newRequest.ImpersonationLevel = request.ImpersonationLevel;
-			newRequest.MaximumAutomaticRedirections = request.MaximumAutomaticRedirections;
-			newRequest.MaximumResponseHeadersLength = request.MaximumResponseHeadersLength;
-			newRequest.MediaType = request.MediaType;
-			newRequest.Method = request.Method;
-			newRequest.Pipelined = request.Pipelined;
-			newRequest.PreAuthenticate = request.PreAuthenticate;
-			newRequest.ProtocolVersion = request.ProtocolVersion;
-			newRequest.ReadWriteTimeout = request.ReadWriteTimeout;
-			newRequest.SendChunked = request.SendChunked;
-			newRequest.Timeout = request.Timeout;
-			newRequest.UseDefaultCredentials = request.UseDefaultCredentials;
-
-			try {
-				newRequest.Proxy = request.Proxy;
-				newRequest.UnsafeAuthenticatedConnectionSharing = request.UnsafeAuthenticatedConnectionSharing;
-			} catch (SecurityException) {
-				Logger.Messaging.Warn("Unable to clone some HttpWebRequest properties due to partial trust.");
-			}
-
-			return newRequest;
 		}
 
 		/// <summary>
@@ -1503,8 +1438,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="request">The request to get recipient information from.</param>
 		/// <returns>The recipient.</returns>
 		/// <exception cref="ArgumentException">Thrown if the HTTP request is something we can't handle.</exception>
-		internal static MessageReceivingEndpoint GetRecipient(this HttpRequestBase request) {
-			return new MessageReceivingEndpoint(request.GetPublicFacingUrl(), GetHttpDeliveryMethod(request.HttpMethod));
+		internal static MessageReceivingEndpoint GetRecipient(this HttpRequestMessage request) {
+			return new MessageReceivingEndpoint(request.RequestUri, GetHttpDeliveryMethod(request.Method.Method));
 		}
 
 		/// <summary>
@@ -1538,23 +1473,23 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="httpMethod">The HTTP method.</param>
 		/// <returns>An HTTP verb, such as GET, POST, PUT, DELETE, PATCH, or OPTION.</returns>
-		internal static string GetHttpVerb(HttpDeliveryMethods httpMethod) {
+		internal static HttpMethod GetHttpVerb(HttpDeliveryMethods httpMethod) {
 			if ((httpMethod & HttpDeliveryMethods.HttpVerbMask) == HttpDeliveryMethods.GetRequest) {
-				return "GET";
+				return HttpMethod.Get;
 			} else if ((httpMethod & HttpDeliveryMethods.HttpVerbMask) == HttpDeliveryMethods.PostRequest) {
-				return "POST";
+				return HttpMethod.Post;
 			} else if ((httpMethod & HttpDeliveryMethods.HttpVerbMask) == HttpDeliveryMethods.PutRequest) {
-				return "PUT";
+				return HttpMethod.Put;
 			} else if ((httpMethod & HttpDeliveryMethods.HttpVerbMask) == HttpDeliveryMethods.DeleteRequest) {
-				return "DELETE";
+				return HttpMethod.Delete;
 			} else if ((httpMethod & HttpDeliveryMethods.HttpVerbMask) == HttpDeliveryMethods.HeadRequest) {
-				return "HEAD";
+				return HttpMethod.Head;
 			} else if ((httpMethod & HttpDeliveryMethods.HttpVerbMask) == HttpDeliveryMethods.PatchRequest) {
-				return "PATCH";
+				return new HttpMethod("PATCH");
 			} else if ((httpMethod & HttpDeliveryMethods.HttpVerbMask) == HttpDeliveryMethods.OptionsRequest) {
-				return "OPTIONS";
+				return HttpMethod.Options;
 			} else if ((httpMethod & HttpDeliveryMethods.AuthorizationHeaderRequest) != 0) {
-				return "GET"; // if AuthorizationHeaderRequest is specified without an explicit HTTP verb, assume GET.
+				return HttpMethod.Get; // if AuthorizationHeaderRequest is specified without an explicit HTTP verb, assume GET.
 			} else {
 				throw ErrorUtilities.ThrowArgumentNamed("httpMethod", MessagingStrings.UnsupportedHttpVerb, httpMethod);
 			}
@@ -1580,6 +1515,29 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Gets the URI that contains the entire payload that would be sent by the browser for the specified redirect-based request message.
+		/// </summary>
+		/// <param name="response">The redirecting response message.</param>
+		/// <returns>The absolute URI that could be retrieved to send the same message the browser would.</returns>
+		/// <exception cref="System.NotSupportedException">Thrown if the message is not a redirect message.</exception>
+		internal static Uri GetDirectUriRequest(this HttpResponseMessage response) {
+			Requires.NotNull(response, "response");
+			Requires.Argument(
+				response.StatusCode == HttpStatusCode.Redirect || response.StatusCode == HttpStatusCode.RedirectKeepVerb
+				|| response.StatusCode == HttpStatusCode.RedirectMethod || response.StatusCode == HttpStatusCode.TemporaryRedirect,
+				"response",
+				"Redirecting response expected.");
+
+			if (response.Headers.Location != null) {
+				return response.Headers.Location;
+			} else {
+				// Some responses are so large that they're HTML/JS self-posting pages.
+				// We can't create long URLs for those, at present.
+				throw new NotSupportedException();
+			}
+		}
+
+		/// <summary>
 		/// Collects a sequence of key=value pairs into a dictionary.
 		/// </summary>
 		/// <typeparam name="TKey">The type of the key.</typeparam>
@@ -1589,6 +1547,21 @@ namespace DotNetOpenAuth.Messaging {
 		internal static Dictionary<TKey, TValue> ToDictionary<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> sequence) {
 			Requires.NotNull(sequence, "sequence");
 			return sequence.ToDictionary(pair => pair.Key, pair => pair.Value);
+		}
+
+		/// <summary>
+		/// Enumerates all members of the collection as key=value pairs.
+		/// </summary>
+		/// <param name="nvc">The collection to enumerate.</param>
+		/// <returns>A sequence of pairs.</returns>
+		internal static IEnumerable<KeyValuePair<string, string>> AsKeyValuePairs(this NameValueCollection nvc) {
+			Requires.NotNull(nvc, "nvc");
+
+			foreach (string key in nvc) {
+				foreach (string value in nvc.GetValues(key)) {
+					yield return new KeyValuePair<string, string>(key, value);
+				}
+			}
 		}
 
 		/// <summary>
@@ -1862,6 +1835,11 @@ namespace DotNetOpenAuth.Messaging {
 		internal static string EscapeUriDataStringRfc3986(string value) {
 			Requires.NotNull(value, "value");
 
+			// fast path for empty values.
+			if (value.Length == 0) {
+				return value;
+			}
+
 			// Start with RFC 2396 escaping by calling the .NET method to do the work.
 			// This MAY sometimes exhibit RFC 3986 behavior (according to the documentation).
 			// If it does, the escaping we do that follows it will be a no-op since the
@@ -2038,6 +2016,34 @@ namespace DotNetOpenAuth.Messaging {
 			}
 
 			#endregion
+		}
+
+		/// <summary>
+		/// An MVC <see cref="ActionResult"/> that wraps an <see cref="HttpResponseMessage"/>
+		/// </summary>
+		private class HttpResponseMessageActionResult : ActionResult {
+			/// <summary>
+			/// The wrapped response.
+			/// </summary>
+			private readonly HttpResponseMessage response;
+
+			/// <summary>
+			/// Initializes a new instance of the <see cref="HttpResponseMessageActionResult"/> class.
+			/// </summary>
+			/// <param name="response">The response.</param>
+			internal HttpResponseMessageActionResult(HttpResponseMessage response) {
+				Requires.NotNull(response, "response");
+				this.response = response;
+			}
+
+			/// <summary>
+			/// Enables processing of the result of an action method by a custom type that inherits from the <see cref="T:System.Web.Mvc.ActionResult" /> class.
+			/// </summary>
+			/// <param name="context">The context in which the result is executed. The context information includes the controller, HTTP content, request context, and route data.</param>
+			public override void ExecuteResult(ControllerContext context) {
+				// TODO: fix this to be asynchronous.
+				this.response.SendAsync(context.HttpContext).GetAwaiter().GetResult();
+			}
 		}
 	}
 }

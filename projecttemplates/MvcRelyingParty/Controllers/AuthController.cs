@@ -9,6 +9,7 @@ namespace MvcRelyingParty.Controllers {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Net;
+	using System.Threading.Tasks;
 	using System.Web;
 	using System.Web.Mvc;
 	using DotNetOpenAuth.Messaging;
@@ -63,24 +64,25 @@ namespace MvcRelyingParty.Controllers {
 		/// </summary>
 		/// <param name="identifier">The identifier on which to perform discovery.</param>
 		/// <returns>The JSON result of discovery.</returns>
-		public ActionResult Discover(string identifier) {
+		public Task<ActionResult> Discover(string identifier) {
 			if (!this.Request.IsAjaxRequest()) {
 				throw new InvalidOperationException();
 			}
 
-			return this.RelyingParty.AjaxDiscovery(
+			return this.RelyingParty.AjaxDiscoveryAsync(
 				identifier,
 				Realm.AutoDetect,
 				Url.ActionFull("PopUpReturnTo"),
-				this.PrivacyPolicyUrl);
+				this.PrivacyPolicyUrl,
+				Response.ClientDisconnectedToken);
 		}
 
 		/// <summary>
 		/// Prepares a web page to help the user supply his login information.
 		/// </summary>
 		/// <returns>The action result.</returns>
-		public ActionResult LogOn() {
-			this.PreloadDiscoveryResults();
+		public async Task<ActionResult> LogOn() {
+			await this.PreloadDiscoveryResultsAsync();
 			return View();
 		}
 
@@ -88,8 +90,8 @@ namespace MvcRelyingParty.Controllers {
 		/// Prepares a web page to help the user supply his login information.
 		/// </summary>
 		/// <returns>The action result.</returns>
-		public ActionResult LogOnPopUp() {
-			this.PreloadDiscoveryResults();
+		public async Task<ActionResult> LogOnPopUp() {
+			await this.PreloadDiscoveryResultsAsync();
 			return View();
 		}
 
@@ -103,8 +105,8 @@ namespace MvcRelyingParty.Controllers {
 		/// hack attempts and result in errors when validation is turned on.
 		/// </remarks>
 		[AcceptVerbs(HttpVerbs.Get | HttpVerbs.Post), ValidateInput(false)]
-		public ActionResult PopUpReturnTo() {
-			return this.RelyingParty.ProcessAjaxOpenIdResponse();
+		public Task<ActionResult> PopUpReturnTo() {
+			return this.RelyingParty.ProcessAjaxOpenIdResponseAsync(this.Request, this.Response.ClientDisconnectedToken);
 		}
 
 		/// <summary>
@@ -118,15 +120,15 @@ namespace MvcRelyingParty.Controllers {
 		/// hack attempts and result in errors when validation is turned on.
 		/// </remarks>
 		[AcceptVerbs(HttpVerbs.Post), ValidateInput(false)]
-		public ActionResult LogOnPostAssertion(string openid_openidAuthData) {
+		public async Task<ActionResult> LogOnPostAssertion(string openid_openidAuthData) {
 			IAuthenticationResponse response;
 			if (!string.IsNullOrEmpty(openid_openidAuthData)) {
 				// Always say it's a GET since the payload is all in the URL, even the large ones.
 				var auth = new Uri(openid_openidAuthData);
 				HttpRequestBase clientResponseInfo = HttpRequestInfo.Create("GET", auth, headers: Request.Headers);
-				response = this.RelyingParty.GetResponse(clientResponseInfo);
+				response = await this.RelyingParty.GetResponseAsync(clientResponseInfo, Response.ClientDisconnectedToken);
 			} else {
-				response = this.RelyingParty.GetResponse();
+				response = await this.RelyingParty.GetResponseAsync(Request, Response.ClientDisconnectedToken);
 			}
 			if (response != null) {
 				switch (response.Status) {
@@ -155,7 +157,7 @@ namespace MvcRelyingParty.Controllers {
 		}
 
 		[Authorize, AcceptVerbs(HttpVerbs.Post), ValidateAntiForgeryToken, ValidateInput(false)]
-		public ActionResult AddAuthenticationToken(string openid_openidAuthData) {
+		public async Task<ActionResult> AddAuthenticationToken(string openid_openidAuthData) {
 			IAuthenticationResponse response;
 			if (!string.IsNullOrEmpty(openid_openidAuthData)) {
 				var auth = new Uri(openid_openidAuthData);
@@ -166,9 +168,9 @@ namespace MvcRelyingParty.Controllers {
 
 				// Always say it's a GET since the payload is all in the URL, even the large ones.
 				HttpRequestBase clientResponseInfo = HttpRequestInfo.Create("GET", auth, headers: headers);
-				response = this.RelyingParty.GetResponse(clientResponseInfo);
+				response = await this.RelyingParty.GetResponseAsync(clientResponseInfo, Response.ClientDisconnectedToken);
 			} else {
-				response = this.RelyingParty.GetResponse();
+				response = await this.RelyingParty.GetResponseAsync(Request, Response.ClientDisconnectedToken);
 			}
 			if (response != null) {
 				switch (response.Status) {
@@ -208,11 +210,15 @@ namespace MvcRelyingParty.Controllers {
 		/// <summary>
 		/// Preloads discovery results for the OP buttons we display on the selector in the ViewData.
 		/// </summary>
-		private void PreloadDiscoveryResults() {
-			this.ViewData["PreloadedDiscoveryResults"] = this.RelyingParty.PreloadDiscoveryResults(
+		/// <returns>
+		/// A task that completes with the asynchronous operation.
+		/// </returns>
+		private async Task PreloadDiscoveryResultsAsync() {
+			this.ViewData["PreloadedDiscoveryResults"] = this.RelyingParty.PreloadDiscoveryResultsAsync(
 				Realm.AutoDetect,
 				Url.ActionFull("PopUpReturnTo"),
 				this.PrivacyPolicyUrl,
+				Response.ClientDisconnectedToken,
 				"https://me.yahoo.com/",
 				"https://www.google.com/accounts/o8/id");
 		}

@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true"
+﻿<%@ Page Language="C#" AutoEventWireup="true" Async="true"
 	Inherits="OAuthConsumer.SignInWithTwitter" Codebehind="SignInWithTwitter.aspx.cs" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -33,6 +33,7 @@
 				</asp:Panel>
 			</asp:View>
 		</asp:MultiView>
+	</div>
 	</form>
 </body>
 </html>

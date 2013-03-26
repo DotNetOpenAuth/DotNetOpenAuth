@@ -6,6 +6,8 @@
 
 namespace DotNetOpenAuth.Messaging {
 	using System;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using Validation;
 
 	/// <summary>
@@ -33,6 +35,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// Prepares a message for sending based on the rules of this channel binding element.
 		/// </summary>
 		/// <param name="message">The message to prepare for sending.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The protections (if any) that this binding element applied to the message.
 		/// Null if this binding element did not even apply to this binding element.
@@ -41,13 +44,14 @@ namespace DotNetOpenAuth.Messaging {
 		/// Implementations that provide message protection must honor the 
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
-		MessageProtections? ProcessOutgoingMessage(IProtocolMessage message);
+		Task<MessageProtections?> ProcessOutgoingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken);
 
 		/// <summary>
 		/// Performs any transformation on an incoming message that may be necessary and/or
 		/// validates an incoming message based on the rules of this channel binding element.
 		/// </summary>
 		/// <param name="message">The incoming message to process.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The protections (if any) that this binding element applied to the message.
 		/// Null if this binding element did not even apply to this binding element.
@@ -60,6 +64,6 @@ namespace DotNetOpenAuth.Messaging {
 		/// Implementations that provide message protection must honor the 
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
-		MessageProtections? ProcessIncomingMessage(IProtocolMessage message);
+		Task<MessageProtections?> ProcessIncomingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken);
 	}
 }

@@ -72,21 +72,21 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <returns>
 		/// Returns <see cref="T:System.Threading.Tasks.Task`1" />. The task object representing the asynchronous operation.
 		/// </returns>
-		protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken) {
+		protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken) {
 			string bearerToken = this.BearerToken;
 			if (bearerToken == null) {
-				ErrorUtilities.VerifyProtocol(!this.Authorization.AccessTokenExpirationUtc.HasValue || this.Authorization.AccessTokenExpirationUtc < DateTime.UtcNow || this.Authorization.RefreshToken != null, ClientStrings.AuthorizationExpired);
+				ErrorUtilities.VerifyProtocol(!this.Authorization.AccessTokenExpirationUtc.HasValue || this.Authorization.AccessTokenExpirationUtc >= DateTime.UtcNow || this.Authorization.RefreshToken != null, ClientStrings.AuthorizationExpired);
 
 				if (this.Authorization.AccessTokenExpirationUtc.HasValue && this.Authorization.AccessTokenExpirationUtc.Value < DateTime.UtcNow) {
 					ErrorUtilities.VerifyProtocol(this.Authorization.RefreshToken != null, ClientStrings.AccessTokenRefreshFailed);
-					this.Client.RefreshAuthorization(this.Authorization);
+					await this.Client.RefreshAuthorizationAsync(this.Authorization, cancellationToken: cancellationToken);
 				}
 
 				bearerToken = this.Authorization.AccessToken;
 			}
 
 			request.Headers.Authorization = new AuthenticationHeaderValue(Protocol.BearerHttpAuthorizationScheme, bearerToken);
-			return base.SendAsync(request, cancellationToken);
+			return await base.SendAsync(request, cancellationToken);
 		}
 	}
 }

@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using Validation;
+	using System.Collections.Specialized;
 
 	/// <summary>
 	/// The facebook client.
@@ -92,7 +93,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// The access token.
 		/// </param>
 		/// <returns>A dictionary of profile data.</returns>
-		protected override IDictionary<string, string> GetUserData(string accessToken) {
+		protected override NameValueCollection GetUserData(string accessToken) {
 			FacebookGraphData graphData;
 			var request =
 				WebRequest.Create(
@@ -104,7 +105,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 			}
 
 			// this dictionary must contains 
-			var userData = new Dictionary<string, string>();
+			var userData = new NameValueCollection();
 			userData.AddItemIfNotEmpty("id", graphData.Id);
 			userData.AddItemIfNotEmpty("username", graphData.Email);
 			userData.AddItemIfNotEmpty("name", graphData.Name);

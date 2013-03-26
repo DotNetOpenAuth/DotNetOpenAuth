@@ -14,10 +14,13 @@ namespace DotNetOpenAuth {
 	using System.IO.IsolatedStorage;
 	using System.Linq;
 	using System.Net;
+	using System.Net.Http;
+	using System.Net.Http.Headers;
 	using System.Reflection;
 	using System.Security;
 	using System.Text;
 	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
@@ -69,11 +72,6 @@ namespace DotNetOpenAuth {
 		/// The recipient of collected reports.
 		/// </summary>
 		private static Uri wellKnownPostLocation = new Uri("https://reports.dotnetopenauth.net/ReportingPost.ashx");
-
-		/// <summary>
-		/// The outgoing HTTP request handler to use for publishing reports.
-		/// </summary>
-		private static IDirectWebRequestHandler webRequestHandler;
 
 		/// <summary>
 		/// A few HTTP request hosts and paths we've seen.
@@ -330,7 +328,7 @@ namespace DotNetOpenAuth {
 			lock (publishingConsiderationLock) {
 				if (DateTime.Now - lastPublished > Configuration.MinimumReportingInterval) {
 					lastPublished = DateTime.Now;
-					SendStatsAsync();
+					var fireAndForget = SendStatsAsync();
 				}
 			}
 		}
@@ -346,7 +344,6 @@ namespace DotNetOpenAuth {
 						file = GetIsolatedStorage();
 						reportOriginIdentity = GetOrCreateOriginIdentity();
 
-						webRequestHandler = new StandardWebRequestHandler();
 						observations.Add(observedRequests = new PersistentHashSet(file, "requests.txt", 3));
 						observations.Add(observedCultures = new PersistentHashSet(file, "cultures.txt", 20));
 						observations.Add(observedFeatures = new PersistentHashSet(file, "features.txt", int.MaxValue));
@@ -368,6 +365,18 @@ namespace DotNetOpenAuth {
 					}
 				}
 			}
+		}
+
+		/// <summary>
+		/// Creates an HTTP client that can be used for outbound HTTP requests.
+		/// </summary>
+		/// <returns>The HTTP client to use.</returns>
+		private static HttpClient CreateHttpClient() {
+			var channel = new HttpClientHandler();
+			channel.AllowAutoRedirect = false;
+			var webRequestHandler = new HttpClient(channel);
+			webRequestHandler.DefaultRequestHeaders.UserAgent.Add(Util.LibraryVersionHeader);
+			return webRequestHandler;
 		}
 
 		/// <summary>
@@ -426,30 +435,24 @@ namespace DotNetOpenAuth {
 		/// Sends the usage reports to the library authors.
 		/// </summary>
 		/// <returns>A value indicating whether submitting the report was successful.</returns>
-		private static bool SendStats() {
+		private static async Task<bool> SendStatsAsync() {
 			try {
-				var request = (HttpWebRequest)WebRequest.Create(wellKnownPostLocation);
-				request.UserAgent = Util.LibraryVersion;
-				request.AllowAutoRedirect = false;
-				request.Method = "POST";
-				request.ContentType = "text/dnoa-report1";
 				Stream report = GetReport();
-				request.ContentLength = report.Length;
-				using (var requestStream = webRequestHandler.GetRequestStream(request)) {
-					report.CopyTo(requestStream);
-				}
+				var content = new StreamContent(report);
+				content.Headers.ContentType = new MediaTypeHeaderValue("text/dnoa-report1");
+				using (var webRequestHandler = CreateHttpClient()) {
+					using (var response = await webRequestHandler.PostAsync(wellKnownPostLocation, content)) {
+						Logger.Library.Info("Statistical report submitted successfully.");
 
-				using (var response = webRequestHandler.GetResponse(request)) {
-					Logger.Library.Info("Statistical report submitted successfully.");
-
-					// The response stream may contain a message for the webmaster.
-					// Since as part of the report we submit the library version number,
-					// the report receiving service may have alerts such as:
-					// "You're using an obsolete version with exploitable security vulnerabilities."
-					using (var responseReader = response.GetResponseReader()) {
-						string line = responseReader.ReadLine();
-						if (line != null) {
-							DemuxLogMessage(line);
+						// The response stream may contain a message for the webmaster.
+						// Since as part of the report we submit the library version number,
+						// the report receiving service may have alerts such as:
+						// "You're using an obsolete version with exploitable security vulnerabilities."
+						using (var responseReader = new StreamReader(await response.Content.ReadAsStreamAsync())) {
+							string line = await responseReader.ReadLineAsync();
+							if (line != null) {
+								DemuxLogMessage(line);
+							}
 						}
 					}
 				}
@@ -505,28 +508,6 @@ namespace DotNetOpenAuth {
 					}
 				}
 			}
-		}
-
-		/// <summary>
-		/// Sends the stats report asynchronously, and careful to not throw any unhandled exceptions.
-		/// </summary>
-		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Unhandled exceptions MUST NOT be thrown from here.")]
-		private static void SendStatsAsync() {
-			// Do it on a background thread since it could take a while and we
-			// don't want to slow down this request we're borrowing.
-			ThreadPool.QueueUserWorkItem(state => {
-				try {
-					SendStats();
-				} catch (Exception ex) {
-					// Something bad and unexpected happened.  Just deactivate to avoid more trouble.
-					try {
-						broken = true;
-						Logger.Library.Error("Error while trying to submit statistical report.", ex);
-					} catch (Exception) {
-						// swallow exceptions to prevent a crash.
-					}
-				}
-			});
 		}
 
 		/// <summary>

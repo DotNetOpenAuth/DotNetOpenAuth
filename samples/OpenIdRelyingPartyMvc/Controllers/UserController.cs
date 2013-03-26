@@ -2,6 +2,7 @@
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Threading.Tasks;
 	using System.Web;
 	using System.Web.Mvc;
 	using System.Web.Security;
@@ -31,14 +32,16 @@
 		}
 
 		[ValidateInput(false)]
-		public ActionResult Authenticate(string returnUrl) {
-			var response = openid.GetResponse();
+		public async Task<ActionResult> Authenticate(string returnUrl) {
+			var response = await openid.GetResponseAsync(this.Request, this.Response.ClientDisconnectedToken);
 			if (response == null) {
 				// Stage 2: user submitting Identifier
 				Identifier id;
 				if (Identifier.TryParse(Request.Form["openid_identifier"], out id)) {
 					try {
-						return openid.CreateRequest(Request.Form["openid_identifier"]).RedirectingResponse.AsActionResult();
+						var request = await openid.CreateRequestAsync(Request.Form["openid_identifier"]);
+						var redirectingResponse = await request.GetRedirectingResponseAsync(this.Response.ClientDisconnectedToken);
+						return redirectingResponse.AsActionResult();
 					} catch (ProtocolException ex) {
 						ViewData["Message"] = ex.Message;
 						return View("Login");
@@ -52,7 +55,8 @@
 				switch (response.Status) {
 					case AuthenticationStatus.Authenticated:
 						Session["FriendlyIdentifier"] = response.FriendlyIdentifierForDisplay;
-						FormsAuthentication.SetAuthCookie(response.ClaimedIdentifier, false);
+						var cookie = FormsAuthentication.GetAuthCookie(response.ClaimedIdentifier, false);
+						Response.SetCookie(cookie);
 						if (!string.IsNullOrEmpty(returnUrl)) {
 							return Redirect(returnUrl);
 						} else {

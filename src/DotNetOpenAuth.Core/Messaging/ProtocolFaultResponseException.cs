@@ -8,7 +8,10 @@ namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Net.Http;
 	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using Validation;
 
 	/// <summary>
@@ -61,10 +64,12 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Creates the HTTP response to forward to the client to report the error.
 		/// </summary>
-		/// <returns>The HTTP response.</returns>
-		public OutgoingWebResponse CreateErrorResponse() {
-			var response = this.channel.PrepareResponse(this.ErrorResponseMessage);
-			return response;
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The HTTP response.
+		/// </returns>
+		public Task<HttpResponseMessage> CreateErrorResponseAsync(CancellationToken cancellationToken) {
+			return this.channel.PrepareResponseAsync(this.ErrorResponseMessage, cancellationToken);
 		}
 	}
 }

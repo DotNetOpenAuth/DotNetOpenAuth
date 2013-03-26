@@ -17,7 +17,6 @@
 		</description>
 		<dependencies>
 			<dependency id="DotNetOpenAuth.OAuth.Core" version="[$version$]" />
-			<dependency id="DotNetOpenAuth.OAuth.Common" version="[$version$]" />
 		</dependencies>
 	</metadata>
 	<files>

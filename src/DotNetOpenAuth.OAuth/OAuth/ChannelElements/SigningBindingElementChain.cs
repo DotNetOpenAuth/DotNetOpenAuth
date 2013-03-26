@@ -9,6 +9,8 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using DotNetOpenAuth.Messaging;
 	using Validation;
 
@@ -86,14 +88,15 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// Prepares a message for sending based on the rules of this channel binding element.
 		/// </summary>
 		/// <param name="message">The message to prepare for sending.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The protections (if any) that this binding element applied to the message.
 		/// Null if this binding element did not even apply to this binding element.
 		/// </returns>
-		public MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
+		public async Task<MessageProtections?> ProcessOutgoingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
 			foreach (IChannelBindingElement signer in this.signers) {
 				ErrorUtilities.VerifyInternal(signer.Channel != null, "A binding element's Channel property is unexpectedly null.");
-				MessageProtections? result = signer.ProcessOutgoingMessage(message);
+				MessageProtections? result = await signer.ProcessOutgoingMessageAsync(message, cancellationToken);
 				if (result.HasValue) {
 					return result;
 				}
@@ -107,14 +110,15 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// validates an incoming message based on the rules of this channel binding element.
 		/// </summary>
 		/// <param name="message">The incoming message to process.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The protections (if any) that this binding element applied to the message.
 		/// Null if this binding element did not even apply to this binding element.
 		/// </returns>
-		public MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
+		public async Task<MessageProtections?> ProcessIncomingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
 			foreach (IChannelBindingElement signer in this.signers) {
 				ErrorUtilities.VerifyInternal(signer.Channel != null, "A binding element's Channel property is unexpectedly null.");
-				MessageProtections? result = signer.ProcessIncomingMessage(message);
+				MessageProtections? result = await signer.ProcessIncomingMessageAsync(message, cancellationToken);
 				if (result.HasValue) {
 					return result;
 				}

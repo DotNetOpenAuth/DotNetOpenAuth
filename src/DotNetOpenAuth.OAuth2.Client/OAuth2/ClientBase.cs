@@ -13,8 +13,9 @@ namespace DotNetOpenAuth.OAuth2 {
 	using System.Net.Http;
 	using System.Security;
 	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Xml;
-
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2.ChannelElements;
 	using DotNetOpenAuth.OAuth2.Messages;
@@ -33,10 +34,10 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// The tool to use to apply client credentials to authenticated requests to the Authorization Server.  
 		/// May be <c>null</c> for clients with no secret or other means of authentication.
 		/// </param>
-		protected ClientBase(AuthorizationServerDescription authorizationServer, string clientIdentifier = null, ClientCredentialApplicator clientCredentialApplicator = null) {
+		protected ClientBase(AuthorizationServerDescription authorizationServer, string clientIdentifier = null, ClientCredentialApplicator clientCredentialApplicator = null, IHostFactories hostFactories = null) {
 			Requires.NotNull(authorizationServer, "authorizationServer");
 			this.AuthorizationServer = authorizationServer;
-			this.Channel = new OAuth2ClientChannel();
+			this.Channel = new OAuth2ClientChannel(hostFactories);
 			this.ClientIdentifier = clientIdentifier;
 			this.ClientCredentialApplicator = clientCredentialApplicator;
 		}
@@ -116,11 +117,15 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <param name="request">The request for protected resources from the service provider.</param>
 		/// <param name="authorization">The authorization for this request previously obtained via OAuth.</param>
-		public void AuthorizeRequest(HttpWebRequest request, IAuthorizationState authorization) {
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// A task that completes with the asynchronous operation.
+		/// </returns>
+		public Task AuthorizeRequestAsync(HttpWebRequest request, IAuthorizationState authorization, CancellationToken cancellationToken) {
 			Requires.NotNull(request, "request");
 			Requires.NotNull(authorization, "authorization");
 
-			this.AuthorizeRequest(request.Headers, authorization);
+			return this.AuthorizeRequestAsync(request.Headers, authorization, cancellationToken);
 		}
 
 		/// <summary>
@@ -129,7 +134,11 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <param name="requestHeaders">The headers on the request for protected resources from the service provider.</param>
 		/// <param name="authorization">The authorization for this request previously obtained via OAuth.</param>
-		public void AuthorizeRequest(WebHeaderCollection requestHeaders, IAuthorizationState authorization) {
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// A task that completes with the asynchronous operation.
+		/// </returns>
+		public async Task AuthorizeRequestAsync(WebHeaderCollection requestHeaders, IAuthorizationState authorization, CancellationToken cancellationToken) {
 			Requires.NotNull(requestHeaders, "requestHeaders");
 			Requires.NotNull(authorization, "authorization");
 			Requires.That(!string.IsNullOrEmpty(authorization.AccessToken), "authorization", "AccessToken required.");
@@ -137,7 +146,7 @@ namespace DotNetOpenAuth.OAuth2 {
 
 			if (authorization.AccessTokenExpirationUtc.HasValue && authorization.AccessTokenExpirationUtc.Value < DateTime.UtcNow) {
 				ErrorUtilities.VerifyProtocol(authorization.RefreshToken != null, ClientStrings.AccessTokenRefreshFailed);
-				this.RefreshAuthorization(authorization);
+				await this.RefreshAuthorizationAsync(authorization, cancellationToken: cancellationToken);
 			}
 
 			AuthorizeRequest(requestHeaders, authorization.AccessToken);
@@ -174,13 +183,14 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <param name="authorization">The authorization to update.</param>
 		/// <param name="skipIfUsefulLifeExceeds">If given, the access token will <em>not</em> be refreshed if its remaining lifetime exceeds this value.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>A value indicating whether the access token was actually renewed; <c>true</c> if it was renewed, or <c>false</c> if it still had useful life remaining.</returns>
 		/// <remarks>
 		/// This method may modify the value of the <see cref="IAuthorizationState.RefreshToken"/> property on
 		/// the <paramref name="authorization"/> parameter if the authorization server has cycled out your refresh token.
 		/// If the parameter value was updated, this method calls <see cref="IAuthorizationState.SaveChanges"/> on that instance.
 		/// </remarks>
-		public bool RefreshAuthorization(IAuthorizationState authorization, TimeSpan? skipIfUsefulLifeExceeds = null) {
+		public async Task<bool> RefreshAuthorizationAsync(IAuthorizationState authorization, TimeSpan? skipIfUsefulLifeExceeds = null, CancellationToken cancellationToken = default(CancellationToken)) {
 			Requires.NotNull(authorization, "authorization");
 			Requires.That(!string.IsNullOrEmpty(authorization.RefreshToken), "authorization", "RefreshToken required.");
 
@@ -200,7 +210,7 @@ namespace DotNetOpenAuth.OAuth2 {
 
 			this.ApplyClientCredential(request);
 
-			var response = this.Channel.Request<AccessTokenSuccessResponse>(request);
+			var response = await this.Channel.RequestAsync<AccessTokenSuccessResponse>(request, cancellationToken);
 			UpdateAuthorizationWithResponse(authorization, response);
 			return true;
 		}
@@ -211,12 +221,13 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <param name="refreshToken">The refresh token.</param>
 		/// <param name="scope">The scope subset desired in the access token.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>A description of the obtained access token, and possibly a new refresh token.</returns>
 		/// <remarks>
 		/// If the return value includes a new refresh token, the old refresh token should be discarded and
 		/// replaced with the new one.
 		/// </remarks>
-		public IAuthorizationState GetScopedAccessToken(string refreshToken, HashSet<string> scope) {
+		public async Task<IAuthorizationState> GetScopedAccessTokenAsync(string refreshToken, HashSet<string> scope, CancellationToken cancellationToken) {
 			Requires.NotNullOrEmpty(refreshToken, "refreshToken");
 			Requires.NotNull(scope, "scope");
 
@@ -227,7 +238,7 @@ namespace DotNetOpenAuth.OAuth2 {
 
 			this.ApplyClientCredential(request);
 
-			var response = this.Channel.Request<AccessTokenSuccessResponse>(request);
+			var response = await this.Channel.RequestAsync<AccessTokenSuccessResponse>(request, cancellationToken);
 			var authorization = new AuthorizationState();
 			UpdateAuthorizationWithResponse(authorization, response);
 
@@ -240,8 +251,11 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="userName">The resource owner's username, as it is known by the authorization server.</param>
 		/// <param name="password">The resource owner's account password.</param>
 		/// <param name="scopes">The desired scope of access.</param>
-		/// <returns>The result, containing the tokens if successful.</returns>
-		public IAuthorizationState ExchangeUserCredentialForToken(string userName, string password, IEnumerable<string> scopes = null) {
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The result, containing the tokens if successful.
+		/// </returns>
+		public Task<IAuthorizationState> ExchangeUserCredentialForTokenAsync(string userName, string password, IEnumerable<string> scopes = null, CancellationToken cancellationToken = default(CancellationToken)) {
 			Requires.NotNullOrEmpty(userName, "userName");
 			Requires.NotNull(password, "password");
 
@@ -250,17 +264,20 @@ namespace DotNetOpenAuth.OAuth2 {
 				Password = password,
 			};
 
-			return this.RequestAccessToken(request, scopes);
+			return this.RequestAccessTokenAsync(request, scopes, cancellationToken);
 		}
 
 		/// <summary>
 		/// Obtains an access token for accessing client-controlled resources on the resource server.
 		/// </summary>
 		/// <param name="scopes">The desired scopes.</param>
-		/// <returns>The result of the authorization request.</returns>
-		public IAuthorizationState GetClientAccessToken(IEnumerable<string> scopes = null) {
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The result of the authorization request.
+		/// </returns>
+		public Task<IAuthorizationState> GetClientAccessTokenAsync(IEnumerable<string> scopes = null, CancellationToken cancellationToken = default(CancellationToken)) {
 			var request = new AccessTokenClientCredentialsRequest(this.AuthorizationServer.TokenEndpoint, this.AuthorizationServer.Version);
-			return this.RequestAccessToken(request, scopes);
+			return this.RequestAccessTokenAsync(request, scopes, cancellationToken);
 		}
 
 		/// <summary>
@@ -322,7 +339,11 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <param name="authorizationState">The authorization state to update.</param>
 		/// <param name="authorizationSuccess">The authorization success message obtained from the authorization server.</param>
-		internal void UpdateAuthorizationWithResponse(IAuthorizationState authorizationState, EndUserAuthorizationSuccessAuthCodeResponse authorizationSuccess) {
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// A task that completes with the asynchronous operation.
+		/// </returns>
+		internal async Task UpdateAuthorizationWithResponseAsync(IAuthorizationState authorizationState, EndUserAuthorizationSuccessAuthCodeResponse authorizationSuccess, CancellationToken cancellationToken) {
 			Requires.NotNull(authorizationState, "authorizationState");
 			Requires.NotNull(authorizationSuccess, "authorizationSuccess");
 
@@ -332,7 +353,7 @@ namespace DotNetOpenAuth.OAuth2 {
 				AuthorizationCode = authorizationSuccess.AuthorizationCode,
 			};
 			this.ApplyClientCredential(accessTokenRequest);
-			IProtocolMessage accessTokenResponse = this.Channel.Request(accessTokenRequest);
+			IProtocolMessage accessTokenResponse = await this.Channel.RequestAsync(accessTokenRequest, cancellationToken);
 			var accessTokenSuccess = accessTokenResponse as AccessTokenSuccessResponse;
 			var failedAccessTokenResponse = accessTokenResponse as AccessTokenFailedResponse;
 			if (accessTokenSuccess != null) {
@@ -387,8 +408,11 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <param name="request">The request message.</param>
 		/// <param name="scopes">The scopes requested by the client.</param>
-		/// <returns>The result of the request.</returns>
-		private IAuthorizationState RequestAccessToken(ScopedAccessTokenRequest request, IEnumerable<string> scopes = null) {
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The result of the request.
+		/// </returns>
+		private async Task<IAuthorizationState> RequestAccessTokenAsync(ScopedAccessTokenRequest request, IEnumerable<string> scopes, CancellationToken cancellationToken) {
 			Requires.NotNull(request, "request");
 
 			var authorizationState = new AuthorizationState(scopes);
@@ -397,7 +421,7 @@ namespace DotNetOpenAuth.OAuth2 {
 			this.ApplyClientCredential(request);
 			request.Scope.UnionWith(authorizationState.Scope);
 
-			var response = this.Channel.Request(request);
+			var response = await this.Channel.RequestAsync(request, cancellationToken);
 			var success = response as AccessTokenSuccessResponse;
 			var failure = response as AccessTokenFailedResponse;
 			ErrorUtilities.VerifyProtocol(success != null || failure != null, MessagingStrings.UnexpectedMessageReceivedOfMany);

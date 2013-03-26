@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="NoIdentityOpenId.aspx.cs"
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="NoIdentityOpenId.aspx.cs" Async="true"
 	MasterPageFile="~/Site.Master" Inherits="OpenIdRelyingPartyWebForms.NoIdentityOpenId" %>
 
 <asp:Content runat="server" ContentPlaceHolderID="Main">

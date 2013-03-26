@@ -10,13 +10,14 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 	using System.IO;
 	using System.Runtime.Serialization;
 	using System.Runtime.Serialization.Formatters.Binary;
+	using System.Threading.Tasks;
 	using System.Xml.Serialization;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using NUnit.Framework;
 
 	[TestFixture]
-	public class ClaimsResponseTests {
+	public class ClaimsResponseTests : OpenIdTestBase {
 		[Test]
 		public void EmptyMailAddress() {
 			ClaimsResponse response = new ClaimsResponse(Constants.TypeUris.Standard);
@@ -132,14 +133,14 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 		}
 
 		[Test]
-		public void ResponseAlternateTypeUriTests() {
+		public async Task ResponseAlternateTypeUriTests() {
 			var request = new ClaimsRequest(Constants.TypeUris.Variant10);
 			request.Email = DemandLevel.Require;
 
 			var response = new ClaimsResponse(Constants.TypeUris.Variant10);
 			response.Email = "a@b.com";
 
-			ExtensionTestUtilities.Roundtrip(Protocol.Default, new[] { request }, new[] { response });
+			await this.RoundtripAsync(Protocol.Default, new[] { request }, new[] { response });
 		}
 
 		private ClaimsResponse GetFilledData() {

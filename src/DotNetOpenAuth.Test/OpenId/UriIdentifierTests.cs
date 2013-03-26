@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 	using System;
 	using System.Linq;
 	using System.Net;
+	using System.Threading.Tasks;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
@@ -243,7 +244,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 		}
 
 		[Test]
-		public void TryRequireSslAdjustsIdentifier() {
+		public async Task TryRequireSslAdjustsIdentifier() {
 			Identifier secureId;
 			// Try Parse and ctor without explicit scheme
 			var id = Identifier.Parse("www.yahoo.com");
@@ -263,13 +264,13 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Assert.IsFalse(id.TryRequireSsl(out secureId));
 			Assert.IsTrue(secureId.IsDiscoverySecureEndToEnd, "Although the TryRequireSsl failed, the created identifier should retain the Ssl status.");
 			Assert.AreEqual("http://www.yahoo.com/", secureId.ToString());
-			Assert.AreEqual(0, Discover(secureId).Count(), "Since TryRequireSsl failed, the created Identifier should never discover anything.");
+			Assert.AreEqual(0, (await DiscoverAsync(secureId)).Count(), "Since TryRequireSsl failed, the created Identifier should never discover anything.");
 
 			id = new UriIdentifier("http://www.yahoo.com");
 			Assert.IsFalse(id.TryRequireSsl(out secureId));
 			Assert.IsTrue(secureId.IsDiscoverySecureEndToEnd);
 			Assert.AreEqual("http://www.yahoo.com/", secureId.ToString());
-			Assert.AreEqual(0, Discover(secureId).Count());
+			Assert.AreEqual(0, (await DiscoverAsync(secureId)).Count());
 		}
 
 		/// <summary>

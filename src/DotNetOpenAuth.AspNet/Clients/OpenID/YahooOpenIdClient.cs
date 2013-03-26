@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 	using System.Collections.Generic;
 	using DotNetOpenAuth.OpenId.Extensions.AttributeExchange;
 	using DotNetOpenAuth.OpenId.RelyingParty;
+	using System.Collections.Specialized;
 
 	/// <summary>
 	/// The yahoo open id client.
@@ -32,10 +33,10 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// The response message. 
 		/// </param>
 		/// <returns>A dictionary of profile data; or null if no data is available.</returns>
-		protected override Dictionary<string, string> GetExtraData(IAuthenticationResponse response) {
+		protected override NameValueCollection GetExtraData(IAuthenticationResponse response) {
 			FetchResponse fetchResponse = response.GetExtension<FetchResponse>();
 			if (fetchResponse != null) {
-				var extraData = new Dictionary<string, string>();
+				var extraData = new NameValueCollection();
 				extraData.AddItemIfNotEmpty("email", fetchResponse.GetAttributeValue(WellKnownAttributes.Contact.Email));
 				extraData.AddItemIfNotEmpty("fullName", fetchResponse.GetAttributeValue(WellKnownAttributes.Name.FullName));
 

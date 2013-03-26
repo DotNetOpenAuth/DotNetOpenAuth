@@ -5,6 +5,8 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.Test.OpenId.Extensions {
+	using System.Threading.Tasks;
+
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Extensions.AttributeExchange;
 	using NUnit.Framework;
@@ -17,7 +19,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 		private int incrementingAttributeValue = 1;
 
 		[Test]
-		public void Fetch() {
+		public async Task Fetch() {
 			var request = new FetchRequest();
 			request.Attributes.Add(new AttributeRequest(NicknameTypeUri));
 			request.Attributes.Add(new AttributeRequest(EmailTypeUri, false, int.MaxValue));
@@ -26,11 +28,11 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			response.Attributes.Add(new AttributeValues(NicknameTypeUri, "Andrew"));
 			response.Attributes.Add(new AttributeValues(EmailTypeUri, "a@a.com", "b@b.com"));
 
-			ExtensionTestUtilities.Roundtrip(Protocol.Default, new[] { request }, new[] { response });
+			await this.RoundtripAsync(Protocol.Default, new[] { request }, new[] { response });
 		}
 
 		[Test]
-		public void Store() {
+		public async Task Store() {
 			var request = new StoreRequest();
 			var newAttribute = new AttributeValues(
 				IncrementingAttribute,
@@ -41,13 +43,13 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 			var successResponse = new StoreResponse();
 			successResponse.Succeeded = true;
 
-			ExtensionTestUtilities.Roundtrip(Protocol.Default, new[] { request }, new[] { successResponse });
+			await this.RoundtripAsync(Protocol.Default, new[] { request }, new[] { successResponse });
 
 			var failureResponse = new StoreResponse();
 			failureResponse.Succeeded = false;
 			failureResponse.FailureReason = "Some error";
 
-			ExtensionTestUtilities.Roundtrip(Protocol.Default, new[] { request }, new[] { failureResponse });
+			await this.RoundtripAsync(Protocol.Default, new[] { request }, new[] { failureResponse });
 		}
 	}
 }

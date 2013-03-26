@@ -6,6 +6,9 @@
 
 namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
+	using System.Net.Http;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
 	using Validation;
@@ -45,7 +48,8 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <summary>
 		/// Attempts to perform relying party discovery of the return URL claimed by the Relying Party.
 		/// </summary>
-		/// <param name="webRequestHandler">The web request handler.</param>
+		/// <param name="hostFactories">The host factories.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The details of how successful the relying party discovery was.
 		/// </returns>
@@ -53,6 +57,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		///   <para>Return URL verification is only attempted if this method is called.</para>
 		///   <para>See OpenID Authentication 2.0 spec section 9.2.1.</para>
 		/// </remarks>
-		RelyingPartyDiscoveryResult IsReturnUrlDiscoverable(IDirectWebRequestHandler webRequestHandler);
+		Task<RelyingPartyDiscoveryResult> IsReturnUrlDiscoverableAsync(IHostFactories hostFactories = null, CancellationToken cancellationToken = default(CancellationToken));
 	}
 }

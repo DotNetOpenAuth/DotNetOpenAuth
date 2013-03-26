@@ -9,6 +9,8 @@ namespace WebFormsRelyingParty.Code {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Security.Cryptography;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
 
 	public static class SiteUtilities {
@@ -51,6 +53,33 @@ namespace WebFormsRelyingParty.Code {
 			}
 
 			throw new InvalidOperationException("Invalid CSRF check.");
+		}
+
+		internal static Task ToApm(this Task task, AsyncCallback callback, object state) {
+			if (task == null) {
+				throw new ArgumentNullException("task");
+			}
+
+			var tcs = new TaskCompletionSource<object>(state);
+			task.ContinueWith(
+				t => {
+					if (t.IsFaulted) {
+						tcs.TrySetException(t.Exception.InnerExceptions);
+					} else if (t.IsCanceled) {
+						tcs.TrySetCanceled();
+					} else {
+						tcs.TrySetResult(null);
+					}
+
+					if (callback != null) {
+						callback(tcs.Task);
+					}
+				},
+				CancellationToken.None,
+				TaskContinuationOptions.None,
+				TaskScheduler.Default);
+
+			return tcs.Task;
 		}
 	}
 }

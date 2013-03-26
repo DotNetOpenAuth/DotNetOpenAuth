@@ -37,10 +37,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 			TokenEndpoint = new Uri("https://authserver/token"),
 		};
 
-		protected static readonly IClientDescription ClientDescription = new ClientDescription(
-			ClientSecret,
-			ClientCallback,
-			ClientType.Confidential);
+		protected static readonly IClientDescription ClientDescription = new ClientDescription(ClientSecret, ClientCallback);
 
 		protected static readonly IAuthorizationServerHost AuthorizationServerMock = CreateAuthorizationServerMock().Object;
 

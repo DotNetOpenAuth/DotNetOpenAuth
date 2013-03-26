@@ -7,6 +7,9 @@
 namespace DotNetOpenAuth.Test.OpenId.Provider {
 	using System;
 	using System.IO;
+	using System.Net.Http;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
@@ -74,60 +77,55 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 		/// Verifies the GetRequest method throws outside an HttpContext.
 		/// </summary>
 		[Test, ExpectedException(typeof(InvalidOperationException))]
-		public void GetRequestNoContext() {
+		public async Task GetRequestNoContext() {
 			HttpContext.Current = null;
-			this.provider.GetRequest();
+			await this.provider.GetRequestAsync();
 		}
 
 		/// <summary>
 		/// Verifies GetRequest throws on null input.
 		/// </summary>
 		[Test, ExpectedException(typeof(ArgumentNullException))]
-		public void GetRequestNull() {
-			this.provider.GetRequest(null);
+		public async Task GetRequestNull() {
+			await this.provider.GetRequestAsync((HttpRequestMessage)null);
 		}
 
 		/// <summary>
 		/// Verifies that GetRequest correctly returns the right messages.
 		/// </summary>
 		[Test]
-		public void GetRequest() {
-			var httpInfo = new HttpRequestInfo("GET", new Uri("http://someUri"));
-			Assert.IsNull(this.provider.GetRequest(httpInfo), "An irrelevant request should return null.");
+		public async Task GetRequest() {
+			var httpInfo = new HttpRequestMessage(HttpMethod.Get, "http://someUri");
+			Assert.IsNull(await this.provider.GetRequestAsync(httpInfo), "An irrelevant request should return null.");
 			var providerDescription = new ProviderEndpointDescription(OPUri, Protocol.Default.Version);
 
 			// Test some non-empty request scenario.
-			OpenIdCoordinator coordinator = new OpenIdCoordinator(
-				rp => {
-					rp.Channel.Request(AssociateRequestRelyingParty.Create(rp.SecuritySettings, providerDescription));
-				},
-				op => {
-					IRequest request = op.GetRequest();
+			HandleProvider(
+				async (op, req) => {
+					IRequest request = await op.GetRequestAsync(req);
 					Assert.IsInstanceOf<AutoResponsiveRequest>(request);
-					op.Respond(request);
+					return await op.PrepareResponseAsync(request);
 				});
-			coordinator.Run();
+			var rp = this.CreateRelyingParty();
+			await rp.Channel.RequestAsync(AssociateRequestRelyingParty.Create(rp.SecuritySettings, providerDescription), CancellationToken.None);
 		}
 
 		[Test]
-		public void BadRequestsGenerateValidErrorResponses() {
-			var coordinator = new OpenIdCoordinator(
-				rp => {
-					var nonOpenIdMessage = new Mocks.TestDirectedMessage();
-					nonOpenIdMessage.Recipient = OPUri;
-					nonOpenIdMessage.HttpMethods = HttpDeliveryMethods.PostRequest;
-					MessagingTestBase.GetStandardTestMessage(MessagingTestBase.FieldFill.AllRequired, nonOpenIdMessage);
-					var response = rp.Channel.Request<DirectErrorResponse>(nonOpenIdMessage);
-					Assert.IsNotNull(response.ErrorMessage);
-					Assert.AreEqual(Protocol.Default.Version, response.Version);
-				},
-				AutoProvider);
-
-			coordinator.Run();
+		public async Task BadRequestsGenerateValidErrorResponses() {
+			this.RegisterAutoProvider();
+			var rp = this.CreateRelyingParty();
+			var nonOpenIdMessage = new Mocks.TestDirectedMessage {
+				Recipient = OPUri,
+				HttpMethods = HttpDeliveryMethods.PostRequest
+			};
+			MessagingTestBase.GetStandardTestMessage(MessagingTestBase.FieldFill.AllRequired, nonOpenIdMessage);
+			var response = await rp.Channel.RequestAsync<DirectErrorResponse>(nonOpenIdMessage, CancellationToken.None);
+			Assert.IsNotNull(response.ErrorMessage);
+			Assert.AreEqual(Protocol.Default.Version, response.Version);
 		}
 
 		[Test, Category("HostASPNET")]
-		public void BadRequestsGenerateValidErrorResponsesHosted() {
+		public async Task BadRequestsGenerateValidErrorResponsesHosted() {
 			try {
 				using (AspNetHost host = AspNetHost.CreateHost(TestWebDirectory)) {
 					Uri opEndpoint = new Uri(host.BaseUri, "/OpenIdProviderEndpoint.ashx");
@@ -136,7 +134,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 					nonOpenIdMessage.Recipient = opEndpoint;
 					nonOpenIdMessage.HttpMethods = HttpDeliveryMethods.PostRequest;
 					MessagingTestBase.GetStandardTestMessage(MessagingTestBase.FieldFill.AllRequired, nonOpenIdMessage);
-					var response = rp.Channel.Request<DirectErrorResponse>(nonOpenIdMessage);
+					var response = await rp.Channel.RequestAsync<DirectErrorResponse>(nonOpenIdMessage, CancellationToken.None);
 					Assert.IsNotNull(response.ErrorMessage);
 				}
 			} catch (FileNotFoundException ex) {

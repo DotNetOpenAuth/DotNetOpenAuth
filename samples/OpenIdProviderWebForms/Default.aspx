@@ -1,5 +1,5 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" MasterPageFile="~/Site.Master" CodeBehind="Default.aspx.cs"
-	Inherits="OpenIdProviderWebForms._default" %>
+	Inherits="OpenIdProviderWebForms._default" Async="true" %>
 
 <%@ Import Namespace="OpenIdProviderWebForms.Code" %>
 <%@ Register Assembly="DotNetOpenAuth.OpenId.UI" Namespace="DotNetOpenAuth.OpenId" TagPrefix="openid" %>

@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 	using System.Net;
 	using DotNetOpenAuth.Messaging;
 	using Validation;
+	using System.Collections.Specialized;
 
 	/// <summary>
 	/// The Microsoft account client.
@@ -110,7 +111,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <returns>
 		/// A dictionary contains key-value pairs of user data 
 		/// </returns>
-		protected override IDictionary<string, string> GetUserData(string accessToken) {
+		protected override NameValueCollection GetUserData(string accessToken) {
 			MicrosoftClientUserData graph;
 			var request =
 				WebRequest.Create(
@@ -121,7 +122,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 				}
 			}
 
-			var userData = new Dictionary<string, string>();
+			var userData = new NameValueCollection();
 			userData.AddItemIfNotEmpty("id", graph.Id);
 			userData.AddItemIfNotEmpty("username", graph.Name);
 			userData.AddItemIfNotEmpty("name", graph.Name);

@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.AspNet {
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
 	using DotNetOpenAuth.Messaging;
+	using System.Collections.Specialized;
 
 	/// <summary>
 	/// Represents the result of OAuth or OpenID authentication.
@@ -46,10 +47,8 @@ namespace DotNetOpenAuth.AspNet {
 		/// <param name="exception">The exception.</param>
 		/// <param name="provider">The provider name.</param>
 		public AuthenticationResult(Exception exception, string provider)
-			: this(isSuccessful: false)
-		{
-			if (exception == null)
-			{
+			: this(isSuccessful: false) {
+			if (exception == null) {
 				throw new ArgumentNullException("exception");
 			}
 
@@ -76,15 +75,12 @@ namespace DotNetOpenAuth.AspNet {
 		/// The extra data. 
 		/// </param>
 		public AuthenticationResult(
-			bool isSuccessful, string provider, string providerUserId, string userName, IDictionary<string, string> extraData) {
+			bool isSuccessful, string provider, string providerUserId, string userName, NameValueCollection extraData) {
 			this.IsSuccessful = isSuccessful;
 			this.Provider = provider;
 			this.ProviderUserId = providerUserId;
 			this.UserName = userName;
-			if (extraData != null) {
-				// wrap extraData in a read-only dictionary
-				this.ExtraData = new ReadOnlyDictionary<string, string>(extraData);
-			}
+			this.ExtraData = extraData ?? new NameValueCollection();
 		}
 
 		/// <summary>
@@ -95,7 +91,7 @@ namespace DotNetOpenAuth.AspNet {
 		/// <summary>
 		/// Gets the optional extra data that may be returned from the provider
 		/// </summary>
-		public IDictionary<string, string> ExtraData { get; private set; }
+		public NameValueCollection ExtraData { get; private set; }
 
 		/// <summary>
 		/// Gets a value indicating whether the authentication step is successful.

@@ -201,6 +201,8 @@ namespace DotNetOpenAuth.Loggers {
 				return IsLog4NetPresent ? CreateLogger(name) : null;
 			} catch (FileLoadException) { // wrong log4net.dll version
 				return null;
+			} catch (TargetInvocationException) { // Thrown due to some security issues on .NET 4.5.
+				return null;
 			} catch (TypeLoadException) { // Thrown by mono (http://stackoverflow.com/questions/10805773/error-when-pushing-dotnetopenauth-to-staging-or-production-environment)
 				return null;
 			}

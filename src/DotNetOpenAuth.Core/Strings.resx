@@ -141,4 +141,10 @@
   <data name="ResponseBodyNotSupported" xml:space="preserve">
     <value>This object contains a response body, which is not supported.</value>
   </data>
+  <data name="HostFactoriesRequired" xml:space="preserve">
+    <value>The HostFactories property must be set first.</value>
+  </data>
+  <data name="Generic_CryptoFailure" xml:space="preserve">
+    <value>The provided data could not be decrypted. If the current application is deployed in a web farm configuration, ensure that the 'decryptionKey' and 'validationKey' attributes are explicitly specified in the &lt;machineKey&gt; configuration section.</value>
+  </data>
 </root>

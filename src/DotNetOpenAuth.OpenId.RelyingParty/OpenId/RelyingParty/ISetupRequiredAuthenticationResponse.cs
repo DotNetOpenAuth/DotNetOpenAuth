@@ -6,6 +6,8 @@
 
 namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
+	using System.Threading;
+	using System.Web;
 
 	/// <summary>
 	/// An interface to expose useful properties and functionality for handling
@@ -14,7 +16,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// </summary>
 	public interface ISetupRequiredAuthenticationResponse {
 		/// <summary>
-		/// Gets the <see cref="Identifier"/> to pass to <see cref="OpenIdRelyingParty.CreateRequest(Identifier)"/>
+		/// Gets the <see cref="Identifier"/> to pass to <see cref="OpenIdRelyingParty.CreateRequestAsync(Identifier, HttpRequestBase, CancellationToken)"/>
 		/// in a subsequent authentication attempt.
 		/// </summary>
 		Identifier UserSuppliedIdentifier { get; }

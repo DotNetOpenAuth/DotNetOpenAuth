@@ -6,6 +6,8 @@
 
 namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using DotNetOpenAuth.OpenId.ChannelElements;
 	using Validation;
 
@@ -28,6 +30,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// Called when a request is received by the Provider.
 		/// </summary>
 		/// <param name="request">The incoming request.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// <c>true</c> if this behavior owns this request and wants to stop other behaviors
 		/// from handling it; <c>false</c> to allow other behaviors to process this request.
@@ -37,16 +40,17 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// should not change the properties on the instance of <see cref="ProviderSecuritySettings"/>
 		/// itself as that instance may be shared across many requests.
 		/// </remarks>
-		bool OnIncomingRequest(IRequest request);
+		Task<bool> OnIncomingRequestAsync(IRequest request, CancellationToken cancellationToken);
 
 		/// <summary>
 		/// Called when the Provider is preparing to send a response to an authentication request.
 		/// </summary>
 		/// <param name="request">The request that is configured to generate the outgoing response.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// <c>true</c> if this behavior owns this request and wants to stop other behaviors
 		/// from handling it; <c>false</c> to allow other behaviors to process this request.
 		/// </returns>
-		bool OnOutgoingResponse(IAuthenticationRequest request);
+		Task<bool> OnOutgoingResponseAsync(IAuthenticationRequest request, CancellationToken cancellationToken);
 	}
 }

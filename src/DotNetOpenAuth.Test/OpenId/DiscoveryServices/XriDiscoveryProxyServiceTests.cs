@@ -9,14 +9,16 @@ namespace DotNetOpenAuth.Test.OpenId.DiscoveryServices {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
+	using System.Threading.Tasks;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.RelyingParty;
+	using DotNetOpenAuth.Test.Mocks;
 	using NUnit.Framework;
 
 	[TestFixture]
 	public class XriDiscoveryProxyServiceTests : OpenIdTestBase {
 		[Test]
-		public void Discover() {
+		public async Task Discover() {
 			string xrds = @"<?xml version='1.0' encoding='UTF-8'?>
 <XRD version='2.0' xmlns='xri://$xrd*($v*2.0)'>
  <Query>*Arnott</Query>
@@ -48,14 +50,14 @@ namespace DotNetOpenAuth.Test.OpenId.DiscoveryServices {
   <URI append='none' priority='10'>http://1id.com/sso</URI>
  </Service>
 </XRD>";
-			Dictionary<string, string> mocks = new Dictionary<string, string> {
+			var mocks = new Dictionary<string, string> {
 				{ "https://xri.net/=Arnott?_xrd_r=application/xrd%2Bxml;sep=false", xrds },
 				{ "https://xri.net/=!9B72.7DD1.50A9.5CCD?_xrd_r=application/xrd%2Bxml;sep=false", xrds },
 			};
-			this.MockResponder.RegisterMockXrdsResponses(mocks);
+			this.RegisterMockXrdsResponses(mocks);
 
 			string expectedCanonicalId = "=!9B72.7DD1.50A9.5CCD";
-			IdentifierDiscoveryResult se = this.VerifyCanonicalId("=Arnott", expectedCanonicalId);
+			IdentifierDiscoveryResult se = await this.VerifyCanonicalIdAsync("=Arnott", expectedCanonicalId);
 			Assert.AreEqual(Protocol.V10, Protocol.Lookup(se.Version));
 			Assert.AreEqual("http://1id.com/sso", se.ProviderEndpoint.ToString());
 			Assert.AreEqual(se.ClaimedIdentifier, se.ProviderLocalIdentifier);
@@ -63,7 +65,7 @@ namespace DotNetOpenAuth.Test.OpenId.DiscoveryServices {
 		}
 
 		[Test]
-		public void DiscoverCommunityInameCanonicalIDs() {
+		public async Task DiscoverCommunityInameCanonicalIDs() {
 			string llliResponse = @"<?xml version='1.0' encoding='UTF-8'?>
 <XRD version='2.0' xmlns='xri://$xrd*($v*2.0)'>
  <Query>*llli</Query>
@@ -278,23 +280,23 @@ uEyb50RJ7DWmXctSC0b3eymZ2lSXxAWNOsNy
   </X509Data>
  </KeyInfo>
 </XRD>";
-			this.MockResponder.RegisterMockXrdsResponses(new Dictionary<string, string> {
+			this.RegisterMockXrdsResponses(new Dictionary<string, string> {
 				{ "https://xri.net/@llli?_xrd_r=application/xrd%2Bxml;sep=false", llliResponse },
 				{ "https://xri.net/@llli*area?_xrd_r=application/xrd%2Bxml;sep=false", llliAreaResponse },
 				{ "https://xri.net/@llli*area*canada.unattached?_xrd_r=application/xrd%2Bxml;sep=false", llliAreaCanadaUnattachedResponse },
 				{ "https://xri.net/@llli*area*canada.unattached*ada?_xrd_r=application/xrd%2Bxml;sep=false", llliAreaCanadaUnattachedAdaResponse },
 				{ "https://xri.net/=Web?_xrd_r=application/xrd%2Bxml;sep=false", webResponse },
 			});
-			this.VerifyCanonicalId("@llli", "@!72CD.A072.157E.A9C6");
-			this.VerifyCanonicalId("@llli*area", "@!72CD.A072.157E.A9C6!0000.0000.3B9A.CA0C");
-			this.VerifyCanonicalId("@llli*area*canada.unattached", "@!72CD.A072.157E.A9C6!0000.0000.3B9A.CA0C!0000.0000.3B9A.CA41");
-			this.VerifyCanonicalId("@llli*area*canada.unattached*ada", "@!72CD.A072.157E.A9C6!0000.0000.3B9A.CA0C!0000.0000.3B9A.CA41!0000.0000.3B9A.CA01");
-			this.VerifyCanonicalId("=Web", "=!91F2.8153.F600.AE24");
+			await this.VerifyCanonicalIdAsync("@llli", "@!72CD.A072.157E.A9C6");
+			await this.VerifyCanonicalIdAsync("@llli*area", "@!72CD.A072.157E.A9C6!0000.0000.3B9A.CA0C");
+			await this.VerifyCanonicalIdAsync("@llli*area*canada.unattached", "@!72CD.A072.157E.A9C6!0000.0000.3B9A.CA0C!0000.0000.3B9A.CA41");
+			await this.VerifyCanonicalIdAsync("@llli*area*canada.unattached*ada", "@!72CD.A072.157E.A9C6!0000.0000.3B9A.CA0C!0000.0000.3B9A.CA41!0000.0000.3B9A.CA01");
+			await this.VerifyCanonicalIdAsync("=Web", "=!91F2.8153.F600.AE24");
 		}
 
 		[Test]
-		public void DiscoveryCommunityInameDelegateWithoutCanonicalID() {
-			this.MockResponder.RegisterMockXrdsResponses(new Dictionary<string, string> {
+		public async Task DiscoveryCommunityInameDelegateWithoutCanonicalID() {
+			this.RegisterMockXrdsResponses(new Dictionary<string, string> {
 				{ "https://xri.net/=Web*andrew.arnott?_xrd_r=application/xrd%2Bxml;sep=false", @"<?xml version='1.0' encoding='UTF-8'?>
 <XRD xmlns='xri://$xrd*($v*2.0)'>
  <Query>*andrew.arnott</Query>
@@ -375,12 +377,12 @@ uEyb50RJ7DWmXctSC0b3eymZ2lSXxAWNOsNy
 			});
 			// Consistent with spec section 7.3.2.3, we do not permit
 			// delegation on XRI discovery when there is no CanonicalID present.
-			this.VerifyCanonicalId("=Web*andrew.arnott", null);
-			this.VerifyCanonicalId("@id*andrewarnott", null);
+			await this.VerifyCanonicalIdAsync("=Web*andrew.arnott", null);
+			await this.VerifyCanonicalIdAsync("@id*andrewarnott", null);
 		}
 
-		private IdentifierDiscoveryResult VerifyCanonicalId(Identifier iname, string expectedClaimedIdentifier) {
-			var se = this.Discover(iname).FirstOrDefault();
+		private async Task<IdentifierDiscoveryResult> VerifyCanonicalIdAsync(Identifier iname, string expectedClaimedIdentifier) {
+			var se = (await this.DiscoverAsync(iname)).FirstOrDefault();
 			if (expectedClaimedIdentifier != null) {
 				Assert.IsNotNull(se);
 				Assert.AreEqual(expectedClaimedIdentifier, se.ClaimedIdentifier.ToString(), "i-name {0} discovery resulted in unexpected CanonicalId", iname);

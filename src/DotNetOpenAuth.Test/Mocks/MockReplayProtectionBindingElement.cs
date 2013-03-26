@@ -5,6 +5,9 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.Test.Mocks {
+	using System.Threading;
+	using System.Threading.Tasks;
+
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using NUnit.Framework;
@@ -23,17 +26,17 @@ namespace DotNetOpenAuth.Test.Mocks {
 		/// </summary>
 		public Channel Channel { get; set; }
 
-		MessageProtections? IChannelBindingElement.ProcessOutgoingMessage(IProtocolMessage message) {
+		Task<MessageProtections?> IChannelBindingElement.ProcessOutgoingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
 			var replayMessage = message as IReplayProtectedProtocolMessage;
 			if (replayMessage != null) {
 				replayMessage.Nonce = "someNonce";
-				return MessageProtections.ReplayProtection;
+				return MessageProtectionTasks.ReplayProtection;
 			}
 
-			return null;
+			return MessageProtectionTasks.Null;
 		}
 
-		MessageProtections? IChannelBindingElement.ProcessIncomingMessage(IProtocolMessage message) {
+		Task<MessageProtections?> IChannelBindingElement.ProcessIncomingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
 			var replayMessage = message as IReplayProtectedProtocolMessage;
 			if (replayMessage != null) {
 				Assert.AreEqual("someNonce", replayMessage.Nonce, "The nonce didn't serialize correctly, or something");
@@ -42,10 +45,10 @@ namespace DotNetOpenAuth.Test.Mocks {
 					throw new ReplayedMessageException(message);
 				}
 				this.messageReceived = true;
-				return MessageProtections.ReplayProtection;
+				return MessageProtectionTasks.ReplayProtection;
 			}
 
-			return null;
+			return MessageProtectionTasks.Null;
 		}
 
 		#endregion

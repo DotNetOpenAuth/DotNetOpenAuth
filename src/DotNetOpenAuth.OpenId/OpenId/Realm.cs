@@ -12,7 +12,10 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Linq;
+	using System.Net.Http;
 	using System.Text.RegularExpressions;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
 	using System.Xml;
 	using DotNetOpenAuth.Messaging;
@@ -415,15 +418,16 @@ namespace DotNetOpenAuth.OpenId {
 		/// Searches for an XRDS document at the realm URL, and if found, searches
 		/// for a description of a relying party endpoints (OpenId login pages).
 		/// </summary>
-		/// <param name="requestHandler">The mechanism to use for sending HTTP requests.</param>
+		/// <param name="hostFactories">The host factories.</param>
 		/// <param name="allowRedirects">Whether redirects may be followed when discovering the Realm.
 		/// This may be true when creating an unsolicited assertion, but must be
 		/// false when performing return URL verification per 2.0 spec section 9.2.1.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The details of the endpoints if found; or <c>null</c> if no service document was discovered.
 		/// </returns>
-		internal virtual IEnumerable<RelyingPartyEndpointDescription> DiscoverReturnToEndpoints(IDirectWebRequestHandler requestHandler, bool allowRedirects) {
-			XrdsDocument xrds = this.Discover(requestHandler, allowRedirects);
+		internal virtual async Task<IEnumerable<RelyingPartyEndpointDescription>> DiscoverReturnToEndpointsAsync(IHostFactories hostFactories, bool allowRedirects, CancellationToken cancellationToken) {
+			XrdsDocument xrds = await this.DiscoverAsync(hostFactories, allowRedirects, cancellationToken);
 			if (xrds != null) {
 				return xrds.FindRelyingPartyReceivingEndpoints();
 			}
@@ -434,16 +438,17 @@ namespace DotNetOpenAuth.OpenId {
 		/// <summary>
 		/// Searches for an XRDS document at the realm URL.
 		/// </summary>
-		/// <param name="requestHandler">The mechanism to use for sending HTTP requests.</param>
+		/// <param name="hostFactories">The host factories.</param>
 		/// <param name="allowRedirects">Whether redirects may be followed when discovering the Realm.
 		/// This may be true when creating an unsolicited assertion, but must be
 		/// false when performing return URL verification per 2.0 spec section 9.2.1.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The XRDS document if found; or <c>null</c> if no service document was discovered.
 		/// </returns>
-		internal virtual XrdsDocument Discover(IDirectWebRequestHandler requestHandler, bool allowRedirects) {
+		internal virtual async Task<XrdsDocument> DiscoverAsync(IHostFactories hostFactories, bool allowRedirects, CancellationToken cancellationToken) {
 			// Attempt YADIS discovery
-			DiscoveryResult yadisResult = Yadis.Discover(requestHandler, this.UriWithWildcardChangedToWww, false);
+			DiscoveryResult yadisResult = await Yadis.DiscoverAsync(hostFactories, this.UriWithWildcardChangedToWww, false, cancellationToken);
 			if (yadisResult != null) {
 				// Detect disallowed redirects, since realm discovery never allows them for security.
 				ErrorUtilities.VerifyProtocol(allowRedirects || yadisResult.NormalizedUri == yadisResult.RequestUri, OpenIdStrings.RealmCausedRedirectUponDiscovery, yadisResult.RequestUri);

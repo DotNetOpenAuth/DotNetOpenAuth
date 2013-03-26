@@ -22,6 +22,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Drawing.Design;
 	using System.Globalization;
 	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web.UI;
 	using System.Web.UI.HtmlControls;
 	using DotNetOpenAuth.Messaging;
@@ -716,7 +718,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 
 	loader.insert();
 } } catch (e) { }";
-				this.Page.ClientScript.RegisterClientScriptInclude("yuiloader", this.Page.Request.Url.IsTransportSecure() ? YuiLoaderHttps : YuiLoaderHttp);
+				this.Page.ClientScript.RegisterClientScriptInclude(
+					"yuiloader", this.Page.Request.Url.IsTransportSecure() ? YuiLoaderHttps : YuiLoaderHttp);
 				this.Page.ClientScript.RegisterClientScriptBlock(this.GetType(), "requiredYuiComponents", yuiLoadScript, true);
 			}
 
@@ -737,9 +740,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			// If an Identifier is preset on this control, preload discovery on that identifier,
 			// but only if we're not already persisting an authentication result since that would
 			// be redundant.
-			if (this.Identifier != null && this.AuthenticationResponse == null) {
-				this.PreloadDiscovery(this.Identifier);
-			}
+			this.Page.RegisterAsyncTask(new PageAsyncTask(async ct => {
+				var response = await this.GetAuthenticationResponseAsync(ct);
+				if (this.Identifier != null && response == null) {
+					await this.PreloadDiscoveryAsync(this.Identifier, ct);
+				}
+			}));
 		}
 
 		/// <summary>

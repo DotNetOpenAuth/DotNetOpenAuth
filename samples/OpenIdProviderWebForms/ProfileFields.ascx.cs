@@ -25,15 +25,15 @@ namespace OpenIdProviderWebForms {
 
 		public DateTime? DateOfBirth {
 			get {
-				try {
-					int day = Convert.ToInt32(this.dobDayDropdownlist.SelectedValue);
-					int month = Convert.ToInt32(this.dobMonthDropdownlist.SelectedValue);
-					int year = Convert.ToInt32(this.dobYearDropdownlist.SelectedValue);
-					DateTime newDate = new DateTime(year, month, day);
+				int day, month, year;
+				if (int.TryParse(this.dobDayDropdownlist.SelectedValue, out day)
+					&& int.TryParse(this.dobMonthDropdownlist.SelectedValue, out month)
+					&& int.TryParse(this.dobYearDropdownlist.SelectedValue, out year)) {
+					var newDate = new DateTime(year, month, day);
 					return newDate;
-				} catch (Exception) {
-					return null;
 				}
+
+				return null;
 			}
 
 			set {

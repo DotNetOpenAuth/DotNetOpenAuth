@@ -9,13 +9,18 @@ namespace OAuthServiceProvider.Code {
 	using System.Collections.Generic;
 	using System.Diagnostics;
 	using System.Linq;
+	using System.ServiceModel;
+
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.OAuth.Messages;
 
 	public class DatabaseTokenManager : IServiceProviderTokenManager {
+		internal OperationContext OperationContext { get; set; }
+
 		#region IServiceProviderTokenManager
 
 		public IConsumerDescription GetConsumer(string consumerKey) {
+			this.ApplyOperationContext();
 			var consumerRow = Global.DataContext.OAuthConsumers.SingleOrDefault(
 				consumerCandidate => consumerCandidate.ConsumerKey == consumerKey);
 			if (consumerRow == null) {
@@ -27,6 +32,7 @@ namespace OAuthServiceProvider.Code {
 
 		public IServiceProviderRequestToken GetRequestToken(string token) {
 			try {
+				this.ApplyOperationContext();
 				return Global.DataContext.OAuthTokens.First(t => t.Token == token && t.State != TokenAuthorizationState.AccessToken);
 			} catch (InvalidOperationException ex) {
 				throw new KeyNotFoundException("Unrecognized token", ex);
@@ -34,6 +40,7 @@ namespace OAuthServiceProvider.Code {
 		}
 
 		public IServiceProviderAccessToken GetAccessToken(string token) {
+			this.ApplyOperationContext();
 			try {
 				return Global.DataContext.OAuthTokens.First(t => t.Token == token && t.State == TokenAuthorizationState.AccessToken);
 			} catch (InvalidOperationException ex) {
@@ -54,6 +61,7 @@ namespace OAuthServiceProvider.Code {
 		#region ITokenManager Members
 
 		public string GetTokenSecret(string token) {
+			this.ApplyOperationContext();
 			var tokenRow = Global.DataContext.OAuthTokens.SingleOrDefault(
 				tokenCandidate => tokenCandidate.Token == token);
 			if (tokenRow == null) {
@@ -64,6 +72,7 @@ namespace OAuthServiceProvider.Code {
 		}
 
 		public void StoreNewRequestToken(UnauthorizedTokenRequest request, ITokenSecretContainingMessage response) {
+			this.ApplyOperationContext();
 			RequestScopedTokenMessage scopedRequest = (RequestScopedTokenMessage)request;
 			var consumer = Global.DataContext.OAuthConsumers.Single(consumerRow => consumerRow.ConsumerKey == request.ConsumerKey);
 			string scope = scopedRequest.Scope;
@@ -90,6 +99,7 @@ namespace OAuthServiceProvider.Code {
 		/// been authorized, has expired or does not exist.
 		/// </returns>
 		public bool IsRequestTokenAuthorized(string requestToken) {
+			this.ApplyOperationContext();
 			var tokenFound = Global.DataContext.OAuthTokens.SingleOrDefault(
 				token => token.Token == requestToken &&
 				token.State == TokenAuthorizationState.AuthorizedRequestToken);
@@ -97,6 +107,8 @@ namespace OAuthServiceProvider.Code {
 		}
 
 		public void ExpireRequestTokenAndStoreNewAccessToken(string consumerKey, string requestToken, string accessToken, string accessTokenSecret) {
+			this.ApplyOperationContext();
+
 			var data = Global.DataContext;
 			var consumerRow = data.OAuthConsumers.Single(consumer => consumer.ConsumerKey == consumerKey);
 			var tokenRow = data.OAuthTokens.Single(token => token.Token == requestToken && token.OAuthConsumer == consumerRow);
@@ -115,6 +127,7 @@ namespace OAuthServiceProvider.Code {
 		/// <param name="token">The token to classify.</param>
 		/// <returns>Request or Access token, or invalid if the token is not recognized.</returns>
 		public TokenType GetTokenType(string token) {
+			this.ApplyOperationContext();
 			var tokenRow = Global.DataContext.OAuthTokens.SingleOrDefault(tokenCandidate => tokenCandidate.Token == token);
 			if (tokenRow == null) {
 				return TokenType.InvalidToken;
@@ -135,6 +148,7 @@ namespace OAuthServiceProvider.Code {
 				throw new ArgumentNullException("user");
 			}
 
+			this.ApplyOperationContext();
 			var tokenRow = Global.DataContext.OAuthTokens.SingleOrDefault(
 				tokenCandidate => tokenCandidate.Token == requestToken &&
 				tokenCandidate.State == TokenAuthorizationState.UnauthorizedRequestToken);
@@ -151,6 +165,7 @@ namespace OAuthServiceProvider.Code {
 				throw new ArgumentNullException("requestToken");
 			}
 
+			this.ApplyOperationContext();
 			var tokenRow = Global.DataContext.OAuthTokens.SingleOrDefault(
 				tokenCandidate => tokenCandidate.Token == token);
 			if (tokenRow == null) {
@@ -158,6 +173,12 @@ namespace OAuthServiceProvider.Code {
 			}
 
 			return tokenRow.OAuthConsumer;
+		}
+
+		private void ApplyOperationContext() {
+			if (this.OperationContext != null && OperationContext.Current == null) {
+				OperationContext.Current = this.OperationContext;
+			}
 		}
 	}
 }
