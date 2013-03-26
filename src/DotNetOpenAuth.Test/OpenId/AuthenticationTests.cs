@@ -294,9 +294,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 						// When the OP notices the replay we get a generic InvalidSignatureException.
 						// When the RP notices the replay we get a specific ReplayMessageException.
 						try {
-							// TODO: fix this.
-							////CoordinatingChannel channel = (CoordinatingChannel)rp.Channel;
-							////await channel.ReplayAsync(response);
+							await rp.Channel.ReadFromRequestAsync<PositiveAssertionResponse>(assertionMessage, CancellationToken.None);
 							Assert.Fail("Expected ProtocolException was not thrown.");
 						} catch (ProtocolException ex) {
 							Assert.IsTrue(
