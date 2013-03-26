@@ -31,8 +31,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		private RelyingPartyDiscoveryResult? realmDiscoveryResult;
 
-		private IHostFactories hostFactories;
-
 		/// <summary>
 		/// Initializes a new instance of the <see cref="HostProcessedRequest"/> class.
 		/// </summary>
@@ -42,7 +40,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			: base(request, provider.SecuritySettings) {
 			Requires.NotNull(provider, "provider");
 
-			this.hostFactories = provider.Channel.HostFactories;
 			this.negativeResponse = new Lazy<Task<NegativeAssertionResponse>>(() => NegativeAssertionResponse.CreateAsync(request, CancellationToken.None, provider.Channel));
 			Reporting.RecordEventOccurrence(this, request.Realm);
 		}
@@ -114,7 +111,8 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// property getter multiple times in one request is not a performance hit.
 		/// See OpenID Authentication 2.0 spec section 9.2.1.
 		/// </remarks>
-		public async Task<RelyingPartyDiscoveryResult> IsReturnUrlDiscoverableAsync(IHostFactories hostFactories, CancellationToken cancellationToken) {
+		public async Task<RelyingPartyDiscoveryResult> IsReturnUrlDiscoverableAsync(IHostFactories hostFactories, CancellationToken cancellationToken = default(CancellationToken)) {
+			Requires.NotNull(hostFactories, "hostFactories");
 			if (!this.realmDiscoveryResult.HasValue) {
 				this.realmDiscoveryResult = await this.IsReturnUrlDiscoverableCoreAsync(hostFactories, cancellationToken);
 			}
@@ -142,8 +140,8 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// Result of realm discovery.
 		/// </returns>
 		private async Task<RelyingPartyDiscoveryResult> IsReturnUrlDiscoverableCoreAsync(IHostFactories hostFactories, CancellationToken cancellationToken) {
+			Requires.NotNull(hostFactories, "hostFactories");
 			ErrorUtilities.VerifyInternal(this.Realm != null, "Realm should have been read or derived by now.");
-			hostFactories = hostFactories ?? this.hostFactories;
 
 			try {
 				if (this.SecuritySettings.RequireSsl && this.Realm.Scheme != Uri.UriSchemeHttps) {
