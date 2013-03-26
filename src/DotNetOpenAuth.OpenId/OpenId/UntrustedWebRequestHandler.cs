@@ -126,13 +126,13 @@ namespace DotNetOpenAuth.OpenId {
 		/// </summary>
 		public int MaxAutomaticRedirections {
 			get {
-				return base.InnerHandler is WebRequestHandler ? this.InnerWebRequestHandler.MaxAutomaticRedirections : this.maxAutomaticRedirections;
+				return this.InnerHandler is WebRequestHandler ? this.InnerWebRequestHandler.MaxAutomaticRedirections : this.maxAutomaticRedirections;
 			}
 
 			set {
 				Requires.Range(value >= 0, "value");
 				this.maxAutomaticRedirections = value;
-				if (base.InnerHandler is WebRequestHandler) {
+				if (this.InnerHandler is WebRequestHandler) {
 					this.InnerWebRequestHandler.MaxAutomaticRedirections = value;
 				}
 			}
@@ -143,12 +143,12 @@ namespace DotNetOpenAuth.OpenId {
 		/// </summary>
 		public bool AllowAutoRedirect {
 			get {
-				return base.InnerHandler is WebRequestHandler ? this.InnerWebRequestHandler.AllowAutoRedirect : this.allowAutoRedirect;
+				return this.InnerHandler is WebRequestHandler ? this.InnerWebRequestHandler.AllowAutoRedirect : this.allowAutoRedirect;
 			}
 
 			set {
 				this.allowAutoRedirect = value;
-				if (base.InnerHandler is WebRequestHandler) {
+				if (this.InnerHandler is WebRequestHandler) {
 					this.InnerWebRequestHandler.AllowAutoRedirect = value;
 				}
 			}

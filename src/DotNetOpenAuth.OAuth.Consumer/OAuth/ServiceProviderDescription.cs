@@ -61,7 +61,7 @@ namespace DotNetOpenAuth.OAuth {
 		public HttpMethod TemporaryCredentialsRequestEndpointMethod { get; set; }
 
 		/// <summary>
-		/// Gets the resource owner authorization endpoint.
+		/// Gets or sets the resource owner authorization endpoint.
 		/// </summary>
 		/// <value>
 		/// The resource owner authorization endpoint.
@@ -70,7 +70,7 @@ namespace DotNetOpenAuth.OAuth {
 		public Uri ResourceOwnerAuthorizationEndpoint { get; set; }
 
 		/// <summary>
-		/// Gets the token request endpoint.
+		/// Gets or sets the token request endpoint.
 		/// </summary>
 		/// <value>
 		/// The token request endpoint.

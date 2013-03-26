@@ -10,10 +10,6 @@
 	/// The web application global events and properties.
 	/// </summary>
 	public class Global : HttpApplication {
-		private readonly object syncObject = new object();
-
-		private volatile bool initialized;
-
 		/// <summary>
 		/// An application memory cache of recent log messages.
 		/// </summary>
@@ -23,6 +19,10 @@
 		/// The logger for this sample to use.
 		/// </summary>
 		public static log4net.ILog Logger = log4net.LogManager.GetLogger("DotNetOpenAuth.OAuthServiceProvider");
+
+		private readonly object syncObject = new object();
+
+		private volatile bool initialized;
 
 		/// <summary>
 		/// Gets the transaction-protected database connection for the current request.

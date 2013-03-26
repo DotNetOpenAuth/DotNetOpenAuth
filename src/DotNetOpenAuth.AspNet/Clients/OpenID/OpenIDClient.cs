@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.AspNet.Clients {
 	using System;
 	using System.Collections.Generic;
+	using System.Collections.Specialized;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Threading;
 	using System.Threading.Tasks;
@@ -15,7 +16,6 @@ namespace DotNetOpenAuth.AspNet.Clients {
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using Validation;
-	using System.Collections.Specialized;
 
 	/// <summary>
 	/// Base classes for OpenID clients.

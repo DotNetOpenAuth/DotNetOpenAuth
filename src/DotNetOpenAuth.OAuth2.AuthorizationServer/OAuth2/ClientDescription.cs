@@ -57,7 +57,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		#region IClientDescription Members
 
 		/// <summary>
-		/// Gets the callback to use when an individual authorization request
+		/// Gets or sets the callback to use when an individual authorization request
 		/// does not include an explicit callback URI.
 		/// </summary>
 		/// <value>
@@ -66,7 +66,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		public Uri DefaultCallback { get; protected set; }
 
 		/// <summary>
-		/// Gets the type of the client.
+		/// Gets or sets the type of the client.
 		/// </summary>
 		public ClientType ClientType { get; protected set; }
 

@@ -55,7 +55,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// </returns>
 		public CryptoKey GetKey(string bucket, string handle) {
 			if (handle == HardCodedKeyHandle) {
-				return OneCryptoKey;
+				return this.OneCryptoKey;
 			}
 
 			return null;
@@ -69,7 +69,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// A sequence of handles and keys, ordered by descending <see cref="CryptoKey.ExpiresUtc" />.
 		/// </returns>
 		public IEnumerable<KeyValuePair<string, CryptoKey>> GetKeys(string bucket) {
-			return new[] { new KeyValuePair<string, CryptoKey>(HardCodedKeyHandle, OneCryptoKey) };
+			return new[] { new KeyValuePair<string, CryptoKey>(HardCodedKeyHandle, this.OneCryptoKey) };
 		}
 
 		/// <summary>
@@ -78,7 +78,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// <param name="bucket">The name of the bucket to store the key in.  Case sensitive.</param>
 		/// <param name="handle">The handle to the key, unique within the bucket.  Case sensitive.</param>
 		/// <param name="key">The key to store.</param>
-		/// <exception cref="System.NotSupportedException"></exception>
+		/// <exception cref="System.NotSupportedException">Always thrown.</exception>
 		public void StoreKey(string bucket, string handle, CryptoKey key) {
 			throw new NotSupportedException();
 		}
@@ -88,7 +88,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// </summary>
 		/// <param name="bucket">The bucket name.  Case sensitive.</param>
 		/// <param name="handle">The key handle.  Case sensitive.</param>
-		/// <exception cref="System.NotSupportedException"></exception>
+		/// <exception cref="System.NotSupportedException">Always thrown.</exception>
 		public void RemoveKey(string bucket, string handle) {
 			throw new NotSupportedException();
 		}

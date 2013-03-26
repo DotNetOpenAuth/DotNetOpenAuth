@@ -89,6 +89,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// Gets the protocol message that may be in the given HTTP response.
 		/// </summary>
 		/// <param name="response">The response that is anticipated to contain an protocol message.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The deserialized message parts, if found.  Null otherwise.
 		/// </returns>

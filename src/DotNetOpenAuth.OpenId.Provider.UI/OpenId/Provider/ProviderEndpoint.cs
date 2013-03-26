@@ -69,21 +69,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		public event EventHandler<AnonymousRequestEventArgs> AnonymousRequest;
 
 		/// <summary>
-		/// Gets or sets the <see cref="OpenIdProvider"/> instance to use for all instances of this control.
-		/// </summary>
-		/// <value>The default value is an <see cref="OpenIdProvider"/> instance initialized according to the web.config file.</value>
-		public OpenIdProvider Provider {
-			get {
-				return this.provider.Value;
-			}
-
-			set {
-				Requires.NotNull(value, "value");
-				this.provider = new Lazy<OpenIdProvider>(() => value, LazyThreadSafetyMode.PublicationOnly);
-			}
-		}
-
-		/// <summary>
 		/// Gets or sets an incoming OpenID authentication request that has not yet been responded to.
 		/// </summary>
 		/// <remarks>
@@ -149,6 +134,21 @@ namespace DotNetOpenAuth.OpenId.Provider {
 				RequiresEx.ValidState(HttpContext.Current != null, MessagingStrings.HttpContextRequired);
 				RequiresEx.ValidState(HttpContext.Current.Session != null, MessagingStrings.SessionRequired);
 				HttpContext.Current.Session[PendingRequestKey] = value;
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets the <see cref="OpenIdProvider"/> instance to use for all instances of this control.
+		/// </summary>
+		/// <value>The default value is an <see cref="OpenIdProvider"/> instance initialized according to the web.config file.</value>
+		public OpenIdProvider Provider {
+			get {
+				return this.provider.Value;
+			}
+
+			set {
+				Requires.NotNull(value, "value");
+				this.provider = new Lazy<OpenIdProvider>(() => value, LazyThreadSafetyMode.PublicationOnly);
 			}
 		}
 

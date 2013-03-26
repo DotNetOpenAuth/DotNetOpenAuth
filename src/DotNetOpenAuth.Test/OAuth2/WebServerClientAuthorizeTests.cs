@@ -118,9 +118,9 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 			authServer.Setup(
 				a => a.CheckAuthorizeClientCredentialsGrant(It.Is<IAccessTokenRequest>(d => d.ClientIdentifier == ClientId && MessagingUtilities.AreEquivalent(d.Scope, TestScopes))))
 					  .Returns<IAccessTokenRequest>(req => {
-						  var response = new AutomatedAuthorizationCheckResponse(req, true);
-						  response.ApprovedScope.ResetContents(approvedScopes);
-						  return response;
+						var response = new AutomatedAuthorizationCheckResponse(req, true);
+						response.ApprovedScope.ResetContents(approvedScopes);
+						return response;
 					  });
 			Handle(AuthorizationServerDescription.TokenEndpoint).By(
 				async (req, ct) => {

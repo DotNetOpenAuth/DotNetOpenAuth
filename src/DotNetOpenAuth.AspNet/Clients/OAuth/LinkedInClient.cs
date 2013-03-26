@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.AspNet.Clients {
 	using System;
 	using System.Collections.Generic;
+	using System.Collections.Specialized;
 	using System.Diagnostics.CodeAnalysis;
 	using System.IO;
 	using System.Net;
@@ -18,7 +19,6 @@ namespace DotNetOpenAuth.AspNet.Clients {
 	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.OAuth.Messages;
-	using System.Collections.Specialized;
 
 	/// <summary>
 	/// Represents LinkedIn authentication client.

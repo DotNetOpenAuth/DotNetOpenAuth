@@ -26,14 +26,13 @@ namespace DotNetOpenAuth.OAuth2 {
 	/// </summary>
 	public class ClientBase {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ClientBase"/> class.
+		/// Initializes a new instance of the <see cref="ClientBase" /> class.
 		/// </summary>
 		/// <param name="authorizationServer">The token issuer.</param>
 		/// <param name="clientIdentifier">The client identifier.</param>
-		/// <param name="clientCredentialApplicator">
-		/// The tool to use to apply client credentials to authenticated requests to the Authorization Server.  
-		/// May be <c>null</c> for clients with no secret or other means of authentication.
-		/// </param>
+		/// <param name="clientCredentialApplicator">The tool to use to apply client credentials to authenticated requests to the Authorization Server.
+		/// May be <c>null</c> for clients with no secret or other means of authentication.</param>
+		/// <param name="hostFactories">The host factories.</param>
 		protected ClientBase(AuthorizationServerDescription authorizationServer, string clientIdentifier = null, ClientCredentialApplicator clientCredentialApplicator = null, IHostFactories hostFactories = null) {
 			Requires.NotNull(authorizationServer, "authorizationServer");
 			this.AuthorizationServer = authorizationServer;

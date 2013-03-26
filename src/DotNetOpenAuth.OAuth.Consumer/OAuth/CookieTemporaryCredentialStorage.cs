@@ -31,7 +31,7 @@ namespace DotNetOpenAuth.OAuth {
 		private readonly HttpContextBase httpContext;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="CookieTemporaryCredentialsStorage"/> class
+		/// Initializes a new instance of the <see cref="CookieTemporaryCredentialStorage"/> class
 		/// using <see cref="HttpContext.Current"/> as the source for the context to read and write cookies to.
 		/// </summary>
 		public CookieTemporaryCredentialStorage()
@@ -39,7 +39,7 @@ namespace DotNetOpenAuth.OAuth {
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="CookieTemporaryCredentialsStorage"/> class.
+		/// Initializes a new instance of the <see cref="CookieTemporaryCredentialStorage"/> class.
 		/// </summary>
 		/// <param name="httpContext">The HTTP context from and to which to access cookies.</param>
 		public CookieTemporaryCredentialStorage(HttpContextBase httpContext) {
@@ -75,7 +75,6 @@ namespace DotNetOpenAuth.OAuth {
 		/// <returns>
 		/// An initialized key value pair if credentials are available; otherwise both key and value are <c>null</c>.
 		/// </returns>
-		/// <exception cref="System.NotImplementedException"></exception>
 		public KeyValuePair<string, string> RetrieveTemporaryCredential() {
 			HttpCookie cookie = this.httpContext.Request.Cookies[TokenCookieKey];
 			if (cookie == null || cookie.Values.Count == 0) {

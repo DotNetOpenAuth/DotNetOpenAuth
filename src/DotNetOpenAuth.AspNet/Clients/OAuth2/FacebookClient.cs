@@ -7,12 +7,12 @@
 namespace DotNetOpenAuth.AspNet.Clients {
 	using System;
 	using System.Collections.Generic;
+	using System.Collections.Specialized;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Net;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using Validation;
-	using System.Collections.Specialized;
 
 	/// <summary>
 	/// The facebook client.

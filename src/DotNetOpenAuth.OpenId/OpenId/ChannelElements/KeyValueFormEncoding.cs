@@ -131,7 +131,10 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// Decodes bytes in Key-Value Form to key/value pairs.
 		/// </summary>
 		/// <param name="data">The stream of Key-Value Form encoded bytes.</param>
-		/// <returns>The deserialized dictionary.</returns>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The deserialized dictionary.
+		/// </returns>
 		/// <exception cref="FormatException">Thrown when the data is not in the expected format.</exception>
 		public async Task<IDictionary<string, string>> GetDictionaryAsync(Stream data, CancellationToken cancellationToken) {
 			using (StreamReader reader = new StreamReader(data, textEncoding)) {

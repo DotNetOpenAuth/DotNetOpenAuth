@@ -34,14 +34,11 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		#region Constructors and Destructors
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="DotNetOpenAuthWebConsumer"/> class.
+		/// Initializes a new instance of the <see cref="DotNetOpenAuthWebConsumer" /> class.
 		/// </summary>
-		/// <param name="serviceDescription">
-		/// The service description.
-		/// </param>
-		/// <param name="tokenManager">
-		/// The token manager.
-		/// </param>
+		/// <param name="serviceDescription">The service description.</param>
+		/// <param name="consumerKey">The consumer key.</param>
+		/// <param name="consumerSecret">The consumer secret.</param>
 		public DotNetOpenAuthWebConsumer(ServiceProviderDescription serviceDescription, string consumerKey, string consumerSecret) {
 			Requires.NotNull(serviceDescription, "serviceDescription");
 
@@ -56,7 +53,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		#endregion
 
 		/// <summary>
-		/// Gets the DotNetOpenAuth <see cref="WebConsumer"/> instance that can be used to make OAuth 1.0 authorized HTTP requests.
+		/// Gets the DotNetOpenAuth <see cref="Consumer"/> instance that can be used to make OAuth 1.0 authorized HTTP requests.
 		/// </summary>
 		public Consumer Consumer {
 			get { return this.webConsumer; }
@@ -68,6 +65,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// Creates an HTTP message handler that authorizes outgoing web requests.
 		/// </summary>
 		/// <param name="accessToken">The access token.</param>
+		/// <returns>An <see cref="HttpMessageHandler"/> that applies the access token to all outgoing requests.</returns>
 		public HttpMessageHandler CreateMessageHandler(AccessToken accessToken) {
 			Requires.NotNullOrEmpty(accessToken.Token, "accessToken");
 
@@ -77,6 +75,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <summary>
 		/// The process user authorization.
 		/// </summary>
+		/// <param name="context">The HTTP context.</param>
 		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The response message.

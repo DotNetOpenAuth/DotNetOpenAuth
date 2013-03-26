@@ -7,16 +7,16 @@
 namespace DotNetOpenAuth.AspNet.Test {
 	using System;
 	using System.Collections.Specialized;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
 	using DotNetOpenAuth.AspNet;
 	using DotNetOpenAuth.AspNet.Clients;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.Messages;
 	using Moq;
 	using NUnit.Framework;
-	using DotNetOpenAuth.OAuth;
-	using System.Threading;
-	using System.Threading.Tasks;
 
 	[TestFixture]
 	public class OAuthClientTest {

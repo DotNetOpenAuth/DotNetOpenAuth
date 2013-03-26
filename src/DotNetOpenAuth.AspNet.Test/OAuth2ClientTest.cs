@@ -8,11 +8,11 @@ namespace DotNetOpenAuth.AspNet.Test {
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.Specialized;
+	using System.Threading.Tasks;
 	using System.Web;
 	using DotNetOpenAuth.AspNet.Clients;
 	using Moq;
 	using NUnit.Framework;
-	using System.Threading.Tasks;
 
 	[TestFixture]
 	public class OAuth2ClientTest {

@@ -221,6 +221,22 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Gets or sets the outgoing message filter.
+		/// </summary>
+		/// <value>
+		/// The outgoing message filter.
+		/// </value>
+		internal Action<IProtocolMessage> OutgoingMessageFilter { get; set; }
+
+		/// <summary>
+		/// Gets or sets the incoming message filter.
+		/// </summary>
+		/// <value>
+		/// The incoming message filter.
+		/// </value>
+		internal Action<IProtocolMessage> IncomingMessageFilter { get; set; }
+
+		/// <summary>
 		/// Gets the binding elements used by this channel, in no particular guaranteed order.
 		/// </summary>
 		protected internal ReadOnlyCollection<IChannelBindingElement> BindingElements {
@@ -327,8 +343,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// Gets the protocol message embedded in the given HTTP request, if present.
 		/// </summary>
 		/// <typeparam name="TRequest">The expected type of the message to be received.</typeparam>
-		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <param name="httpRequest">The request to search for an embedded message.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// True if the expected message was recognized and deserialized.  False otherwise.
 		/// </returns>
@@ -352,8 +368,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// Gets the protocol message embedded in the given HTTP request.
 		/// </summary>
 		/// <typeparam name="TRequest">The expected type of the message to be received.</typeparam>
-		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <param name="httpRequest">The request to search for an embedded message.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The deserialized message.  Never null.
 		/// </returns>
@@ -503,7 +519,10 @@ namespace DotNetOpenAuth.Messaging {
 		/// Gets the protocol message that may be in the given HTTP response.
 		/// </summary>
 		/// <param name="response">The response that is anticipated to contain an protocol message.</param>
-		/// <returns>The deserialized message parts, if found.  Null otherwise.</returns>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The deserialized message parts, if found.  Null otherwise.
+		/// </returns>
 		/// <exception cref="ProtocolException">Thrown when the response is not valid.</exception>
 		internal Task<IDictionary<string, string>> ReadFromResponseCoreAsyncTestHook(HttpResponseMessage response, CancellationToken cancellationToken) {
 			return this.ReadFromResponseCoreAsync(response, cancellationToken);
@@ -974,10 +993,6 @@ namespace DotNetOpenAuth.Messaging {
 			}
 			return dictionary;
 		}
-
-		internal Action<IProtocolMessage> OutgoingMessageFilter { get; set; }
-
-		internal Action<IProtocolMessage> IncomingMessageFilter { get; set; }
 
 		/// <summary>
 		/// Prepares a message for transmit by applying signatures, nonces, etc.

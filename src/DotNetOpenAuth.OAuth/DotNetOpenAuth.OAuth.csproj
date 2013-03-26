@@ -34,7 +34,6 @@
     <Compile Include="OAuth\ChannelElements\UriOrOobEncoding.cs" />
     <Compile Include="OAuth\ConsumerSecuritySettings.cs" />
     <Compile Include="OAuth\Messages\ITokenSecretContainingMessage.cs" />
-    <Compile Include="OAuth\Messages\MessageBaseSimple.cs" />
     <Compile Include="OAuth\OAuthStrings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

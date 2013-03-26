@@ -7,11 +7,11 @@
 namespace DotNetOpenAuth.AspNet.Clients {
 	using System;
 	using System.Collections.Generic;
+	using System.Collections.Specialized;
 	using System.IO;
 	using System.Net;
 	using DotNetOpenAuth.Messaging;
 	using Validation;
-	using System.Collections.Specialized;
 
 	/// <summary>
 	/// The Microsoft account client.

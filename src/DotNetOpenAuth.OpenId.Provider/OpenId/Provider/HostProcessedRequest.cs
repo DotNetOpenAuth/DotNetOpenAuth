@@ -9,13 +9,13 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Net;
+	using System.Runtime.Serialization;
 	using System.Text;
 	using System.Threading;
 	using System.Threading.Tasks;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
 	using Validation;
-	using System.Runtime.Serialization;
 
 	/// <summary>
 	/// A base class from which identity and non-identity RP requests can derive.

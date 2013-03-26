@@ -51,7 +51,6 @@ namespace DotNetOpenAuth.OAuth {
 		/// <summary>
 		/// Clears the temporary credentials from storage.
 		/// </summary>
-		/// <param name="identifier">The identifier of the credentials to clear.</param>
 		/// <remarks>
 		/// DotNetOpenAuth calls this when the credentials are no longer needed.
 		/// </remarks>

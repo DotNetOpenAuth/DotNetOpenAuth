@@ -20,6 +20,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 	using System.Threading;
 	using System.Threading.Tasks;
 	using System.Web;
+	using System.Web.Http;
 	using System.Web.Http.Routing;
 	using System.Web.Http.SelfHost;
 	using System.Windows;
@@ -39,12 +40,15 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 	using log4net.Core;
 	using Validation;
 
-	using System.Web.Http;
-
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
 	/// </summary>
 	public partial class MainWindow : Window, IDisposable {
+		/// <summary>
+		/// The main window for the app.
+		/// </summary>
+		internal static MainWindow Instance;
+
 		/// <summary>
 		/// The logger the application may use.
 		/// </summary>
@@ -68,8 +72,6 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 			Instance = this;
 			this.StartProviderAsync();
 		}
-
-		internal static MainWindow Instance;
 
 		#region IDisposable Members
 
@@ -155,6 +157,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// <summary>
 		/// Starts the provider.
 		/// </summary>
+		/// <returns>A task that completes when the asynchronous operation is finished.</returns>
 		private async Task StartProviderAsync() {
 			Exception exception = null;
 			try {
@@ -199,6 +202,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// <summary>
 		/// Stops the provider.
 		/// </summary>
+		/// <returns>A task that completes when the asynchronous operation is finished.</returns>
 		private async Task StopProviderAsync() {
 			if (this.hostServer != null) {
 				await this.hostServer.CloseAsync();

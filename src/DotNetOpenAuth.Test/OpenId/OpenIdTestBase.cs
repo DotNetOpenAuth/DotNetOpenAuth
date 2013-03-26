@@ -196,72 +196,6 @@ namespace DotNetOpenAuth.Test.OpenId {
 			var rp = this.CreateRelyingParty(true);
 			return rp.DiscoverAsync(identifier, cancellationToken);
 		}
-
-		protected Realm GetMockRealm(bool useSsl) {
-			var rpDescription = new RelyingPartyEndpointDescription(useSsl ? RPUriSsl : RPUri, new string[] { Protocol.V20.RPReturnToTypeURI });
-			return new MockRealm(useSsl ? RPRealmUriSsl : RPRealmUri, rpDescription);
-		}
-
-		protected Identifier GetMockIdentifier(ProtocolVersion providerVersion) {
-			return this.GetMockIdentifier(providerVersion, false);
-		}
-
-		protected Identifier GetMockIdentifier(ProtocolVersion providerVersion, bool useSsl) {
-			return this.GetMockIdentifier(providerVersion, useSsl, false);
-		}
-
-		protected Identifier GetMockIdentifier(ProtocolVersion providerVersion, bool useSsl, bool delegating) {
-			var se = GetServiceEndpoint(0, providerVersion, 10, useSsl, delegating);
-			this.RegisterMockXrdsResponse(se);
-			return se.ClaimedIdentifier;
-		}
-
-		protected Identifier GetMockDualIdentifier() {
-			Protocol protocol = Protocol.Default;
-			var opDesc = new ProviderEndpointDescription(OPUri, protocol.Version);
-			var dualResults = new IdentifierDiscoveryResult[] {
-				IdentifierDiscoveryResult.CreateForClaimedIdentifier(VanityUri.AbsoluteUri, OPLocalIdentifiers[0], opDesc, 10, 10),
-				IdentifierDiscoveryResult.CreateForProviderIdentifier(protocol.ClaimedIdentifierForOPIdentifier, opDesc, 20, 20),
-			};
-
-			this.RegisterMockXrdsResponse(VanityUri, dualResults);
-			return VanityUri;
-		}
-
-		/// <summary>
-		/// Creates a standard <see cref="OpenIdRelyingParty"/> instance for general testing.
-		/// </summary>
-		/// <returns>The new instance.</returns>
-		protected OpenIdRelyingParty CreateRelyingParty() {
-			return this.CreateRelyingParty(false);
-		}
-
-		/// <summary>
-		/// Creates a standard <see cref="OpenIdRelyingParty"/> instance for general testing.
-		/// </summary>
-		/// <param name="stateless">if set to <c>true</c> a stateless RP is created.</param>
-		/// <returns>The new instance.</returns>
-		protected OpenIdRelyingParty CreateRelyingParty(bool stateless) {
-			var rp = new OpenIdRelyingParty(stateless ? null : new StandardRelyingPartyApplicationStore(), this.HostFactories);
-			return rp;
-		}
-
-		/// <summary>
-		/// Creates a standard <see cref="OpenIdProvider"/> instance for general testing.
-		/// </summary>
-		/// <returns>The new instance.</returns>
-		protected OpenIdProvider CreateProvider() {
-			var op = new OpenIdProvider(new StandardProviderApplicationStore(), this.HostFactories);
-			return op;
-		}
-
-		protected internal void HandleProvider(Func<OpenIdProvider, HttpRequestMessage, Task<HttpResponseMessage>> provider) {
-			var op = this.CreateProvider();
-			this.Handle(OPUri).By(async req => {
-				return await provider(op, req);
-			});
-		}
-
 		/// <summary>
 		/// Simulates an extension request and response.
 		/// </summary>
@@ -335,5 +269,71 @@ namespace DotNetOpenAuth.Test.OpenId {
 				CollectionAssert<IOpenIdMessageExtension>.AreEquivalentByEquality(responses.ToArray(), receivedResponses.ToArray());
 			}
 		}
+
+		protected internal void HandleProvider(Func<OpenIdProvider, HttpRequestMessage, Task<HttpResponseMessage>> provider) {
+			var op = this.CreateProvider();
+			this.Handle(OPUri).By(async req => {
+				return await provider(op, req);
+			});
+		}
+
+		protected Realm GetMockRealm(bool useSsl) {
+			var rpDescription = new RelyingPartyEndpointDescription(useSsl ? RPUriSsl : RPUri, new string[] { Protocol.V20.RPReturnToTypeURI });
+			return new MockRealm(useSsl ? RPRealmUriSsl : RPRealmUri, rpDescription);
+		}
+
+		protected Identifier GetMockIdentifier(ProtocolVersion providerVersion) {
+			return this.GetMockIdentifier(providerVersion, false);
+		}
+
+		protected Identifier GetMockIdentifier(ProtocolVersion providerVersion, bool useSsl) {
+			return this.GetMockIdentifier(providerVersion, useSsl, false);
+		}
+
+		protected Identifier GetMockIdentifier(ProtocolVersion providerVersion, bool useSsl, bool delegating) {
+			var se = GetServiceEndpoint(0, providerVersion, 10, useSsl, delegating);
+			this.RegisterMockXrdsResponse(se);
+			return se.ClaimedIdentifier;
+		}
+
+		protected Identifier GetMockDualIdentifier() {
+			Protocol protocol = Protocol.Default;
+			var opDesc = new ProviderEndpointDescription(OPUri, protocol.Version);
+			var dualResults = new IdentifierDiscoveryResult[] {
+				IdentifierDiscoveryResult.CreateForClaimedIdentifier(VanityUri.AbsoluteUri, OPLocalIdentifiers[0], opDesc, 10, 10),
+				IdentifierDiscoveryResult.CreateForProviderIdentifier(protocol.ClaimedIdentifierForOPIdentifier, opDesc, 20, 20),
+			};
+
+			this.RegisterMockXrdsResponse(VanityUri, dualResults);
+			return VanityUri;
+		}
+
+		/// <summary>
+		/// Creates a standard <see cref="OpenIdRelyingParty"/> instance for general testing.
+		/// </summary>
+		/// <returns>The new instance.</returns>
+		protected OpenIdRelyingParty CreateRelyingParty() {
+			return this.CreateRelyingParty(false);
+		}
+
+		/// <summary>
+		/// Creates a standard <see cref="OpenIdRelyingParty"/> instance for general testing.
+		/// </summary>
+		/// <param name="stateless">if set to <c>true</c> a stateless RP is created.</param>
+		/// <returns>The new instance.</returns>
+		protected OpenIdRelyingParty CreateRelyingParty(bool stateless) {
+			var rp = new OpenIdRelyingParty(stateless ? null : new StandardRelyingPartyApplicationStore(), this.HostFactories);
+			return rp;
+		}
+
+		/// <summary>
+		/// Creates a standard <see cref="OpenIdProvider"/> instance for general testing.
+		/// </summary>
+		/// <returns>The new instance.</returns>
+		protected OpenIdProvider CreateProvider() {
+			var op = new OpenIdProvider(new StandardProviderApplicationStore(), this.HostFactories);
+			return op;
+		}
+
 	}
 }

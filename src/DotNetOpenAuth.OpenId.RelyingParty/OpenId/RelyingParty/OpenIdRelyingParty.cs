@@ -515,6 +515,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Gets an authentication response from a Provider.
 		/// </summary>
+		/// <param name="request">The request.</param>
 		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The processed authentication response if there is any; <c>null</c> otherwise.
@@ -530,7 +531,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Gets an authentication response from a Provider.
 		/// </summary>
-		/// <param name="httpRequestInfo">The HTTP request that may be carrying an authentication response from the Provider.</param>
+		/// <param name="request">The HTTP request that may be carrying an authentication response from the Provider.</param>
 		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The processed authentication response if there is any; <c>null</c> otherwise.
@@ -608,7 +609,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <typeparam name="T">The extension <i>response</i> type that will read data from the assertion.</typeparam>
 		/// <param name="propertyName">The property name on the openid_identifier input box object that will be used to store the extension data.  For example: sreg</param>
 		/// <remarks>
-		/// This method should be called before <see cref="ProcessResponseFromPopupAsync(CancellationToken)"/>.
+		/// This method should be called before <see cref="ProcessResponseFromPopupAsync(HttpRequestMessage, CancellationToken)"/>.
 		/// </remarks>
 		[SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "By design")]
 		public void RegisterClientScriptExtension<T>(string propertyName) where T : IClientScriptExtensionResponse {

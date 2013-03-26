@@ -7,15 +7,13 @@
 namespace DotNetOpenAuth.AspNet.Clients {
 	using System;
 	using System.Collections.Generic;
+	using System.Collections.Specialized;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Threading;
 	using System.Threading.Tasks;
 	using System.Web;
-
 	using DotNetOpenAuth.Messaging;
-
 	using Validation;
-	using System.Collections.Specialized;
 
 	/// <summary>
 	/// Represents the base class for OAuth 2.0 clients

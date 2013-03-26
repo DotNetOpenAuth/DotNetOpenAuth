@@ -32,8 +32,6 @@ namespace DotNetOpenAuth.OAuth {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="WebConsumerOpenIdRelyingParty"/> class.
 		/// </summary>
-		/// <param name="serviceDescription">The endpoints and behavior of the Service Provider.</param>
-		/// <param name="tokenManager">The host's method of storing and recalling tokens and secrets.</param>
 		public WebConsumerOpenIdRelyingParty() {
 		}
 
@@ -61,10 +59,6 @@ namespace DotNetOpenAuth.OAuth {
 		/// <returns>
 		/// The access token, or null if OAuth authorization was denied by the user or service provider.
 		/// </returns>
-		/// <remarks>
-		/// The access token, if granted, is automatically stored in the <see cref="ConsumerBase.TokenManager" />.
-		/// The token manager instance must implement <see cref="IOpenIdOAuthTokenManager" />.
-		/// </remarks>
 		public async Task<AccessTokenResponse> ProcessUserAuthorizationAsync(IAuthenticationResponse openIdAuthenticationResponse, CancellationToken cancellationToken = default(CancellationToken)) {
 			Requires.NotNull(openIdAuthenticationResponse, "openIdAuthenticationResponse");
 

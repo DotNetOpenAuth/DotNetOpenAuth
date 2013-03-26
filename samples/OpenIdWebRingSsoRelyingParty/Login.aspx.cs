@@ -80,8 +80,7 @@
 										response.ClaimedIdentifier,
 										DateTime.Now,
 										DateTime.Now.AddMinutes(TimeoutInMinutes),
-										false,
-										// non-persistent, since login is automatic and we wanted updated roles
+										false, // non-persistent, since login is automatic and we wanted updated roles
 										string.Join(";", roles.ToArray()));
 
 									HttpCookie cookie = new HttpCookie(FormsAuthentication.FormsCookieName, FormsAuthentication.Encrypt(ticket));

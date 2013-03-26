@@ -86,9 +86,11 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// Gets the protocol message that may be in the given HTTP response.
 		/// </summary>
 		/// <param name="response">The response that is anticipated to contain an protocol message.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The deserialized message parts, if found.  Null otherwise.
 		/// </returns>
+		/// <exception cref="System.NotImplementedException">Always thrown.</exception>
 		/// <exception cref="ProtocolException">Thrown when the response is not valid.</exception>
 		protected override Task<IDictionary<string, string>> ReadFromResponseCoreAsync(HttpResponseMessage response, CancellationToken cancellationToken) {
 			// We never expect resource servers to send out direct requests,
@@ -130,7 +132,10 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// Searches for a bearer access token in the request.
 		/// </summary>
 		/// <param name="request">The request.</param>
-		/// <returns>The bearer access token, if one exists.  Otherwise <c>null</c>.</returns>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The bearer access token, if one exists.  Otherwise <c>null</c>.
+		/// </returns>
 		private static async Task<string> SearchForBearerAccessTokenInRequestAsync(HttpRequestMessage request, CancellationToken cancellationToken) {
 			Requires.NotNull(request, "request");
 

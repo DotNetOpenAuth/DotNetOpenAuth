@@ -10,6 +10,12 @@ namespace DotNetOpenAuth.Messaging {
 
 	using Validation;
 
+	/// <summary>
+	/// An HttpResponseMessage that includes the original DNOA semantic message as a property.
+	/// </summary>
+	/// <remarks>
+	/// This is used to assist in testing.
+	/// </remarks>
 	internal class HttpResponseMessageWithOriginal : HttpResponseMessage {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="HttpResponseMessageWithOriginal"/> class.
@@ -18,7 +24,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="statusCode">The status code.</param>
 		internal HttpResponseMessageWithOriginal(IMessage originalMessage, HttpStatusCode statusCode = HttpStatusCode.OK)
 			: base(statusCode) {
-			OriginalMessage = originalMessage;
+			this.OriginalMessage = originalMessage;
 			Requires.NotNull(originalMessage, "originalMessage");
 		}
 

@@ -23,36 +23,37 @@ namespace DotNetOpenAuth.OAuth2 {
 	/// </summary>
 	public class UserAgentClient : ClientBase {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="UserAgentClient"/> class.
+		/// Initializes a new instance of the <see cref="UserAgentClient" /> class.
 		/// </summary>
 		/// <param name="authorizationServer">The token issuer.</param>
 		/// <param name="clientIdentifier">The client identifier.</param>
 		/// <param name="clientSecret">The client secret.</param>
+		/// <param name="hostFactories">The host factories.</param>
 		public UserAgentClient(AuthorizationServerDescription authorizationServer, string clientIdentifier = null, string clientSecret = null, IHostFactories hostFactories = null)
 			: this(authorizationServer, clientIdentifier, DefaultSecretApplicator(clientSecret), hostFactories) {
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="UserAgentClient"/> class.
+		/// Initializes a new instance of the <see cref="UserAgentClient" /> class.
 		/// </summary>
 		/// <param name="authorizationEndpoint">The authorization endpoint.</param>
 		/// <param name="tokenEndpoint">The token endpoint.</param>
 		/// <param name="clientIdentifier">The client identifier.</param>
 		/// <param name="clientSecret">The client secret.</param>
+		/// <param name="hostFactories">The host factories.</param>
 		public UserAgentClient(Uri authorizationEndpoint, Uri tokenEndpoint, string clientIdentifier = null, string clientSecret = null, IHostFactories hostFactories = null)
 			: this(authorizationEndpoint, tokenEndpoint, clientIdentifier, DefaultSecretApplicator(clientSecret), hostFactories) {
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="UserAgentClient"/> class.
+		/// Initializes a new instance of the <see cref="UserAgentClient" /> class.
 		/// </summary>
 		/// <param name="authorizationEndpoint">The authorization endpoint.</param>
 		/// <param name="tokenEndpoint">The token endpoint.</param>
 		/// <param name="clientIdentifier">The client identifier.</param>
-		/// <param name="clientCredentialApplicator">
-		/// The tool to use to apply client credentials to authenticated requests to the Authorization Server.  
-		/// May be <c>null</c> for clients with no secret or other means of authentication.
-		/// </param>
+		/// <param name="clientCredentialApplicator">The tool to use to apply client credentials to authenticated requests to the Authorization Server.
+		/// May be <c>null</c> for clients with no secret or other means of authentication.</param>
+		/// <param name="hostFactories">The host factories.</param>
 		public UserAgentClient(Uri authorizationEndpoint, Uri tokenEndpoint, string clientIdentifier, ClientCredentialApplicator clientCredentialApplicator, IHostFactories hostFactories = null)
 			: this(new AuthorizationServerDescription { AuthorizationEndpoint = authorizationEndpoint, TokenEndpoint = tokenEndpoint }, clientIdentifier, clientCredentialApplicator, hostFactories) {
 			Requires.NotNull(authorizationEndpoint, "authorizationEndpoint");
@@ -60,14 +61,13 @@ namespace DotNetOpenAuth.OAuth2 {
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="UserAgentClient"/> class.
+		/// Initializes a new instance of the <see cref="UserAgentClient" /> class.
 		/// </summary>
 		/// <param name="authorizationServer">The token issuer.</param>
 		/// <param name="clientIdentifier">The client identifier.</param>
-		/// <param name="clientCredentialApplicator">
-		/// The tool to use to apply client credentials to authenticated requests to the Authorization Server.  
-		/// May be <c>null</c> for clients with no secret or other means of authentication.
-		/// </param>
+		/// <param name="clientCredentialApplicator">The tool to use to apply client credentials to authenticated requests to the Authorization Server.
+		/// May be <c>null</c> for clients with no secret or other means of authentication.</param>
+		/// <param name="hostFactories">The host factories.</param>
 		public UserAgentClient(AuthorizationServerDescription authorizationServer, string clientIdentifier, ClientCredentialApplicator clientCredentialApplicator, IHostFactories hostFactories = null)
 			: base(authorizationServer, clientIdentifier, clientCredentialApplicator, hostFactories) {
 		}

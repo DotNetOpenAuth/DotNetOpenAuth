@@ -6,9 +6,9 @@
 
 namespace DotNetOpenAuth.AspNet.Clients {
 	using System.Collections.Generic;
+	using System.Collections.Specialized;
 	using DotNetOpenAuth.OpenId.Extensions.AttributeExchange;
 	using DotNetOpenAuth.OpenId.RelyingParty;
-	using System.Collections.Specialized;
 
 	/// <summary>
 	/// Represents Google OpenID client.

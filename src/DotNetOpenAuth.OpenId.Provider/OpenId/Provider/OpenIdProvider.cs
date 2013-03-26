@@ -204,6 +204,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <summary>
 		/// Gets the incoming OpenID request if there is one, or null if none was detected.
 		/// </summary>
+		/// <param name="request">The request.</param>
 		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The request that the hosting Provider should possibly process and then transmit the response for.
@@ -448,7 +449,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// Prepares the return value for the GetRequest method in the event of an exception.
 		/// </summary>
 		/// <param name="ex">The exception that forms the basis of the error response.  Must not be null.</param>
-		/// <param name="httpRequestInfo">The incoming HTTP request.  Must not be null.</param>
+		/// <param name="request">The incoming HTTP request.  Must not be null.</param>
 		/// <param name="incomingMessage">The incoming message.  May be null in the case that it was malformed.</param>
 		/// <returns>
 		/// Either the <see cref="IRequest"/> to return to the host site or null to indicate no response could be reasonably created and that the caller should rethrow the exception.

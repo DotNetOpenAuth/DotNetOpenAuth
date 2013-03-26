@@ -7,6 +7,7 @@
 namespace DotNetOpenAuth.AspNet.Clients {
 	using System;
 	using System.Collections.Generic;
+	using System.Collections.Specialized;
 	using System.Diagnostics.CodeAnalysis;
 	using System.IO;
 	using System.Threading;
@@ -19,7 +20,6 @@ namespace DotNetOpenAuth.AspNet.Clients {
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.OAuth.Messages;
 	using Validation;
-	using System.Collections.Specialized;
 
 	/// <summary>
 	/// Represents base class for OAuth 1.0 clients
@@ -28,17 +28,12 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		#region Constructors and Destructors
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="OAuthClient"/> class.
+		/// Initializes a new instance of the <see cref="OAuthClient" /> class.
 		/// </summary>
-		/// <param name="providerName">
-		/// Name of the provider. 
-		/// </param>
-		/// <param name="serviceDescription">
-		/// The service Description.
-		/// </param>
-		/// <param name="tokenManager">
-		/// The token Manager.
-		/// </param>
+		/// <param name="providerName">Name of the provider.</param>
+		/// <param name="serviceDescription">The service Description.</param>
+		/// <param name="consumerKey">The consumer key.</param>
+		/// <param name="consumerSecret">The consumer secret.</param>
 		protected OAuthClient(
 			string providerName, ServiceProviderDescription serviceDescription, string consumerKey, string consumerSecret)
 			: this(providerName, new DotNetOpenAuthWebConsumer(serviceDescription, consumerKey, consumerSecret)) {

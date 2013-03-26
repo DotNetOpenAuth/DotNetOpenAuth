@@ -33,9 +33,7 @@
 								await client.ProcessUserAuthorizationAsync(new HttpRequestWrapper(Request), Response.ClientDisconnectedToken);
 							if (authorization == null) {
 								// Kick off authorization request
-								var request =
-									await client.PrepareRequestUserAuthorizationAsync(scopes: new[] { WindowsLiveClient.Scopes.Basic });
-								// this scope isn't even required just to log in
+								var request = await client.PrepareRequestUserAuthorizationAsync(scopes: new[] { WindowsLiveClient.Scopes.Basic }); // this scope isn't even required just to log in
 								await request.SendAsync(new HttpContextWrapper(this.Context), Response.ClientDisconnectedToken);
 								this.Context.Response.End();
 							} else {

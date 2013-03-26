@@ -142,7 +142,10 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// Handles an incoming request to the authorization server's token endpoint.
 		/// </summary>
 		/// <param name="request">The HTTP request.</param>
-		/// <returns>The HTTP response to send to the client.</returns>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The HTTP response to send to the client.
+		/// </returns>
 		public async Task<HttpResponseMessage> HandleTokenRequestAsync(HttpRequestMessage request, CancellationToken cancellationToken = default(CancellationToken)) {
 			Requires.NotNull(request, "request");
 

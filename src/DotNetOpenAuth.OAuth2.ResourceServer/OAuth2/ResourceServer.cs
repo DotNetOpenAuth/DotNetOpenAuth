@@ -99,7 +99,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <summary>
 		/// Discovers what access the client should have considering the access token in the current request.
 		/// </summary>
-		/// <param name="request">The HTTP request message.</param>
+		/// <param name="requestMessage">The request message.</param>
 		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <param name="requiredScopes">The set of scopes required to approve this request.</param>
 		/// <returns>

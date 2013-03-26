@@ -23,7 +23,7 @@ namespace DotNetOpenAuth.OAuth {
 	using Validation;
 
 	/// <summary>
-	/// Base class for <see cref="WebConsumer"/> and <see cref="DesktopConsumer"/> types.
+	/// Provides OAuth 1.0 consumer services to a client or web application.
 	/// </summary>
 	public class Consumer {
 		/// <summary>
@@ -74,7 +74,7 @@ namespace DotNetOpenAuth.OAuth {
 		}
 
 		/// <summary>
-		/// Gets the Consumer Key used to communicate with the Service Provider.
+		/// Gets or sets the Consumer Key used to communicate with the Service Provider.
 		/// </summary>
 		public string ConsumerKey { get; set; }
 
@@ -103,7 +103,7 @@ namespace DotNetOpenAuth.OAuth {
 		public ServiceProviderDescription ServiceProvider { get; set; }
 
 		/// <summary>
-		/// Gets the persistence store for tokens and secrets.
+		/// Gets or sets the persistence store for tokens and secrets.
 		/// </summary>
 		public ITemporaryCredentialStorage TemporaryCredentialStorage { get; set; }
 

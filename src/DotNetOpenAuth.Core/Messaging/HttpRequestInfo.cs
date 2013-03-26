@@ -267,7 +267,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// When overridden in a derived class, gets or sets the MIME content type of the request.
 		/// </summary>
 		/// <returns>The MIME content type of the request, such as "text/html".</returns>
-		/// <exception cref="System.NotImplementedException"></exception>
+		/// <exception cref="System.NotImplementedException">Setter always throws</exception>
 		public override string ContentType {
 			get { return this.Headers["Content-Type"]; }
 			set { throw new NotImplementedException(); }

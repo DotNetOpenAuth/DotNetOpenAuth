@@ -6,17 +6,16 @@
 
 namespace DotNetOpenAuth.Test.OpenId {
 	using System;
+	using System.Net;
 	using System.Net.Http;
 	using System.Threading;
 	using System.Threading.Tasks;
-
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.Provider;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using NUnit.Framework;
-	using System.Net;
 
 	[TestFixture]
 	public class NonIdentityTests : OpenIdTestBase {

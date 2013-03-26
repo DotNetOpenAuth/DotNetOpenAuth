@@ -73,37 +73,6 @@ namespace DotNetOpenAuth.Test {
 			return result;
 		}
 
-		internal Channel CreateChannel(MessageProtections capabilityAndRecognition) {
-			return this.CreateChannel(capabilityAndRecognition, capabilityAndRecognition);
-		}
-
-		internal Channel CreateChannel(MessageProtections capability, MessageProtections recognition) {
-			var bindingElements = new List<IChannelBindingElement>();
-			if (capability >= MessageProtections.TamperProtection) {
-				bindingElements.Add(new MockSigningBindingElement());
-			}
-			if (capability >= MessageProtections.Expiration) {
-				bindingElements.Add(new StandardExpirationBindingElement());
-			}
-			if (capability >= MessageProtections.ReplayProtection) {
-				bindingElements.Add(new MockReplayProtectionBindingElement());
-			}
-
-			bool signing = false, expiration = false, replay = false;
-			if (recognition >= MessageProtections.TamperProtection) {
-				signing = true;
-			}
-			if (recognition >= MessageProtections.Expiration) {
-				expiration = true;
-			}
-			if (recognition >= MessageProtections.ReplayProtection) {
-				replay = true;
-			}
-
-			var typeProvider = new TestMessageFactory(signing, expiration, replay);
-			return new TestChannel(typeProvider, bindingElements.ToArray(), this.HostFactories);
-		}
-
 		internal static IDictionary<string, string> GetStandardTestFields(FieldFill fill) {
 			TestMessage expectedMessage = GetStandardTestMessage(fill);
 
@@ -143,6 +112,37 @@ namespace DotNetOpenAuth.Test {
 				message.Name = "Andrew";
 				message.Location = new Uri("http://localtest/path");
 			}
+		}
+
+		internal Channel CreateChannel(MessageProtections capabilityAndRecognition) {
+			return this.CreateChannel(capabilityAndRecognition, capabilityAndRecognition);
+		}
+
+		internal Channel CreateChannel(MessageProtections capability, MessageProtections recognition) {
+			var bindingElements = new List<IChannelBindingElement>();
+			if (capability >= MessageProtections.TamperProtection) {
+				bindingElements.Add(new MockSigningBindingElement());
+			}
+			if (capability >= MessageProtections.Expiration) {
+				bindingElements.Add(new StandardExpirationBindingElement());
+			}
+			if (capability >= MessageProtections.ReplayProtection) {
+				bindingElements.Add(new MockReplayProtectionBindingElement());
+			}
+
+			bool signing = false, expiration = false, replay = false;
+			if (recognition >= MessageProtections.TamperProtection) {
+				signing = true;
+			}
+			if (recognition >= MessageProtections.Expiration) {
+				expiration = true;
+			}
+			if (recognition >= MessageProtections.ReplayProtection) {
+				replay = true;
+			}
+
+			var typeProvider = new TestMessageFactory(signing, expiration, replay);
+			return new TestChannel(typeProvider, bindingElements.ToArray(), this.HostFactories);
 		}
 
 		internal async Task ParameterizedReceiveTestAsync(HttpMethod method) {

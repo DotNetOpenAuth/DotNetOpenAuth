@@ -23,11 +23,13 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// Creates an HTTP message handler that authorizes outgoing web requests.
 		/// </summary>
 		/// <param name="accessToken">The access token.</param>
+		/// <returns>An <see cref="HttpMessageHandler"/> that applies the access token to all outgoing requests.</returns>
 		HttpMessageHandler CreateMessageHandler(AccessToken accessToken);
 
 		/// <summary>
 		/// The process user authorization.
 		/// </summary>
+		/// <param name="context">The HTTP context.</param>
 		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The access token, if obtained; otherwise <c>null</c>.

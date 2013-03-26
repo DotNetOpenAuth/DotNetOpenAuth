@@ -170,8 +170,8 @@ namespace DotNetOpenAuth.Yadis {
 
 				HttpResponseMessage response = null;
 				try {
-					response = await httpClient.SendAsync(request, cancellationToken);
 					// http://stackoverflow.com/questions/14103154/how-to-determine-if-an-httpresponsemessage-was-fulfilled-from-cache-using-httpcl
+					response = await httpClient.SendAsync(request, cancellationToken);
 					if (!response.IsSuccessStatusCode && response.Headers.Age.HasValue && response.Headers.Age.Value > TimeSpan.Zero) {
 						// We don't want to report error responses from the cache, since the server may have fixed
 						// whatever was causing the problem.  So try again with cache disabled.

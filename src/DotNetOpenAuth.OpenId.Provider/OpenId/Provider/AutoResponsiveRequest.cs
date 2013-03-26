@@ -66,7 +66,10 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <summary>
 		/// Gets the response message, once <see cref="IsResponseReady" /> is <c>true</c>.
 		/// </summary>
-		/// <returns>The response message.</returns>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The response message.
+		/// </returns>
 		internal Task<IProtocolMessage> GetResponseMessageAsyncTestHook(CancellationToken cancellationToken) {
 			return this.GetResponseMessageAsync(cancellationToken);
 		}

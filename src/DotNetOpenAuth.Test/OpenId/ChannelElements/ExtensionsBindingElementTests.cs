@@ -124,7 +124,6 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 			var opStore = new StandardProviderApplicationStore();
 			int rpStep = 0;
 
-
 			Handle(RPUri).By(
 				async req => {
 					var rp = new OpenIdRelyingParty(new StandardRelyingPartyApplicationStore(), this.HostFactories);
@@ -157,7 +156,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 			{
 				var op = new OpenIdProvider(opStore, this.HostFactories);
 				RegisterMockExtension(op.Channel);
-				var redirectingResponse = await op.Channel.PrepareResponseAsync(CreateResponseWithExtensions(protocol));
+				var redirectingResponse = await op.Channel.PrepareResponseAsync(this.CreateResponseWithExtensions(protocol));
 				using (var httpClient = this.HostFactories.CreateHttpClient()) {
 					using (var response = await httpClient.GetAsync(redirectingResponse.Headers.Location)) {
 						response.EnsureSuccessStatusCode();
@@ -165,7 +164,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 				}
 
 				op.SecuritySettings.SignOutgoingExtensions = false;
-				redirectingResponse = await op.Channel.PrepareResponseAsync(CreateResponseWithExtensions(protocol));
+				redirectingResponse = await op.Channel.PrepareResponseAsync(this.CreateResponseWithExtensions(protocol));
 				using (var httpClient = this.HostFactories.CreateHttpClient()) {
 					using (var response = await httpClient.GetAsync(redirectingResponse.Headers.Location)) {
 						response.EnsureSuccessStatusCode();

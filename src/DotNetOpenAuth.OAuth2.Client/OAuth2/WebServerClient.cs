@@ -49,7 +49,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="clientIdentifier">The client identifier.</param>
 		/// <param name="clientCredentialApplicator">The tool to use to apply client credentials to authenticated requests to the Authorization Server.
 		/// May be <c>null</c> for clients with no secret or other means of authentication.</param>
-		/// <param name="hostFactories"></param>
+		/// <param name="hostFactories">The host factories.</param>
 		public WebServerClient(AuthorizationServerDescription authorizationServer, string clientIdentifier, ClientCredentialApplicator clientCredentialApplicator, IHostFactories hostFactories = null)
 			: base(authorizationServer, clientIdentifier, clientCredentialApplicator, hostFactories) {
 		}

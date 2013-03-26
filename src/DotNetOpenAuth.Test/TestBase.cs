@@ -19,9 +19,8 @@ namespace DotNetOpenAuth.Test {
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using DotNetOpenAuth.Test.Performance;
 	using log4net;
-	using NUnit.Framework;
-
 	using log4net.Config;
+	using NUnit.Framework;
 
 	/// <summary>
 	/// The base class that all test classes inherit from.
@@ -55,7 +54,7 @@ namespace DotNetOpenAuth.Test {
 			get { return this.messageDescriptions; }
 		}
 
-		internal MockingHostFactories HostFactories;
+		internal MockingHostFactories HostFactories { get; set; }
 
 		/// <summary>
 		/// The TestInitialize method for the test cases.

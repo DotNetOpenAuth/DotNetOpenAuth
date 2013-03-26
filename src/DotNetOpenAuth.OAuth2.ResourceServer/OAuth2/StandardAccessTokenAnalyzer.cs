@@ -31,8 +31,9 @@ namespace DotNetOpenAuth.OAuth2 {
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="StandardAccessTokenAnalyzer"/> class.
+		/// Initializes a new instance of the <see cref="StandardAccessTokenAnalyzer" /> class.
 		/// </summary>
+		/// <param name="symmetricKeyStore">The symmetric key store.</param>
 		public StandardAccessTokenAnalyzer(ICryptoKeyStore symmetricKeyStore) {
 			Requires.NotNull(symmetricKeyStore, "symmetricKeyStore");
 			this.SymmetricKeyStore = symmetricKeyStore;
@@ -50,6 +51,12 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <value>The resource server private encryption key.</value>
 		public RSACryptoServiceProvider ResourceServerPrivateEncryptionKey { get; private set; }
 
+		/// <summary>
+		/// Gets the symmetric key store.
+		/// </summary>
+		/// <value>
+		/// The symmetric key store.
+		/// </value>
 		public ICryptoKeyStore SymmetricKeyStore { get; private set; }
 
 		/// <summary>

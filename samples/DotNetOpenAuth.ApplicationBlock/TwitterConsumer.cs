@@ -154,7 +154,7 @@ namespace DotNetOpenAuth.ApplicationBlock {
 		}
 
 		public async Task<JArray> GetUpdatesAsync(AccessToken accessToken, CancellationToken cancellationToken = default(CancellationToken)) {
-			if (String.IsNullOrEmpty(accessToken.Token)) {
+			if (string.IsNullOrEmpty(accessToken.Token)) {
 				throw new ArgumentNullException("accessToken.Token");
 			}
 
@@ -169,7 +169,7 @@ namespace DotNetOpenAuth.ApplicationBlock {
 		}
 
 		public async Task<XDocument> GetFavorites(AccessToken accessToken, CancellationToken cancellationToken = default(CancellationToken)) {
-			if (String.IsNullOrEmpty(accessToken.Token)) {
+			if (string.IsNullOrEmpty(accessToken.Token)) {
 				throw new ArgumentNullException("accessToken.Token");
 			}
 

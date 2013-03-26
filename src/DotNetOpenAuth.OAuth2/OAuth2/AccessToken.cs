@@ -59,7 +59,10 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <summary>
 		/// Creates a formatter capable of serializing/deserializing an access token.
 		/// </summary>
-		/// <returns>An access token serializer.</returns>
+		/// <param name="symmetricKeyStore">The symmetric key store.</param>
+		/// <returns>
+		/// An access token serializer.
+		/// </returns>
 		internal static IDataBagFormatter<AccessToken> CreateFormatter(ICryptoKeyStore symmetricKeyStore) {
 			Requires.NotNull(symmetricKeyStore, "symmetricKeyStore");
 			return new UriStyleMessageFormatter<AccessToken>(symmetricKeyStore, bucket: "AccessTokens", signed: true, encrypted: true);
