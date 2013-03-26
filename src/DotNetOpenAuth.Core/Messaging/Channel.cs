@@ -1181,6 +1181,10 @@ namespace DotNetOpenAuth.Messaging {
 					messageAccessor.ToStringDeferred());
 			}
 
+			if (this.IncomingMessageFilter != null) {
+				this.IncomingMessageFilter(message);
+			}
+
 			MessageProtections appliedProtection = MessageProtections.None;
 			foreach (IChannelBindingElement bindingElement in this.IncomingBindingElements) {
 				Assumes.True(bindingElement.Channel != null); // CC bug: this.IncomingBindingElements ensures this... why must we assume it here?
@@ -1231,10 +1235,6 @@ namespace DotNetOpenAuth.Messaging {
 			// message deserializer did for us.  It would be too late to do it here since
 			// they might look initialized by the time we have an IProtocolMessage instance.
 			message.EnsureValidMessage();
-
-			if (this.IncomingMessageFilter != null) {
-				this.IncomingMessageFilter(message);
-			}
 		}
 
 		/// <summary>

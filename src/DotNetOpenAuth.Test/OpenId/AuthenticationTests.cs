@@ -270,7 +270,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 					}
 				}
 
-				var assertionMessage = new HttpRequestMessage(HttpMethod.Get, redirectResponse.AbsoluteUri);
+				var assertionMessage = new HttpRequestMessage(HttpMethod.Get, redirectResponse);
 				if (positive) {
 					if (tamper) {
 						try {
