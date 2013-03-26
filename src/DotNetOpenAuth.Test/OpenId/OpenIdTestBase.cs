@@ -196,6 +196,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 			var rp = this.CreateRelyingParty(true);
 			return rp.DiscoverAsync(identifier, cancellationToken);
 		}
+
 		/// <summary>
 		/// Simulates an extension request and response.
 		/// </summary>
@@ -206,8 +207,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// This method relies on the extension objects' Equals methods to verify
 		/// accurate transport.  The Equals methods should be verified by separate tests.
 		/// </remarks>
-		internal async Task RoundtripAsync(
-			Protocol protocol, IEnumerable<IOpenIdMessageExtension> requests, IEnumerable<IOpenIdMessageExtension> responses) {
+		internal async Task RoundtripAsync(Protocol protocol, IEnumerable<IOpenIdMessageExtension> requests, IEnumerable<IOpenIdMessageExtension> responses) {
 			var securitySettings = new ProviderSecuritySettings();
 			var cryptoKeyStore = new MemoryCryptoKeyStore();
 			var associationStore = new ProviderAssociationHandleEncoder(cryptoKeyStore);
@@ -334,6 +334,5 @@ namespace DotNetOpenAuth.Test.OpenId {
 			var op = new OpenIdProvider(new StandardProviderApplicationStore(), this.HostFactories);
 			return op;
 		}
-
 	}
 }

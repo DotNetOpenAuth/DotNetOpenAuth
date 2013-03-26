@@ -117,11 +117,11 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 					  .Returns(true);
 			authServer.Setup(
 				a => a.CheckAuthorizeClientCredentialsGrant(It.Is<IAccessTokenRequest>(d => d.ClientIdentifier == ClientId && MessagingUtilities.AreEquivalent(d.Scope, TestScopes))))
-					  .Returns<IAccessTokenRequest>(req => {
+					.Returns<IAccessTokenRequest>(req => {
 						var response = new AutomatedAuthorizationCheckResponse(req, true);
 						response.ApprovedScope.ResetContents(approvedScopes);
 						return response;
-					  });
+					});
 			Handle(AuthorizationServerDescription.TokenEndpoint).By(
 				async (req, ct) => {
 					var server = new AuthorizationServer(authServer.Object);

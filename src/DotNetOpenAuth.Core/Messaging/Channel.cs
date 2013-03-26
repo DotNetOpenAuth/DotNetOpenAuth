@@ -735,19 +735,6 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
-		/// Provides derived-types the opportunity to wrap an <see cref="HttpMessageHandler"/> with another one.
-		/// </summary>
-		/// <param name="innerHandler">The inner handler received from <see cref="IHostFactories"/></param>
-		/// <returns>The handler to use in <see cref="HttpClient"/> instances.</returns>
-		protected virtual HttpMessageHandler WrapMessageHandler(HttpMessageHandler innerHandler) {
-			//TODO: make sure that everyone calls this to wrap their handlers rather than using the one directly returned
-			//from IHostFactories.
-
-			// No wrapping by default.
-			return innerHandler;
-		}
-
-		/// <summary>
 		/// Called when receiving a direct response message, before deserialization begins.
 		/// </summary>
 		/// <param name="response">The HTTP direct response.</param>

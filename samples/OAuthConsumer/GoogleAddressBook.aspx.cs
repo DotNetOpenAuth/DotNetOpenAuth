@@ -51,13 +51,14 @@
 
 						XDocument contactsDocument =
 							await google.GetContactsAsync(this.AccessToken, 5, 1, Response.ClientDisconnectedToken);
-						var contacts = from entry in contactsDocument.Root.Elements(XName.Get("entry", "http://www.w3.org/2005/Atom"))
-						               select
-							               new {
-								               Name = entry.Element(XName.Get("title", "http://www.w3.org/2005/Atom")).Value,
-								               Email =
-							               entry.Element(XName.Get("email", "http://schemas.google.com/g/2005")).Attribute("address").Value
-							               };
+						var contacts =
+							from entry in contactsDocument.Root.Elements(XName.Get("entry", "http://www.w3.org/2005/Atom"))
+							select
+							 new {
+								 Name = entry.Element(XName.Get("title", "http://www.w3.org/2005/Atom")).Value,
+								 Email =
+							 entry.Element(XName.Get("email", "http://schemas.google.com/g/2005")).Attribute("address").Value
+							 };
 						StringBuilder tableBuilder = new StringBuilder();
 						tableBuilder.Append("<table><tr><td>Name</td><td>Email</td></tr>");
 						foreach (var contact in contacts) {

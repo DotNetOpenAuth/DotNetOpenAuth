@@ -24,7 +24,7 @@ namespace DotNetOpenAuth.OAuth {
 	/// outgoing HTTP requests per the OAuth 1.0 "3.4 Signature" in RFC 5849.
 	/// </summary>
 	/// <remarks>
-	/// http://tools.ietf.org/html/rfc5849#section-3.4
+	/// An implementation of http://tools.ietf.org/html/rfc5849#section-3.4
 	/// </remarks>
 	public abstract class OAuth1HttpMessageHandlerBase : DelegatingHandler {
 		/// <summary>

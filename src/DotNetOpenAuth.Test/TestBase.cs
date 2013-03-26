@@ -148,12 +148,12 @@ namespace DotNetOpenAuth.Test {
 
 			internal void By(string responseContent, string contentType, HttpStatusCode statusCode = HttpStatusCode.OK) {
 				this.By(
-				   req => {
-					   var response = new HttpResponseMessage(statusCode);
-					   response.Content = new StringContent(responseContent);
-					   response.Content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
-					   return response;
-				   });
+					req => {
+						var response = new HttpResponseMessage(statusCode);
+						response.Content = new StringContent(responseContent);
+						response.Content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
+						return response;
+					});
 			}
 		}
 	}

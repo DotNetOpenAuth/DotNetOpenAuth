@@ -1,4 +1,10 @@
-﻿namespace DotNetOpenAuth.OpenIdOfflineProvider.Controllers {
+﻿//-----------------------------------------------------------------------
+// <copyright file="UserController.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+namespace DotNetOpenAuth.OpenIdOfflineProvider.Controllers {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
