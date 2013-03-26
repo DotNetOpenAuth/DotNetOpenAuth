@@ -15,16 +15,18 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
 	using Validation;
+	using System.Runtime.Serialization;
 
 	/// <summary>
 	/// A base class from which identity and non-identity RP requests can derive.
 	/// </summary>
 	[Serializable]
-	internal abstract class HostProcessedRequest : Request, IHostProcessedRequest {
+	internal abstract class HostProcessedRequest : Request, IHostProcessedRequest, IDeserializationCallback {
 		/// <summary>
 		/// The negative assertion to send, if the host site chooses to send it.
 		/// </summary>
-		private readonly Lazy<Task<NegativeAssertionResponse>> negativeResponse;
+		[NonSerialized]
+		private Lazy<Task<NegativeAssertionResponse>> negativeResponse;
 
 		/// <summary>
 		/// A cache of the result from discovery of the Realm URL.
@@ -40,7 +42,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			: base(request, provider.SecuritySettings) {
 			Requires.NotNull(provider, "provider");
 
-			this.negativeResponse = new Lazy<Task<NegativeAssertionResponse>>(() => NegativeAssertionResponse.CreateAsync(request, CancellationToken.None, provider.Channel));
+			this.SharedInitialization(provider);
 			Reporting.RecordEventOccurrence(this, request.Realm);
 		}
 
@@ -123,6 +125,15 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		#endregion
 
 		/// <summary>
+		/// Runs when the entire object graph has been deserialized.
+		/// </summary>
+		/// <param name="sender">The object that initiated the callback. The functionality for this parameter is not currently implemented.</param>
+		void IDeserializationCallback.OnDeserialization(object sender) {
+			// Bug: user_setup_url won't be created for OpenID 1.1 RPs in this path.
+			this.SharedInitialization(null);
+		}
+
+		/// <summary>
 		/// Gets the negative response.
 		/// </summary>
 		/// <returns>The negative assertion message.</returns>
@@ -182,6 +193,14 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			}
 
 			return RelyingPartyDiscoveryResult.NoMatchingReturnTo;
+		}
+
+		/// <summary>
+		/// Performs initialization common to construction and deserialization.
+		/// </summary>
+		/// <param name="provider">The provider.</param>
+		private void SharedInitialization(OpenIdProvider provider) {
+			this.negativeResponse = new Lazy<Task<NegativeAssertionResponse>>(() => NegativeAssertionResponse.CreateAsync(this.RequestMessage, CancellationToken.None, provider.Channel));
 		}
 	}
 }

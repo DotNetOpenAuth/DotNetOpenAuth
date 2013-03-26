@@ -6,14 +6,14 @@
 
 namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using DotNetOpenAuth.Messaging;
-using DotNetOpenAuth.OpenId.Messages;
-using Validation;
+	using System.Collections.Generic;
+	using System.Linq;
+	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
+	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId.Messages;
+	using Validation;
 
 	/// <summary>
 	/// Implements the <see cref="IRequest" /> interface for all incoming
