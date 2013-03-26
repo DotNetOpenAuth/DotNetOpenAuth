@@ -202,7 +202,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 							if (positive) {
 								response = new PositiveAssertionResponse(request);
 							} else {
-								response = new NegativeAssertionResponse(request.Version, request.ReturnTo, request.Mode);
+								response = await NegativeAssertionResponse.CreateAsync(request, CancellationToken.None, op.Channel);
 							}
 
 							return await op.Channel.PrepareResponseAsync(response);
