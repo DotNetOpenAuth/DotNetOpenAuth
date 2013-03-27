@@ -12,11 +12,11 @@
 
 	<Import Project="$(ProjectRoot)Tools\sandcastle.targets" />
 
-  <ItemGroup>
-    <MRefDependencyProjects Include="$(ProjectRoot)src\DotNetOpenAuth.Core\DotNetOpenAuth.Core.csproj" />
-    <MRefDependencyProjects Include="$(ProjectRoot)src\DotNetOpenAuth.OAuth2.Client\DotNetOpenAuth.OAuth2.Client.csproj" />
-  </ItemGroup>
-  
+	<ItemGroup>
+		<MRefDependencyProjects Include="$(ProjectRoot)src\DotNetOpenAuth.Core\DotNetOpenAuth.Core.csproj" />
+		<MRefDependencyProjects Include="$(ProjectRoot)src\DotNetOpenAuth.OAuth2.Client\DotNetOpenAuth.OAuth2.Client.csproj" />
+	</ItemGroup>
+	
 	<Target Name="CollectMRefDependencies">
 		<MSBuild
 			Projects="@(MRefDependencyProjects)"
