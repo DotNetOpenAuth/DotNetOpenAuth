@@ -1,4 +1,10 @@
-﻿namespace DotNetOpenAuth.OAuth {
+﻿//-----------------------------------------------------------------------
+// <copyright file="AccessTokenResponse.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+namespace DotNetOpenAuth.OAuth {
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.Specialized;

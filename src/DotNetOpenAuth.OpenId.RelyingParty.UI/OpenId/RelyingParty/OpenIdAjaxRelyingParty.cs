@@ -236,12 +236,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			//    string userSuppliedIdentifier;
 			//    jsonResponse discoveryResult; // contains result of call to SerializeDiscoveryAsJson(Identifier)
 			// }
-			var jsonAsync = (from request in requests
-							 group request by request.DiscoveryResult.UserSuppliedIdentifier into requestsByIdentifier
-							 select new {
-								 userSuppliedIdentifier = (string)requestsByIdentifier.Key,
-								 discoveryResult = this.AsJsonDiscoveryResultAsync(requestsByIdentifier, cancellationToken),
-							 }).ToArray();
+			var jsonAsync = (
+				from request in requests
+				group request by request.DiscoveryResult.UserSuppliedIdentifier into requestsByIdentifier
+				select new {
+					userSuppliedIdentifier = (string)requestsByIdentifier.Key,
+					discoveryResult = this.AsJsonDiscoveryResultAsync(requestsByIdentifier, cancellationToken),
+				}).ToArray();
 			await Task.WhenAll(jsonAsync.Select(j => j.discoveryResult));
 			var json =
 				from j in jsonAsync
