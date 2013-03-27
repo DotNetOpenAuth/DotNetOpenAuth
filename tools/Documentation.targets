@@ -12,9 +12,14 @@
 
 	<Import Project="$(ProjectRoot)Tools\sandcastle.targets" />
 
+  <ItemGroup>
+    <MRefDependencyProjects Include="$(ProjectRoot)src\DotNetOpenAuth.Core\DotNetOpenAuth.Core.csproj" />
+    <MRefDependencyProjects Include="$(ProjectRoot)src\DotNetOpenAuth.OAuth2.Client\DotNetOpenAuth.OAuth2.Client.csproj" />
+  </ItemGroup>
+  
 	<Target Name="CollectMRefDependencies">
 		<MSBuild
-			Projects="$(ProjectRoot)src\DotNetOpenAuth.Core\DotNetOpenAuth.Core.csproj"
+			Projects="@(MRefDependencyProjects)"
 			Targets="ResolveAssemblyReferences"
 			BuildInParallel="$(BuildInParallel)">
 			<Output TaskParameter="TargetOutputs" ItemName="MRefDependencies" />
