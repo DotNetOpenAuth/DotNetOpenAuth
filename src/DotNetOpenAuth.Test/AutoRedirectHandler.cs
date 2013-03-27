@@ -1,4 +1,10 @@
-﻿namespace DotNetOpenAuth.Test {
+﻿//-----------------------------------------------------------------------
+// <copyright file="AutoRedirectHandler.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+namespace DotNetOpenAuth.Test {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
