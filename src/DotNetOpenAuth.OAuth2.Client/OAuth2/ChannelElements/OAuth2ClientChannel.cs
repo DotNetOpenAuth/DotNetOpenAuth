@@ -101,11 +101,8 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			var contentType = response.Content.Headers.ContentType.MediaType;
 			if (contentType == JsonEncoded || contentType == JsonTextEncoded) {
 				return this.DeserializeFromJson(body);
-			} else if (contentType == HttpFormUrlEncoded || contentType == PlainTextEncoded) {
-				return HttpUtility.ParseQueryString(body).ToDictionary();
-			} else {
-				throw ErrorUtilities.ThrowProtocol(ClientStrings.UnexpectedResponseContentType, contentType);
 			}
+			return HttpUtility.ParseQueryString(body).ToDictionary();
 		}
 
 		/// <summary>
