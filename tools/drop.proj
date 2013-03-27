@@ -3,6 +3,10 @@
 	<Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.props))\EnlistmentInfo.props" Condition=" '$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.props))' != '' " />
 	<Import Project="$(MSBuildProjectDirectory)\DotNetOpenAuth.automated.props"/>
 
+	<PropertyGroup>
+		<BuildProjectTemplates>false</BuildProjectTemplates>
+	</PropertyGroup>
+
 	<Target Name="LayoutDependencies">
 		<MSBuild Projects="$(ProjectRoot)src\$(ProductName)\$(ProductName).proj"
 		         Properties="TargetFrameworkVersion=v4.5"
@@ -19,10 +23,10 @@
 		<!-- Note that we use an MSBuild task for these dependencies rather than individual DependsOnTargets entries
 		     so that these builds can be executed in parallel. -->
 		<ItemGroup>
-			<ProjectsToBuild Include="
-							$(ProjectRoot)vsix\vsix.proj;
-							$(ProjectRoot)samples\samples.proj;
-							">
+			<ProjectsToBuild Include="$(ProjectRoot)vsix\vsix.proj" Condition=" '$(BuildProjectTemplates)' == 'true' ">
+				<Properties>TargetFrameworkVersion=v4.5</Properties>
+			</ProjectsToBuild>
+			<ProjectsToBuild Include="$(ProjectRoot)samples\samples.proj">
 				<Properties>TargetFrameworkVersion=v4.5</Properties>
 			</ProjectsToBuild>
 
