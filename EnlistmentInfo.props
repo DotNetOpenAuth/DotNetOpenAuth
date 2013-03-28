@@ -12,4 +12,12 @@
 		<RequireRestoreConsent>false</RequireRestoreConsent>
 		<DownloadNuGetExe>true</DownloadNuGetExe>
 	</PropertyGroup>
+
+	<Target Name="ExcludeGeneratedFilesFromStyleCop" BeforeTargets="StyleCop">
+		<ItemGroup>
+			<Compile Condition=" $([System.String]::new('%(FileName)').StartsWith('TemporaryGeneratedFile')) ">
+				<ExcludeFromStyleCop>true</ExcludeFromStyleCop>
+			</Compile>
+		</ItemGroup>
+	</Target>
 </Project>
