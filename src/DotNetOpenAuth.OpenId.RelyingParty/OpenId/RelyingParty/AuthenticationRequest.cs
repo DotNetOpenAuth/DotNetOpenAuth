@@ -434,34 +434,34 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			Logger.Yadis.InfoFormat("Performing discovery on user-supplied identifier: {0}", userSuppliedIdentifier);
 			IEnumerable<IdentifierDiscoveryResult> endpoints = FilterAndSortEndpoints(serviceEndpoints, relyingParty);
 
-			var authRequestResults = await endpoints.ToDictionaryAsync(async endpoint => {
+			var authRequestResults = endpoints.Select(async endpoint => {
 				Logger.OpenId.DebugFormat("Creating authentication request for user supplied Identifier: {0}", userSuppliedIdentifier);
 
 				// The strategy here is to prefer endpoints with whom we can create associations.
-				Association association = null;
 				if (relyingParty.AssociationManager.HasAssociationStore) {
 					// In some scenarios (like the AJAX control wanting ALL auth requests possible),
 					// we don't want to create associations with every Provider.  But we'll use
 					// associations where they are already formed from previous authentications.
-					association = createNewAssociationsAsNeeded ? await relyingParty.AssociationManager.GetOrCreateAssociationAsync(endpoint, cancellationToken) : relyingParty.AssociationManager.GetExistingAssociation(endpoint);
+					Association association = createNewAssociationsAsNeeded ? await relyingParty.AssociationManager.GetOrCreateAssociationAsync(endpoint, cancellationToken) : relyingParty.AssociationManager.GetExistingAssociation(endpoint);
 					if (association == null && createNewAssociationsAsNeeded) {
 						Logger.OpenId.WarnFormat("Failed to create association with {0}.  Skipping to next endpoint.", endpoint.ProviderEndpoint);
 
 						// No association could be created.  Add it to the list of failed association
 						// endpoints and skip to the next available endpoint.
-						return null;
+						return new KeyValuePair<IdentifierDiscoveryResult, AuthenticationRequest>(endpoint, null);
 					}
 				}
 
-				return new AuthenticationRequest(endpoint, realm, returnToUrl, relyingParty);
-			});
+				return new KeyValuePair<IdentifierDiscoveryResult, AuthenticationRequest>(endpoint, new AuthenticationRequest(endpoint, realm, returnToUrl, relyingParty));
+			}).ToList();
 
-			var results = (from pair in authRequestResults where pair.Value != null select pair.Value).ToList();
+			await Task.WhenAll(authRequestResults);
+			var results = (from pair in authRequestResults where pair.Result.Value != null select pair.Result.Value).ToList();
 
 			// Maintain a list of endpoints that we could not form an association with.
 			// We'll fallback to generating requests to these if the ones we CAN create
 			// an association with run out.
-			var failedAssociationEndpoints = (from pair in authRequestResults where pair.Value == null select pair.Key).ToList();
+			var failedAssociationEndpoints = (from pair in authRequestResults where pair.Result.Value == null select pair.Result.Key).ToList();
 
 			// Now that we've run out of endpoints that respond to association requests,
 			// since we apparently are still running, the caller must want another request.
