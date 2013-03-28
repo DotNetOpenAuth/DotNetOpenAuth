@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 	using System.Threading;
 	using System.Threading.Tasks;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.Provider;
@@ -327,8 +328,8 @@ namespace DotNetOpenAuth.Test.OpenId {
 			Association rpAssociation = null, opAssociation;
 			AssociateSuccessfulResponse associateSuccessfulResponse = null;
 			AssociateUnsuccessfulResponse associateUnsuccessfulResponse = null;
-			var relyingParty = new OpenIdRelyingParty(new StandardRelyingPartyApplicationStore(), this.HostFactories);
-			var provider = new OpenIdProvider(new StandardProviderApplicationStore(), this.HostFactories) {
+			var relyingParty = new OpenIdRelyingParty(new MemoryCryptoKeyAndNonceStore(), this.HostFactories);
+			var provider = new OpenIdProvider(new MemoryCryptoKeyAndNonceStore(), this.HostFactories) {
 				SecuritySettings = this.ProviderSecuritySettings
 			};
 			Handle(opDescription.Uri).By(

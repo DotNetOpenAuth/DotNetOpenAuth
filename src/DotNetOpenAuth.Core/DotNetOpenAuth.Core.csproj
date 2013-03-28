@@ -29,8 +29,10 @@
     <Compile Include="Messaging\Bindings\CryptoKeyCollisionException.cs" />
     <Compile Include="Messaging\Bindings\HardCodedKeyCryptoKeyStore.cs" />
     <Compile Include="Messaging\Bindings\ICryptoKeyStore.cs" />
+    <Compile Include="Messaging\Bindings\ICryptoKeyAndNonceStore.cs" />
     <Compile Include="Messaging\Bindings\MemoryCryptoKeyStore.cs" />
     <Compile Include="Messaging\BinaryDataBagFormatter.cs" />
+    <Compile Include="Messaging\Bindings\MemoryCryptoKeyAndNonceStore.cs" />
     <Compile Include="Messaging\HttpResponseMessageWithOriginal.cs" />
     <Compile Include="Messaging\MessageProtectionTasks.cs" />
     <Compile Include="Messaging\MultipartContentMember.cs" />
@@ -71,7 +73,7 @@
     <Compile Include="Messaging\TimestampEncoder.cs" />
     <Compile Include="Messaging\IMessageWithBinaryData.cs" />
     <Compile Include="Messaging\ChannelEventArgs.cs" />
-    <Compile Include="Messaging\Bindings\NonceMemoryStore.cs" />
+    <Compile Include="Messaging\Bindings\MemoryNonceStore.cs" />
     <Compile Include="Messaging\Bindings\INonceStore.cs" />
     <Compile Include="Messaging\Bindings\StandardReplayProtectionBindingElement.cs" />
     <Compile Include="Messaging\MessagePartAttribute.cs" />

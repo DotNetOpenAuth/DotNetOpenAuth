@@ -12,6 +12,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 	using System.Web;
 
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Extensions;
 	using DotNetOpenAuth.OpenId.Messages;
@@ -40,7 +41,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 
 		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void SecuritySettingsSetNull() {
-			var rp = new OpenIdRelyingParty(new StandardRelyingPartyApplicationStore());
+			var rp = new OpenIdRelyingParty(new MemoryCryptoKeyAndNonceStore());
 			rp.SecuritySettings = null;
 		}
 
@@ -109,10 +110,10 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// </summary>
 		[Test]
 		public async Task AssertionWithEndpointFilter() {
-			var opStore = new StandardProviderApplicationStore();
+			var opStore = new MemoryCryptoKeyAndNonceStore();
 			Handle(RPUri).By(
 				async req => {
-					var rp = new OpenIdRelyingParty(new StandardRelyingPartyApplicationStore(), this.HostFactories);
+					var rp = new OpenIdRelyingParty(new MemoryCryptoKeyAndNonceStore(), this.HostFactories);
 
 					// Rig it to always deny the incoming OP
 					rp.EndpointFilter = op => false;

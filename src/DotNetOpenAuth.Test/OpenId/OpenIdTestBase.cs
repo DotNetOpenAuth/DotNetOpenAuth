@@ -151,7 +151,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 		internal void RegisterAutoProvider() {
 			this.Handle(OPUri).By(
 				async (req, ct) => {
-					var provider = new OpenIdProvider(new StandardProviderApplicationStore(), this.HostFactories);
+					var provider = new OpenIdProvider(new MemoryCryptoKeyAndNonceStore(), this.HostFactories);
 					return await this.AutoProviderActionAsync(provider, req, ct);
 				});
 		}
@@ -322,7 +322,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// <param name="stateless">if set to <c>true</c> a stateless RP is created.</param>
 		/// <returns>The new instance.</returns>
 		protected OpenIdRelyingParty CreateRelyingParty(bool stateless) {
-			var rp = new OpenIdRelyingParty(stateless ? null : new StandardRelyingPartyApplicationStore(), this.HostFactories);
+			var rp = new OpenIdRelyingParty(stateless ? null : new MemoryCryptoKeyAndNonceStore(), this.HostFactories);
 			return rp;
 		}
 
@@ -331,7 +331,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// </summary>
 		/// <returns>The new instance.</returns>
 		protected OpenIdProvider CreateProvider() {
-			var op = new OpenIdProvider(new StandardProviderApplicationStore(), this.HostFactories);
+			var op = new OpenIdProvider(new MemoryCryptoKeyAndNonceStore(), this.HostFactories);
 			return op;
 		}
 	}

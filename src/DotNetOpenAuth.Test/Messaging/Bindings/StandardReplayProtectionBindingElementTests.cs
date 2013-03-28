@@ -31,7 +31,7 @@ namespace DotNetOpenAuth.Test.Messaging.Bindings {
 			base.SetUp();
 
 			this.protocol = Protocol.Default;
-			this.nonceStore = new NonceMemoryStore(TimeSpan.FromHours(3));
+			this.nonceStore = new MemoryNonceStore(TimeSpan.FromHours(3));
 			this.nonceElement = new StandardReplayProtectionBindingElement(this.nonceStore);
 			this.nonceElement.Channel = new Mocks.TestChannel();
 			this.message = new TestReplayProtectedMessage();

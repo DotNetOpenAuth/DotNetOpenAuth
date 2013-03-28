@@ -31,7 +31,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	public sealed class OpenIdProvider : IDisposable, IOpenIdHost {
 		/// <summary>
 		/// The name of the key to use in the HttpApplication cache to store the
-		/// instance of <see cref="StandardProviderApplicationStore"/> to use.
+		/// instance of <see cref="MemoryCryptoKeyAndNonceStore"/> to use.
 		/// </summary>
 		private const string ApplicationStoreKey = "DotNetOpenAuth.OpenId.Provider.OpenIdProvider.ApplicationStore";
 
@@ -63,7 +63,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		/// <param name="applicationStore">The application store to use.  Cannot be null.</param>
 		/// <param name="hostFactories">The host factories.</param>
-		public OpenIdProvider(IOpenIdApplicationStore applicationStore, IHostFactories hostFactories = null)
+		public OpenIdProvider(ICryptoKeyAndNonceStore applicationStore, IHostFactories hostFactories = null)
 			: this((INonceStore)applicationStore, (ICryptoKeyStore)applicationStore, hostFactories) {
 			Requires.NotNull(applicationStore, "applicationStore");
 		}
@@ -180,18 +180,18 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		/// <param name="context">The context.</param>
 		/// <returns>The application store.</returns>
-		public static IOpenIdApplicationStore GetHttpApplicationStore(HttpContextBase context = null) {
+		public static ICryptoKeyAndNonceStore GetHttpApplicationStore(HttpContextBase context = null) {
 			if (context == null) {
-				ErrorUtilities.VerifyOperation(HttpContext.Current != null, Strings.StoreRequiredWhenNoHttpContextAvailable, typeof(IOpenIdApplicationStore).Name);
+				ErrorUtilities.VerifyOperation(HttpContext.Current != null, Strings.StoreRequiredWhenNoHttpContextAvailable, typeof(ICryptoKeyAndNonceStore).Name);
 				context = new HttpContextWrapper(HttpContext.Current);
 			}
 
-			var store = (IOpenIdApplicationStore)context.Application[ApplicationStoreKey];
+			var store = (ICryptoKeyAndNonceStore)context.Application[ApplicationStoreKey];
 			if (store == null) {
 				context.Application.Lock();
 				try {
-					if ((store = (IOpenIdApplicationStore)context.Application[ApplicationStoreKey]) == null) {
-						context.Application[ApplicationStoreKey] = store = new StandardProviderApplicationStore();
+					if ((store = (ICryptoKeyAndNonceStore)context.Application[ApplicationStoreKey]) == null) {
+						context.Application[ApplicationStoreKey] = store = new MemoryCryptoKeyAndNonceStore();
 					}
 				} finally {
 					context.Application.UnLock();

@@ -55,7 +55,6 @@
     <Compile Include="OpenId\RelyingParty\OpenIdRelyingParty.cs" />
     <Compile Include="OpenId\RelyingParty\PositiveAuthenticationResponseSnapshot.cs" />
     <Compile Include="OpenId\RelyingParty\SimpleXrdsProviderEndpoint.cs" />
-    <Compile Include="OpenId\RelyingParty\StandardRelyingPartyApplicationStore.cs" />
     <Compile Include="OpenId\RelyingParty\WellKnownProviders.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

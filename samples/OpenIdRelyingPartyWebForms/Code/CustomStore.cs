@@ -25,7 +25,7 @@ namespace OpenIdRelyingPartyWebForms.Code {
 	/// But we "persist" all associations and nonces into a DataTable to demonstrate
 	/// that using a database is possible.
 	/// </remarks>
-	public class CustomStore : IOpenIdApplicationStore {
+	public class CustomStore : ICryptoKeyAndNonceStore {
 		private static CustomStoreDataSet dataSet = new CustomStoreDataSet();
 
 		#region INonceStore Members

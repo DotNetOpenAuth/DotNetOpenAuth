@@ -22,6 +22,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Web.UI;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId.Extensions;
 	using Validation;
 
@@ -303,7 +304,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="store">The store to pass to the relying party constructor.</param>
 		/// <returns>The instantiated relying party.</returns>
-		protected override OpenIdRelyingParty CreateRelyingParty(IOpenIdApplicationStore store) {
+		protected override OpenIdRelyingParty CreateRelyingParty(ICryptoKeyAndNonceStore store) {
 			return new OpenIdAjaxRelyingParty(store);
 		}
 

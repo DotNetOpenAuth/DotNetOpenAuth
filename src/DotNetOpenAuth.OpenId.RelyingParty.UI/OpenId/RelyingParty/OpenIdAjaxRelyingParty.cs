@@ -21,6 +21,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Web.Script.Serialization;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId.Extensions;
 	using DotNetOpenAuth.OpenId.Extensions.UI;
 	using Validation;
@@ -40,7 +41,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Initializes a new instance of the <see cref="OpenIdAjaxRelyingParty"/> class.
 		/// </summary>
 		/// <param name="applicationStore">The application store.  If <c>null</c>, the relying party will always operate in "dumb mode".</param>
-		public OpenIdAjaxRelyingParty(IOpenIdApplicationStore applicationStore)
+		public OpenIdAjaxRelyingParty(ICryptoKeyAndNonceStore applicationStore)
 			: base(applicationStore) {
 			Reporting.RecordFeatureUse(this);
 		}

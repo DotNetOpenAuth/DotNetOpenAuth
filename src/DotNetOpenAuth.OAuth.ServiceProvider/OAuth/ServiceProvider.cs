@@ -37,7 +37,7 @@ namespace DotNetOpenAuth.OAuth {
 	public class ServiceProvider : IDisposable {
 		/// <summary>
 		/// The name of the key to use in the HttpApplication cache to store the
-		/// instance of <see cref="NonceMemoryStore"/> to use.
+		/// instance of <see cref="MemoryNonceStore"/> to use.
 		/// </summary>
 		private const string ApplicationStoreKey = "DotNetOpenAuth.OAuth.ServiceProvider.HttpApplicationStore";
 
@@ -165,7 +165,7 @@ namespace DotNetOpenAuth.OAuth {
 				context.Application.Lock();
 				try {
 					if ((store = (INonceStore)context.Application[ApplicationStoreKey]) == null) {
-						context.Application[ApplicationStoreKey] = store = new NonceMemoryStore(StandardExpirationBindingElement.MaximumMessageAge);
+						context.Application[ApplicationStoreKey] = store = new MemoryNonceStore(StandardExpirationBindingElement.MaximumMessageAge);
 					}
 				} finally {
 					context.Application.UnLock();

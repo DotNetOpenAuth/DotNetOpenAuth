@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="NonceMemoryStore.cs" company="Outercurve Foundation">
+// <copyright file="MemoryNonceStore.cs" company="Outercurve Foundation">
 //     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -8,14 +8,12 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
-	using System.Text;
-	using DotNetOpenAuth.Messaging.Bindings;
 
 	/// <summary>
 	/// An in-memory nonce store.  Useful for single-server web applications.
 	/// NOT for web farms.
 	/// </summary>
-	internal class NonceMemoryStore : INonceStore {
+	internal class MemoryNonceStore : INonceStore {
 		/// <summary>
 		/// How frequently we should take time to clear out old nonces.
 		/// </summary>
@@ -45,17 +43,17 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		private int nonceClearingCounter;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="NonceMemoryStore"/> class.
+		/// Initializes a new instance of the <see cref="MemoryNonceStore"/> class.
 		/// </summary>
-		internal NonceMemoryStore()
+		internal MemoryNonceStore()
 			: this(StandardExpirationBindingElement.MaximumMessageAge) {
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="NonceMemoryStore"/> class.
+		/// Initializes a new instance of the <see cref="MemoryNonceStore"/> class.
 		/// </summary>
 		/// <param name="maximumMessageAge">The maximum age a message can be before it is discarded.</param>
-		internal NonceMemoryStore(TimeSpan maximumMessageAge) {
+		internal MemoryNonceStore(TimeSpan maximumMessageAge) {
 			this.maximumMessageAge = maximumMessageAge;
 		}
 

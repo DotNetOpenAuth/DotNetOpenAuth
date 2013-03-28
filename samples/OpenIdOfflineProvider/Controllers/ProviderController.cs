@@ -15,11 +15,12 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider.Controllers {
 	using System.Threading.Tasks;
 	using System.Web.Http;
 
+	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Provider;
 
 	public class ProviderController : ApiController {
-		private static readonly IOpenIdApplicationStore store = new StandardProviderApplicationStore();
+		private static readonly ICryptoKeyAndNonceStore store = new MemoryCryptoKeyAndNonceStore();
 
 		private MainWindow MainWindow {
 			get { return MainWindow.Instance; }

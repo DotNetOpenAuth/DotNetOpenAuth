@@ -14,6 +14,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 	using System.Threading.Tasks;
 
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.Extensions;
@@ -121,12 +122,12 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		[Test]
 		public async Task ExtensionsAreIdentifiedAsSignedOrUnsigned() {
 			Protocol protocol = Protocol.Default;
-			var opStore = new StandardProviderApplicationStore();
+			var opStore = new MemoryCryptoKeyAndNonceStore();
 			int rpStep = 0;
 
 			Handle(RPUri).By(
 				async req => {
-					var rp = new OpenIdRelyingParty(new StandardRelyingPartyApplicationStore(), this.HostFactories);
+					var rp = new OpenIdRelyingParty(new MemoryCryptoKeyAndNonceStore(), this.HostFactories);
 					RegisterMockExtension(rp.Channel);
 
 					switch (++rpStep) {

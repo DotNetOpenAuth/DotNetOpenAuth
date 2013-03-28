@@ -1,10 +1,10 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="StandardProviderApplicationStore.cs" company="Outercurve Foundation">
+// <copyright file="MemoryCryptoKeyAndNonceStore.cs" company="Outercurve Foundation">
 //     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.OpenId.Provider {
+namespace DotNetOpenAuth.Messaging.Bindings {
 	using System;
 	using System.Collections.Generic;
 	using DotNetOpenAuth.Configuration;
@@ -19,10 +19,10 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	/// out of the box on most single-server web sites.  It is highly recommended
 	/// that high traffic web sites consider using a database to store the information
 	/// used by an OpenID Provider and write a custom implementation of the
-	/// <see cref="IOpenIdApplicationStore"/> interface to use instead of this
+	/// <see cref="ICryptoKeyAndNonceStore"/> interface to use instead of this
 	/// class.
 	/// </remarks>
-	public class StandardProviderApplicationStore : IOpenIdApplicationStore {
+	public class MemoryCryptoKeyAndNonceStore : ICryptoKeyAndNonceStore {
 		/// <summary>
 		/// The nonce store to use.
 		/// </summary>
@@ -34,10 +34,19 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		private readonly ICryptoKeyStore cryptoKeyStore;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="StandardProviderApplicationStore"/> class.
+		/// Initializes a new instance of the <see cref="MemoryCryptoKeyAndNonceStore" /> class
+		/// with a default max nonce lifetime of 5 minutes.
 		/// </summary>
-		public StandardProviderApplicationStore() {
-			this.nonceStore = new NonceMemoryStore(OpenIdElement.Configuration.MaxAuthenticationTime);
+		public MemoryCryptoKeyAndNonceStore()
+			: this(TimeSpan.FromMinutes(5)) {
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="MemoryCryptoKeyAndNonceStore"/> class.
+		/// </summary>
+		/// <param name="maximumMessageAge">The maximum time to live of a message that might carry a nonce.</param>
+		public MemoryCryptoKeyAndNonceStore(TimeSpan maximumMessageAge) {
+			this.nonceStore = new MemoryNonceStore(maximumMessageAge);
 			this.cryptoKeyStore = new MemoryCryptoKeyStore();
 		}
 

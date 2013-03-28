@@ -26,6 +26,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using DotNetOpenAuth.ComponentModel;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId.Extensions;
 	using DotNetOpenAuth.OpenId.Extensions.UI;
 	using DotNetOpenAuth.OpenId.Messages;
@@ -817,7 +818,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <returns>The instantiated relying party.</returns>
 		protected OpenIdRelyingParty CreateRelyingParty() {
-			IOpenIdApplicationStore store = this.Stateless ? null : OpenIdElement.Configuration.RelyingParty.ApplicationStore.CreateInstance(OpenIdRelyingParty.GetHttpApplicationStore(new HttpContextWrapper(this.Context)), null);
+			ICryptoKeyAndNonceStore store = this.Stateless ? null : OpenIdElement.Configuration.RelyingParty.ApplicationStore.CreateInstance(OpenIdRelyingParty.GetHttpApplicationStore(new HttpContextWrapper(this.Context)), null);
 			return this.CreateRelyingParty(store);
 		}
 
@@ -826,7 +827,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="store">The store to pass to the relying party constructor.</param>
 		/// <returns>The instantiated relying party.</returns>
-		protected virtual OpenIdRelyingParty CreateRelyingParty(IOpenIdApplicationStore store) {
+		protected virtual OpenIdRelyingParty CreateRelyingParty(ICryptoKeyAndNonceStore store) {
 			return new OpenIdRelyingParty(store);
 		}
 

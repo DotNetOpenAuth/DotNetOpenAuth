@@ -66,10 +66,10 @@ namespace DotNetOpenAuth.Test.OpenId {
 
 		[Test]
 		public async Task UnsolicitedAssertion() {
-			var opStore = new StandardProviderApplicationStore();
+			var opStore = new MemoryCryptoKeyAndNonceStore();
 			Handle(RPUri).By(
 				async req => {
-					var rp = new OpenIdRelyingParty(new StandardRelyingPartyApplicationStore(), this.HostFactories);
+					var rp = new OpenIdRelyingParty(new MemoryCryptoKeyAndNonceStore(), this.HostFactories);
 					IAuthenticationResponse response = await rp.GetResponseAsync(req);
 					Assert.That(response, Is.Not.Null);
 					Assert.AreEqual(AuthenticationStatus.Authenticated, response.Status);
@@ -97,10 +97,10 @@ namespace DotNetOpenAuth.Test.OpenId {
 
 		[Test]
 		public async Task UnsolicitedAssertionRejected() {
-			var opStore = new StandardProviderApplicationStore();
+			var opStore = new MemoryCryptoKeyAndNonceStore();
 			Handle(RPUri).By(
 				async req => {
-					var rp = new OpenIdRelyingParty(new StandardRelyingPartyApplicationStore(), this.HostFactories);
+					var rp = new OpenIdRelyingParty(new MemoryCryptoKeyAndNonceStore(), this.HostFactories);
 					rp.SecuritySettings.RejectUnsolicitedAssertions = true;
 					IAuthenticationResponse response = await rp.GetResponseAsync(req);
 					Assert.That(response, Is.Not.Null);
@@ -132,7 +132,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 		/// </summary>
 		[Test]
 		public async Task UnsolicitedDelegatingIdentifierRejection() {
-			var opStore = new StandardProviderApplicationStore();
+			var opStore = new MemoryCryptoKeyAndNonceStore();
 			Handle(RPUri).By(
 				async req => {
 					var rp = this.CreateRelyingParty();

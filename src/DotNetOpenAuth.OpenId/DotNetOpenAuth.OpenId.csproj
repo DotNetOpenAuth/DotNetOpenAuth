@@ -140,7 +140,6 @@
       <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="OpenId\Protocol.cs" />
-    <Compile Include="OpenId\IOpenIdApplicationStore.cs" />
     <Compile Include="OpenId\RelyingParty\RelyingPartySecuritySettings.cs" />
     <Compile Include="OpenId\UntrustedWebRequestHandler.cs" />
     <Compile Include="OpenId\UriDiscoveryService.cs" />

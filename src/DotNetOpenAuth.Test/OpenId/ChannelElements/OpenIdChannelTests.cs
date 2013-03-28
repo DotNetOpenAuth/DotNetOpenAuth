@@ -30,7 +30,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 
 		[SetUp]
 		public void Setup() {
-			this.channel = new OpenIdRelyingPartyChannel(new MemoryCryptoKeyStore(), new NonceMemoryStore(maximumMessageAge), new RelyingPartySecuritySettings(), this.HostFactories);
+			this.channel = new OpenIdRelyingPartyChannel(new MemoryCryptoKeyStore(), new MemoryNonceStore(maximumMessageAge), new RelyingPartySecuritySettings(), this.HostFactories);
 		}
 
 		[Test]

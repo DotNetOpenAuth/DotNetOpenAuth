@@ -53,7 +53,6 @@
     <Compile Include="OpenId\Provider\IDirectedIdentityIdentifierProvider.cs" />
     <Compile Include="OpenId\Provider\IErrorReporting.cs" />
     <Compile Include="OpenId\Provider\Request.cs" />
-    <Compile Include="OpenId\Provider\StandardProviderApplicationStore.cs" />
     <Compile Include="OpenId\Provider\OpenIdProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
