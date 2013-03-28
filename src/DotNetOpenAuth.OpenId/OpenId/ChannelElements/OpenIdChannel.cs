@@ -187,7 +187,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			var fields = messageAccessor.Serialize();
 			byte[] keyValueEncoding = KeyValueFormEncoding.GetBytes(fields);
 
-			var preparedResponse = new HttpResponseMessage();
+			var preparedResponse = new HttpResponseMessageWithOriginal(response);
 			ApplyMessageTemplate(response, preparedResponse);
 			var content = new StreamContent(new MemoryStream(keyValueEncoding));
 			content.Headers.ContentType = new MediaTypeHeaderValue(KeyValueFormContentType);
