@@ -9,11 +9,9 @@
 
 	<Target Name="LayoutDependencies">
 		<MSBuild Projects="$(ProjectRoot)src\$(ProductName)\$(ProductName).proj"
-		         Properties="TargetFrameworkVersion=v4.5"
 		         Targets="BuildUnifiedProduct"
 		         BuildInParallel="$(BuildInParallel)" />
 		<MSBuild Projects="@(DelaySignedProjects)"
-		         Properties="TargetFrameworkVersion=v4.5"
 		         Targets="Sign"
 		         BuildInParallel="$(BuildInParallel)"
 		         Condition=" '%(DelaySignedProjects.Nonshipping)' != 'true' " />
@@ -23,17 +21,11 @@
 		<!-- Note that we use an MSBuild task for these dependencies rather than individual DependsOnTargets entries
 		     so that these builds can be executed in parallel. -->
 		<ItemGroup>
-			<ProjectsToBuild Include="$(ProjectRoot)vsix\vsix.proj" Condition=" '$(BuildProjectTemplates)' == 'true' ">
-				<Properties>TargetFrameworkVersion=v4.5</Properties>
-			</ProjectsToBuild>
-			<ProjectsToBuild Include="$(ProjectRoot)samples\samples.proj">
-				<Properties>TargetFrameworkVersion=v4.5</Properties>
-			</ProjectsToBuild>
+			<ProjectsToBuild Include="$(ProjectRoot)vsix\vsix.proj" Condition=" '$(BuildProjectTemplates)' == 'true' " />
+			<ProjectsToBuild Include="$(ProjectRoot)samples\samples.proj" />
 
 			<!-- Sandcastle doesn't seem to be able to handle .NET 4.0 dependencies right now. -->
-			<ProjectsToBuild Include="$(ProjectRoot)doc\doc.proj">
-				<Properties>TargetFrameworkVersion=v4.5</Properties>
-			</ProjectsToBuild>
+			<ProjectsToBuild Include="$(ProjectRoot)doc\doc.proj" />
 		</ItemGroup>
 		<MSBuild Projects="@(ProjectsToBuild)"
 						 Properties="%(ProjectsToBuild.Properties)"

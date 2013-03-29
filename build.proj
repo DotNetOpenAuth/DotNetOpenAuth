@@ -8,16 +8,12 @@
 		<NightlyProjects Include="
 										nuget\nuget.proj;
 										tools\drop.proj;
-										 ">
-			<Properties>TargetFrameworkVersion=v4.5</Properties>
-		</NightlyProjects>
+										 " />
 		<NightlyProjects Include="samples\samples.proj">
 			<Targets>DeployableArchive</Targets>
-			<Properties>TargetFrameworkVersion=v4.5</Properties>
 		</NightlyProjects>
 		<NightlyProjects Include="doc\doc.proj">
 			<Targets>DeployableArchive</Targets>
-			<Properties>TargetFrameworkVersion=v4.5</Properties>
 		</NightlyProjects>
 
 		<ProjectsToClean Include="
@@ -26,12 +22,8 @@
 		                          vsi\vsi.proj;
 		                          vsix\vsix.proj;
 		                          samples\samples.proj;
-		                          ">
-			<Properties>TargetFrameworkVersion=v4.5</Properties>
-		</ProjectsToClean>
-		<ProjectsToClean Include="doc\doc.proj">
-			<Properties>TargetFrameworkVersion=v4.5</Properties>
-		</ProjectsToClean>
+		                          doc\doc.proj;
+		                          " />
 
 		<DirectoriesToClean Include="
 			                           $(ProjectRoot)bin;
@@ -48,13 +40,10 @@
 		<TestProjects Include="DotNetOpenAuth_AspNet_Test" />
 		<TestAssemblies Include="$(OutputPath)$(ProductName).AspNet.Test.dll" />
 
-		<ProjectsToPublish Include="doc\doc.proj">
+		<ProjectsToPublish Include="
+		                            doc\doc.proj;
+		                            samples\samples.proj">
 			<Targets>Publish</Targets>
-			<Properties>TargetFrameworkVersion=v4.5</Properties>
-		</ProjectsToPublish>
-		<ProjectsToPublish Include="samples\samples.proj">
-			<Targets>Publish</Targets>
-			<Properties>TargetFrameworkVersion=v4.5</Properties>
 		</ProjectsToPublish>
 	</ItemGroup>
 

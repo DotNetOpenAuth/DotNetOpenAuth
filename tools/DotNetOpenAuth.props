@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<ProductName>DotNetOpenAuth</ProductName>
 		<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-		<TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+		<TargetFrameworkVersion Condition=" '$(TargetFrameworkVersion)' == '' ">v4.5</TargetFrameworkVersion>
 		<DisableFastUpToDateCheck>false</DisableFastUpToDateCheck>
 		<DropsRoot>$(ProjectRoot)drops\$(TargetFrameworkVersion)\$(Configuration)\</DropsRoot>
 		<OutputPath>$(ProjectRoot)bin\$(TargetFrameworkVersion)\$(Configuration)\</OutputPath>
@@ -82,9 +82,7 @@
 		<DelaySignedProjects Include="$(ProjectRoot)src\dotnetopenauth.test\dotnetopenauth.test.csproj">
 			<Nonshipping>true</Nonshipping>
 		</DelaySignedProjects>
-		<DelaySignedProjects Include="$(ProjectRoot)samples\openidofflineprovider\openidofflineprovider.csproj">
-			<TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-		</DelaySignedProjects>
+		<DelaySignedProjects Include="$(ProjectRoot)samples\openidofflineprovider\openidofflineprovider.csproj" />
 
 		<ProjectReferencesToRemove Include="@(ProductProjectNames->'..\..\src\%(Identity)\%(Identity).csproj')" />
 		<AssemblyReferencesToReplaceWith Include="@(ProjectReferencesToRemove->'..\..\Bin-net4.0\$(ProductName).dll')" />
