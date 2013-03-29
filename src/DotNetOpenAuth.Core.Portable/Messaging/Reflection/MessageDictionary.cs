@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
+	using System.Reflection;
 	using Validation;
 
 	/// <summary>
@@ -93,10 +94,10 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// </summary>
 		public ICollection<string> Keys {
 			get {
-				List<string> keys = new List<string>(this.message.ExtraData.Count + this.description.Mapping.Count);
+				var keys = new List<string>(this.message.ExtraData.Count + this.description.Mapping.Count);
 				keys.AddRange(this.DeclaredKeys);
 				keys.AddRange(this.AdditionalKeys);
-				return keys.AsReadOnly();
+				return keys;
 			}
 		}
 
@@ -105,7 +106,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// </summary>
 		public ICollection<string> DeclaredKeys {
 			get {
-				List<string> keys = new List<string>(this.description.Mapping.Count);
+				var keys = new List<string>(this.description.Mapping.Count);
 				foreach (var pair in this.description.Mapping) {
 					// Don't include keys with null values, but default values for structs is ok
 					if (pair.Value.GetValue(this.message, this.getOriginalValues) != null) {
@@ -113,7 +114,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 					}
 				}
 
-				return keys.AsReadOnly();
+				return keys;
 			}
 		}
 
@@ -129,7 +130,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// </summary>
 		public ICollection<string> Values {
 			get {
-				List<string> values = new List<string>(this.message.ExtraData.Count + this.description.Mapping.Count);
+				var values = new List<string>(this.message.ExtraData.Count + this.description.Mapping.Count);
 				foreach (MessagePart part in this.description.Mapping.Values) {
 					if (part.GetValue(this.message, this.getOriginalValues) != null) {
 						values.Add(part.GetValue(this.message, this.getOriginalValues));
@@ -141,7 +142,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 					values.Add(value);
 				}
 
-				return values.AsReadOnly();
+				return values;
 			}
 		}
 
@@ -151,7 +152,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// Gets the serializer for the message this dictionary provides access to.
 		/// </summary>
 		private MessageSerializer Serializer {
-			get { return MessageSerializer.Get(this.Message.GetType()); }
+			get { return MessageSerializer.Get(this.Message.GetType().GetTypeInfo()); }
 		}
 
 		#region IDictionary<string,string> Indexers

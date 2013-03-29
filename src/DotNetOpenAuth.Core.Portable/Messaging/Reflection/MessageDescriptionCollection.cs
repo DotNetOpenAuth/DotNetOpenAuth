@@ -10,6 +10,8 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Linq;
+	using System.Reflection;
+
 	using Validation;
 
 	/// <summary>
@@ -67,7 +69,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <returns>A <see cref="MessageDescription"/> instance.</returns>
 		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Diagnostics.Contracts.__ContractsRuntime.Assume(System.Boolean,System.String,System.String)", Justification = "No localization required.")]
 		[Pure]
-		internal MessageDescription Get(Type messageType, Version messageVersion) {
+		internal MessageDescription Get(TypeInfo messageType, Version messageVersion) {
 			RequiresEx.NotNullSubtype<IMessage>(messageType, "messageType");
 			Requires.NotNull(messageVersion, "messageVersion");
 
@@ -105,7 +107,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		[Pure]
 		internal MessageDescription Get(IMessage message) {
 			Requires.NotNull(message, "message");
-			return this.Get(message.GetType(), message.Version);
+			return this.Get(message.GetType().GetTypeInfo(), message.Version);
 		}
 
 		/// <summary>
@@ -138,7 +140,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			/// <summary>
 			/// Backing store for the <see cref="Type"/> property.
 			/// </summary>
-			private readonly Type type;
+				private readonly TypeInfo type;
 
 			/// <summary>
 			/// Backing store for the <see cref="Version"/> property.
@@ -150,7 +152,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			/// </summary>
 			/// <param name="messageType">Type of the message.</param>
 			/// <param name="messageVersion">The message version.</param>
-			internal MessageTypeAndVersion(Type messageType, Version messageVersion) {
+			internal MessageTypeAndVersion(TypeInfo messageType, Version messageVersion) {
 				Requires.NotNull(messageType, "messageType");
 				Requires.NotNull(messageVersion, "messageVersion");
 
@@ -162,7 +164,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			/// Gets the message type.
 			/// </summary>
 			[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Exposes basic identity on the type.")]
-			internal Type Type {
+			internal TypeInfo Type {
 				get { return this.type; }
 			}
 

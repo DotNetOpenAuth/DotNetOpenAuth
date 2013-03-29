@@ -7,6 +7,8 @@
 namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.Globalization;
+	using System.Reflection;
+
 	using DotNetOpenAuth.Messaging.Reflection;
 
 	/// <summary>
@@ -25,8 +27,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// Gets the type of the encoded values produced by this encoder, as they would appear in their preferred form.
 		/// </summary>
-		public Type FormattingType {
-			get { return typeof(int); }
+		public TypeInfo FormattingType {
+			get { return typeof(int).GetTypeInfo(); }
 		}
 
 		#endregion

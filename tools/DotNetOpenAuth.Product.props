@@ -48,7 +48,7 @@ http://opensource.org/licenses/ms-pl.html
 		</Compile>
 	</ItemGroup>
 
-	<ItemGroup>
+	<ItemGroup Condition=" '$(TargetFrameworkProfile)' == '' ">
 		<Reference Include="System" />
 		<Reference Include="System.Security" />
 		<Reference Include="System.configuration" />
@@ -69,9 +69,6 @@ http://opensource.org/licenses/ms-pl.html
 		<Reference Include="System.XML" />
 		<Reference Include="System.Xml.Linq" />
 		<Reference Include="System.ComponentModel.DataAnnotations" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<Reference Include="System.Xaml" />
 	</ItemGroup>
 </Project>

@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Reflection;
 	using System.Text;
 	using Reflection;
 	using Validation;
@@ -104,7 +105,7 @@ namespace DotNetOpenAuth.Messaging {
 			var messageDescriptions = new List<MessageDescription>(messageTypes.Count * versions.Count);
 			messageDescriptions.AddRange(from version in versions
 			                             from messageType in messageTypes
-			                             select descriptionsCache.Get(messageType, version));
+			                             select descriptionsCache.Get(messageType.GetTypeInfo(), version));
 
 			return messageDescriptions;
 		}

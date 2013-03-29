@@ -5,11 +5,9 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth {
-	using System;
 	using System.Globalization;
+
 	using DotNetOpenAuth.Loggers;
-	using DotNetOpenAuth.Messaging;
-	using log4net.Core;
 	using Validation;
 
 	/// <summary>
@@ -20,64 +18,64 @@ namespace DotNetOpenAuth {
 	/// overloads that take <see cref="CultureInfo"/> have been removed, and 
 	/// <see cref="CultureInfo.InvariantCulture"/> is used implicitly.
 	/// </remarks>
-	internal static partial class Logger {
+	public static class Logger {
 		#region Category-specific loggers
 
 		/// <summary>
 		/// The <see cref="ILog"/> instance that is to be used 
 		/// by this static Logger for the duration of the appdomain.
 		/// </summary>
-		private static readonly ILog library = CreateWithBanner("DotNetOpenAuth");
+		private static ILog library = NoOpLogger.Initialize();
 
 		/// <summary>
 		/// Backing field for the <see cref="Yadis"/> property.
 		/// </summary>
-		private static readonly ILog yadis = Create("DotNetOpenAuth.Yadis");
+		private static ILog yadis = NoOpLogger.Initialize();
 
 		/// <summary>
 		/// Backing field for the <see cref="Messaging"/> property.
 		/// </summary>
-		private static readonly ILog messaging = Create("DotNetOpenAuth.Messaging");
+		private static ILog messaging = NoOpLogger.Initialize();
 
 		/// <summary>
 		/// Backing field for the <see cref="Channel"/> property.
 		/// </summary>
-		private static readonly ILog channel = Create("DotNetOpenAuth.Messaging.Channel");
+		private static ILog channel = NoOpLogger.Initialize();
 
 		/// <summary>
 		/// Backing field for the <see cref="Bindings"/> property.
 		/// </summary>
-		private static readonly ILog bindings = Create("DotNetOpenAuth.Messaging.Bindings");
+		private static ILog bindings = NoOpLogger.Initialize();
 
 		/// <summary>
 		/// Backing field for the <see cref="Signatures"/> property.
 		/// </summary>
-		private static readonly ILog signatures = Create("DotNetOpenAuth.Messaging.Bindings.Signatures");
+		private static ILog signatures = NoOpLogger.Initialize();
 
 		/// <summary>
 		/// Backing field for the <see cref="Http"/> property.
 		/// </summary>
-		private static readonly ILog http = Create("DotNetOpenAuth.Http");
+		private static ILog http = NoOpLogger.Initialize();
 
 		/// <summary>
 		/// Backing field for the <see cref="Controls"/> property.
 		/// </summary>
-		private static readonly ILog controls = Create("DotNetOpenAuth.Controls");
+		private static ILog controls = NoOpLogger.Initialize();
 
 		/// <summary>
 		/// Backing field for the <see cref="OpenId"/> property.
 		/// </summary>
-		private static readonly ILog openId = Create("DotNetOpenAuth.OpenId");
+		private static ILog openId = NoOpLogger.Initialize();
 
 		/// <summary>
 		/// Backing field for the <see cref="OAuth"/> property.
 		/// </summary>
-		private static readonly ILog oauth = Create("DotNetOpenAuth.OAuth");
+		private static ILog oauth = NoOpLogger.Initialize();
 
 		/// <summary>
 		/// Backing field for the <see cref="InfoCard"/> property.
 		/// </summary>
-		private static readonly ILog infocard = Create("DotNetOpenAuth.InfoCard");
+		private static ILog infocard = NoOpLogger.Initialize();
 
 		/// <summary>
 		/// Gets the logger for general library logging.
@@ -137,48 +135,23 @@ namespace DotNetOpenAuth {
 		#endregion
 
 		/// <summary>
-		/// Creates an additional logger on demand for a subsection of the application.
+		/// Initializes logging using the specified factory.
 		/// </summary>
-		/// <param name="name">A name that will be included in the log file.</param>
-		/// <returns>The <see cref="ILog"/> instance created with the given name.</returns>
-		internal static ILog Create(string name) {
-			Requires.NotNullOrEmpty(name, "name");
-			return InitializeFacade(name);
-		}
+		/// <param name="loggerFactory">The logger factory.</param>
+		public static void InitializeLogging(ILoggerFactory loggerFactory) {
+			Requires.NotNull(loggerFactory, "loggerFactory");
 
-		/// <summary>
-		/// Creates the main logger for the library, and emits an INFO message
-		/// that is the name and version of the library.
-		/// </summary>
-		/// <param name="name">A name that will be included in the log file.</param>
-		/// <returns>The <see cref="ILog"/> instance created with the given name.</returns>
-		internal static ILog CreateWithBanner(string name) {
-			Requires.NotNullOrEmpty(name, "name");
-			ILog log = Create(name);
-			log.Info(Util.LibraryVersion);
-			return log;
-		}
-
-		/// <summary>
-		/// Creates an additional logger on demand for a subsection of the application.
-		/// </summary>
-		/// <param name="type">A type whose full name that will be included in the log file.</param>
-		/// <returns>The <see cref="ILog"/> instance created with the given type name.</returns>
-		internal static ILog Create(Type type) {
-			Requires.NotNull(type, "type");
-
-			return Create(type.FullName);
-		}
-
-		/// <summary>
-		/// Discovers the presence of Log4net.dll and other logging mechanisms
-		/// and returns the best available logger.
-		/// </summary>
-		/// <param name="name">The name of the log to initialize.</param>
-		/// <returns>The <see cref="ILog"/> instance of the logger to use.</returns>
-		private static ILog InitializeFacade(string name) {
-			ILog result = Log4NetLogger.Initialize(name) ?? TraceLogger.Initialize(name) ?? NoOpLogger.Initialize();
-			return result;
+			library = loggerFactory.CreateLogger("DotNetOpenAuth");
+			yadis = loggerFactory.CreateLogger("DotNetOpenAuth.Yadis");
+			messaging = loggerFactory.CreateLogger("DotNetOpenAuth.Messaging");
+			channel = loggerFactory.CreateLogger("DotNetOpenAuth.Messaging.Channel");
+			bindings = loggerFactory.CreateLogger("DotNetOpenAuth.Messaging.Bindings");
+			signatures = loggerFactory.CreateLogger("DotNetOpenAuth.Messaging.Bindings.Signatures");
+			http = loggerFactory.CreateLogger("DotNetOpenAuth.Http");
+			controls = loggerFactory.CreateLogger("DotNetOpenAuth.Controls");
+			openId = loggerFactory.CreateLogger("DotNetOpenAuth.OpenId");
+			oauth = loggerFactory.CreateLogger("DotNetOpenAuth.OAuth");
+			infocard = loggerFactory.CreateLogger("DotNetOpenAuth.InfoCard");
 		}
 	}
 }

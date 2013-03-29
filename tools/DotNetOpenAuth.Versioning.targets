@@ -6,7 +6,7 @@
 	<PropertyGroup>
 		<VersionCsFile>$(IntermediatePath)\$(AssemblyName).Version.cs</VersionCsFile>
 		<NoWarn>$(NoWarn);1607</NoWarn>
-		<UltimateResourceFallbackLocation Condition=" '$(UltimateResourceFallbackLocation)' == '' ">UltimateResourceFallbackLocation.MainAssembly</UltimateResourceFallbackLocation>
+		<UltimateResourceFallbackLocation Condition=" '$(UltimateResourceFallbackLocation)' == '' and '$(TargetFrameworkProfile)' == '' ">UltimateResourceFallbackLocation.MainAssembly</UltimateResourceFallbackLocation>
 	</PropertyGroup>
 
 	<UsingTask AssemblyFile="$(ProjectRoot)lib\MSBuild.Community.Tasks.dll" TaskName="AssemblyInfo"/>

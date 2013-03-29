@@ -11,6 +11,7 @@ namespace DotNetOpenAuth {
 	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Linq;
+	using System.Reflection;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using Validation;
@@ -62,9 +63,9 @@ namespace DotNetOpenAuth {
 		/// <param name="type">The type given in the argument.</param>
 		/// <param name="parameterName">Name of the parameter.</param>
 		[Pure, DebuggerStepThrough]
-		internal static void NotNullSubtype<T>(Type type, string parameterName) {
+		internal static void NotNullSubtype<T>(TypeInfo type, string parameterName) {
 			Requires.NotNull(type, parameterName);
-			Requires.That(typeof(T).IsAssignableFrom(type), parameterName, MessagingStrings.UnexpectedType, typeof(T).FullName, type.FullName);
+			Requires.That(typeof(T).GetTypeInfo().IsAssignableFrom(type), parameterName, MessagingStrings.UnexpectedType, typeof(T).FullName, type.FullName);
 		}
 
 		/// <summary>

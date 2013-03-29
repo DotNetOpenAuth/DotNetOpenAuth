@@ -10,7 +10,6 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Diagnostics;
 	using System.Diagnostics.Contracts;
 	using System.Globalization;
-	using System.Web;
 	using Validation;
 
 	/// <summary>
@@ -190,10 +189,8 @@ namespace DotNetOpenAuth.Messaging {
 					Logger.Messaging.Error(
 						string.Format(
 						CultureInfo.CurrentCulture,
-						"Protocol error: {0}{1}{2}",
-						exception.Message,
-						Environment.NewLine,
-						new StackTrace()));
+						"Protocol error: {0}",
+						exception.Message));
 				}
 				throw exception;
 			}
@@ -322,15 +319,6 @@ namespace DotNetOpenAuth.Messaging {
 			if (value.Length == 0) {
 				throw new ArgumentException(MessagingStrings.UnexpectedEmptyString, paramName);
 			}
-		}
-
-		/// <summary>
-		/// Verifies that <see cref="HttpContext.Current"/> != <c>null</c>.
-		/// </summary>
-		/// <exception cref="InvalidOperationException">Thrown if <see cref="HttpContext.Current"/> == <c>null</c></exception>
-		[Pure]
-		internal static void VerifyHttpContext() {
-			ErrorUtilities.VerifyOperation(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
 		}
 
 		/// <summary>

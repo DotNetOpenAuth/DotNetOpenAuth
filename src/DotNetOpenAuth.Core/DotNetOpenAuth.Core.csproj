@@ -19,9 +19,9 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Assumes.cs" />
     <Compile Include="IHostFactories.cs" />
     <Compile Include="IRequireHostFactories.cs" />
+    <Compile Include="Loggers\TraceLogger.cs" />
     <Compile Include="MachineKeyUtil.cs" />
     <Compile Include="Messaging\Base64WebEncoder.cs" />
     <Compile Include="Messaging\Bindings\AsymmetricCryptoKeyStoreWrapper.cs" />
@@ -41,30 +41,19 @@
     <Compile Include="Messaging\HttpRequestHeaders.cs" />
     <Compile Include="Messaging\IHttpDirectRequest.cs" />
     <Compile Include="Messaging\IHttpIndirectResponse.cs" />
-    <Compile Include="Messaging\IMessageOriginalPayload.cs" />
     <Compile Include="Messaging\DirectWebRequestOptions.cs" />
     <Compile Include="Messaging\EnumerableCacheExtensions.cs" />
-    <Compile Include="Messaging\HostErrorException.cs" />
     <Compile Include="Messaging\IHttpDirectResponse.cs" />
     <Compile Include="Messaging\IExtensionMessage.cs" />
-    <Compile Include="Messaging\IMessage.cs" />
     <Compile Include="Messaging\IDirectResponseProtocolMessage.cs" />
     <Compile Include="Messaging\EmptyDictionary.cs" />
     <Compile Include="Messaging\EmptyEnumerator.cs" />
     <Compile Include="Messaging\EmptyList.cs" />
-    <Compile Include="Messaging\ErrorUtilities.cs" />
     <Compile Include="Messaging\IMessageWithEvents.cs" />
     <Compile Include="Messaging\IProtocolMessageWithExtensions.cs" />
-    <Compile Include="Messaging\InternalErrorException.cs" />
     <Compile Include="Messaging\IStreamSerializingDataBag.cs" />
     <Compile Include="Messaging\KeyedCollectionDelegate.cs" />
     <Compile Include="Messaging\ProtocolFaultResponseException.cs" />
-    <Compile Include="Messaging\Reflection\IMessagePartEncoder.cs" />
-    <Compile Include="Messaging\Reflection\IMessagePartFormattingEncoder.cs" />
-    <Compile Include="Messaging\Reflection\IMessagePartNullEncoder.cs" />
-    <Compile Include="Messaging\Reflection\IMessagePartOriginalEncoder.cs" />
-    <Compile Include="Messaging\Reflection\MessageDescriptionCollection.cs" />
-    <Compile Include="Messaging\Reflection\DefaultEncoderAttribute.cs" />
     <Compile Include="Messaging\StandardMessageFactory.cs" />
     <Compile Include="Messaging\IDataBagFormatter.cs" />
     <Compile Include="Messaging\UriStyleMessageFormatter.cs" />
@@ -76,8 +65,6 @@
     <Compile Include="Messaging\Bindings\MemoryNonceStore.cs" />
     <Compile Include="Messaging\Bindings\INonceStore.cs" />
     <Compile Include="Messaging\Bindings\StandardReplayProtectionBindingElement.cs" />
-    <Compile Include="Messaging\MessagePartAttribute.cs" />
-    <Compile Include="Messaging\MessageProtections.cs" />
     <Compile Include="Messaging\IChannelBindingElement.cs" />
     <Compile Include="Messaging\Bindings\ReplayedMessageException.cs" />
     <Compile Include="Messaging\Bindings\ExpiredMessageException.cs" />
@@ -89,25 +76,14 @@
     <Compile Include="Messaging\IDirectedProtocolMessage.cs" />
     <Compile Include="Messaging\IMessageFactory.cs" />
     <Compile Include="Messaging\ITamperResistantProtocolMessage.cs" />
-    <Compile Include="Messaging\MessageSerializer.cs" />
-    <Compile Include="Messaging\MessagingStrings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>MessagingStrings.resx</DependentUpon>
-    </Compile>
     <Compile Include="Messaging\MessagingUtilities.cs" />
     <Compile Include="Messaging\Bindings\StandardExpirationBindingElement.cs" />
-    <Compile Include="Messaging\Reflection\ValueMapping.cs" />
-    <Compile Include="Messaging\Reflection\MessageDescription.cs" />
-    <Compile Include="Messaging\Reflection\MessageDictionary.cs" />
-    <Compile Include="Messaging\Reflection\MessagePart.cs" />
     <Compile Include="Messaging\UnprotectedMessageException.cs" />
-    <Compile Include="Messaging\IProtocolMessage.cs" />
     <Compile Include="Messaging\HttpDeliveryMethods.cs" />
-    <Compile Include="Messaging\MessageTransport.cs" />
-    <Compile Include="Messaging\ProtocolException.cs" />
     <Compile Include="Messaging\TimespanSecondsEncoder.cs" />
     <Compile Include="Messaging\MessageReceivingEndpoint.cs" />
+    <Compile Include="UriUtil.cs" />
+    <Compile Include="Util.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Messaging\Bindings\Bindings.cd" />
@@ -127,22 +103,16 @@
     <Compile Include="Configuration\HostNameOrRegexCollection.cs" />
     <Compile Include="Configuration\HostNameElement.cs" />
     <Compile Include="IEmbeddedResourceRetrieval.cs" />
-    <Compile Include="Logger.cs" />
-    <Compile Include="Loggers\ILog.cs" />
+    <Compile Include="LoggerFactory.cs" />
     <Compile Include="Loggers\Log4NetLogger.cs" />
-    <Compile Include="Loggers\NoOpLogger.cs" />
-    <Compile Include="Loggers\TraceLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Messaging\ReadOnlyDictionary.cs" />
     <Compile Include="Reporting.cs" />
-    <Compile Include="RequiresEx.cs" />
     <Compile Include="Strings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Strings.resx</DependentUpon>
     </Compile>
-    <Compile Include="UriUtil.cs" />
-    <Compile Include="Util.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Configuration\DotNetOpenAuth.xsd" />
@@ -156,16 +126,6 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Strings.sr.resx" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Messaging\MessagingStrings.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>MessagingStrings.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Messaging\MessagingStrings.sr.resx" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="log4net, Version=1.2.11.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
@@ -205,6 +165,12 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Validation.2.0.2.13022\lib\portable-windows8+net40+sl5+windowsphone8\Validation.dll</HintPath>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DotNetOpenAuth.Core.Portable\DotNetOpenAuth.Core.Portable.csproj">
+      <Project>{c79ff72c-4459-4449-9524-0d7c828b9698}</Project>
+      <Name>DotNetOpenAuth.Core.Portable</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.targets" />

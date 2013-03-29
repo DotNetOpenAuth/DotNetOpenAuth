@@ -11,10 +11,8 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 	using System.Diagnostics.CodeAnalysis;
 	using System.Globalization;
 	using System.Linq;
-	using System.Net.Security;
 	using System.Reflection;
 	using System.Xml;
-	using DotNetOpenAuth.Configuration;
 	using Validation;
 
 	/// <summary>
@@ -23,14 +21,20 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 	[DebuggerDisplay("MessagePart {Name}")]
 	internal class MessagePart {
 		/// <summary>
+		/// A value indicating whether to follow strict message part matching rules.
+		/// Used to be set via configuration property: DotNetOpenAuthSection.Messaging.Strict
+		/// </summary>
+		private const bool Strict = true;
+
+		/// <summary>
 		/// A map of converters that help serialize custom objects to string values and back again.
 		/// </summary>
-		private static readonly Dictionary<Type, ValueMapping> converters = new Dictionary<Type, ValueMapping>();
+		private static readonly Dictionary<TypeInfo, ValueMapping> converters = new Dictionary<TypeInfo, ValueMapping>();
 
 		/// <summary>
 		/// A map of instantiated custom encoders used to encode/decode message parts.
 		/// </summary>
-		private static readonly Dictionary<Type, IMessagePartEncoder> encoders = new Dictionary<Type, IMessagePartEncoder>();
+		private static readonly Dictionary<TypeInfo, IMessagePartEncoder> encoders = new Dictionary<TypeInfo, IMessagePartEncoder>();
 
 		/// <summary>
 		/// The string-object conversion routines to use for this individual message part.
@@ -50,7 +54,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <summary>
 		/// The type of the message part.  (Not the type of the message itself).
 		/// </summary>
-		private Type memberDeclaredType;
+		private TypeInfo memberDeclaredType;
 
 		/// <summary>
 		/// The default (uninitialized) value of the member inherent in its type.
@@ -82,7 +86,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 				return Convert.FromBase64String(str);
 			};
 			Map<Uri>(uri => uri.AbsoluteUri, uri => uri.OriginalString, safeUri);
-			Map<DateTime>(dt => XmlConvert.ToString(dt, XmlDateTimeSerializationMode.Utc), null, str => XmlConvert.ToDateTime(str, XmlDateTimeSerializationMode.Utc));
+			Map<DateTime>(dt => dt.ToUniversalTime().ToString("o", CultureInfo.InvariantCulture), null, str => DateTime.Parse(str, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal));
 			Map<TimeSpan>(ts => ts.ToString(), null, str => TimeSpan.Parse(str));
 			Map<byte[]>(safeFromByteArray, null, safeToByteArray);
 			Map<bool>(value => value.ToString().ToLowerInvariant(), null, safeBool);
@@ -115,7 +119,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			this.IsRequired = attribute.IsRequired;
 			this.AllowEmpty = attribute.AllowEmpty;
 			this.IsSecuritySensitive = attribute.IsSecuritySensitive;
-			this.memberDeclaredType = (this.field != null) ? this.field.FieldType : this.property.PropertyType;
+			this.memberDeclaredType = (this.field != null) ? this.field.FieldType.GetTypeInfo() : this.property.PropertyType.GetTypeInfo();
 			this.defaultMemberValue = DeriveDefaultValue(this.memberDeclaredType);
 
 			Assumes.True(this.memberDeclaredType != null); // CC missing PropertyInfo.PropertyType ensures result != null
@@ -124,22 +128,22 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 					if (this.memberDeclaredType.IsGenericType &&
 						this.memberDeclaredType.GetGenericTypeDefinition() == typeof(Nullable<>)) {
 						// It's a nullable type.  Try again to look up an appropriate converter for the underlying type.
-						Type underlyingType = Nullable.GetUnderlyingType(this.memberDeclaredType);
+						Type underlyingType = Nullable.GetUnderlyingType(this.memberDeclaredType.GetType());
 						ValueMapping underlyingMapping;
-						if (converters.TryGetValue(underlyingType, out underlyingMapping)) {
+						if (converters.TryGetValue(underlyingType.GetTypeInfo(), out underlyingMapping)) {
 							this.converter = new ValueMapping(
 								underlyingMapping.ValueToString,
 								null,
 								str => str != null ? underlyingMapping.StringToValue(str) : null);
 						} else {
-							this.converter = GetDefaultEncoder(underlyingType);
+							this.converter = GetDefaultEncoder(underlyingType.GetTypeInfo());
 						}
 					} else {
 						this.converter = GetDefaultEncoder(this.memberDeclaredType);
 					}
 				}
 			} else {
-				this.converter = new ValueMapping(GetEncoder(attribute.Encoder));
+				this.converter = new ValueMapping(GetEncoder(attribute.Encoder.GetTypeInfo()));
 			}
 
 			// readonly and const fields are considered legal, and "constants" for message transport.
@@ -210,14 +214,14 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <summary>
 		/// Gets the type of the declared member.
 		/// </summary>
-		internal Type MemberDeclaredType {
+		internal TypeInfo MemberDeclaredType {
 			get { return this.memberDeclaredType; }
 		}
 
 		/// <summary>
 		/// Gets the type of the encoded values produced by this encoder, as they would appear in their preferred form.
 		/// </summary>
-		internal Type PreferredFormattingType {
+		internal TypeInfo PreferredFormattingType {
 			get {
 				var formattingEncoder = this.converter.Encoder as IMessagePartFormattingEncoder;
 				if (formattingEncoder != null) {
@@ -240,7 +244,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			try {
 				if (this.IsConstantValue) {
 					string constantValue = this.GetValue(message);
-					var caseSensitivity = DotNetOpenAuthSection.Messaging.Strict ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
+					var caseSensitivity = Strict ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
 					if (!string.Equals(constantValue, value, caseSensitivity)) {
 						throw new ArgumentException(string.Format(
 							CultureInfo.CurrentCulture,
@@ -321,7 +325,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			Func<object, string> safeToString = obj => obj != null ? toString((T)obj) : null;
 			Func<object, string> safeToOriginalString = obj => obj != null ? toOriginalString((T)obj) : null;
 			Func<string, object> safeToT = str => str != null ? toValue(str) : default(T);
-			converters.Add(typeof(T), new ValueMapping(safeToString, safeToOriginalString, safeToT));
+			converters.Add(typeof(T).GetTypeInfo(), new ValueMapping(safeToString, safeToOriginalString, safeToT));
 		}
 
 		/// <summary>
@@ -344,7 +348,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// </summary>
 		/// <param name="type">The type to create a <see cref="ValueMapping"/> for.</param>
 		/// <returns>A <see cref="ValueMapping"/> struct.</returns>
-		private static ValueMapping GetDefaultEncoder(Type type) {
+		private static ValueMapping GetDefaultEncoder(TypeInfo type) {
 			Requires.NotNull(type, "type");
 
 			var converterAttributes = (DefaultEncoderAttribute[])type.GetCustomAttributes(typeof(DefaultEncoderAttribute), false);
@@ -353,7 +357,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 				return new ValueMapping(converterAttributes[0].Encoder);
 			}
 
-			return CreateFallbackMapping(type);
+			return CreateFallbackMapping(type.AsType());
 		}
 
 		/// <summary>
@@ -361,9 +365,9 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// </summary>
 		/// <param name="type">The type whose default value is being sought.</param>
 		/// <returns>Either null, or some default value like 0 or 0.0.</returns>
-		private static object DeriveDefaultValue(Type type) {
+		private static object DeriveDefaultValue(TypeInfo type) {
 			if (type.IsValueType) {
-				return Activator.CreateInstance(type);
+				return Activator.CreateInstance(type.AsType());
 			} else {
 				return null;
 			}
@@ -374,7 +378,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// </summary>
 		/// <param name="type">The type in question.</param>
 		/// <returns>True if this is a nullable value type.</returns>
-		private static bool IsNonNullableValueType(Type type) {
+		private static bool IsNonNullableValueType(TypeInfo type) {
 			if (!type.IsValueType) {
 				return false;
 			}
@@ -391,15 +395,15 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// </summary>
 		/// <param name="messagePartEncoder">The message part encoder type.</param>
 		/// <returns>An instance of the desired encoder.</returns>
-		private static IMessagePartEncoder GetEncoder(Type messagePartEncoder) {
+		private static IMessagePartEncoder GetEncoder(TypeInfo messagePartEncoder) {
 			Requires.NotNull(messagePartEncoder, "messagePartEncoder");
 
 			IMessagePartEncoder encoder;
 			lock (encoders) {
 				if (!encoders.TryGetValue(messagePartEncoder, out encoder)) {
 					try {
-						encoder = encoders[messagePartEncoder] = (IMessagePartEncoder)Activator.CreateInstance(messagePartEncoder);
-					} catch (MissingMethodException ex) {
+						encoder = encoders[messagePartEncoder] = (IMessagePartEncoder)Activator.CreateInstance(messagePartEncoder.AsType());
+					} catch (MissingMemberException ex) {
 						throw ErrorUtilities.Wrap(ex, MessagingStrings.EncoderInstantiationFailed, messagePartEncoder.FullName);
 					}
 				}

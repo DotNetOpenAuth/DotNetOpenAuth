@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.props))\EnlistmentInfo.props" Condition=" '$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.props))' != '' " />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+  </PropertyGroup>
+  <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.props" />
+  <PropertyGroup>
+    <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
+    <ProjectGuid>{C79FF72C-4459-4449-9524-0D7C828B9698}</ProjectGuid>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <AssemblyName>DotNetOpenAuth.Core.Portable</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Profile7</TargetFrameworkProfile>
+    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+  </PropertyGroup>
+  <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.Product.props" />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Assumes.cs" />
+    <Compile Include="Logger.cs" />
+    <Compile Include="Loggers\ILog.cs" />
+    <Compile Include="Loggers\ILoggerFactory.cs" />
+    <Compile Include="Loggers\NoOpLogger.cs" />
+    <Compile Include="Messaging\HostErrorException.cs" />
+    <Compile Include="Messaging\ErrorUtilities.cs" />
+    <Compile Include="Messaging\IMessage.cs" />
+    <Compile Include="Messaging\IMessageOriginalPayload.cs" />
+    <Compile Include="Messaging\InternalErrorException.cs" />
+    <Compile Include="Messaging\IProtocolMessage.cs" />
+    <Compile Include="Messaging\MessagePartAttribute.cs" />
+    <Compile Include="Messaging\MessageProtections.cs" />
+    <Compile Include="Messaging\MessageSerializer.cs" />
+    <Compile Include="Messaging\MessageTransport.cs" />
+    <Compile Include="Messaging\MessagingStrings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MessagingStrings.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Messaging\ProtocolException.cs" />
+    <Compile Include="Messaging\Reflection\DefaultEncoderAttribute.cs" />
+    <Compile Include="Messaging\Reflection\IMessagePartEncoder.cs" />
+    <Compile Include="Messaging\Reflection\IMessagePartFormattingEncoder.cs" />
+    <Compile Include="Messaging\Reflection\IMessagePartNullEncoder.cs" />
+    <Compile Include="Messaging\Reflection\IMessagePartOriginalEncoder.cs" />
+    <Compile Include="Messaging\Reflection\MessageDescription.cs" />
+    <Compile Include="Messaging\Reflection\MessageDescriptionCollection.cs" />
+    <Compile Include="Messaging\Reflection\MessageDictionary.cs" />
+    <Compile Include="Messaging\Reflection\MessagePart.cs" />
+    <Compile Include="Messaging\ProtectionLevel.cs" />
+    <Compile Include="Messaging\Reflection\ValueMapping.cs" />
+    <Compile Include="PortableUtilities.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RequiresEx.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Validation">
+      <HintPath>..\packages\Validation.2.0.2.13022\lib\portable-windows8+net40+sl5+windowsphone8\Validation.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Messaging\MessagingStrings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>MessagingStrings.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Messaging\MessagingStrings.sr.resx" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
+  <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.targets" />
+  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))\EnlistmentInfo.targets" Condition=" '$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))' != '' " />
+  <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
+</Project>

@@ -17,7 +17,6 @@ namespace DotNetOpenAuth.Messaging {
 	/// really an unexpected, potentially unrecoverable exception.
 	/// </remarks>
 	[SuppressMessage("Microsoft.Design", "CA1064:ExceptionsShouldBePublic", Justification = "We want this to be internal so clients cannot catch it.")]
-	[Serializable]
 	internal class InternalErrorException : Exception {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="InternalErrorException"/> class.
@@ -36,21 +35,5 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="message">The message.</param>
 		/// <param name="inner">The inner exception.</param>
 		public InternalErrorException(string message, Exception inner) : base(message, inner) { }
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="InternalErrorException"/> class.
-		/// </summary>
-		/// <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> that holds the serialized object data about the exception being thrown.</param>
-		/// <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext"/> that contains contextual information about the source or destination.</param>
-		/// <exception cref="T:System.ArgumentNullException">
-		/// The <paramref name="info"/> parameter is null.
-		/// </exception>
-		/// <exception cref="T:System.Runtime.Serialization.SerializationException">
-		/// The class name is null or <see cref="P:System.Exception.HResult"/> is zero (0).
-		/// </exception>
-		protected InternalErrorException(
-		  System.Runtime.Serialization.SerializationInfo info,
-		  System.Runtime.Serialization.StreamingContext context)
-			: base(info, context) { }
 	}
 }

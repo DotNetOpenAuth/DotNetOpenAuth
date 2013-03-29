@@ -27,8 +27,6 @@ namespace DotNetOpenAuth.Loggers
 {
 	using System;
 	using System.Reflection;
-	using log4net;
-	using log4net.Core;
 
 	/// <summary>
 	/// The ILog interface is use by application to log messages into
@@ -36,8 +34,8 @@ namespace DotNetOpenAuth.Loggers
 	/// </summary>
 	/// <remarks>
 	/// <para>
-	/// Use the <see cref="LogManager"/> to obtain logger instances
-	/// that implement this interface. The <see cref="LogManager.GetLogger(Assembly,Type)"/>
+	/// Use the LogManager to obtain logger instances
+	/// that implement this interface. The LogManager.GetLogger(Assembly,Type)
 	/// static method is used to get logger instances.
 	/// </para>
 	/// <para>
@@ -65,33 +63,31 @@ namespace DotNetOpenAuth.Loggers
 	/// }
 	/// </code>
 	/// </example>
-	/// <seealso cref="LogManager"/>
-	/// <seealso cref="LogManager.GetLogger(Assembly, Type)"/>
 	/// <author>Nicko Cadell</author>
 	/// <author>Gert Driesen</author>
-	interface ILog
+	public interface ILog
 	{
-		/// <overloads>Log a message object with the <see cref="Level.Debug"/> level.</overloads>
+		/// <overloads>Log a message object with the Level.Debug level.</overloads>
 		/// <summary>
-		/// Log a message object with the <see cref="Level.Debug"/> level.
+		/// Log a message object with the Level.Debug level.
 		/// </summary>
 		/// <param name="message">The message object to log.</param>
 		/// <remarks>
 		/// <para>
 		/// This method first checks if this logger is <c>DEBUG</c>
 		/// enabled by comparing the level of this logger with the 
-		/// <see cref="Level.Debug"/> level. If this logger is
+		/// Level.Debug level. If this logger is
 		/// <c>DEBUG</c> enabled, then it converts the message object
 		/// (passed as parameter) to a string by invoking the appropriate
-		/// <see cref="log4net.ObjectRenderer.IObjectRenderer"/>. It then 
+		/// log4net.ObjectRenderer.IObjectRenderer. It then 
 		/// proceeds to call all the registered appenders in this logger 
 		/// and also higher in the hierarchy depending on the value of 
 		/// the additivity flag.
 		/// </para>
-		/// <para><b>WARNING</b> Note that passing an <see cref="Exception"/> 
-		/// to this method will print the name of the <see cref="Exception"/> 
+		/// <para><b>WARNING</b> Note that passing an Exception 
+		/// to this method will print the name of the Exception 
 		/// but no stack trace. To print a stack trace use the 
-		/// <see cref="Debug(object,Exception)"/> form instead.
+		/// Debug(object,Exception) form instead.
 		/// </para>
 		/// </remarks>
 		/// <seealso cref="Debug(object,Exception)"/>
@@ -99,36 +95,36 @@ namespace DotNetOpenAuth.Loggers
 		void Debug(object message);
   
 		/// <summary>
-		/// Log a message object with the <see cref="Level.Debug"/> level including
-		/// the stack trace of the <see cref="Exception"/> passed
+		/// Log a message object with the Level.Debug level including
+		/// the stack trace of the Exception passed
 		/// as a parameter.
 		/// </summary>
 		/// <param name="message">The message object to log.</param>
 		/// <param name="exception">The exception to log, including its stack trace.</param>
 		/// <remarks>
 		/// <para>
-		/// See the <see cref="Debug(object)"/> form for more detailed information.
+		/// See the Debug(object) form for more detailed information.
 		/// </para>
 		/// </remarks>
 		/// <seealso cref="Debug(object)"/>
 		/// <seealso cref="IsDebugEnabled"/>
 		void Debug(object message, Exception exception);
 
-		/// <overloads>Log a formatted string with the <see cref="Level.Debug"/> level.</overloads>
+		/// <overloads>Log a formatted string with the Level.Debug level.</overloads>
 		/// <summary>
-		/// Logs a formatted message string with the <see cref="Level.Debug"/> level.
+		/// Logs a formatted message string with the Level.Debug level.
 		/// </summary>
 		/// <param name="format">A String containing zero or more format items</param>
 		/// <param name="args">An Object array containing zero or more objects to format</param>
 		/// <remarks>
 		/// <para>
 		/// The message is formatted using the <c>string.Format</c> method. See
-		/// <see cref="string.Format(string, object[])"/> for details of the syntax of the format string and the behavior
+		/// string.Format(string, object[]) for details of the syntax of the format string and the behavior
 		/// of the formatting.
 		/// </para>
 		/// <para>
-		/// This method does not take an <see cref="Exception"/> object to include in the
-		/// log event. To pass an <see cref="Exception"/> use one of the <see cref="Debug(object,Exception)"/>
+		/// This method does not take an Exception object to include in the
+		/// log event. To pass an Exception use one of the Debug(object,Exception)
 		/// methods instead.
 		/// </para>
 		/// </remarks>
@@ -137,19 +133,19 @@ namespace DotNetOpenAuth.Loggers
 		void DebugFormat(string format, params object[] args); 
 
 		/// <summary>
-		/// Logs a formatted message string with the <see cref="Level.Debug"/> level.
+		/// Logs a formatted message string with the Level.Debug level.
 		/// </summary>
 		/// <param name="format">A String containing zero or more format items</param>
 		/// <param name="arg0">An Object to format</param>
 		/// <remarks>
 		/// <para>
 		/// The message is formatted using the <c>string.Format</c> method. See
-		/// <see cref="string.Format(string, object[])"/> for details of the syntax of the format string and the behavior
+		/// string.Format(string, object[]) for details of the syntax of the format string and the behavior
 		/// of the formatting.
 		/// </para>
 		/// <para>
-		/// This method does not take an <see cref="Exception"/> object to include in the
-		/// log event. To pass an <see cref="Exception"/> use one of the <see cref="Debug(object,Exception)"/>
+		/// This method does not take an Exception object to include in the
+		/// log event. To pass an Exception use one of the Debug(object,Exception)
 		/// methods instead.
 		/// </para>
 		/// </remarks>
@@ -158,7 +154,7 @@ namespace DotNetOpenAuth.Loggers
 		void DebugFormat(string format, object arg0); 
 
 		/// <summary>
-		/// Logs a formatted message string with the <see cref="Level.Debug"/> level.
+		/// Logs a formatted message string with the Level.Debug level.
 		/// </summary>
 		/// <param name="format">A String containing zero or more format items</param>
 		/// <param name="arg0">An Object to format</param>
@@ -166,12 +162,12 @@ namespace DotNetOpenAuth.Loggers
 		/// <remarks>
 		/// <para>
 		/// The message is formatted using the <c>string.Format</c> method. See
-		/// <see cref="string.Format(string, object[])"/> for details of the syntax of the format string and the behavior
+		/// string.Format(string, object[]) for details of the syntax of the format string and the behavior
 		/// of the formatting.
 		/// </para>
 		/// <para>
-		/// This method does not take an <see cref="Exception"/> object to include in the
-		/// log event. To pass an <see cref="Exception"/> use one of the <see cref="Debug(object,Exception)"/>
+		/// This method does not take an Exception object to include in the
+		/// log event. To pass an Exception use one of the Debug(object,Exception)
 		/// methods instead.
 		/// </para>
 		/// </remarks>
@@ -180,7 +176,7 @@ namespace DotNetOpenAuth.Loggers
 		void DebugFormat(string format, object arg0, object arg1); 
 
 		/// <summary>
-		/// Logs a formatted message string with the <see cref="Level.Debug"/> level.
+		/// Logs a formatted message string with the Level.Debug level.
 		/// </summary>
 		/// <param name="format">A String containing zero or more format items</param>
 		/// <param name="arg0">An Object to format</param>
@@ -189,12 +185,12 @@ namespace DotNetOpenAuth.Loggers
 		/// <remarks>
 		/// <para>
 		/// The message is formatted using the <c>string.Format</c> method. See
-		/// <see cref="string.Format(string, object[])"/> for details of the syntax of the format string and the behavior
+		/// string.Format(string, object[]) for details of the syntax of the format string and the behavior
 		/// of the formatting.
 		/// </para>
 		/// <para>
-		/// This method does not take an <see cref="Exception"/> object to include in the
-		/// log event. To pass an <see cref="Exception"/> use one of the <see cref="Debug(object,Exception)"/>
+		/// This method does not take an Exception object to include in the
+		/// log event. To pass an Exception use one of the Debug(object,Exception)
 		/// methods instead.
 		/// </para>
 		/// </remarks>
@@ -202,26 +198,26 @@ namespace DotNetOpenAuth.Loggers
 		/// <seealso cref="IsDebugEnabled"/>
 		void DebugFormat(string format, object arg0, object arg1, object arg2); 
 
-		/// <overloads>Log a message object with the <see cref="Level.Info"/> level.</overloads>
+		/// <overloads>Log a message object with the Level.Info level.</overloads>
 		/// <summary>
-		/// Logs a message object with the <see cref="Level.Info"/> level.
+		/// Logs a message object with the Level.Info level.
 		/// </summary>
 		/// <remarks>
 		/// <para>
 		/// This method first checks if this logger is <c>INFO</c>
 		/// enabled by comparing the level of this logger with the 
-		/// <see cref="Level.Info"/> level. If this logger is
+		/// Level.Info level. If this logger is
 		/// <c>INFO</c> enabled, then it converts the message object
 		/// (passed as parameter) to a string by invoking the appropriate
-		/// <see cref="log4net.ObjectRenderer.IObjectRenderer"/>. It then 
+		/// log4net.ObjectRenderer.IObjectRenderer. It then 
 		/// proceeds to call all the registered appenders in this logger 
 		/// and also higher in the hierarchy depending on the value of the 
 		/// additivity flag.
 		/// </para>
-		/// <para><b>WARNING</b> Note that passing an <see cref="Exception"/> 
-		/// to this method will print the name of the <see cref="Exception"/> 
+		/// <para><b>WARNING</b> Note that passing an Exception 
+		/// to this method will print the name of the Exception 
 		/// but no stack trace. To print a stack trace use the 
-		/// <see cref="Info(object,Exception)"/> form instead.
+		/// Info(object,Exception) form instead.
 		/// </para>
 		/// </remarks>
 		/// <param name="message">The message object to log.</param>
@@ -231,35 +227,35 @@ namespace DotNetOpenAuth.Loggers
   
 		/// <summary>
 		/// Logs a message object with the <c>INFO</c> level including
-		/// the stack trace of the <see cref="Exception"/> passed
+		/// the stack trace of the Exception passed
 		/// as a parameter.
 		/// </summary>
 		/// <param name="message">The message object to log.</param>
 		/// <param name="exception">The exception to log, including its stack trace.</param>
 		/// <remarks>
 		/// <para>
-		/// See the <see cref="Info(object)"/> form for more detailed information.
+		/// See the Info(object) form for more detailed information.
 		/// </para>
 		/// </remarks>
 		/// <seealso cref="Info(object)"/>
 		/// <seealso cref="IsInfoEnabled"/>
 		void Info(object message, Exception exception);
 
-		/// <overloads>Log a formatted message string with the <see cref="Level.Info"/> level.</overloads>
+		/// <overloads>Log a formatted message string with the Level.Info level.</overloads>
 		/// <summary>
-		/// Logs a formatted message string with the <see cref="Level.Info"/> level.
+		/// Logs a formatted message string with the Level.Info level.
 		/// </summary>
 		/// <param name="format">A String containing zero or more format items</param>
 		/// <param name="args">An Object array containing zero or more objects to format</param>
 		/// <remarks>
 		/// <para>
 		/// The message is formatted using the <c>string.Format</c> method. See
-		/// <see cref="string.Format(string, object[])"/> for details of the syntax of the format string and the behavior
+		/// string.Format(string, object[]) for details of the syntax of the format string and the behavior
 		/// of the formatting.
 		/// </para>
 		/// <para>
-		/// This method does not take an <see cref="Exception"/> object to include in the
-		/// log event. To pass an <see cref="Exception"/> use one of the <see cref="Info(object)"/>
+		/// This method does not take an Exception object to include in the
+		/// log event. To pass an Exception use one of the Info(object)
 		/// methods instead.
 		/// </para>
 		/// </remarks>
@@ -268,19 +264,19 @@ namespace DotNetOpenAuth.Loggers
 		void InfoFormat(string format, params object[] args);
 
 		/// <summary>
-		/// Logs a formatted message string with the <see cref="Level.Info"/> level.
+		/// Logs a formatted message string with the Level.Info level.
 		/// </summary>
 		/// <param name="format">A String containing zero or more format items</param>
 		/// <param name="arg0">An Object to format</param>
 		/// <remarks>
 		/// <para>
 		/// The message is formatted using the <c>string.Format</c> method. See
-		/// <see cref="string.Format(string, object[])"/> for details of the syntax of the format string and the behavior
+		/// string.Format(string, object[]) for details of the syntax of the format string and the behavior
 		/// of the formatting.
 		/// </para>
 		/// <para>
-		/// This method does not take an <see cref="Exception"/> object to include in the
-		/// log event. To pass an <see cref="Exception"/> use one of the <see cref="Info(object,Exception)"/>
+		/// This method does not take an Exception object to include in the
+		/// log event. To pass an Exception use one of the Info(object,Exception)
 		/// methods instead.
 		/// </para>
 		/// </remarks>
@@ -289,7 +285,7 @@ namespace DotNetOpenAuth.Loggers
 		void InfoFormat(string format, object arg0); 
 
 		/// <summary>
-		/// Logs a formatted message string with the <see cref="Level.Info"/> level.
+		/// Logs a formatted message string with the Level.Info level.
 		/// </summary>
 		/// <param name="format">A String containing zero or more format items</param>
 		/// <param name="arg0">An Object to format</param>
@@ -297,12 +293,12 @@ namespace DotNetOpenAuth.Loggers
 		/// <remarks>
 		/// <para>
 		/// The message is formatted using the <c>string.Format</c> method. See
-		/// <see cref="string.Format(string, object[])"/> for details of the syntax of the format string and the behavior
+		/// string.Format(string, object[]) for details of the syntax of the format string and the behavior
 		/// of the formatting.
 		/// </para>
 		/// <para>
-		/// This method does not take an <see cref="Exception"/> object to include in the
-		/// log event. To pass an <see cref="Exception"/> use one of the <see cref="Info(object,Exception)"/>
+		/// This method does not take an Exception object to include in the
+		/// log event. To pass an Exception use one of the Info(object,Exception)
 		/// methods instead.
 		/// </para>
 		/// </remarks>
@@ -311,7 +307,7 @@ namespace DotNetOpenAuth.Loggers
 		void InfoFormat(string format, object arg0, object arg1); 
 
 		/// <summary>
-		/// Logs a formatted message string with the <see cref="Level.Info"/> level.
+		/// Logs a formatted message string with the Level.Info level.
 		/// </summary>
 		/// <param name="format">A String containing zero or more format items</param>
 		/// <param name="arg0">An Object to format</param>
@@ -320,12 +316,12 @@ namespace DotNetOpenAuth.Loggers
 		/// <remarks>
 		/// <para>
 		/// The message is formatted using the <c>string.Format</c> method. See
-		/// <see cref="string.Format(string, object[])"/> for details of the syntax of the format string and the behavior
+		/// string.Format(string, object[]) for details of the syntax of the format string and the behavior
 		/// of the formatting.
 		/// </para>
 		/// <para>
-		/// This method does not take an <see cref="Exception"/> object to include in the
-		/// log event. To pass an <see cref="Exception"/> use one of the <see cref="Info(object,Exception)"/>
+		/// This method does not take an Exception object to include in the
+		/// log event. To pass an Exception use one of the Info(object,Exception)
 		/// methods instead.
 		/// </para>
 		/// </remarks>
@@ -333,26 +329,26 @@ namespace DotNetOpenAuth.Loggers
 		/// <seealso cref="IsInfoEnabled"/>
 		void InfoFormat(string format, object arg0, object arg1, object arg2); 
 
-		/// <overloads>Log a message object with the <see cref="Level.Warn"/> level.</overloads>
+		/// <overloads>Log a message object with the Level.Warn level.</overloads>
 		/// <summary>
-		/// Log a message object with the <see cref="Level.Warn"/> level.
+		/// Log a message object with the Level.Warn level.
 		/// </summary>
 		/// <remarks>
 		/// <para>
 		/// This method first checks if this logger is <c>WARN</c>
 		/// enabled by comparing the level of this logger with the 
-		/// <see cref="Level.Warn"/> level. If this logger is
+		/// Level.Warn level. If this logger is
 		/// <c>WARN</c> enabled, then it converts the message object
 		/// (passed as parameter) to a string by invoking the appropriate
-		/// <see cref="log4net.ObjectRenderer.IObjectRenderer"/>. It then 
+		/// log4net.ObjectRenderer.IObjectRenderer. It then 
 		/// proceeds to call all the registered appenders in this logger 
 		/// and also higher in the hierarchy depending on the value of the 
 		/// additivity flag.
 		/// </para>
-		/// <para><b>WARNING</b> Note that passing an <see cref="Exception"/> 
-		/// to this method will print the name of the <see cref="Exception"/> 
+		/// <para><b>WARNING</b> Note that passing an Exception 
+		/// to this method will print the name of the Exception 
 		/// but no stack trace. To print a stack trace use the 
-		/// <see cref="Warn(object,Exception)"/> form instead.
+		/// Warn(object,Exception) form instead.
 		/// </para>
 		/// </remarks>
 		/// <param name="message">The message object to log.</param>
@@ -361,36 +357,36 @@ namespace DotNetOpenAuth.Loggers
 		void Warn(object message);
   
 		/// <summary>
-		/// Log a message object with the <see cref="Level.Warn"/> level including
-		/// the stack trace of the <see cref="Exception"/> passed
+		/// Log a message object with the Level.Warn level including
+		/// the stack trace of the Exception passed
 		/// as a parameter.
 		/// </summary>
 		/// <param name="message">The message object to log.</param>
 		/// <param name="exception">The exception to log, including its stack trace.</param>
 		/// <remarks>
 		/// <para>
-		/// See the <see cref="Warn(object)"/> form for more detailed information.
+		/// See the Warn(object) form for more detailed information.
 		/// </para>
 		/// </remarks>
 		/// <seealso cref="Warn(object)"/>
 		/// <seealso cref="IsWarnEnabled"/>
 		void Warn(object message, Exception exception);
 
-		/// <overloads>Log a formatted message string with the <see cref="Level.Warn"/> level.</overloads>
+		/// <overloads>Log a formatted message string with the Level.Warn level.</overloads>
 		/// <summary>
-		/// Logs a formatted message string with the <see cref="Level.Warn"/> level.
+		/// Logs a formatted message string with the Level.Warn level.
 		/// </summary>
 		/// <param name="format">A String containing zero or more format items</param>
 		/// <param name="args">An Object array containing zero or more objects to format</param>
 		/// <remarks>
 		/// <para>
 		/// The message is formatted using the <c>string.Format</c> method. See
-		/// <see cref="string.Format(string, object[])"/> for details of the syntax of the format string and the behavior
+		/// string.Format(string, object[]) for details of the syntax of the format string and the behavior
 		/// of the formatting.
 		/// </para>
 		/// <para>
-		/// This method does not take an <see cref="Exception"/> object to include in the
-		/// log event. To pass an <see cref="Exception"/> use one of the <see cref="Warn(object)"/>
+		/// This method does not take an Exception object to include in the
+		/// log event. To pass an Exception use one of the Warn(object)
 		/// methods instead.
 		/// </para>
 		/// </remarks>
@@ -399,19 +395,19 @@ namespace DotNetOpenAuth.Loggers
 		void WarnFormat(string format, params object[] args);
 
 		/// <summary>
-		/// Logs a formatted message string with the <see cref="Level.Warn"/> level.
+		/// Logs a formatted message string with the Level.Warn level.
 		/// </summary>
 		/// <param name="format">A String containing zero or more format items</param>
 		/// <param name="arg0">An Object to format</param>
 		/// <remarks>
 		/// <para>
 		/// The message is formatted using the <c>string.Format</c> method. See
-		/// <see cref="string.Format(string, object[])"/> for details of the syntax of the format string and the behavior
+		/// string.Format(string, object[]) for details of the syntax of the format string and the behavior
 		/// of the formatting.
 		/// </para>
 		/// <para>
-		/// This method does not take an <see cref="Exception"/> object to include in the
-		/// log event. To pass an <see cref="Exception"/> use one of the <see cref="Warn(object,Exception)"/>
+		/// This method does not take an Exception object to include in the
+		/// log event. To pass an Exception use one of the Warn(object,Exception)
 		/// methods instead.
 		/// </para>
 		/// </remarks>
@@ -420,7 +416,7 @@ namespace DotNetOpenAuth.Loggers
 		void WarnFormat(string format, object arg0); 
 
 		/// <summary>
-		/// Logs a formatted message string with the <see cref="Level.Warn"/> level.
+		/// Logs a formatted message string with the Level.Warn level.
 		/// </summary>
 		/// <param name="format">A String containing zero or more format items</param>
 		/// <param name="arg0">An Object to format</param>
@@ -428,12 +424,12 @@ namespace DotNetOpenAuth.Loggers
 		/// <remarks>
 		/// <para>
 		/// The message is formatted using the <c>string.Format</c> method. See
-		/// <see cref="string.Format(string, object[])"/> for details of the syntax of the format string and the behavior
+		/// string.Format(string, object[]) for details of the syntax of the format string and the behavior
 		/// of the formatting.
 		/// </para>
 		/// <para>
-		/// This method does not take an <see cref="Exception"/> object to include in the
-		/// log event. To pass an <see cref="Exception"/> use one of the <see cref="Warn(object,Exception)"/>
+		/// This method does not take an Exception object to include in the
+		/// log event. To pass an Exception use one of the Warn(object,Exception)
 		/// methods instead.
 		/// </para>
 		/// </remarks>
@@ -442,7 +438,7 @@ namespace DotNetOpenAuth.Loggers
 		void WarnFormat(string format, object arg0, object arg1); 
 
 		/// <summary>
-		/// Logs a formatted message string with the <see cref="Level.Warn"/> level.
+		/// Logs a formatted message string with the Level.Warn level.
 		/// </summary>
 		/// <param name="format">A String containing zero or more format items</param>
 		/// <param name="arg0">An Object to format</param>
@@ -451,12 +447,12 @@ namespace DotNetOpenAuth.Loggers
 		/// <remarks>
 		/// <para>
 		/// The message is formatted using the <c>string.Format</c> method. See
-		/// <see cref="string.Format(string, object[])"/> for details of the syntax of the format string and the behavior
+		/// string.Format(string, object[]) for details of the syntax of the format string and the behavior
 		/// of the formatting.
 		/// </para>
 		/// <para>
-		/// This method does not take an <see cref="Exception"/> object to include in the
-		/// log event. To pass an <see cref="Exception"/> use one of the <see cref="Warn(object,Exception)"/>
+		/// This method does not take an Exception object to include in the
+		/// log event. To pass an Exception use one of the Warn(object,Exception)
 		/// methods instead.
 		/// </para>
 		/// </remarks>
@@ -464,27 +460,27 @@ namespace DotNetOpenAuth.Loggers
 		/// <seealso cref="IsWarnEnabled"/>
 		void WarnFormat(string format, object arg0, object arg1, object arg2); 
 
-		/// <overloads>Log a message object with the <see cref="Level.Error"/> level.</overloads>
+		/// <overloads>Log a message object with the Level.Error level.</overloads>
 		/// <summary>
-		/// Logs a message object with the <see cref="Level.Error"/> level.
+		/// Logs a message object with the Level.Error level.
 		/// </summary>
 		/// <param name="message">The message object to log.</param>
 		/// <remarks>
 		/// <para>
 		/// This method first checks if this logger is <c>ERROR</c>
 		/// enabled by comparing the level of this logger with the 
-		/// <see cref="Level.Error"/> level. If this logger is
+		/// Level.Error level. If this logger is
 		/// <c>ERROR</c> enabled, then it converts the message object
 		/// (passed as parameter) to a string by invoking the appropriate
-		/// <see cref="log4net.ObjectRenderer.IObjectRenderer"/>. It then 
+		/// log4net.ObjectRenderer.IObjectRenderer. It then 
 		/// proceeds to call all the registered appenders in this logger 
 		/// and also higher in the hierarchy depending on the value of the 
 		/// additivity flag.
 		/// </para>
-		/// <para><b>WARNING</b> Note that passing an <see cref="Exception"/> 
-		/// to this method will print the name of the <see cref="Exception"/> 
+		/// <para><b>WARNING</b> Note that passing an Exception 
+		/// to this method will print the name of the Exception 
 		/// but no stack trace. To print a stack trace use the 
-		/// <see cref="Error(object,Exception)"/> form instead.
+		/// Error(object,Exception) form instead.
 		/// </para>
 		/// </remarks>
 		/// <seealso cref="Error(object,Exception)"/>
@@ -492,36 +488,36 @@ namespace DotNetOpenAuth.Loggers
 		void Error(object message);
 
 		/// <summary>
-		/// Log a message object with the <see cref="Level.Error"/> level including
-		/// the stack trace of the <see cref="Exception"/> passed
+		/// Log a message object with the Level.Error level including
+		/// the stack trace of the Exception passed
 		/// as a parameter.
 		/// </summary>
 		/// <param name="message">The message object to log.</param>
 		/// <param name="exception">The exception to log, including its stack trace.</param>
 		/// <remarks>
 		/// <para>
-		/// See the <see cref="Error(object)"/> form for more detailed information.
+		/// See the Error(object) form for more detailed information.
 		/// </para>
 		/// </remarks>
 		/// <seealso cref="Error(object)"/>
 		/// <seealso cref="IsErrorEnabled"/>
 		void Error(object message, Exception exception);
 
-		/// <overloads>Log a formatted message string with the <see cref="Level.Error"/> level.</overloads>
+		/// <overloads>Log a formatted message string with the Level.Error level.</overloads>
 		/// <summary>
-		/// Logs a formatted message string with the <see cref="Level.Error"/> level.
+		/// Logs a formatted message string with the Level.Error level.
 		/// </summary>
 		/// <param name="format">A String containing zero or more format items</param>
 		/// <param name="args">An Object array containing zero or more objects to format</param>
 		/// <remarks>
 		/// <para>
 		/// The message is formatted using the <c>string.Format</c> method. See
-		/// <see cref="string.Format(string, object[])"/> for details of the syntax of the format string and the behavior
+		/// string.Format(string, object[]) for details of the syntax of the format string and the behavior
 		/// of the formatting.
 		/// </para>
 		/// <para>
-		/// This method does not take an <see cref="Exception"/> object to include in the
-		/// log event. To pass an <see cref="Exception"/> use one of the <see cref="Error(object)"/>
+		/// This method does not take an Exception object to include in the
+		/// log event. To pass an Exception use one of the Error(object)
 		/// methods instead.
 		/// </para>
 		/// </remarks>
@@ -530,19 +526,19 @@ namespace DotNetOpenAuth.Loggers
 		void ErrorFormat(string format, params object[] args);
 
 		/// <summary>
-		/// Logs a formatted message string with the <see cref="Level.Error"/> level.
+		/// Logs a formatted message string with the Level.Error level.
 		/// </summary>
 		/// <param name="format">A String containing zero or more format items</param>
 		/// <param name="arg0">An Object to format</param>
 		/// <remarks>
 		/// <para>
 		/// The message is formatted using the <c>string.Format</c> method. See
-		/// <see cref="string.Format(string, object[])"/> for details of the syntax of the format string and the behavior
+		/// string.Format(string, object[]) for details of the syntax of the format string and the behavior
 		/// of the formatting.
 		/// </para>
 		/// <para>
-		/// This method does not take an <see cref="Exception"/> object to include in the
-		/// log event. To pass an <see cref="Exception"/> use one of the <see cref="Error(object,Exception)"/>
+		/// This method does not take an Exception object to include in the
+		/// log event. To pass an Exception use one of the Error(object,Exception)
 		/// methods instead.
 		/// </para>
 		/// </remarks>
@@ -551,7 +547,7 @@ namespace DotNetOpenAuth.Loggers
 		void ErrorFormat(string format, object arg0); 
 
 		/// <summary>
-		/// Logs a formatted message string with the <see cref="Level.Error"/> level.
+		/// Logs a formatted message string with the Level.Error level.
 		/// </summary>
 		/// <param name="format">A String containing zero or more format items</param>
 		/// <param name="arg0">An Object to format</param>
@@ -559,12 +555,12 @@ namespace DotNetOpenAuth.Loggers
 		/// <remarks>
 		/// <para>
 		/// The message is formatted using the <c>string.Format</c> method. See
-		/// <see cref="string.Format(string, object[])"/> for details of the syntax of the format string and the behavior
+		/// string.Format(string, object[]) for details of the syntax of the format string and the behavior
 		/// of the formatting.
 		/// </para>
 		/// <para>
-		/// This method does not take an <see cref="Exception"/> object to include in the
-		/// log event. To pass an <see cref="Exception"/> use one of the <see cref="Error(object,Exception)"/>
+		/// This method does not take an Exception object to include in the
+		/// log event. To pass an Exception use one of the Error(object,Exception)
 		/// methods instead.
 		/// </para>
 		/// </remarks>
@@ -573,7 +569,7 @@ namespace DotNetOpenAuth.Loggers
 		void ErrorFormat(string format, object arg0, object arg1); 
 
 		/// <summary>
-		/// Logs a formatted message string with the <see cref="Level.Error"/> level.
+		/// Logs a formatted message string with the Level.Error level.
 		/// </summary>
 		/// <param name="format">A String containing zero or more format items</param>
 		/// <param name="arg0">An Object to format</param>
@@ -582,12 +578,12 @@ namespace DotNetOpenAuth.Loggers
 		/// <remarks>
 		/// <para>
 		/// The message is formatted using the <c>string.Format</c> method. See
-		/// <see cref="string.Format(string, object[])"/> for details of the syntax of the format string and the behavior
+		/// string.Format(string, object[]) for details of the syntax of the format string and the behavior
 		/// of the formatting.
 		/// </para>
 		/// <para>
-		/// This method does not take an <see cref="Exception"/> object to include in the
-		/// log event. To pass an <see cref="Exception"/> use one of the <see cref="Error(object,Exception)"/>
+		/// This method does not take an Exception object to include in the
+		/// log event. To pass an Exception use one of the Error(object,Exception)
 		/// methods instead.
 		/// </para>
 		/// </remarks>
@@ -595,26 +591,26 @@ namespace DotNetOpenAuth.Loggers
 		/// <seealso cref="IsErrorEnabled"/>
 		void ErrorFormat(string format, object arg0, object arg1, object arg2); 
 
-		/// <overloads>Log a message object with the <see cref="Level.Fatal"/> level.</overloads>
+		/// <overloads>Log a message object with the Level.Fatal level.</overloads>
 		/// <summary>
-		/// Log a message object with the <see cref="Level.Fatal"/> level.
+		/// Log a message object with the Level.Fatal level.
 		/// </summary>
 		/// <remarks>
 		/// <para>
 		/// This method first checks if this logger is <c>FATAL</c>
 		/// enabled by comparing the level of this logger with the 
-		/// <see cref="Level.Fatal"/> level. If this logger is
+		/// Level.Fatal level. If this logger is
 		/// <c>FATAL</c> enabled, then it converts the message object
 		/// (passed as parameter) to a string by invoking the appropriate
-		/// <see cref="log4net.ObjectRenderer.IObjectRenderer"/>. It then 
+		/// log4net.ObjectRenderer.IObjectRenderer. It then 
 		/// proceeds to call all the registered appenders in this logger 
 		/// and also higher in the hierarchy depending on the value of the 
 		/// additivity flag.
 		/// </para>
-		/// <para><b>WARNING</b> Note that passing an <see cref="Exception"/> 
-		/// to this method will print the name of the <see cref="Exception"/> 
+		/// <para><b>WARNING</b> Note that passing an Exception 
+		/// to this method will print the name of the Exception 
 		/// but no stack trace. To print a stack trace use the 
-		/// <see cref="Fatal(object,Exception)"/> form instead.
+		/// Fatal(object,Exception) form instead.
 		/// </para>
 		/// </remarks>
 		/// <param name="message">The message object to log.</param>
@@ -623,36 +619,36 @@ namespace DotNetOpenAuth.Loggers
 		void Fatal(object message);
   
 		/// <summary>
-		/// Log a message object with the <see cref="Level.Fatal"/> level including
-		/// the stack trace of the <see cref="Exception"/> passed
+		/// Log a message object with the Level.Fatal level including
+		/// the stack trace of the Exception passed
 		/// as a parameter.
 		/// </summary>
 		/// <param name="message">The message object to log.</param>
 		/// <param name="exception">The exception to log, including its stack trace.</param>
 		/// <remarks>
 		/// <para>
-		/// See the <see cref="Fatal(object)"/> form for more detailed information.
+		/// See the Fatal(object) form for more detailed information.
 		/// </para>
 		/// </remarks>
 		/// <seealso cref="Fatal(object)"/>
 		/// <seealso cref="IsFatalEnabled"/>
 		void Fatal(object message, Exception exception);
 
-		/// <overloads>Log a formatted message string with the <see cref="Level.Fatal"/> level.</overloads>
+		/// <overloads>Log a formatted message string with the Level.Fatal level.</overloads>
 		/// <summary>
-		/// Logs a formatted message string with the <see cref="Level.Fatal"/> level.
+		/// Logs a formatted message string with the Level.Fatal level.
 		/// </summary>
 		/// <param name="format">A String containing zero or more format items</param>
 		/// <param name="args">An Object array containing zero or more objects to format</param>
 		/// <remarks>
 		/// <para>
 		/// The message is formatted using the <c>string.Format</c> method. See
-		/// <see cref="string.Format(string, object[])"/> for details of the syntax of the format string and the behavior
+		/// string.Format(string, object[]) for details of the syntax of the format string and the behavior
 		/// of the formatting.
 		/// </para>
 		/// <para>
-		/// This method does not take an <see cref="Exception"/> object to include in the
-		/// log event. To pass an <see cref="Exception"/> use one of the <see cref="Fatal(object)"/>
+		/// This method does not take an Exception object to include in the
+		/// log event. To pass an Exception use one of the Fatal(object)
 		/// methods instead.
 		/// </para>
 		/// </remarks>
@@ -661,19 +657,19 @@ namespace DotNetOpenAuth.Loggers
 		void FatalFormat(string format, params object[] args);
 
 		/// <summary>
-		/// Logs a formatted message string with the <see cref="Level.Fatal"/> level.
+		/// Logs a formatted message string with the Level.Fatal level.
 		/// </summary>
 		/// <param name="format">A String containing zero or more format items</param>
 		/// <param name="arg0">An Object to format</param>
 		/// <remarks>
 		/// <para>
 		/// The message is formatted using the <c>string.Format</c> method. See
-		/// <see cref="string.Format(string, object[])"/> for details of the syntax of the format string and the behavior
+		/// string.Format(string, object[]) for details of the syntax of the format string and the behavior
 		/// of the formatting.
 		/// </para>
 		/// <para>
-		/// This method does not take an <see cref="Exception"/> object to include in the
-		/// log event. To pass an <see cref="Exception"/> use one of the <see cref="Fatal(object,Exception)"/>
+		/// This method does not take an Exception object to include in the
+		/// log event. To pass an Exception use one of the Fatal(object,Exception)
 		/// methods instead.
 		/// </para>
 		/// </remarks>
@@ -682,7 +678,7 @@ namespace DotNetOpenAuth.Loggers
 		void FatalFormat(string format, object arg0); 
 
 		/// <summary>
-		/// Logs a formatted message string with the <see cref="Level.Fatal"/> level.
+		/// Logs a formatted message string with the Level.Fatal level.
 		/// </summary>
 		/// <param name="format">A String containing zero or more format items</param>
 		/// <param name="arg0">An Object to format</param>
@@ -690,12 +686,12 @@ namespace DotNetOpenAuth.Loggers
 		/// <remarks>
 		/// <para>
 		/// The message is formatted using the <c>string.Format</c> method. See
-		/// <see cref="string.Format(string, object[])"/> for details of the syntax of the format string and the behavior
+		/// string.Format(string, object[]) for details of the syntax of the format string and the behavior
 		/// of the formatting.
 		/// </para>
 		/// <para>
-		/// This method does not take an <see cref="Exception"/> object to include in the
-		/// log event. To pass an <see cref="Exception"/> use one of the <see cref="Fatal(object,Exception)"/>
+		/// This method does not take an Exception object to include in the
+		/// log event. To pass an Exception use one of the Fatal(object,Exception)
 		/// methods instead.
 		/// </para>
 		/// </remarks>
@@ -704,7 +700,7 @@ namespace DotNetOpenAuth.Loggers
 		void FatalFormat(string format, object arg0, object arg1); 
 
 		/// <summary>
-		/// Logs a formatted message string with the <see cref="Level.Fatal"/> level.
+		/// Logs a formatted message string with the Level.Fatal level.
 		/// </summary>
 		/// <param name="format">A String containing zero or more format items</param>
 		/// <param name="arg0">An Object to format</param>
@@ -713,12 +709,12 @@ namespace DotNetOpenAuth.Loggers
 		/// <remarks>
 		/// <para>
 		/// The message is formatted using the <c>string.Format</c> method. See
-		/// <see cref="string.Format(string, object[])"/> for details of the syntax of the format string and the behavior
+		/// string.Format(string, object[]) for details of the syntax of the format string and the behavior
 		/// of the formatting.
 		/// </para>
 		/// <para>
-		/// This method does not take an <see cref="Exception"/> object to include in the
-		/// log event. To pass an <see cref="Exception"/> use one of the <see cref="Fatal(object,Exception)"/>
+		/// This method does not take an Exception object to include in the
+		/// log event. To pass an Exception use one of the Fatal(object,Exception)
 		/// methods instead.
 		/// </para>
 		/// </remarks>
@@ -727,10 +723,10 @@ namespace DotNetOpenAuth.Loggers
 		void FatalFormat(string format, object arg0, object arg1, object arg2); 
 
 		/// <summary>
-		/// Checks if this logger is enabled for the <see cref="Level.Debug"/> level.
+		/// Checks if this logger is enabled for the Level.Debug level.
 		/// </summary>
 		/// <value>
-		/// <c>true</c> if this logger is enabled for <see cref="Level.Debug"/> events, <c>false</c> otherwise.
+		/// <c>true</c> if this logger is enabled for Level.Debug events, <c>false</c> otherwise.
 		/// </value>
 		/// <remarks>
 		/// <para>
@@ -759,8 +755,8 @@ namespace DotNetOpenAuth.Loggers
 		/// construction if debugging is disabled for <c>log</c>. On
 		/// the other hand, if the <c>log</c> is debug enabled, you
 		/// will incur the cost of evaluating whether the logger is debug
-		/// enabled twice. Once in <see cref="IsDebugEnabled"/> and once in
-		/// the <see cref="Debug(object)"/>.  This is an insignificant overhead
+		/// enabled twice. Once in IsDebugEnabled and once in
+		/// the Debug(object).  This is an insignificant overhead
 		/// since evaluating a logger takes about 1% of the time it
 		/// takes to actually log. This is the preferred style of logging.
 		/// </para>
@@ -797,52 +793,52 @@ namespace DotNetOpenAuth.Loggers
 		bool IsDebugEnabled { get; }
   
 		/// <summary>
-		/// Checks if this logger is enabled for the <see cref="Level.Info"/> level.
+		/// Checks if this logger is enabled for the Level.Info level.
 		/// </summary>
 		/// <value>
-		/// <c>true</c> if this logger is enabled for <see cref="Level.Info"/> events, <c>false</c> otherwise.
+		/// <c>true</c> if this logger is enabled for Level.Info events, <c>false</c> otherwise.
 		/// </value>
 		/// <remarks>
-		/// For more information see <see cref="ILog.IsDebugEnabled"/>.
+		/// For more information see ILog.IsDebugEnabled.
 		/// </remarks>
 		/// <seealso cref="Info(object)"/>
 		/// <seealso cref="ILog.IsDebugEnabled"/>
 		bool IsInfoEnabled { get; }
 
 		/// <summary>
-		/// Checks if this logger is enabled for the <see cref="Level.Warn"/> level.
+		/// Checks if this logger is enabled for the Level.Warn level.
 		/// </summary>
 		/// <value>
-		/// <c>true</c> if this logger is enabled for <see cref="Level.Warn"/> events, <c>false</c> otherwise.
+		/// <c>true</c> if this logger is enabled for Level.Warn events, <c>false</c> otherwise.
 		/// </value>
 		/// <remarks>
-		/// For more information see <see cref="ILog.IsDebugEnabled"/>.
+		/// For more information see ILog.IsDebugEnabled.
 		/// </remarks>
 		/// <seealso cref="Warn(object)"/>
 		/// <seealso cref="ILog.IsDebugEnabled"/>
 		bool IsWarnEnabled { get; }
 
 		/// <summary>
-		/// Checks if this logger is enabled for the <see cref="Level.Error"/> level.
+		/// Checks if this logger is enabled for the Level.Error level.
 		/// </summary>
 		/// <value>
-		/// <c>true</c> if this logger is enabled for <see cref="Level.Error"/> events, <c>false</c> otherwise.
+		/// <c>true</c> if this logger is enabled for Level.Error events, <c>false</c> otherwise.
 		/// </value>
 		/// <remarks>
-		/// For more information see <see cref="ILog.IsDebugEnabled"/>.
+		/// For more information see ILog.IsDebugEnabled.
 		/// </remarks>
 		/// <seealso cref="Error(object)"/>
 		/// <seealso cref="ILog.IsDebugEnabled"/>
 		bool IsErrorEnabled { get; }
 
 		/// <summary>
-		/// Checks if this logger is enabled for the <see cref="Level.Fatal"/> level.
+		/// Checks if this logger is enabled for the Level.Fatal level.
 		/// </summary>
 		/// <value>
-		/// <c>true</c> if this logger is enabled for <see cref="Level.Fatal"/> events, <c>false</c> otherwise.
+		/// <c>true</c> if this logger is enabled for Level.Fatal events, <c>false</c> otherwise.
 		/// </value>
 		/// <remarks>
-		/// For more information see <see cref="ILog.IsDebugEnabled"/>.
+		/// For more information see ILog.IsDebugEnabled.
 		/// </remarks>
 		/// <seealso cref="Fatal(object)"/>
 		/// <seealso cref="ILog.IsDebugEnabled"/>

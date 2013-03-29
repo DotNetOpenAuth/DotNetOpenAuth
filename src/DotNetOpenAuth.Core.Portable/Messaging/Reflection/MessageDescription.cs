@@ -30,7 +30,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// </summary>
 		/// <param name="messageType">Type of the message.</param>
 		/// <param name="messageVersion">The message version.</param>
-		internal MessageDescription(Type messageType, Version messageVersion) {
+		internal MessageDescription(TypeInfo messageType, Version messageVersion) {
 			RequiresEx.NotNullSubtype<IMessage>(messageType, "messageType");
 			Requires.NotNull(messageVersion, "messageVersion");
 
@@ -56,7 +56,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// Gets the type of message this instance was generated from.
 		/// </summary>
 		/// <value>The type of the described message.</value>
-		internal Type MessageType { get; private set; }
+		internal TypeInfo MessageType { get; private set; }
 
 		/// <summary>
 		/// Gets the constructors available on the message type.
@@ -238,9 +238,9 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		private void ReflectMessageType() {
 			this.mapping = new Dictionary<string, MessagePart>();
 
-			Type currentType = this.MessageType;
+			TypeInfo currentType = this.MessageType;
 			do {
-				foreach (MemberInfo member in currentType.GetMembers(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly)) {
+				foreach (MemberInfo member in currentType.DeclaredMembers) {
 					if (member is PropertyInfo || member is FieldInfo) {
 						MessagePartAttribute partAttribute =
 							(from a in member.GetCustomAttributes(typeof(MessagePartAttribute), true).OfType<MessagePartAttribute>()
@@ -261,11 +261,10 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 						}
 					}
 				}
-				currentType = currentType.BaseType;
+				currentType = currentType.BaseType.GetTypeInfo();
 			} while (currentType != null);
 
-			BindingFlags flags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
-			this.Constructors = this.MessageType.GetConstructors(flags);
+			this.Constructors = this.MessageType.DeclaredConstructors.ToArray();
 		}
 
 #if CONTRACTS_FULL

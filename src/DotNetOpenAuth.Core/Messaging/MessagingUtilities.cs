@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Collections.Generic;
 	using System.Collections.Specialized;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.IO;
 	using System.IO.Compression;
@@ -405,7 +406,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <returns>The URI that the outside world used to create this request.</returns>
 		public static Uri GetPublicFacingUrl() {
-			ErrorUtilities.VerifyHttpContext();
+			VerifyHttpContext();
 			return GetPublicFacingUrl(new HttpRequestWrapper(HttpContext.Current.Request));
 		}
 
@@ -453,7 +454,7 @@ namespace DotNetOpenAuth.Messaging {
 		public static async Task SendAsync(this HttpResponseMessage response, HttpContextBase context = null, CancellationToken cancellationToken = default(CancellationToken)) {
 			Requires.NotNull(response, "response");
 			if (context == null) {
-				ErrorUtilities.VerifyHttpContext();
+				VerifyHttpContext();
 				context = new HttpContextWrapper(HttpContext.Current);
 			}
 
@@ -1151,6 +1152,15 @@ namespace DotNetOpenAuth.Messaging {
 			}
 
 			return totalCopiedBytes;
+		}
+
+		/// <summary>
+		/// Verifies that <see cref="HttpContext.Current"/> != <c>null</c>.
+		/// </summary>
+		/// <exception cref="InvalidOperationException">Thrown if <see cref="HttpContext.Current"/> == <c>null</c></exception>
+		[Pure]
+		internal static void VerifyHttpContext() {
+			ErrorUtilities.VerifyOperation(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
 		}
 
 		/// <summary>

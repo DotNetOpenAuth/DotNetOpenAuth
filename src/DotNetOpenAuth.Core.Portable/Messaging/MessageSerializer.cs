@@ -24,14 +24,14 @@ namespace DotNetOpenAuth.Messaging {
 		/// The specific <see cref="IMessage"/>-derived type
 		/// that will be serialized and deserialized using this class.
 		/// </summary>
-		private readonly Type messageType;
+		private readonly TypeInfo messageType;
 
 		/// <summary>
 		/// Initializes a new instance of the MessageSerializer class.
 		/// </summary>
 		/// <param name="messageType">The specific <see cref="IMessage"/>-derived type
 		/// that will be serialized and deserialized using this class.</param>
-		private MessageSerializer(Type messageType) {
+		private MessageSerializer(TypeInfo messageType) {
 			RequiresEx.NotNullSubtype<IMessage>(messageType, "messageType");
 			this.messageType = messageType;
 		}
@@ -41,7 +41,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="messageType">The type of message that will be serialized/deserialized.</param>
 		/// <returns>A message serializer for the given message type.</returns>
-			internal static MessageSerializer Get(Type messageType) {
+		internal static MessageSerializer Get(TypeInfo messageType) {
 			RequiresEx.NotNullSubtype<IMessage>(messageType, "messageType");
 
 			return new MessageSerializer(messageType);
@@ -76,7 +76,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="messageDictionary">The message to be serialized.</param>
 		/// <param name="writer">The writer to use for the serialized form.</param>
 		/// <remarks>
-		/// Use <see cref="System.Runtime.Serialization.Json.JsonReaderWriterFactory.CreateJsonWriter(System.IO.Stream)"/>
+		/// Use System.Runtime.Serialization.Json.JsonReaderWriterFactory.CreateJsonWriter(System.IO.Stream)
 		/// to create the <see cref="XmlDictionaryWriter"/> instance capable of emitting JSON.
 		/// </remarks>
 		[Pure]
@@ -94,10 +94,10 @@ namespace DotNetOpenAuth.Messaging {
 					Assumes.True(partDescription != null);
 					if (partDescription.IsRequired || partDescription.IsNondefaultValueSet(messageDictionary.Message)) {
 						include = true;
-						Type formattingType = partDescription.PreferredFormattingType;
+						TypeInfo formattingType = partDescription.PreferredFormattingType;
 						if (IsNumeric(formattingType)) {
 							type = "number";
-						} else if (formattingType.IsAssignableFrom(typeof(bool))) {
+						} else if (formattingType.IsAssignableFrom(typeof(bool).GetTypeInfo())) {
 							type = "boolean";
 						}
 					}
@@ -124,7 +124,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="reader">The XML/JSON to read into the message.</param>
 		/// <exception cref="ProtocolException">Thrown when protocol rules are broken by the incoming message.</exception>
 		/// <remarks>
-		/// Use <see cref="System.Runtime.Serialization.Json.JsonReaderWriterFactory.CreateJsonReader(System.IO.Stream, System.Xml.XmlDictionaryReaderQuotas)"/>
+		/// Use System.Runtime.Serialization.Json.JsonReaderWriterFactory.CreateJsonReader(System.IO.Stream, System.Xml.XmlDictionaryReaderQuotas)
 		/// to create the <see cref="XmlDictionaryReader"/> instance capable of reading JSON.
 		/// </remarks>
 		internal static void Deserialize(MessageDictionary messageDictionary, XmlDictionaryReader reader) {
@@ -207,15 +207,15 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>
 		/// 	<c>true</c> if the specified type is numeric; otherwise, <c>false</c>.
 		/// </returns>
-		private static bool IsNumeric(Type type) {
-			return type.IsAssignableFrom(typeof(double))
-				|| type.IsAssignableFrom(typeof(float))
-				|| type.IsAssignableFrom(typeof(short))
-				|| type.IsAssignableFrom(typeof(int))
-				|| type.IsAssignableFrom(typeof(long))
-				|| type.IsAssignableFrom(typeof(ushort))
-				|| type.IsAssignableFrom(typeof(uint))
-				|| type.IsAssignableFrom(typeof(ulong));
+		private static bool IsNumeric(TypeInfo type) {
+			return type.IsAssignableFrom(typeof(double).GetTypeInfo())
+				|| type.IsAssignableFrom(typeof(float).GetTypeInfo())
+				|| type.IsAssignableFrom(typeof(short).GetTypeInfo())
+				|| type.IsAssignableFrom(typeof(int).GetTypeInfo())
+				|| type.IsAssignableFrom(typeof(long).GetTypeInfo())
+				|| type.IsAssignableFrom(typeof(ushort).GetTypeInfo())
+				|| type.IsAssignableFrom(typeof(uint).GetTypeInfo())
+				|| type.IsAssignableFrom(typeof(ulong).GetTypeInfo());
 		}
 
 #if CONTRACTS_FULL
