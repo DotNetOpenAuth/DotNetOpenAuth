@@ -39,14 +39,12 @@
     <Compile Include="Messaging\HmacAlgorithms.cs" />
     <Compile Include="Messaging\HttpRequestHeaders.cs" />
     <Compile Include="Messaging\DirectWebRequestOptions.cs" />
-    <Compile Include="Messaging\EnumerableCacheExtensions.cs" />
     <Compile Include="Messaging\EmptyDictionary.cs" />
     <Compile Include="Messaging\EmptyEnumerator.cs" />
     <Compile Include="Messaging\EmptyList.cs" />
     <Compile Include="Messaging\IStreamSerializingDataBag.cs" />
     <Compile Include="Messaging\KeyedCollectionDelegate.cs" />
     <Compile Include="Messaging\ProtocolFaultResponseException.cs" />
-    <Compile Include="Messaging\StandardMessageFactory.cs" />
     <Compile Include="Messaging\IDataBagFormatter.cs" />
     <Compile Include="Messaging\UriStyleMessageFormatter.cs" />
     <Compile Include="Messaging\StandardMessageFactoryChannel.cs" />

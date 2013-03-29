@@ -49,7 +49,7 @@ namespace DotNetOpenAuth.Messaging {
 				bool supportedMessageType = false;
 
 				// First see whether this message fits the recognized pattern for request messages.
-				if (typeof(IDirectedProtocolMessage).IsAssignableFrom(messageDescription.MessageType)) {
+				if (typeof(IDirectedProtocolMessage).GetTypeInfo().IsAssignableFrom(messageDescription.MessageType)) {
 					foreach (ConstructorInfo ctor in messageDescription.Constructors) {
 						ParameterInfo[] parameters = ctor.GetParameters();
 						if (parameters.Length == 2 && parameters[0].ParameterType == typeof(Uri) && parameters[1].ParameterType == typeof(Version)) {
@@ -61,11 +61,11 @@ namespace DotNetOpenAuth.Messaging {
 				}
 
 				// Also see if this message fits the recognized pattern for response messages.
-				if (typeof(IDirectResponseProtocolMessage).IsAssignableFrom(messageDescription.MessageType)) {
+				if (typeof(IDirectResponseProtocolMessage).GetTypeInfo().IsAssignableFrom(messageDescription.MessageType)) {
 					var responseCtors = new Dictionary<Type, ConstructorInfo>(messageDescription.Constructors.Length);
 					foreach (ConstructorInfo ctor in messageDescription.Constructors) {
 						ParameterInfo[] parameters = ctor.GetParameters();
-						if (parameters.Length == 1 && typeof(IDirectedProtocolMessage).IsAssignableFrom(parameters[0].ParameterType)) {
+						if (parameters.Length == 1 && typeof(IDirectedProtocolMessage).GetTypeInfo().IsAssignableFrom(parameters[0].ParameterType.GetTypeInfo())) {
 							responseCtors.Add(parameters[0].ParameterType, ctor);
 						}
 					}
@@ -178,9 +178,9 @@ namespace DotNetOpenAuth.Messaging {
 			var matches = (from responseMessageType in this.responseMessageTypes
 			               let message = responseMessageType.Key
 			               where message.CheckMessagePartsPassBasicValidation(fields)
-			               let ctors = this.FindMatchingResponseConstructors(message, request.GetType())
+						   let ctors = this.FindMatchingResponseConstructors(message, request.GetType().GetTypeInfo())
 			               where ctors.Any()
-			               orderby GetDerivationDistance(ctors.First().GetParameters()[0].ParameterType, request.GetType()),
+						   orderby GetDerivationDistance(ctors.First().GetParameters()[0].ParameterType.GetTypeInfo(), request.GetType().GetTypeInfo()),
 			                 CountInCommon(message.Mapping.Keys, fields.Keys) descending,
 			                 message.Mapping.Count descending
 			               select message).CacheGeneratedResults();
@@ -223,7 +223,7 @@ namespace DotNetOpenAuth.Messaging {
 			Requires.NotNull(messageDescription, "messageDescription");
 			Requires.NotNull(request, "request");
 
-			Type requestType = request.GetType();
+			var requestType = request.GetType().GetTypeInfo();
 			var ctors = this.FindMatchingResponseConstructors(messageDescription, requestType);
 			ConstructorInfo ctor = null;
 			try {
@@ -244,7 +244,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="assignableType">The base type or interface.</param>
 		/// <param name="derivedType">The concrete class that implements the <paramref name="assignableType"/>.</param>
 		/// <returns>The distance between the two types.  0 if the types are equivalent, 1 if the type immediately derives from or implements the base type, or progressively higher integers.</returns>
-		private static int GetDerivationDistance(Type assignableType, Type derivedType) {
+		private static int GetDerivationDistance(TypeInfo assignableType, TypeInfo derivedType) {
 			Requires.NotNull(assignableType, "assignableType");
 			Requires.NotNull(derivedType, "derivedType");
 			Requires.That(assignableType.IsAssignableFrom(derivedType), "assignableType", "Types are not related as required.");
@@ -256,10 +256,10 @@ namespace DotNetOpenAuth.Messaging {
 			}
 
 			int steps;
-			derivedType = derivedType.BaseType;
+			derivedType = derivedType.BaseType.GetTypeInfo();
 			for (steps = 1; assignableType.IsAssignableFrom(derivedType); steps++)
 			{
-				derivedType = derivedType.BaseType;
+				derivedType = derivedType.BaseType.GetTypeInfo();
 			}
 
 			return steps;
@@ -285,11 +285,11 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="messageDescription">The message description.</param>
 		/// <param name="requestType">Type of the request message.</param>
 		/// <returns>A sequence of matching constructors.</returns>
-		private IEnumerable<ConstructorInfo> FindMatchingResponseConstructors(MessageDescription messageDescription, Type requestType) {
+		private IEnumerable<ConstructorInfo> FindMatchingResponseConstructors(MessageDescription messageDescription, TypeInfo requestType) {
 			Requires.NotNull(messageDescription, "messageDescription");
 			Requires.NotNull(requestType, "requestType");
 
-			return this.responseMessageTypes[messageDescription].Where(pair => pair.Key.IsAssignableFrom(requestType)).Select(pair => pair.Value);
+			return this.responseMessageTypes[messageDescription].Where(pair => pair.Key.GetTypeInfo().IsAssignableFrom(requestType)).Select(pair => pair.Value);
 		}
 	}
 }
