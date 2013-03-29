@@ -23,18 +23,31 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Assumes.cs" />
+    <Compile Include="IHostFactories.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Loggers\ILog.cs" />
     <Compile Include="Loggers\ILoggerFactory.cs" />
     <Compile Include="Loggers\NoOpLogger.cs" />
     <Compile Include="Messaging\HostErrorException.cs" />
     <Compile Include="Messaging\ErrorUtilities.cs" />
+    <Compile Include="Messaging\HttpDeliveryMethods.cs" />
+    <Compile Include="Messaging\IDirectedProtocolMessage.cs" />
+    <Compile Include="Messaging\IDirectResponseProtocolMessage.cs" />
+    <Compile Include="Messaging\IExtensionMessage.cs" />
+    <Compile Include="Messaging\IHttpDirectRequest.cs" />
+    <Compile Include="Messaging\IHttpDirectResponse.cs" />
+    <Compile Include="Messaging\IHttpIndirectResponse.cs" />
     <Compile Include="Messaging\IMessage.cs" />
+    <Compile Include="Messaging\IMessageFactory.cs" />
     <Compile Include="Messaging\IMessageOriginalPayload.cs" />
+    <Compile Include="Messaging\IMessageWithBinaryData.cs" />
     <Compile Include="Messaging\InternalErrorException.cs" />
     <Compile Include="Messaging\IProtocolMessage.cs" />
+    <Compile Include="Messaging\IProtocolMessageWithExtensions.cs" />
+    <Compile Include="Messaging\ITamperResistantProtocolMessage.cs" />
     <Compile Include="Messaging\MessagePartAttribute.cs" />
     <Compile Include="Messaging\MessageProtections.cs" />
+    <Compile Include="Messaging\MessageReceivingEndpoint.cs" />
     <Compile Include="Messaging\MessageSerializer.cs" />
     <Compile Include="Messaging\MessageTransport.cs" />
     <Compile Include="Messaging\MessagingStrings.Designer.cs">
@@ -42,6 +55,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>MessagingStrings.resx</DependentUpon>
     </Compile>
+    <Compile Include="Messaging\MultipartContentMember.cs" />
     <Compile Include="Messaging\ProtocolException.cs" />
     <Compile Include="Messaging\Reflection\DefaultEncoderAttribute.cs" />
     <Compile Include="Messaging\Reflection\IMessagePartEncoder.cs" />
