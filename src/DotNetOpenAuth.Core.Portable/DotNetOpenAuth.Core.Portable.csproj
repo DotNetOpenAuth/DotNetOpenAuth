@@ -24,6 +24,7 @@
   <ItemGroup>
     <Compile Include="Assumes.cs" />
     <Compile Include="IHostFactories.cs" />
+    <Compile Include="IRequireHostFactories.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Loggers\ILog.cs" />
     <Compile Include="Loggers\ILoggerFactory.cs" />
@@ -55,8 +56,10 @@
     <Compile Include="Messaging\HostErrorException.cs" />
     <Compile Include="Messaging\ErrorUtilities.cs" />
     <Compile Include="Messaging\HttpDeliveryMethods.cs" />
+    <Compile Include="Messaging\HttpRequestHeaders.cs" />
     <Compile Include="Messaging\HttpResponseMessageWithOriginal.cs" />
     <Compile Include="Messaging\IChannelBindingElement.cs" />
+    <Compile Include="Messaging\IDataBagFormatter.cs" />
     <Compile Include="Messaging\IDirectedProtocolMessage.cs" />
     <Compile Include="Messaging\IDirectResponseProtocolMessage.cs" />
     <Compile Include="Messaging\IExtensionMessage.cs" />
@@ -71,9 +74,11 @@
     <Compile Include="Messaging\InternalErrorException.cs" />
     <Compile Include="Messaging\IProtocolMessage.cs" />
     <Compile Include="Messaging\IProtocolMessageWithExtensions.cs" />
+    <Compile Include="Messaging\IStreamSerializingDataBag.cs" />
     <Compile Include="Messaging\ITamperResistantProtocolMessage.cs" />
     <Compile Include="Messaging\MessagePartAttribute.cs" />
     <Compile Include="Messaging\MessageProtections.cs" />
+    <Compile Include="Messaging\MessageProtectionTasks.cs" />
     <Compile Include="Messaging\MessageReceivingEndpoint.cs" />
     <Compile Include="Messaging\MessageSerializer.cs" />
     <Compile Include="Messaging\MessageTransport.cs" />
