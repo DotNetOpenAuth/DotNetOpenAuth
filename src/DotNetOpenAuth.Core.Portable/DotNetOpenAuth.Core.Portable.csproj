@@ -97,6 +97,8 @@
     <Compile Include="Messaging\ProtectionLevel.cs" />
     <Compile Include="Messaging\Reflection\ValueMapping.cs" />
     <Compile Include="Messaging\StandardMessageFactory.cs" />
+    <Compile Include="Messaging\TimespanSecondsEncoder.cs" />
+    <Compile Include="Messaging\TimestampEncoder.cs" />
     <Compile Include="Messaging\UnprotectedMessageException.cs" />
     <Compile Include="PortableUtilities.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

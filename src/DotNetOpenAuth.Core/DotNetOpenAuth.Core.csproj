@@ -35,10 +35,8 @@
     <Compile Include="Messaging\UriStyleMessageFormatter.cs" />
     <Compile Include="Messaging\StandardMessageFactoryChannel.cs" />
     <Compile Include="Messaging\DataBag.cs" />
-    <Compile Include="Messaging\TimestampEncoder.cs" />
     <Compile Include="Messaging\HttpRequestInfo.cs" />
     <Compile Include="Messaging\MessagingUtilities.cs" />
-    <Compile Include="Messaging\TimespanSecondsEncoder.cs" />
     <Compile Include="UriUtil.cs" />
     <Compile Include="Util.cs" />
   </ItemGroup>
