@@ -22,7 +22,6 @@
     <Compile Include="IRequireHostFactories.cs" />
     <Compile Include="Loggers\TraceLogger.cs" />
     <Compile Include="MachineKeyUtil.cs" />
-    <Compile Include="Messaging\Base64WebEncoder.cs" />
     <Compile Include="Messaging\BinaryDataBagFormatter.cs" />
     <Compile Include="Messaging\Bindings\AsymmetricCryptoKeyStoreWrapper.cs" />
     <Compile Include="Messaging\Channel.cs" />

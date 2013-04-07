@@ -179,7 +179,7 @@ namespace DotNetOpenAuth.Messaging {
 				writer.WriteBuffer(encoded);
 				writer.Flush();
 
-				string payload = MessagingUtilities.ConvertToBase64WebSafeString(finalStream.ToArray());
+				string payload = PortableUtilities.ConvertToBase64WebSafeString(finalStream.ToArray());
 				string result = payload;
 				if (symmetricSecretHandle != null && (this.signed || this.encrypted)) {
 					result = MessagingUtilities.CombineKeyHandleAndPayload(symmetricSecretHandle, payload);
@@ -209,7 +209,7 @@ namespace DotNetOpenAuth.Messaging {
 			}
 
 			message.ContainingMessage = containingMessage;
-			byte[] data = MessagingUtilities.FromBase64WebSafeString(value);
+			byte[] data = PortableUtilities.FromBase64WebSafeString(value);
 
 			byte[] signature = null;
 			if (this.signed) {

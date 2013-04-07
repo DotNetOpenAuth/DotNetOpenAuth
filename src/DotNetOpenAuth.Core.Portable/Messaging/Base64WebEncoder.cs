@@ -21,7 +21,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="value">The value.  Guaranteed to never be null.</param>
 		/// <returns>The <paramref name="value"/> in string form, ready for message transport.</returns>
 		public string Encode(object value) {
-			return MessagingUtilities.ConvertToBase64WebSafeString((byte[])value);
+			return PortableUtilities.ConvertToBase64WebSafeString((byte[])value);
 		}
 
 		/// <summary>
@@ -31,7 +31,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>The deserialized form of the given string.</returns>
 		/// <exception cref="FormatException">Thrown when the string value given cannot be decoded into the required object type.</exception>
 		public object Decode(string value) {
-			return MessagingUtilities.FromBase64WebSafeString(value);
+			return PortableUtilities.FromBase64WebSafeString(value);
 		}
 	}
 }

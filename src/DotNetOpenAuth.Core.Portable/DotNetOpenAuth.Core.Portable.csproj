@@ -28,6 +28,7 @@
     <Compile Include="Loggers\ILog.cs" />
     <Compile Include="Loggers\ILoggerFactory.cs" />
     <Compile Include="Loggers\NoOpLogger.cs" />
+    <Compile Include="Messaging\Base64WebEncoder.cs" />
     <Compile Include="Messaging\Bindings\CryptoKey.cs" />
     <Compile Include="Messaging\Bindings\CryptoKeyCollisionException.cs" />
     <Compile Include="Messaging\Bindings\ExpiredMessageException.cs" />
