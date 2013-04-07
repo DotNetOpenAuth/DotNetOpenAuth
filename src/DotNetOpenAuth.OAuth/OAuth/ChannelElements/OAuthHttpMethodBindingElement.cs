@@ -29,7 +29,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <summary>
 		/// Gets or sets the channel that this binding element belongs to.
 		/// </summary>
-		public Channel Channel { get; set; }
+		public ChannelBase Channel { get; set; }
 
 		/// <summary>
 		/// Prepares a message for sending based on the rules of this channel binding element.
@@ -46,7 +46,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			if (oauthMessage != null) {
 				HttpDeliveryMethods transmissionMethod = oauthMessage.HttpMethods;
 				try {
-					oauthMessage.HttpMethod = MessagingUtilities.GetHttpVerb(transmissionMethod);
+					oauthMessage.HttpMethod = PortableUtilities.GetHttpVerb(transmissionMethod);
 					return MessageProtectionTasks.None;
 				} catch (ArgumentException ex) {
 					Logger.OAuth.Error("Unrecognized HttpDeliveryMethods value.", ex);

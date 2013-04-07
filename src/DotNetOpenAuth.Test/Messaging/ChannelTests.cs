@@ -93,8 +93,8 @@ namespace DotNetOpenAuth.Test.Messaging {
 			Assert.IsTrue(response.Content != null && response.Content.Headers.ContentLength > 0); // a non-empty body helps get passed filters like WebSense
 			StringAssert.StartsWith("http://provider/path", response.Headers.Location.AbsoluteUri);
 			foreach (var pair in expected) {
-				string key = MessagingUtilities.EscapeUriDataStringRfc3986(pair.Key);
-				string value = MessagingUtilities.EscapeUriDataStringRfc3986(pair.Value);
+				string key = PortableUtilities.EscapeUriDataStringRfc3986(pair.Key);
+				string value = PortableUtilities.EscapeUriDataStringRfc3986(pair.Value);
 				string substring = string.Format("{0}={1}", key, value);
 				StringAssert.Contains(substring, response.Headers.Location.AbsoluteUri);
 			}
@@ -205,7 +205,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 		public async Task ReadFromRequestWithContext() {
 			var fields = GetStandardTestFields(FieldFill.AllRequired);
 			TestMessage expectedMessage = GetStandardTestMessage(FieldFill.AllRequired);
-			HttpRequest request = new HttpRequest("somefile", "http://someurl", MessagingUtilities.CreateQueryString(fields));
+			HttpRequest request = new HttpRequest("somefile", "http://someurl", PortableUtilities.CreateQueryString(fields));
 			HttpContext.Current = new HttpContext(request, new HttpResponse(new StringWriter()));
 			var requestBase = this.Channel.GetRequestFromContext();
 			IProtocolMessage message = await this.Channel.ReadFromRequestAsync(requestBase.AsHttpRequestMessage(), CancellationToken.None);

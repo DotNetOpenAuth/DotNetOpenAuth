@@ -83,7 +83,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.AttributeExchange {
 				return false;
 			}
 
-			if (!MessagingUtilities.AreEquivalent<string>(this.Values, other.Values)) {
+			if (!PortableUtilities.AreEquivalent(this.Values, other.Values)) {
 				return false;
 			}
 

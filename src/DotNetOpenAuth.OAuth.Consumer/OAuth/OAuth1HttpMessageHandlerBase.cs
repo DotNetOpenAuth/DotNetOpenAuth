@@ -230,7 +230,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="value">The value to escape. Null and empty strings are OK.</param>
 		/// <returns>The escaped value. Never null.</returns>
 		private static string UrlEscape(string value) {
-			return MessagingUtilities.EscapeUriDataStringRfc3986(value ?? string.Empty);
+			return PortableUtilities.EscapeUriDataStringRfc3986(value ?? string.Empty);
 		}
 
 		/// <summary>
@@ -285,7 +285,7 @@ namespace DotNetOpenAuth.OAuth {
 					}
 
 					var modifiedRequestUri = new UriBuilder(request.RequestUri);
-					modifiedRequestUri.Query = MessagingUtilities.CreateQueryString(queryString.AsKeyValuePairs());
+					modifiedRequestUri.Query = PortableUtilities.CreateQueryString(queryString.AsKeyValuePairs());
 					request.RequestUri = modifiedRequestUri.Uri;
 				}
 			}
@@ -320,7 +320,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// </summary>
 		/// <returns>The nonce string.</returns>
 		private string GenerateUniqueFragment() {
-			return MessagingUtilities.GetRandomString(this.NonceLength, AllowedCharacters);
+			return PortableUtilities.GetRandomString(this.NonceLength, AllowedCharacters);
 		}
 
 		/// <summary>

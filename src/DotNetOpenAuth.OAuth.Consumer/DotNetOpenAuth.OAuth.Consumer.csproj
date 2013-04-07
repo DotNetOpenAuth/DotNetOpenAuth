@@ -36,6 +36,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DotNetOpenAuth.Core.Portable\DotNetOpenAuth.Core.Portable.csproj">
+      <Project>{c79ff72c-4459-4449-9524-0d7c828b9698}</Project>
+      <Name>DotNetOpenAuth.Core.Portable</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DotNetOpenAuth.Core\DotNetOpenAuth.Core.csproj">
       <Project>{60426312-6AE5-4835-8667-37EDEA670222}</Project>
       <Name>DotNetOpenAuth.Core</Name>

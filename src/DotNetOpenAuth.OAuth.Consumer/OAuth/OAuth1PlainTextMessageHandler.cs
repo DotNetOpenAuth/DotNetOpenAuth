@@ -50,9 +50,9 @@ namespace DotNetOpenAuth.OAuth {
 		/// </returns>
 		protected override string GetSignature(System.Net.Http.HttpRequestMessage request, NameValueCollection oauthParameters) {
 			var builder = new StringBuilder();
-			builder.Append(MessagingUtilities.EscapeUriDataStringRfc3986(this.ConsumerSecret));
+			builder.Append(PortableUtilities.EscapeUriDataStringRfc3986(this.ConsumerSecret));
 			builder.Append("&");
-			builder.Append(MessagingUtilities.EscapeUriDataStringRfc3986(this.AccessTokenSecret));
+			builder.Append(PortableUtilities.EscapeUriDataStringRfc3986(this.AccessTokenSecret));
 			return builder.ToString();
 		}
 	}

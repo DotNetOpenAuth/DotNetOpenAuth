@@ -61,6 +61,10 @@
     <Compile Include="UriHelperTest.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DotNetOpenAuth.Core.Portable\DotNetOpenAuth.Core.Portable.csproj">
+      <Project>{C79FF72C-4459-4449-9524-0D7C828B9698}</Project>
+      <Name>DotNetOpenAuth.Core.Portable</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DotNetOpenAuth.Core\DotNetOpenAuth.Core.csproj">
       <Project>{60426312-6AE5-4835-8667-37EDEA670222}</Project>
       <Name>DotNetOpenAuth.Core</Name>

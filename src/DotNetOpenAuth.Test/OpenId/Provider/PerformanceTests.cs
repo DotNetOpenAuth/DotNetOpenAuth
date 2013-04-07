@@ -97,7 +97,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 			Channel rpChannel = rp.Channel;
 			MemoryStream ms = new MemoryStream();
 			StreamWriter mswriter = new StreamWriter(ms);
-			mswriter.Write(MessagingUtilities.CreateQueryString(rpChannel.MessageDescriptions.GetAccessor(associateMessage)));
+			mswriter.Write(PortableUtilities.CreateQueryString(rpChannel.MessageDescriptions.GetAccessor(associateMessage)));
 			mswriter.Flush();
 			ms.Position = 0;
 			var headers = new WebHeaderCollection();
@@ -121,7 +121,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 			checkidMessage.ReturnTo = RPUri;
 			Channel rpChannel = rp.Channel;
 			UriBuilder receiver = new UriBuilder(OPUri);
-			receiver.Query = MessagingUtilities.CreateQueryString(rpChannel.MessageDescriptions.GetAccessor(checkidMessage));
+			receiver.Query = PortableUtilities.CreateQueryString(rpChannel.MessageDescriptions.GetAccessor(checkidMessage));
 			var httpRequest = new HttpRequestInfo("GET", receiver.Uri);
 			return httpRequest;
 		}

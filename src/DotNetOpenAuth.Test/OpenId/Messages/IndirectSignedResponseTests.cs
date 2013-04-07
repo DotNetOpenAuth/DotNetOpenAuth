@@ -116,7 +116,7 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			UriBuilder returnToBuilder = new UriBuilder(this.response.ReturnTo);
 			var extraArgs = new Dictionary<string, string>();
 			extraArgs["a"] = "b";
-			MessagingUtilities.AppendQueryArgs(returnToBuilder, extraArgs);
+			PortableUtilities.AppendQueryArgs(returnToBuilder, extraArgs);
 			this.response.ReturnTo = returnToBuilder.Uri;
 			try {
 				this.response.EnsureValidMessage();

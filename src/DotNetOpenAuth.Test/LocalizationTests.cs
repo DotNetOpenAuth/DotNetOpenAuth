@@ -24,7 +24,7 @@ namespace DotNetOpenAuth.Test {
 		public void Serbian() {
 			HttpContext.Current = null; // our testbase initializes this, but it must be null to throw
 			Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo("sr");
-			ErrorUtilities.VerifyHttpContext();
+			MessagingUtilities.VerifyHttpContext();
 		}
 	}
 }

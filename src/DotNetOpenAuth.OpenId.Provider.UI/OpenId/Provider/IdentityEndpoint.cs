@@ -95,7 +95,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			}
 
 			set {
-				UriUtil.ValidateResolvableUrl(Page, DesignMode, value);
+				Util.ValidateResolvableUrl(Page, DesignMode, value);
 				ViewState[ProviderEndpointUrlViewStateKey] = value;
 			}
 		}
@@ -112,7 +112,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			}
 
 			set {
-				UriUtil.ValidateResolvableUrl(Page, DesignMode, value);
+				Util.ValidateResolvableUrl(Page, DesignMode, value);
 				ViewState[ProviderLocalIdentifierViewStateKey] = value;
 			}
 		}

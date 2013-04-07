@@ -247,8 +247,8 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			Requires.NotNull(destination, "destination");
 
 			foreach (var pair in source) {
-				var key = MessagingUtilities.EscapeUriDataStringRfc3986(pair.Key);
-				var value = MessagingUtilities.EscapeUriDataStringRfc3986(pair.Value);
+				var key = PortableUtilities.EscapeUriDataStringRfc3986(pair.Key);
+				var value = PortableUtilities.EscapeUriDataStringRfc3986(pair.Value);
 				destination.Add(key, value);
 			}
 		}
@@ -265,7 +265,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			if (signedMessage != null) {
 				return signedMessage.HttpMethod;
 			} else {
-				return MessagingUtilities.GetHttpVerb(message.HttpMethods);
+				return PortableUtilities.GetHttpVerb(message.HttpMethods);
 			}
 		}
 
@@ -294,7 +294,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			bool hasEntity = HttpMethodHasEntity(GetHttpMethod(requestMessage));
 
 			if (!hasEntity) {
-				MessagingUtilities.AppendQueryArgs(recipientBuilder, requestMessage.ExtraData);
+				recipientBuilder.AppendQueryArgs(requestMessage.ExtraData);
 			}
 
 			var httpRequest = new HttpRequestMessage(GetHttpMethod(requestMessage), recipientBuilder.Uri);

@@ -29,7 +29,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <remarks>
 		/// This property is set by the channel when it is first constructed.
 		/// </remarks>
-		public Channel Channel { get; set; }
+		public ChannelBase Channel { get; set; }
 
 		/// <summary>
 		/// Gets the protection commonly offered (if any) by this binding element.

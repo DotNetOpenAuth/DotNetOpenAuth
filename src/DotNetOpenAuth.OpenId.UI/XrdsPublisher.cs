@@ -17,6 +17,8 @@ namespace DotNetOpenAuth {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Yadis;
 
+	using Validation;
+
 	/// <summary>
 	/// The locations the YADIS protocol describes can contain a reference
 	/// to an XRDS document.
@@ -117,7 +119,7 @@ namespace DotNetOpenAuth {
 			}
 
 			set {
-				UriUtil.ValidateResolvableUrl(Page, DesignMode, value);
+				Util.ValidateResolvableUrl(Page, DesignMode, value);
 				ViewState[XrdsUrlViewStateKey] = value;
 			}
 		}

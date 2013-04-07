@@ -520,11 +520,11 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				Logger.Yadis.DebugFormat("Some endpoints were filtered out.  Total endpoints remaining: {0}", filteredEndpoints.Count);
 			}
 			if (Logger.Yadis.IsDebugEnabled) {
-				if (MessagingUtilities.AreEquivalent(endpoints, endpointList)) {
+				if (PortableUtilities.AreEquivalent(endpoints, endpointList)) {
 					Logger.Yadis.Debug("Filtering and sorting of endpoints did not affect the list.");
 				} else {
 					Logger.Yadis.Debug("After filtering and sorting service endpoints, this is the new prioritized list:");
-					Logger.Yadis.Debug(Util.ToStringDeferred(filteredEndpoints, true));
+					Logger.Yadis.Debug(PortableUtilities.ToStringDeferred(filteredEndpoints, true));
 				}
 			}
 

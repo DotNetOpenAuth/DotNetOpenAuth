@@ -26,6 +26,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DotNetOpenAuth.Core.Portable\DotNetOpenAuth.Core.Portable.csproj">
+      <Project>{C79FF72C-4459-4449-9524-0D7C828B9698}</Project>
+      <Name>DotNetOpenAuth.Core.Portable</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DotNetOpenAuth.InfoCard.UI\DotNetOpenAuth.InfoCard.UI.csproj">
       <Project>{E040EB58-B4D2-457B-A023-AE6EF3BD34DE}</Project>
       <Name>DotNetOpenAuth.InfoCard.UI</Name>

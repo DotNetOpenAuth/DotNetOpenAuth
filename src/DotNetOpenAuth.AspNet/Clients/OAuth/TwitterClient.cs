@@ -67,7 +67,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 			string userName = response.ExtraData["screen_name"];
 
 			var profileRequestUrl = new Uri("https://api.twitter.com/1/users/show.xml?user_id="
-									   + MessagingUtilities.EscapeUriDataStringRfc3986(userId));
+									   + PortableUtilities.EscapeUriDataStringRfc3986(userId));
 			var authorizingHandler = this.WebWorker.CreateMessageHandler(response.AccessToken);
 
 			var extraData = new NameValueCollection();

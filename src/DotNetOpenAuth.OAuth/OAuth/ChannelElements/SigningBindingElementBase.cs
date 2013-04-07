@@ -49,7 +49,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <summary>
 		/// Gets or sets the channel that this binding element belongs to.
 		/// </summary>
-		public Channel Channel { get; set; }
+		public ChannelBase Channel { get; set; }
 
 		#endregion
 
@@ -200,8 +200,8 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 			if (message.Recipient.Query != null) {
 				NameValueCollection nvc = HttpUtility.ParseQueryString(message.Recipient.Query);
 				foreach (string key in nvc) {
-					string escapedKey = MessagingUtilities.EscapeUriDataStringRfc3986(key);
-					string escapedValue = MessagingUtilities.EscapeUriDataStringRfc3986(nvc[key]);
+					string escapedKey = PortableUtilities.EscapeUriDataStringRfc3986(key);
+					string escapedValue = PortableUtilities.EscapeUriDataStringRfc3986(nvc[key]);
 					string existingValue;
 					if (!encodedDictionary.TryGetValue(escapedKey, out existingValue)) {
 						encodedDictionary.Add(escapedKey, escapedValue);
@@ -238,7 +238,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 					signatureBaseString.Append("&");
 				}
 
-				signatureBaseString.Append(MessagingUtilities.EscapeUriDataStringRfc3986(element));
+				signatureBaseString.Append(PortableUtilities.EscapeUriDataStringRfc3986(element));
 			}
 
 			Logger.Bindings.DebugFormat("Constructed signature base string: {0}", signatureBaseString);
@@ -265,11 +265,11 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		protected static string GetConsumerAndTokenSecretString(ITamperResistantOAuthMessage message) {
 			StringBuilder builder = new StringBuilder();
 			if (!string.IsNullOrEmpty(message.ConsumerSecret)) {
-				builder.Append(MessagingUtilities.EscapeUriDataStringRfc3986(message.ConsumerSecret));
+				builder.Append(PortableUtilities.EscapeUriDataStringRfc3986(message.ConsumerSecret));
 			}
 			builder.Append("&");
 			if (!string.IsNullOrEmpty(message.TokenSecret)) {
-				builder.Append(MessagingUtilities.EscapeUriDataStringRfc3986(message.TokenSecret));
+				builder.Append(PortableUtilities.EscapeUriDataStringRfc3986(message.TokenSecret));
 			}
 			return builder.ToString();
 		}

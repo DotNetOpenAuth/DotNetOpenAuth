@@ -140,7 +140,7 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 
 			MemoryStream ms = new MemoryStream();
 			StreamWriter writer = new StreamWriter(ms);
-			writer.Write(MessagingUtilities.CreateQueryString(fields));
+			writer.Write(PortableUtilities.CreateQueryString(fields));
 			writer.Flush();
 			ms.Seek(0, SeekOrigin.Begin);
 			IDictionary<string, string> deserializedFields = await this.channel.ReadFromResponseCoreAsyncTestHook(
@@ -274,7 +274,7 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 					break;
 				case HttpDeliveryMethods.GetRequest:
 					method = "GET";
-					requestUri.Query = MessagingUtilities.CreateQueryString(fields);
+					requestUri.Query = PortableUtilities.CreateQueryString(fields);
 					break;
 				case HttpDeliveryMethods.AuthorizationHeaderRequest:
 					method = "GET";
@@ -304,7 +304,7 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 			Handle(request.Recipient).By(
 				async (req, ct) => {
 					Assert.IsNotNull(req);
-					Assert.AreEqual(MessagingUtilities.GetHttpVerb(scheme), req.Method);
+					Assert.AreEqual(PortableUtilities.GetHttpVerb(scheme), req.Method);
 					var incomingMessage = (await this.channel.ReadFromRequestAsync(req, CancellationToken.None)) as TestMessage;
 					Assert.IsNotNull(incomingMessage);
 					Assert.AreEqual(request.Age, incomingMessage.Age);
@@ -319,7 +319,7 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 						{ "Timestamp", XmlConvert.ToString(request.Timestamp, XmlDateTimeSerializationMode.Utc) },
 					};
 					var rawResponse = new HttpResponseMessage();
-					rawResponse.Content = new StringContent(MessagingUtilities.CreateQueryString(responseFields));
+					rawResponse.Content = new StringContent(PortableUtilities.CreateQueryString(responseFields));
 					return rawResponse;
 				});
 

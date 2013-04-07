@@ -67,6 +67,21 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <param name="messageType">A type that implements <see cref="IMessage"/>.</param>
 		/// <param name="messageVersion">The protocol version of the message.</param>
 		/// <returns>A <see cref="MessageDescription"/> instance.</returns>
+		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters",
+			MessageId = "System.Diagnostics.Contracts.__ContractsRuntime.Assume(System.Boolean,System.String,System.String)",
+			Justification = "No localization required.")]
+		[Pure]
+		internal MessageDescription Get(Type messageType, Version messageVersion) {
+			return this.Get(messageType.GetTypeInfo(), messageVersion);
+		}
+
+		/// <summary>
+		/// Gets a <see cref="MessageDescription"/> instance prepared for the
+		/// given message type.
+		/// </summary>
+		/// <param name="messageType">A type that implements <see cref="IMessage"/>.</param>
+		/// <param name="messageVersion">The protocol version of the message.</param>
+		/// <returns>A <see cref="MessageDescription"/> instance.</returns>
 		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Diagnostics.Contracts.__ContractsRuntime.Assume(System.Boolean,System.String,System.String)", Justification = "No localization required.")]
 		[Pure]
 		internal MessageDescription Get(TypeInfo messageType, Version messageVersion) {

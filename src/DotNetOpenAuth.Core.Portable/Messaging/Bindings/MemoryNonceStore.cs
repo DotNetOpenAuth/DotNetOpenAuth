@@ -20,14 +20,6 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		private const int AutoCleaningFrequency = 10;
 
 		/// <summary>
-		/// The maximum age a message can be before it is discarded.
-		/// </summary>
-		/// <remarks>
-		/// This is useful for knowing how long used nonces must be retained.
-		/// </remarks>
-		private readonly TimeSpan maximumMessageAge;
-
-		/// <summary>
 		/// A list of the consumed nonces.
 		/// </summary>
 		private readonly SortedDictionary<DateTime, List<string>> usedNonces = new SortedDictionary<DateTime, List<string>>();
@@ -47,8 +39,16 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// </summary>
 		/// <param name="maximumMessageAge">The maximum age a message can be before it is discarded.</param>
 		internal MemoryNonceStore(TimeSpan maximumMessageAge) {
-			this.maximumMessageAge = maximumMessageAge;
+			this.MaximumMessageAge = maximumMessageAge;
 		}
+
+		/// <summary>
+		/// Gets or sets the maximum age a message can be before it is discarded.
+		/// </summary>
+		/// <remarks>
+		/// This is useful for knowing how long used nonces must be retained.
+		/// </remarks>
+		public TimeSpan MaximumMessageAge { get; set; }
 
 		#region INonceStore Members
 
@@ -71,7 +71,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// <see cref="StandardExpirationBindingElement.MaximumMessageAge"/> property.
 		/// </remarks>
 		public bool StoreNonce(string context, string nonce, DateTime timestamp) {
-			if (timestamp.ToUniversalTimeSafe() + this.maximumMessageAge < DateTime.UtcNow) {
+			if (timestamp.ToUniversalTimeSafe() + this.MaximumMessageAge < DateTime.UtcNow) {
 				// The expiration binding element should have taken care of this, but perhaps
 				// it's at the boundary case.  We should fail just to be safe.
 				return false;
@@ -113,7 +113,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// </summary>
 		public void ClearExpiredNonces() {
 			lock (this.nonceLock) {
-				var oldNonceLists = this.usedNonces.Keys.Where(time => time.ToUniversalTimeSafe() + this.maximumMessageAge < DateTime.UtcNow).ToList();
+				var oldNonceLists = this.usedNonces.Keys.Where(time => time.ToUniversalTimeSafe() + this.MaximumMessageAge < DateTime.UtcNow).ToList();
 				foreach (DateTime time in oldNonceLists) {
 					this.usedNonces.Remove(time);
 				}

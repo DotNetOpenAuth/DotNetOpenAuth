@@ -16,6 +16,8 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId.ChannelElements;
 
+	using ProtectionLevel = DotNetOpenAuth.Messaging.ProtectionLevel;
+
 	/// <summary>
 	/// An identity assertion from a Provider to a Relying Party, stating that the
 	/// user operating the user agent is in fact some specific user known to the Provider.

@@ -115,7 +115,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 			MicrosoftClientUserData graph;
 			var request =
 				WebRequest.Create(
-					"https://apis.live.net/v5.0/me?access_token=" + MessagingUtilities.EscapeUriDataStringRfc3986(accessToken));
+					"https://apis.live.net/v5.0/me?access_token=" + PortableUtilities.EscapeUriDataStringRfc3986(accessToken));
 			using (var response = request.GetResponse()) {
 				using (var responseStream = response.GetResponseStream()) {
 					graph = JsonHelper.Deserialize<MicrosoftClientUserData>(responseStream);
@@ -147,7 +147,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// </returns>
 		protected override string QueryAccessToken(Uri returnUrl, string authorizationCode) {
 			var entity =
-				MessagingUtilities.CreateQueryString(
+				PortableUtilities.CreateQueryString(
 					new Dictionary<string, string> {
 						{ "client_id", this.appId },
 						{ "redirect_uri", returnUrl.AbsoluteUri },

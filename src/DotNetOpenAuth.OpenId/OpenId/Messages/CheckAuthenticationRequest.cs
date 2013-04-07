@@ -39,7 +39,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// </summary>
 		/// <param name="message">The message whose signature should be verified.</param>
 		/// <param name="channel">The channel.  This is used only within the constructor and is not stored in a field.</param>
-		internal CheckAuthenticationRequest(IndirectSignedResponse message, Channel channel)
+		internal CheckAuthenticationRequest(IndirectSignedResponse message, ChannelBase channel)
 			: base(message.Version, message.ProviderEndpoint, GetProtocolConstant(message.Version, p => p.Args.Mode.check_authentication), MessageTransport.Direct) {
 			Requires.NotNull(channel, "channel");
 

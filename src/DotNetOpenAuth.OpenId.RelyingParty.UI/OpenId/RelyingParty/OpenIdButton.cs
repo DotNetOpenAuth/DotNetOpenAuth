@@ -92,7 +92,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			set {
-				UriUtil.ValidateResolvableUrl(Page, DesignMode, value);
+				Util.ValidateResolvableUrl(Page, DesignMode, value);
 				ViewState[ImageUrlViewStateKey] = value;
 			}
 		}

@@ -21,10 +21,10 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// Initializes a new instance of the <see cref="DefaultEncoderAttribute"/> class.
 		/// </summary>
 		/// <param name="converterType">The <see cref="IMessagePartEncoder"/> implementing type to use for serializing this type.</param>
-		public DefaultEncoderAttribute(TypeInfo converterType) {
+		public DefaultEncoderAttribute(Type converterType) {
 			Requires.NotNull(converterType, "converterType");
-			Requires.That(typeof(IMessagePartEncoder).GetTypeInfo().IsAssignableFrom(converterType), "Argument must be a type that implements {0}.", typeof(IMessagePartEncoder).Name);
-			this.Encoder = (IMessagePartEncoder)Activator.CreateInstance(converterType.AsType());
+			Requires.That(typeof(IMessagePartEncoder).GetTypeInfo().IsAssignableFrom(converterType.GetTypeInfo()), "Argument must be a type that implements {0}.", typeof(IMessagePartEncoder).Name);
+			this.Encoder = (IMessagePartEncoder)Activator.CreateInstance(converterType);
 		}
 
 		/// <summary>

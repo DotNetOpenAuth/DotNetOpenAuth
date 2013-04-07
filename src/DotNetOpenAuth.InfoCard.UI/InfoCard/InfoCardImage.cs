@@ -25,6 +25,8 @@ namespace DotNetOpenAuth.InfoCard {
 	using System.Diagnostics.CodeAnalysis;
 	using System.Globalization;
 
+	using Validation;
+
 	/// <summary>
 	/// A set of sizes for which standard InfoCard icons are available.
 	/// </summary>

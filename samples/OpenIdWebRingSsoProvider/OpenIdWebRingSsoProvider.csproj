@@ -114,6 +114,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\src\DotNetOpenAuth.Core.Portable\DotNetOpenAuth.Core.Portable.csproj">
+      <Project>{C79FF72C-4459-4449-9524-0D7C828B9698}</Project>
+      <Name>DotNetOpenAuth.Core.Portable</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\src\DotNetOpenAuth.Core.UI\DotNetOpenAuth.Core.UI.csproj">
       <Project>{173E7B8D-E751-46E2-A133-F72297C0D2F4}</Project>
       <Name>DotNetOpenAuth.Core.UI</Name>

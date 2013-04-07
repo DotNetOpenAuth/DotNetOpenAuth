@@ -30,6 +30,15 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// </summary>
 		/// <param name="messageType">Type of the message.</param>
 		/// <param name="messageVersion">The message version.</param>
+		internal MessageDescription(Type messageType, Version messageVersion)
+			: this(messageType.GetTypeInfo(), messageVersion) {
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="MessageDescription"/> class.
+		/// </summary>
+		/// <param name="messageType">Type of the message.</param>
+		/// <param name="messageVersion">The message version.</param>
 		internal MessageDescription(TypeInfo messageType, Version messageVersion) {
 			RequiresEx.NotNullSubtype<IMessage>(messageType, "messageType");
 			Requires.NotNull(messageVersion, "messageVersion");

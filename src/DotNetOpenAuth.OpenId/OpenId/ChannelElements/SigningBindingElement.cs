@@ -21,6 +21,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using DotNetOpenAuth.OpenId.Messages;
 	using Validation;
 
+	using ProtectionLevel = DotNetOpenAuth.Messaging.ProtectionLevel;
+
 	/// <summary>
 	/// Signs and verifies authentication assertions.
 	/// </summary>
@@ -43,7 +45,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <summary>
 		/// Gets or sets the channel that this binding element belongs to.
 		/// </summary>
-		public Channel Channel { get; set; }
+		public ChannelBase Channel { get; set; }
 
 		#endregion
 

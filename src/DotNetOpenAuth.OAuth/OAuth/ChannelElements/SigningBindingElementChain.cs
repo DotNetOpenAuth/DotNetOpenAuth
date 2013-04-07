@@ -72,7 +72,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <summary>
 		/// Gets or sets the channel that this binding element belongs to.
 		/// </summary>
-		public Channel Channel {
+		public ChannelBase Channel {
 			get {
 				return this.signers[0].Channel;
 			}

@@ -97,7 +97,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 			FacebookGraphData graphData;
 			var request =
 				WebRequest.Create(
-					"https://graph.facebook.com/me?access_token=" + MessagingUtilities.EscapeUriDataStringRfc3986(accessToken));
+					"https://graph.facebook.com/me?access_token=" + PortableUtilities.EscapeUriDataStringRfc3986(accessToken));
 			using (var response = request.GetResponse()) {
 				using (var responseStream = response.GetResponseStream()) {
 					graphData = JsonHelper.Deserialize<FacebookGraphData>(responseStream);

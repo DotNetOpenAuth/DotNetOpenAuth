@@ -48,6 +48,15 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Creates or reuses a message serializer for a given message type.
+		/// </summary>
+		/// <param name="messageType">The type of message that will be serialized/deserialized.</param>
+		/// <returns>A message serializer for the given message type.</returns>
+		internal static MessageSerializer Get(Type messageType) {
+			return Get(messageType.GetTypeInfo());
+		}
+
+		/// <summary>
 		/// Reads JSON as a flat dictionary into a message.
 		/// </summary>
 		/// <param name="messageDictionary">The message dictionary to fill with the JSON-deserialized data.</param>

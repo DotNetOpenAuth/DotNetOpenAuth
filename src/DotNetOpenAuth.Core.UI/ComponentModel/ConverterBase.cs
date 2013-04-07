@@ -16,6 +16,8 @@ namespace DotNetOpenAuth.ComponentModel {
 	using System.Security;
 	using System.Security.Permissions;
 
+	using Validation;
+
 	/// <summary>
 	/// A design-time helper to allow Intellisense to aid typing
 	/// ClaimType URIs.

@@ -165,7 +165,7 @@ namespace DotNetOpenAuth.OAuth {
 				context.Application.Lock();
 				try {
 					if ((store = (INonceStore)context.Application[ApplicationStoreKey]) == null) {
-						context.Application[ApplicationStoreKey] = store = new MemoryNonceStore(StandardExpirationBindingElement.MaximumMessageAge);
+						context.Application[ApplicationStoreKey] = store = new MemoryNonceStore(DotNetOpenAuthSection.Messaging.MaximumMessageLifetime);
 					}
 				} finally {
 					context.Application.UnLock();
@@ -191,13 +191,13 @@ namespace DotNetOpenAuth.OAuth {
 				case VerificationCodeFormat.IncludedInCallback:
 					return MessagingUtilities.GetCryptoRandomDataAsBase64(length);
 				case VerificationCodeFormat.AlphaNumericNoLookAlikes:
-					return MessagingUtilities.GetRandomString(length, MessagingUtilities.AlphaNumericNoLookAlikes);
+					return PortableUtilities.GetRandomString(length, MessagingUtilities.AlphaNumericNoLookAlikes);
 				case VerificationCodeFormat.AlphaUpper:
-					return MessagingUtilities.GetRandomString(length, MessagingUtilities.UppercaseLetters);
+					return PortableUtilities.GetRandomString(length, MessagingUtilities.UppercaseLetters);
 				case VerificationCodeFormat.AlphaLower:
-					return MessagingUtilities.GetRandomString(length, MessagingUtilities.LowercaseLetters);
+					return PortableUtilities.GetRandomString(length, MessagingUtilities.LowercaseLetters);
 				case VerificationCodeFormat.Numeric:
-					return MessagingUtilities.GetRandomString(length, MessagingUtilities.Digits);
+					return PortableUtilities.GetRandomString(length, MessagingUtilities.Digits);
 				default:
 					throw new ArgumentOutOfRangeException("format");
 			}

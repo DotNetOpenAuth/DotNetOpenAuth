@@ -20,6 +20,8 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	using DotNetOpenAuth.OpenId.ChannelElements;
 	using Validation;
 
+	using ProtectionLevel = DotNetOpenAuth.Messaging.ProtectionLevel;
+
 	/// <summary>
 	/// An indirect message from a Provider to a Relying Party where at least part of the
 	/// payload is signed so the Relying Party can verify it has not been tampered with.
@@ -351,7 +353,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// <returns>
 		/// A dictionary of the signed message parts.
 		/// </returns>
-		internal IDictionary<string, string> GetSignedMessageParts(Channel channel) {
+		internal IDictionary<string, string> GetSignedMessageParts(ChannelBase channel) {
 			Requires.NotNull(channel, "channel");
 
 			ITamperResistantOpenIdMessage signedSelf = this;

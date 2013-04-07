@@ -231,7 +231,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			MessageDescription description = this.Channel.MessageDescriptions.Get(signedMessage);
 			var signedParts =
 				from part in description.Mapping.Values
-				where (part.RequiredProtection & System.Net.Security.ProtectionLevel.Sign) != 0
+				where (part.RequiredProtection & ProtectionLevel.Sign) != 0
 				&& part.GetValue(signedMessage) != null
 				select part.Name;
 			string prefix = Protocol.V20.openid.Prefix;

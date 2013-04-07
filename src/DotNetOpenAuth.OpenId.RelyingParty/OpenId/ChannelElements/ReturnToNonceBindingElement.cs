@@ -82,7 +82,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <summary>
 		/// Backing field for the <see cref="Channel"/> property.
 		/// </summary>
-		private Channel channel;
+		private ChannelBase channel;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ReturnToNonceBindingElement"/> class.
@@ -105,7 +105,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <remarks>
 		/// This property is set by the channel when it is first constructed.
 		/// </remarks>
-		public Channel Channel {
+		public ChannelBase Channel {
 			get {
 				return this.channel;
 			}
@@ -127,13 +127,6 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		}
 
 		#endregion
-
-		/// <summary>
-		/// Gets the maximum message age from the standard expiration binding element.
-		/// </summary>
-		private static TimeSpan MaximumMessageAge {
-			get { return StandardExpirationBindingElement.MaximumMessageAge; }
-		}
 
 		#region IChannelBindingElement Methods
 
@@ -194,7 +187,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 					this.securitySettings.RejectUnsolicitedAssertions ? OpenIdStrings.UnsolicitedAssertionsNotAllowed : OpenIdStrings.UnsolicitedAssertionsNotAllowedFrom1xOPs);
 
 				CustomNonce nonce = CustomNonce.Deserialize(nonceValue);
-				DateTime expirationDate = nonce.CreationDateUtc + MaximumMessageAge;
+				DateTime expirationDate = nonce.CreationDateUtc + this.Channel.MaximumMessageLifetime;
 				if (expirationDate < DateTime.UtcNow) {
 					throw new ExpiredMessageException(expirationDate, message);
 				}
@@ -275,7 +268,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			internal static CustomNonce Deserialize(string value) {
 				Requires.NotNullOrEmpty(value, "value");
 
-				byte[] nonce = MessagingUtilities.FromBase64WebSafeString(value);
+				byte[] nonce = PortableUtilities.FromBase64WebSafeString(value);
 				Assumes.True(nonce != null);
 				DateTime creationDateUtc = new DateTime(BitConverter.ToInt64(nonce, 0), DateTimeKind.Utc);
 				byte[] randomPart = new byte[NonceByteLength];
@@ -292,7 +285,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 				byte[] nonce = new byte[timestamp.Length + this.randomPart.Length];
 				timestamp.CopyTo(nonce, 0);
 				this.randomPart.CopyTo(nonce, timestamp.Length);
-				string base64Nonce = MessagingUtilities.ConvertToBase64WebSafeString(nonce);
+				string base64Nonce = PortableUtilities.ConvertToBase64WebSafeString(nonce);
 				return base64Nonce;
 			}
 		}
