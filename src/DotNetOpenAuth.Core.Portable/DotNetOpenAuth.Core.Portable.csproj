@@ -47,6 +47,7 @@
     <Compile Include="Messaging\Bindings\StandardReplayProtectionBindingElement.cs" />
     <Compile Include="Messaging\ChannelBase.cs" />
     <Compile Include="Messaging\ChannelEventArgs.cs" />
+    <Compile Include="Messaging\DataBag.cs" />
     <Compile Include="Messaging\EmptyDictionary.cs" />
     <Compile Include="Messaging\EmptyEnumerator.cs" />
     <Compile Include="Messaging\EmptyList.cs" />

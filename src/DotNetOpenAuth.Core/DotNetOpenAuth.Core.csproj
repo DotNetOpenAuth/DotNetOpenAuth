@@ -34,7 +34,6 @@
     <Compile Include="Messaging\IDataBagFormatter.cs" />
     <Compile Include="Messaging\UriStyleMessageFormatter.cs" />
     <Compile Include="Messaging\StandardMessageFactoryChannel.cs" />
-    <Compile Include="Messaging\DataBag.cs" />
     <Compile Include="Messaging\HttpRequestInfo.cs" />
     <Compile Include="Messaging\MessagingUtilities.cs" />
     <Compile Include="UriUtil.cs" />
