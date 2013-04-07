@@ -178,9 +178,9 @@ namespace DotNetOpenAuth.Messaging {
 			var matches = (from responseMessageType in this.responseMessageTypes
 			               let message = responseMessageType.Key
 			               where message.CheckMessagePartsPassBasicValidation(fields)
-						   let ctors = this.FindMatchingResponseConstructors(message, request.GetType().GetTypeInfo())
+			               let ctors = this.FindMatchingResponseConstructors(message, request.GetType().GetTypeInfo())
 			               where ctors.Any()
-						   orderby GetDerivationDistance(ctors.First().GetParameters()[0].ParameterType.GetTypeInfo(), request.GetType().GetTypeInfo()),
+			               orderby GetDerivationDistance(ctors.First().GetParameters()[0].ParameterType.GetTypeInfo(), request.GetType().GetTypeInfo()),
 			                 CountInCommon(message.Mapping.Keys, fields.Keys) descending,
 			                 message.Mapping.Count descending
 			               select message).CacheGeneratedResults();
