@@ -45,7 +45,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.AttributeExchange {
 			req.Attributes.Add("http://att1", "value1", "value2");
 			AttributeValues value = req.Attributes.Single();
 			Assert.AreEqual("http://att1", value.TypeUri);
-			Assert.IsTrue(MessagingUtilities.AreEquivalent(new[] { "value1", "value2" }, value.Values));
+			Assert.IsTrue(PortableUtilities.AreEquivalent(new[] { "value1", "value2" }, value.Values));
 		}
 
 		/// <summary>

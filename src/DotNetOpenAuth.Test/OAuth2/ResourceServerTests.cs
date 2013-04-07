@@ -86,10 +86,10 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 			string accessToken = null;
 			var authServer = CreateAuthorizationServerMock();
 			authServer.Setup(
-				a => a.IsAuthorizationValid(It.Is<IAuthorizationDescription>(d => d.User == null && d.ClientIdentifier == ClientId && MessagingUtilities.AreEquivalent(d.Scope, TestScopes))))
+				a => a.IsAuthorizationValid(It.Is<IAuthorizationDescription>(d => d.User == null && d.ClientIdentifier == ClientId && PortableUtilities.AreEquivalent(d.Scope, TestScopes))))
 				.Returns(true);
 			authServer.Setup(
-				a => a.CheckAuthorizeClientCredentialsGrant(It.Is<IAccessTokenRequest>(d => d.ClientIdentifier == ClientId && MessagingUtilities.AreEquivalent(d.Scope, TestScopes))))
+				a => a.CheckAuthorizeClientCredentialsGrant(It.Is<IAccessTokenRequest>(d => d.ClientIdentifier == ClientId && PortableUtilities.AreEquivalent(d.Scope, TestScopes))))
 				.Returns<IAccessTokenRequest>(req => new AutomatedAuthorizationCheckResponse(req, true));
 
 			Handle(AuthorizationServerDescription.TokenEndpoint).By(

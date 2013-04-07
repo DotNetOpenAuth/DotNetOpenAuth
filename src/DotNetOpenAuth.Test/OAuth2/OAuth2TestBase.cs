@@ -52,7 +52,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 					It.Is<IAuthorizationDescription>(
 						d =>
 						d.ClientIdentifier == ClientId && d.User == ResourceOwnerUsername &&
-						MessagingUtilities.AreEquivalent(d.Scope, TestScopes)))).Returns(true);
+						PortableUtilities.AreEquivalent(d.Scope, TestScopes)))).Returns(true);
 			authHostMock
 				.Setup(m => m.CheckAuthorizeResourceOwnerCredentialGrant(ResourceOwnerUsername, ResourceOwnerPassword, It.IsAny<IAccessTokenRequest>()))
 				.Returns<string, string, IAccessTokenRequest>((p1, p2, p3) => new AutomatedUserAuthorizationCheckResponse(p3, true, ResourceOwnerUsername));

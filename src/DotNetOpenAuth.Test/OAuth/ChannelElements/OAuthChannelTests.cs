@@ -36,7 +36,7 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 			base.SetUp();
 
 			this.signingElement = new RsaSha1ServiceProviderSigningBindingElement(new InMemoryTokenManager());
-			this.nonceStore = new MemoryNonceStore(StandardExpirationBindingElement.MaximumMessageAge);
+			this.nonceStore = new MemoryNonceStore(TimeSpan.FromMinutes(5));
 			this.channel = new OAuthServiceProviderChannel(this.signingElement, this.nonceStore, new InMemoryTokenManager(), this.serviceProviderSecuritySettings, new TestMessageFactory(), this.HostFactories);
 		}
 

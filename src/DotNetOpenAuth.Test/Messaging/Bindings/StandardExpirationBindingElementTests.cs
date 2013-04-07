@@ -41,7 +41,7 @@ namespace DotNetOpenAuth.Test.Messaging.Bindings {
 		[Test, ExpectedException(typeof(ExpiredMessageException))]
 		public async Task VerifyOldTimestampIsRejected() {
 			this.Channel = CreateChannel(MessageProtections.Expiration);
-			await this.ParameterizedReceiveProtectedTestAsync(DateTime.UtcNow - StandardExpirationBindingElement.MaximumMessageAge - TimeSpan.FromSeconds(1), false);
+			await this.ParameterizedReceiveProtectedTestAsync(DateTime.UtcNow - this.Channel.MaximumMessageLifetime - TimeSpan.FromSeconds(1), false);
 		}
 
 		[Test, ExpectedException(typeof(ProtocolException))]

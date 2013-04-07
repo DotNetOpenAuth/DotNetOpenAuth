@@ -18,7 +18,7 @@ namespace DotNetOpenAuth.Test {
 		/// </summary>
 		[Test]
 		public void ToStringDeferredEmptyMultiLine() {
-			Assert.AreEqual("[]", Util.ToStringDeferred(Enumerable.Empty<string>(), true).ToString());
+			Assert.AreEqual("[]", PortableUtilities.ToStringDeferred(Enumerable.Empty<string>(), true).ToString());
 		}
 	}
 }

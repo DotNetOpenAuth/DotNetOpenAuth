@@ -70,7 +70,7 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 						It.Is<IAuthorizationDescription>(
 							d =>
 							d.ClientIdentifier == null && d.User == ResourceOwnerUsername &&
-							MessagingUtilities.AreEquivalent(d.Scope, TestScopes)))).Returns(true);
+							PortableUtilities.AreEquivalent(d.Scope, TestScopes)))).Returns(true);
 			}
 
 			Handle(AuthorizationServerDescription.TokenEndpoint).By(async (req, ct) => {
@@ -92,10 +92,10 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 		public async Task ClientCredentialGrant() {
 			var authServer = CreateAuthorizationServerMock();
 			authServer.Setup(
-				a => a.IsAuthorizationValid(It.Is<IAuthorizationDescription>(d => d.User == null && d.ClientIdentifier == ClientId && MessagingUtilities.AreEquivalent(d.Scope, TestScopes))))
+				a => a.IsAuthorizationValid(It.Is<IAuthorizationDescription>(d => d.User == null && d.ClientIdentifier == ClientId && PortableUtilities.AreEquivalent(d.Scope, TestScopes))))
 				.Returns(true);
 			authServer.Setup(
-				a => a.CheckAuthorizeClientCredentialsGrant(It.Is<IAccessTokenRequest>(d => d.ClientIdentifier == ClientId && MessagingUtilities.AreEquivalent(d.Scope, TestScopes))))
+				a => a.CheckAuthorizeClientCredentialsGrant(It.Is<IAccessTokenRequest>(d => d.ClientIdentifier == ClientId && PortableUtilities.AreEquivalent(d.Scope, TestScopes))))
 				.Returns<IAccessTokenRequest>(req => new AutomatedAuthorizationCheckResponse(req, true));
 			Handle(AuthorizationServerDescription.TokenEndpoint).By(
 				async (req, ct) => {
@@ -113,10 +113,10 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 			string[] approvedScopes = new[] { "Scope2", "Scope3" };
 			var authServer = CreateAuthorizationServerMock();
 			authServer.Setup(
-				a => a.IsAuthorizationValid(It.Is<IAuthorizationDescription>(d => d.User == null && d.ClientIdentifier == ClientId && MessagingUtilities.AreEquivalent(d.Scope, TestScopes))))
+				a => a.IsAuthorizationValid(It.Is<IAuthorizationDescription>(d => d.User == null && d.ClientIdentifier == ClientId && PortableUtilities.AreEquivalent(d.Scope, TestScopes))))
 					  .Returns(true);
 			authServer.Setup(
-				a => a.CheckAuthorizeClientCredentialsGrant(It.Is<IAccessTokenRequest>(d => d.ClientIdentifier == ClientId && MessagingUtilities.AreEquivalent(d.Scope, TestScopes))))
+				a => a.CheckAuthorizeClientCredentialsGrant(It.Is<IAccessTokenRequest>(d => d.ClientIdentifier == ClientId && PortableUtilities.AreEquivalent(d.Scope, TestScopes))))
 					.Returns<IAccessTokenRequest>(req => {
 						var response = new AutomatedAuthorizationCheckResponse(req, true);
 						response.ApprovedScope.ResetContents(approvedScopes);

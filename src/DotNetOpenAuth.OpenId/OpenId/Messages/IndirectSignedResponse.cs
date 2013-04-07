@@ -74,7 +74,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// </summary>
 		/// <param name="previouslySignedMessage">The previously signed message.</param>
 		/// <param name="channel">The channel.  This is used only within the constructor and is not stored in a field.</param>
-		internal IndirectSignedResponse(CheckAuthenticationRequest previouslySignedMessage, Channel channel)
+		internal IndirectSignedResponse(CheckAuthenticationRequest previouslySignedMessage, ChannelBase channel)
 			: base(GetVersion(previouslySignedMessage), previouslySignedMessage.ReturnTo, Protocol.Lookup(GetVersion(previouslySignedMessage)).Args.Mode.id_res) {
 			Requires.NotNull(channel, "channel");
 
