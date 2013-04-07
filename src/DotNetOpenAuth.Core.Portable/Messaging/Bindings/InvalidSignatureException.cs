@@ -10,7 +10,6 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 	/// <summary>
 	/// An exception thrown when a signed message does not pass signature validation.
 	/// </summary>
-	[Serializable]
 	internal class InvalidSignatureException : ProtocolException {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="InvalidSignatureException"/> class.

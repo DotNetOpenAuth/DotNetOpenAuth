@@ -114,11 +114,6 @@ namespace DotNetOpenAuth.Messaging {
 		private static readonly char[] QuoteArray = new char[] { '"' };
 
 		/// <summary>
-		/// The set of characters that are unreserved in RFC 2396 but are NOT unreserved in RFC 3986.
-		/// </summary>
-		private static readonly string[] UriRfc3986CharsToEscape = new[] { "!", "*", "'", "(", ")" };
-
-		/// <summary>
 		/// A set of escaping mappings that help secure a string from javscript execution.
 		/// </summary>
 		/// <remarks>
@@ -164,13 +159,6 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
-		/// Gets a random number generator for use on the current thread only.
-		/// </summary>
-		internal static Random NonCryptoRandomDataGenerator {
-			get { return ThreadSafeRandom.RandomNumberGenerator; }
-		}
-
-		/// <summary>
 		/// Gets the original request URL, as seen from the browser before any URL rewrites on the server if any.
 		/// Cookieless session directory (if applicable) is also included.
 		/// </summary>
@@ -180,30 +168,6 @@ namespace DotNetOpenAuth.Messaging {
 		public static Uri GetRequestUrlFromContext() {
 			RequiresEx.ValidState(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
 			return new HttpRequestWrapper(HttpContext.Current.Request).GetPublicFacingUrl();
-		}
-
-		/// <summary>
-		/// Strips any and all URI query parameters that start with some prefix.
-		/// </summary>
-		/// <param name="uri">The URI that may have a query with parameters to remove.</param>
-		/// <param name="prefix">The prefix for parameters to remove.  A period is NOT automatically appended.</param>
-		/// <returns>Either a new Uri with the parameters removed if there were any to remove, or the same Uri instance if no parameters needed to be removed.</returns>
-		public static Uri StripQueryArgumentsWithPrefix(this Uri uri, string prefix) {
-			Requires.NotNull(uri, "uri");
-			Requires.NotNullOrEmpty(prefix, "prefix");
-
-			NameValueCollection queryArgs = HttpUtility.ParseQueryString(uri.Query);
-			var matchingKeys = queryArgs.Keys.OfType<string>().Where(key => key.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)).ToList();
-			if (matchingKeys.Count > 0) {
-				UriBuilder builder = new UriBuilder(uri);
-				foreach (string key in matchingKeys) {
-					queryArgs.Remove(key);
-				}
-				builder.Query = CreateQueryString(queryArgs.ToDictionary());
-				return builder.Uri;
-			} else {
-				return uri;
-			}
 		}
 
 		/// <summary>
@@ -255,37 +219,6 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>A DateTime with a 0 millisecond component.</returns>
 		public static DateTime CutToSecond(this DateTime value) {
 			return value - TimeSpan.FromMilliseconds(value.Millisecond);
-		}
-
-		/// <summary>
-		/// Adds a name-value pair to the end of a given URL
-		/// as part of the querystring piece.  Prefixes a ? or &amp; before
-		/// first element as necessary.
-		/// </summary>
-		/// <param name="builder">The UriBuilder to add arguments to.</param>
-		/// <param name="name">The name of the parameter to add.</param>
-		/// <param name="value">The value of the argument.</param>
-		/// <remarks>
-		/// If the parameters to add match names of parameters that already are defined
-		/// in the query string, the existing ones are <i>not</i> replaced.
-		/// </remarks>
-		public static void AppendQueryArgument(this UriBuilder builder, string name, string value) {
-			AppendQueryArgs(builder, new[] { new KeyValuePair<string, string>(name, value) });
-		}
-
-		/// <summary>
-		/// Adds a set of values to a collection.
-		/// </summary>
-		/// <typeparam name="T">The type of value kept in the collection.</typeparam>
-		/// <param name="collection">The collection to add to.</param>
-		/// <param name="values">The values to add to the collection.</param>
-		public static void AddRange<T>(this ICollection<T> collection, IEnumerable<T> values) {
-			Requires.NotNull(collection, "collection");
-			Requires.NotNull(values, "values");
-
-			foreach (var value in values) {
-				collection.Add(value);
-			}
 		}
 
 		/// <summary>
@@ -552,7 +485,7 @@ namespace DotNetOpenAuth.Messaging {
 
 			collection.Clear();
 			if (values != null) {
-				AddRange(collection, values);
+				PortableUtilities.AddRange(collection, values);
 			}
 		}
 
@@ -573,7 +506,7 @@ namespace DotNetOpenAuth.Messaging {
 				foreach (string key in matchingKeys) {
 					queryArgs.Remove(key);
 				}
-				builder.Query = CreateQueryString(queryArgs.ToDictionary());
+				builder.Query = PortableUtilities.CreateQueryString(queryArgs.ToDictionary());
 				return builder.Uri;
 			} else {
 				return uri;
@@ -592,8 +525,8 @@ namespace DotNetOpenAuth.Messaging {
 
 			var authorization = new StringBuilder();
 			foreach (var pair in fields) {
-				string key = MessagingUtilities.EscapeUriDataStringRfc3986(pair.Key);
-				string value = MessagingUtilities.EscapeUriDataStringRfc3986(pair.Value);
+				string key = PortableUtilities.EscapeUriDataStringRfc3986(pair.Key);
+				string value = PortableUtilities.EscapeUriDataStringRfc3986(pair.Value);
 				authorization.Append(key);
 				authorization.Append("=\"");
 				authorization.Append(value);
@@ -660,7 +593,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>The generated values, which may contain zeros.</returns>
 		internal static byte[] GetNonCryptoRandomData(int length) {
 			byte[] buffer = new byte[length];
-			NonCryptoRandomDataGenerator.NextBytes(buffer);
+			PortableUtilities.NonCryptoRandomDataGenerator.NextBytes(buffer);
 			return buffer;
 		}
 
@@ -697,25 +630,6 @@ namespace DotNetOpenAuth.Messaging {
 			byte[] uniq_bytes = GetNonCryptoRandomData(binaryLength);
 			string uniq = Convert.ToBase64String(uniq_bytes);
 			return uniq;
-		}
-
-		/// <summary>
-		/// Gets a random string made up of a given set of allowable characters.
-		/// </summary>
-		/// <param name="length">The length of the desired random string.</param>
-		/// <param name="allowableCharacters">The allowable characters.</param>
-		/// <returns>A random string.</returns>
-		internal static string GetRandomString(int length, string allowableCharacters) {
-			Requires.Range(length >= 0, "length");
-			Requires.That(allowableCharacters != null && allowableCharacters.Length >= 2, "allowableCharacters", "At least two allowable characters required.");
-
-			char[] randomString = new char[length];
-			var random = NonCryptoRandomDataGenerator;
-			for (int i = 0; i < length; i++) {
-				randomString[i] = allowableCharacters[random.Next(allowableCharacters.Length)];
-			}
-
-			return new string(randomString);
 		}
 
 		/// <summary>
@@ -767,7 +681,7 @@ namespace DotNetOpenAuth.Messaging {
 			Requires.NotNull(algorithm, "algorithm");
 			Requires.NotNull(sortedData, "sortedData");
 
-			return ComputeHash(algorithm, CreateQueryString(sortedData), encoding);
+			return ComputeHash(algorithm, PortableUtilities.CreateQueryString(sortedData), encoding);
 		}
 
 		/// <summary>
@@ -964,7 +878,7 @@ namespace DotNetOpenAuth.Messaging {
 				int failedAttempts = 0;
 			tryAgain:
 				try {
-					string handle = GetRandomString(SymmetricSecretHandleLength, Base64WebSafeCharacters);
+					string handle = PortableUtilities.GetRandomString(SymmetricSecretHandleLength, Base64WebSafeCharacters);
 					cryptoKeyPair = new KeyValuePair<string, CryptoKey>(handle, cryptoKey);
 					cryptoKeyStore.StoreKey(bucket, handle, cryptoKey);
 				} catch (CryptoKeyCollisionException) {
@@ -1253,46 +1167,6 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
-		/// Tests two sequences for same contents and ordering.
-		/// </summary>
-		/// <typeparam name="T">The type of elements in the arrays.</typeparam>
-		/// <param name="sequence1">The first sequence in the comparison.  May not be null.</param>
-		/// <param name="sequence2">The second sequence in the comparison. May not be null.</param>
-		/// <returns>True if the arrays equal; false otherwise.</returns>
-		internal static bool AreEquivalent<T>(IEnumerable<T> sequence1, IEnumerable<T> sequence2) {
-			if (sequence1 == null && sequence2 == null) {
-				return true;
-			}
-			if ((sequence1 == null) ^ (sequence2 == null)) {
-				return false;
-			}
-
-			IEnumerator<T> iterator1 = sequence1.GetEnumerator();
-			IEnumerator<T> iterator2 = sequence2.GetEnumerator();
-			bool movenext1, movenext2;
-			while (true) {
-				movenext1 = iterator1.MoveNext();
-				movenext2 = iterator2.MoveNext();
-				if (!movenext1 || !movenext2) { // if we've reached the end of at least one sequence
-					break;
-				}
-				object obj1 = iterator1.Current;
-				object obj2 = iterator2.Current;
-				if (obj1 == null && obj2 == null) {
-					continue; // both null is ok
-				}
-				if (obj1 == null ^ obj2 == null) {
-					return false; // exactly one null is different
-				}
-				if (!obj1.Equals(obj2)) {
-					return false; // if they're not equal to each other
-				}
-			}
-
-			return movenext1 == movenext2; // did they both reach the end together?
-		}
-
-		/// <summary>
 		/// Tests two unordered collections for same contents.
 		/// </summary>
 		/// <typeparam name="T">The type of elements in the collections.</typeparam>
@@ -1332,177 +1206,6 @@ namespace DotNetOpenAuth.Messaging {
 			Requires.NotNull(first, "first");
 			Requires.NotNull(second, "second");
 			return AreEquivalent(first.ToArray(), second.ToArray());
-		}
-
-		/// <summary>
-		/// Concatenates a list of name-value pairs as key=value&amp;key=value,
-		/// taking care to properly encode each key and value for URL
-		/// transmission according to RFC 3986.  No ? is prefixed to the string.
-		/// </summary>
-		/// <param name="args">The dictionary of key/values to read from.</param>
-		/// <returns>The formulated querystring style string.</returns>
-		internal static string CreateQueryString(IEnumerable<KeyValuePair<string, string>> args) {
-			Requires.NotNull(args, "args");
-
-			if (!args.Any()) {
-				return string.Empty;
-			}
-			StringBuilder sb = new StringBuilder(args.Count() * 10);
-
-			foreach (var p in args) {
-				ErrorUtilities.VerifyArgument(!string.IsNullOrEmpty(p.Key), MessagingStrings.UnexpectedNullOrEmptyKey);
-				ErrorUtilities.VerifyArgument(p.Value != null, MessagingStrings.UnexpectedNullValue, p.Key);
-				sb.Append(EscapeUriDataStringRfc3986(p.Key));
-				sb.Append('=');
-				sb.Append(EscapeUriDataStringRfc3986(p.Value));
-				sb.Append('&');
-			}
-			sb.Length--; // remove trailing &
-
-			return sb.ToString();
-		}
-
-		/// <summary>
-		/// Adds a set of name-value pairs to the end of a given URL
-		/// as part of the querystring piece.  Prefixes a ? or &amp; before
-		/// first element as necessary.
-		/// </summary>
-		/// <param name="builder">The UriBuilder to add arguments to.</param>
-		/// <param name="args">
-		/// The arguments to add to the query.  
-		/// If null, <paramref name="builder"/> is not changed.
-		/// </param>
-		/// <remarks>
-		/// If the parameters to add match names of parameters that already are defined
-		/// in the query string, the existing ones are <i>not</i> replaced.
-		/// </remarks>
-		internal static void AppendQueryArgs(this UriBuilder builder, IEnumerable<KeyValuePair<string, string>> args) {
-			Requires.NotNull(builder, "builder");
-
-			if (args != null && args.Count() > 0) {
-				StringBuilder sb = new StringBuilder(50 + (args.Count() * 10));
-				if (!string.IsNullOrEmpty(builder.Query)) {
-					sb.Append(builder.Query.Substring(1));
-					sb.Append('&');
-				}
-				sb.Append(CreateQueryString(args));
-
-				builder.Query = sb.ToString();
-			}
-		}
-
-		/// <summary>
-		/// Adds a set of name-value pairs to the end of a given URL
-		/// as part of the fragment piece.  Prefixes a # or &amp; before
-		/// first element as necessary.
-		/// </summary>
-		/// <param name="builder">The UriBuilder to add arguments to.</param>
-		/// <param name="args">
-		/// The arguments to add to the query.  
-		/// If null, <paramref name="builder"/> is not changed.
-		/// </param>
-		/// <remarks>
-		/// If the parameters to add match names of parameters that already are defined
-		/// in the fragment, the existing ones are <i>not</i> replaced.
-		/// </remarks>
-		internal static void AppendFragmentArgs(this UriBuilder builder, IEnumerable<KeyValuePair<string, string>> args) {
-			Requires.NotNull(builder, "builder");
-
-			if (args != null && args.Count() > 0) {
-				StringBuilder sb = new StringBuilder(50 + (args.Count() * 10));
-				if (!string.IsNullOrEmpty(builder.Fragment)) {
-					sb.Append(builder.Fragment);
-					sb.Append('&');
-				}
-				sb.Append(CreateQueryString(args));
-
-				builder.Fragment = sb.ToString();
-			}
-		}
-
-		/// <summary>
-		/// Adds parameters to a query string, replacing parameters that
-		/// match ones that already exist in the query string.
-		/// </summary>
-		/// <param name="builder">The UriBuilder to add arguments to.</param>
-		/// <param name="args">
-		/// The arguments to add to the query.  
-		/// If null, <paramref name="builder"/> is not changed.
-		/// </param>
-		internal static void AppendAndReplaceQueryArgs(this UriBuilder builder, IEnumerable<KeyValuePair<string, string>> args) {
-			Requires.NotNull(builder, "builder");
-
-			if (args != null && args.Count() > 0) {
-				NameValueCollection aggregatedArgs = HttpUtility.ParseQueryString(builder.Query);
-				foreach (var pair in args) {
-					aggregatedArgs[pair.Key] = pair.Value;
-				}
-
-				builder.Query = CreateQueryString(aggregatedArgs.ToDictionary());
-			}
-		}
-
-		/// <summary>
-		/// Extracts the recipient from an HttpRequestInfo.
-		/// </summary>
-		/// <param name="request">The request to get recipient information from.</param>
-		/// <returns>The recipient.</returns>
-		/// <exception cref="ArgumentException">Thrown if the HTTP request is something we can't handle.</exception>
-		internal static MessageReceivingEndpoint GetRecipient(this HttpRequestMessage request) {
-			return new MessageReceivingEndpoint(request.RequestUri, GetHttpDeliveryMethod(request.Method.Method));
-		}
-
-		/// <summary>
-		/// Gets the <see cref="HttpDeliveryMethods"/> enum value for a given HTTP verb.
-		/// </summary>
-		/// <param name="httpVerb">The HTTP verb.</param>
-		/// <returns>A <see cref="HttpDeliveryMethods"/> enum value that is within the <see cref="HttpDeliveryMethods.HttpVerbMask"/>.</returns>
-		/// <exception cref="ArgumentException">Thrown if the HTTP request is something we can't handle.</exception>
-		internal static HttpDeliveryMethods GetHttpDeliveryMethod(string httpVerb) {
-			if (httpVerb == "GET") {
-				return HttpDeliveryMethods.GetRequest;
-			} else if (httpVerb == "POST") {
-				return HttpDeliveryMethods.PostRequest;
-			} else if (httpVerb == "PUT") {
-				return HttpDeliveryMethods.PutRequest;
-			} else if (httpVerb == "DELETE") {
-				return HttpDeliveryMethods.DeleteRequest;
-			} else if (httpVerb == "HEAD") {
-				return HttpDeliveryMethods.HeadRequest;
-			} else if (httpVerb == "PATCH") {
-				return HttpDeliveryMethods.PatchRequest;
-			} else if (httpVerb == "OPTIONS") {
-				return HttpDeliveryMethods.OptionsRequest;
-			} else {
-				throw ErrorUtilities.ThrowArgumentNamed("httpVerb", MessagingStrings.UnsupportedHttpVerb, httpVerb);
-			}
-		}
-
-		/// <summary>
-		/// Gets the HTTP verb to use for a given <see cref="HttpDeliveryMethods"/> enum value.
-		/// </summary>
-		/// <param name="httpMethod">The HTTP method.</param>
-		/// <returns>An HTTP verb, such as GET, POST, PUT, DELETE, PATCH, or OPTION.</returns>
-		internal static HttpMethod GetHttpVerb(HttpDeliveryMethods httpMethod) {
-			if ((httpMethod & HttpDeliveryMethods.HttpVerbMask) == HttpDeliveryMethods.GetRequest) {
-				return HttpMethod.Get;
-			} else if ((httpMethod & HttpDeliveryMethods.HttpVerbMask) == HttpDeliveryMethods.PostRequest) {
-				return HttpMethod.Post;
-			} else if ((httpMethod & HttpDeliveryMethods.HttpVerbMask) == HttpDeliveryMethods.PutRequest) {
-				return HttpMethod.Put;
-			} else if ((httpMethod & HttpDeliveryMethods.HttpVerbMask) == HttpDeliveryMethods.DeleteRequest) {
-				return HttpMethod.Delete;
-			} else if ((httpMethod & HttpDeliveryMethods.HttpVerbMask) == HttpDeliveryMethods.HeadRequest) {
-				return HttpMethod.Head;
-			} else if ((httpMethod & HttpDeliveryMethods.HttpVerbMask) == HttpDeliveryMethods.PatchRequest) {
-				return new HttpMethod("PATCH");
-			} else if ((httpMethod & HttpDeliveryMethods.HttpVerbMask) == HttpDeliveryMethods.OptionsRequest) {
-				return HttpMethod.Options;
-			} else if ((httpMethod & HttpDeliveryMethods.AuthorizationHeaderRequest) != 0) {
-				return HttpMethod.Get; // if AuthorizationHeaderRequest is specified without an explicit HTTP verb, assume GET.
-			} else {
-				throw ErrorUtilities.ThrowArgumentNamed("httpMethod", MessagingStrings.UnsupportedHttpVerb, httpMethod);
-			}
 		}
 
 		/// <summary>
@@ -1832,66 +1535,6 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
-		/// Escapes a string according to the URI data string rules given in RFC 3986.
-		/// </summary>
-		/// <param name="value">The value to escape.</param>
-		/// <returns>The escaped value.</returns>
-		/// <remarks>
-		/// The <see cref="Uri.EscapeDataString"/> method is <i>supposed</i> to take on
-		/// RFC 3986 behavior if certain elements are present in a .config file.  Even if this
-		/// actually worked (which in my experiments it <i>doesn't</i>), we can't rely on every
-		/// host actually having this configuration element present.
-		/// </remarks>
-		internal static string EscapeUriDataStringRfc3986(string value) {
-			Requires.NotNull(value, "value");
-
-			// fast path for empty values.
-			if (value.Length == 0) {
-				return value;
-			}
-
-			// Start with RFC 2396 escaping by calling the .NET method to do the work.
-			// This MAY sometimes exhibit RFC 3986 behavior (according to the documentation).
-			// If it does, the escaping we do that follows it will be a no-op since the
-			// characters we search for to replace can't possibly exist in the string.
-			StringBuilder escaped = new StringBuilder(Uri.EscapeDataString(value));
-
-			// Upgrade the escaping to RFC 3986, if necessary.
-			for (int i = 0; i < UriRfc3986CharsToEscape.Length; i++) {
-				escaped.Replace(UriRfc3986CharsToEscape[i], Uri.HexEscape(UriRfc3986CharsToEscape[i][0]));
-			}
-
-			// Return the fully-RFC3986-escaped string.
-			return escaped.ToString();
-		}
-
-		/// <summary>
-		/// Ensures that UTC times are converted to local times.  Unspecified kinds are unchanged.
-		/// </summary>
-		/// <param name="value">The date-time to convert.</param>
-		/// <returns>The date-time in local time.</returns>
-		internal static DateTime ToLocalTimeSafe(this DateTime value) {
-			if (value.Kind == DateTimeKind.Unspecified) {
-				return value;
-			}
-
-			return value.ToLocalTime();
-		}
-
-		/// <summary>
-		/// Ensures that local times are converted to UTC times.  Unspecified kinds are unchanged.
-		/// </summary>
-		/// <param name="value">The date-time to convert.</param>
-		/// <returns>The date-time in UTC time.</returns>
-		internal static DateTime ToUniversalTimeSafe(this DateTime value) {
-			if (value.Kind == DateTimeKind.Unspecified) {
-				return value;
-			}
-
-			return value.ToUniversalTime();
-		}
-
-		/// <summary>
 		/// Gets the query data from the original request (before any URL rewriting has occurred.)
 		/// </summary>
 		/// <param name="request">The request.</param>
@@ -1959,37 +1602,6 @@ namespace DotNetOpenAuth.Messaging {
 				}
 
 				throw;
-			}
-		}
-
-		/// <summary>
-		/// A thread-safe, non-crypto random number generator.
-		/// </summary>
-		private static class ThreadSafeRandom {
-			/// <summary>
-			/// The initializer of all new <see cref="Random"/> instances.
-			/// </summary>
-			private static readonly Random threadRandomInitializer = new Random();
-
-			/// <summary>
-			/// A thread-local instance of <see cref="Random"/>
-			/// </summary>
-			[ThreadStatic]
-			private static Random threadRandom;
-
-			/// <summary>
-			/// Gets a random number generator for use on the current thread only.
-			/// </summary>
-			public static Random RandomNumberGenerator {
-				get {
-					if (threadRandom == null) {
-						lock (threadRandomInitializer) {
-							threadRandom = new Random(threadRandomInitializer.Next());
-						}
-					}
-
-					return threadRandom;
-				}
 			}
 		}
 

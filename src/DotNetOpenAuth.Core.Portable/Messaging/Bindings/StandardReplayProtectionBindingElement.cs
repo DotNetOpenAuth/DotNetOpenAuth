@@ -72,7 +72,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// <summary>
 		/// Gets or sets the channel that this binding element belongs to.
 		/// </summary>
-		public Channel Channel { get; set; }
+		public ChannelBase Channel { get; set; }
 
 		#endregion
 
@@ -160,7 +160,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// </summary>
 		/// <returns>The nonce string.</returns>
 		private string GenerateUniqueFragment() {
-			return MessagingUtilities.GetRandomString(this.nonceLength, AllowedCharacters);
+			return PortableUtilities.GetRandomString(this.nonceLength, AllowedCharacters);
 		}
 	}
 }

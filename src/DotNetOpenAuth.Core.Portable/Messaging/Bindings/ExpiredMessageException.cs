@@ -12,7 +12,6 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 	/// <summary>
 	/// An exception thrown when a message is received that exceeds the maximum message age limit.
 	/// </summary>
-	[Serializable]
 	internal class ExpiredMessageException : ProtocolException {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ExpiredMessageException"/> class.

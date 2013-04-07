@@ -11,7 +11,6 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 	/// An exception thrown when a message is received for the second time, signalling a possible
 	/// replay attack.
 	/// </summary>
-	[Serializable]
 	internal class ReplayedMessageException : ProtocolException {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ReplayedMessageException"/> class.

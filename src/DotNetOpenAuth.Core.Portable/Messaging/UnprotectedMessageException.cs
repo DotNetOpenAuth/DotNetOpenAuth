@@ -11,7 +11,6 @@ namespace DotNetOpenAuth.Messaging {
 	/// <summary>
 	/// An exception thrown when messages cannot receive all the protections they require.
 	/// </summary>
-	[Serializable]
 	internal class UnprotectedMessageException : ProtocolException {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="UnprotectedMessageException"/> class.

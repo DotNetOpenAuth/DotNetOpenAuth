@@ -23,17 +23,9 @@
     <Compile Include="Loggers\TraceLogger.cs" />
     <Compile Include="MachineKeyUtil.cs" />
     <Compile Include="Messaging\Base64WebEncoder.cs" />
-    <Compile Include="Messaging\Bindings\AsymmetricCryptoKeyStoreWrapper.cs" />
-    <Compile Include="Messaging\Bindings\CryptoKey.cs" />
-    <Compile Include="Messaging\Bindings\CryptoKeyCollisionException.cs" />
-    <Compile Include="Messaging\Bindings\HardCodedKeyCryptoKeyStore.cs" />
-    <Compile Include="Messaging\Bindings\ICryptoKeyStore.cs" />
-    <Compile Include="Messaging\Bindings\ICryptoKeyAndNonceStore.cs" />
-    <Compile Include="Messaging\Bindings\MemoryCryptoKeyStore.cs" />
     <Compile Include="Messaging\BinaryDataBagFormatter.cs" />
-    <Compile Include="Messaging\Bindings\MemoryCryptoKeyAndNonceStore.cs" />
-    <Compile Include="Messaging\HttpResponseMessageWithOriginal.cs" />
-    <Compile Include="Messaging\IMessageWithEvents.cs" />
+    <Compile Include="Messaging\Bindings\AsymmetricCryptoKeyStoreWrapper.cs" />
+    <Compile Include="Messaging\Channel.cs" />
     <Compile Include="Messaging\MessageProtectionTasks.cs" />
     <Compile Include="Messaging\DataBagFormatterBase.cs" />
     <Compile Include="Messaging\HmacAlgorithms.cs" />
@@ -50,27 +42,13 @@
     <Compile Include="Messaging\StandardMessageFactoryChannel.cs" />
     <Compile Include="Messaging\DataBag.cs" />
     <Compile Include="Messaging\TimestampEncoder.cs" />
-    <Compile Include="Messaging\ChannelEventArgs.cs" />
-    <Compile Include="Messaging\Bindings\MemoryNonceStore.cs" />
-    <Compile Include="Messaging\Bindings\INonceStore.cs" />
-    <Compile Include="Messaging\Bindings\StandardReplayProtectionBindingElement.cs" />
-    <Compile Include="Messaging\IChannelBindingElement.cs" />
-    <Compile Include="Messaging\Bindings\ReplayedMessageException.cs" />
-    <Compile Include="Messaging\Bindings\ExpiredMessageException.cs" />
-    <Compile Include="Messaging\Bindings\InvalidSignatureException.cs" />
-    <Compile Include="Messaging\Bindings\IReplayProtectedProtocolMessage.cs" />
-    <Compile Include="Messaging\Bindings\IExpiringProtocolMessage.cs" />
-    <Compile Include="Messaging\Channel.cs" />
     <Compile Include="Messaging\HttpRequestInfo.cs" />
     <Compile Include="Messaging\MessagingUtilities.cs" />
-    <Compile Include="Messaging\Bindings\StandardExpirationBindingElement.cs" />
-    <Compile Include="Messaging\UnprotectedMessageException.cs" />
     <Compile Include="Messaging\TimespanSecondsEncoder.cs" />
     <Compile Include="UriUtil.cs" />
     <Compile Include="Util.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Messaging\Bindings\Bindings.cd" />
     <None Include="Messaging\Exceptions.cd" />
     <None Include="Messaging\Messaging.cd" />
     <None Include="packages.config" />

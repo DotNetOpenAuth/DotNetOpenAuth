@@ -75,7 +75,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 			}
 
 			return this.ExpiresUtc == other.ExpiresUtc
-				&& MessagingUtilities.AreEquivalent(this.Key, other.Key);
+				&& PortableUtilities.AreEquivalent(this.Key, other.Key);
 		}
 
 		/// <summary>

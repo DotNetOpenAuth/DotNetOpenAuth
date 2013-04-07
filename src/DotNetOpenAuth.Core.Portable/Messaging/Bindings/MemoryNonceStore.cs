@@ -35,19 +35,12 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// <summary>
 		/// A lock object used around accesses to the <see cref="usedNonces"/> field.
 		/// </summary>
-		private object nonceLock = new object();
+		private readonly object nonceLock = new object();
 
 		/// <summary>
 		/// Where we're currently at in our periodic nonce cleaning cycle.
 		/// </summary>
 		private int nonceClearingCounter;
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="MemoryNonceStore"/> class.
-		/// </summary>
-		internal MemoryNonceStore()
-			: this(StandardExpirationBindingElement.MaximumMessageAge) {
-		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MemoryNonceStore"/> class.

@@ -8,7 +8,6 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 	using System;
 	using System.Threading;
 	using System.Threading.Tasks;
-	using DotNetOpenAuth.Configuration;
 
 	/// <summary>
 	/// A message expiration enforcing binding element that supports messages
@@ -44,18 +43,9 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// <summary>
 		/// Gets or sets the channel that this binding element belongs to.
 		/// </summary>
-		public Channel Channel { get; set; }
+		public ChannelBase Channel { get; set; }
 
 		#endregion
-
-		/// <summary>
-		/// Gets the maximum age a message implementing the 
-		/// <see cref="IExpiringProtocolMessage"/> interface can be before
-		/// being discarded as too old.
-		/// </summary>
-		protected internal static TimeSpan MaximumMessageAge {
-			get { return Configuration.DotNetOpenAuthSection.Messaging.MaximumMessageLifetime; }
-		}
 
 		#region IChannelBindingElement Methods
 
@@ -102,7 +92,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 				// Yes the UtcCreationDate is supposed to always be in UTC already,
 				// but just in case a given message failed to guarantee that, we do it here.
 				DateTime creationDate = expiringMessage.UtcCreationDate.ToUniversalTimeSafe();
-				DateTime expirationDate = creationDate + MaximumMessageAge;
+				DateTime expirationDate = creationDate + this.Channel.MaximumMessageLifetime;
 				if (expirationDate < DateTime.UtcNow) {
 					throw new ExpiredMessageException(expirationDate, expiringMessage);
 				}
@@ -110,7 +100,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 				// Mitigate HMAC attacks (just guessing the signature until they get it) by 
 				// disallowing post-dated messages.
 				ErrorUtilities.VerifyProtocol(
-					creationDate <= DateTime.UtcNow + DotNetOpenAuthSection.Messaging.MaximumClockSkew,
+					creationDate <= DateTime.UtcNow + this.Channel.MaximumClockSkew,
 					MessagingStrings.MessageTimestampInFuture,
 					creationDate);
 

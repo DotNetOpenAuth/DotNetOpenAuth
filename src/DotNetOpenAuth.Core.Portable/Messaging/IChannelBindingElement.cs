@@ -21,7 +21,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <remarks>
 		/// This property is set by the channel when it is first constructed.
 		/// </remarks>
-		Channel Channel { get; set; }
+		ChannelBase Channel { get; set; }
 
 		/// <summary>
 		/// Gets the protection commonly offered (if any) by this binding element.

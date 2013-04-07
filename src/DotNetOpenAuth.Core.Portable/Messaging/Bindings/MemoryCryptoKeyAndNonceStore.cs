@@ -7,8 +7,6 @@
 namespace DotNetOpenAuth.Messaging.Bindings {
 	using System;
 	using System.Collections.Generic;
-	using DotNetOpenAuth.Configuration;
-	using DotNetOpenAuth.Messaging.Bindings;
 
 	/// <summary>
 	/// An in-memory store for Providers, suitable for single server, single process

@@ -28,10 +28,30 @@
     <Compile Include="Loggers\ILog.cs" />
     <Compile Include="Loggers\ILoggerFactory.cs" />
     <Compile Include="Loggers\NoOpLogger.cs" />
+    <Compile Include="Messaging\Bindings\CryptoKey.cs" />
+    <Compile Include="Messaging\Bindings\CryptoKeyCollisionException.cs" />
+    <Compile Include="Messaging\Bindings\ExpiredMessageException.cs" />
+    <Compile Include="Messaging\Bindings\HardCodedKeyCryptoKeyStore.cs" />
+    <Compile Include="Messaging\Bindings\ICryptoKeyAndNonceStore.cs" />
+    <Compile Include="Messaging\Bindings\ICryptoKeyStore.cs" />
+    <Compile Include="Messaging\Bindings\IExpiringProtocolMessage.cs" />
+    <Compile Include="Messaging\Bindings\INonceStore.cs" />
+    <Compile Include="Messaging\Bindings\InvalidSignatureException.cs" />
+    <Compile Include="Messaging\Bindings\IReplayProtectedProtocolMessage.cs" />
+    <Compile Include="Messaging\Bindings\MemoryCryptoKeyAndNonceStore.cs" />
+    <Compile Include="Messaging\Bindings\MemoryCryptoKeyStore.cs" />
+    <Compile Include="Messaging\Bindings\MemoryNonceStore.cs" />
+    <Compile Include="Messaging\Bindings\ReplayedMessageException.cs" />
+    <Compile Include="Messaging\Bindings\StandardExpirationBindingElement.cs" />
+    <Compile Include="Messaging\Bindings\StandardReplayProtectionBindingElement.cs" />
+    <Compile Include="Messaging\ChannelBase.cs" />
+    <Compile Include="Messaging\ChannelEventArgs.cs" />
     <Compile Include="Messaging\EnumerableCacheExtensions.cs" />
     <Compile Include="Messaging\HostErrorException.cs" />
     <Compile Include="Messaging\ErrorUtilities.cs" />
     <Compile Include="Messaging\HttpDeliveryMethods.cs" />
+    <Compile Include="Messaging\HttpResponseMessageWithOriginal.cs" />
+    <Compile Include="Messaging\IChannelBindingElement.cs" />
     <Compile Include="Messaging\IDirectedProtocolMessage.cs" />
     <Compile Include="Messaging\IDirectResponseProtocolMessage.cs" />
     <Compile Include="Messaging\IExtensionMessage.cs" />
@@ -42,6 +62,7 @@
     <Compile Include="Messaging\IMessageFactory.cs" />
     <Compile Include="Messaging\IMessageOriginalPayload.cs" />
     <Compile Include="Messaging\IMessageWithBinaryData.cs" />
+    <Compile Include="Messaging\IMessageWithEvents.cs" />
     <Compile Include="Messaging\InternalErrorException.cs" />
     <Compile Include="Messaging\IProtocolMessage.cs" />
     <Compile Include="Messaging\IProtocolMessageWithExtensions.cs" />
@@ -70,16 +91,26 @@
     <Compile Include="Messaging\ProtectionLevel.cs" />
     <Compile Include="Messaging\Reflection\ValueMapping.cs" />
     <Compile Include="Messaging\StandardMessageFactory.cs" />
+    <Compile Include="Messaging\UnprotectedMessageException.cs" />
     <Compile Include="PortableUtilities.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RequiresEx.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="System.Net.Http.Extensions">
+      <HintPath>..\packages\Microsoft.Net.Http.2.1.3-beta\lib\portable-net45+win8\System.Net.Http.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Primitives">
+      <HintPath>..\packages\Microsoft.Net.Http.2.1.3-beta\lib\portable-net45+win8\System.Net.Http.Primitives.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Validation">
       <HintPath>..\packages\Validation.2.0.2.13022\lib\portable-windows8+net40+sl5+windowsphone8\Validation.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
+    <None Include="Messaging\Bindings\Bindings.cd" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

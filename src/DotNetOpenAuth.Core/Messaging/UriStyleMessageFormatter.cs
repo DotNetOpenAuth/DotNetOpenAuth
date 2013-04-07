@@ -57,7 +57,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>The buffer containing the serialized data.</returns>
 		protected override byte[] SerializeCore(T message) {
 			var fields = MessageSerializer.Get(message.GetType().GetTypeInfo()).Serialize(MessageDescriptions.GetAccessor(message));
-			string value = MessagingUtilities.CreateQueryString(fields);
+			string value = PortableUtilities.CreateQueryString(fields);
 			return Encoding.UTF8.GetBytes(value);
 		}
 
