@@ -109,6 +109,7 @@
     <Compile Include="PortableUtilities.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RequiresEx.cs" />
+    <Compile Include="UriUtil.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Net.Http.Extensions">

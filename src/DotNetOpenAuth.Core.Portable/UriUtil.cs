@@ -10,8 +10,6 @@ namespace DotNetOpenAuth {
 	using System.Diagnostics.CodeAnalysis;
 	using System.Linq;
 	using System.Text.RegularExpressions;
-	using System.Web;
-	using System.Web.UI;
 	using DotNetOpenAuth.Messaging;
 	using Validation;
 
@@ -27,15 +25,14 @@ namespace DotNetOpenAuth {
 		/// <returns>
 		/// True if the URI contains an OAuth message.
 		/// </returns>
-			internal static bool QueryStringContainPrefixedParameters(this Uri uri, string prefix) {
+		internal static bool QueryStringContainPrefixedParameters(this Uri uri, string prefix) {
 			Requires.NotNullOrEmpty(prefix, "prefix");
 			if (uri == null) {
 				return false;
 			}
 
-			NameValueCollection nvc = HttpUtility.ParseQueryString(uri.Query);
-			Assumes.True(nvc != null); // BCL
-			return nvc.Keys.OfType<string>().Any(key => key.StartsWith(prefix, StringComparison.Ordinal));
+			return PortableUtilities.ParseQueryString(uri.Query)
+				.Any(pair => pair.Key != null && pair.Key.StartsWith(prefix, StringComparison.Ordinal));
 		}
 
 		/// <summary>
@@ -75,39 +72,6 @@ namespace DotNetOpenAuth {
 			} else {
 				// The port must be explicitly given anyway.
 				return builder.ToString();
-			}
-		}
-
-		/// <summary>
-		/// Validates that a URL will be resolvable at runtime.
-		/// </summary>
-		/// <param name="page">The page hosting the control that receives this URL as a property.</param>
-		/// <param name="designMode">If set to <c>true</c> the page is in design-time mode rather than runtime mode.</param>
-		/// <param name="value">The URI to check.</param>
-		/// <exception cref="UriFormatException">Thrown if the given URL is not a valid, resolvable URI.</exception>
-		[SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "System.Uri", Justification = "Just to throw an exception on invalid input.")]
-		internal static void ValidateResolvableUrl(Page page, bool designMode, string value) {
-			if (string.IsNullOrEmpty(value)) {
-				return;
-			}
-
-			if (page != null && !designMode) {
-				Assumes.True(page.Request != null);
-
-				// Validate new value by trying to construct a Realm object based on it.
-				string relativeUrl = page.ResolveUrl(value);
-				Assumes.True(page.Request.Url != null);
-				Assumes.True(relativeUrl != null);
-				new Uri(page.Request.Url, relativeUrl); // throws an exception on failure.
-			} else {
-				// We can't fully test it, but it should start with either ~/ or a protocol.
-				if (Regex.IsMatch(value, @"^https?://")) {
-					new Uri(value); // make sure it's fully-qualified, but ignore wildcards
-				} else if (value.StartsWith("~/", StringComparison.Ordinal)) {
-					// this is valid too
-				} else {
-					throw new UriFormatException();
-				}
 			}
 		}
 	}

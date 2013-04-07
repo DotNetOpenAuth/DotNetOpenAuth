@@ -6,12 +6,14 @@
 namespace DotNetOpenAuth {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Globalization;
 	using System.Linq;
 	using System.Net;
 	using System.Net.Http.Headers;
 	using System.Reflection;
 	using System.Text;
+	using System.Text.RegularExpressions;
 	using System.Threading.Tasks;
 	using System.Web;
 	using System.Web.UI;
@@ -131,6 +133,38 @@ namespace DotNetOpenAuth {
 						CultureInfo.CurrentCulture,
 						Strings.EmbeddedResourceUrlProviderRequired,
 						string.Join(", ", new string[] { typeof(Page).FullName, typeof(IEmbeddedResourceRetrieval).FullName })));
+			}
+		}
+		/// <summary>
+		/// Validates that a URL will be resolvable at runtime.
+		/// </summary>
+		/// <param name="page">The page hosting the control that receives this URL as a property.</param>
+		/// <param name="designMode">If set to <c>true</c> the page is in design-time mode rather than runtime mode.</param>
+		/// <param name="value">The URI to check.</param>
+		/// <exception cref="UriFormatException">Thrown if the given URL is not a valid, resolvable URI.</exception>
+		[SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "System.Uri", Justification = "Just to throw an exception on invalid input.")]
+		internal static void ValidateResolvableUrl(Page page, bool designMode, string value) {
+			if (string.IsNullOrEmpty(value)) {
+				return;
+			}
+
+			if (page != null && !designMode) {
+				Assumes.True(page.Request != null);
+
+				// Validate new value by trying to construct a Realm object based on it.
+				string relativeUrl = page.ResolveUrl(value);
+				Assumes.True(page.Request.Url != null);
+				Assumes.True(relativeUrl != null);
+				new Uri(page.Request.Url, relativeUrl); // throws an exception on failure.
+			} else {
+				// We can't fully test it, but it should start with either ~/ or a protocol.
+				if (Regex.IsMatch(value, @"^https?://")) {
+					new Uri(value); // make sure it's fully-qualified, but ignore wildcards
+				} else if (value.StartsWith("~/", StringComparison.Ordinal)) {
+					// this is valid too
+				} else {
+					throw new UriFormatException();
+				}
 			}
 		}
 
