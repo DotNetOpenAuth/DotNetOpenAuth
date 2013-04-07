@@ -47,6 +47,9 @@
     <Compile Include="Messaging\Bindings\StandardReplayProtectionBindingElement.cs" />
     <Compile Include="Messaging\ChannelBase.cs" />
     <Compile Include="Messaging\ChannelEventArgs.cs" />
+    <Compile Include="Messaging\EmptyDictionary.cs" />
+    <Compile Include="Messaging\EmptyEnumerator.cs" />
+    <Compile Include="Messaging\EmptyList.cs" />
     <Compile Include="Messaging\EnumerableCacheExtensions.cs" />
     <Compile Include="Messaging\HostErrorException.cs" />
     <Compile Include="Messaging\ErrorUtilities.cs" />
@@ -81,6 +84,7 @@
     <Compile Include="Messaging\MultipartContentMember.cs" />
     <Compile Include="Messaging\ProtocolException.cs" />
     <Compile Include="Messaging\ProtocolFaultResponseException.cs" />
+    <Compile Include="Messaging\ReadOnlyDictionary.cs" />
     <Compile Include="Messaging\Reflection\DefaultEncoderAttribute.cs" />
     <Compile Include="Messaging\Reflection\IMessagePartEncoder.cs" />
     <Compile Include="Messaging\Reflection\IMessagePartFormattingEncoder.cs" />
