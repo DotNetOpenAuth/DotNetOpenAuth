@@ -80,6 +80,7 @@
     </Compile>
     <Compile Include="Messaging\MultipartContentMember.cs" />
     <Compile Include="Messaging\ProtocolException.cs" />
+    <Compile Include="Messaging\ProtocolFaultResponseException.cs" />
     <Compile Include="Messaging\Reflection\DefaultEncoderAttribute.cs" />
     <Compile Include="Messaging\Reflection\IMessagePartEncoder.cs" />
     <Compile Include="Messaging\Reflection\IMessagePartFormattingEncoder.cs" />

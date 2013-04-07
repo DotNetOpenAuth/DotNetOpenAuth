@@ -35,7 +35,6 @@
     <Compile Include="Messaging\EmptyList.cs" />
     <Compile Include="Messaging\IStreamSerializingDataBag.cs" />
     <Compile Include="Messaging\KeyedCollectionDelegate.cs" />
-    <Compile Include="Messaging\ProtocolFaultResponseException.cs" />
     <Compile Include="Messaging\IDataBagFormatter.cs" />
     <Compile Include="Messaging\UriStyleMessageFormatter.cs" />
     <Compile Include="Messaging\StandardMessageFactoryChannel.cs" />

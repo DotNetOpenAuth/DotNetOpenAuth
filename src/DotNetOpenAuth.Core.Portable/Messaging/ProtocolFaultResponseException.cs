@@ -23,7 +23,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <summary>
 		/// The channel that produced the error response message, to be used in constructing the actual HTTP response.
 		/// </summary>
-		private readonly Channel channel;
+		private readonly ChannelBase channel;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ProtocolFaultResponseException"/> class
@@ -34,7 +34,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="faultedMessage">The message that was the cause of the exception.  May be null.</param>
 		/// <param name="innerException">The inner exception.</param>
 		/// <param name="message">The message for the exception.</param>
-		protected internal ProtocolFaultResponseException(Channel channel, IDirectResponseProtocolMessage errorResponse, IProtocolMessage faultedMessage = null, Exception innerException = null, string message = null)
+		protected internal ProtocolFaultResponseException(ChannelBase channel, IDirectResponseProtocolMessage errorResponse, IProtocolMessage faultedMessage = null, Exception innerException = null, string message = null)
 			: base(message ?? (innerException != null ? innerException.Message : null), faultedMessage, innerException) {
 			Requires.NotNull(channel, "channel");
 			Requires.NotNull(errorResponse, "errorResponse");
