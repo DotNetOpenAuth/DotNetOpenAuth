@@ -132,8 +132,9 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			get {
 				var values = new List<string>(this.message.ExtraData.Count + this.description.Mapping.Count);
 				foreach (MessagePart part in this.description.Mapping.Values) {
-					if (part.GetValue(this.message, this.getOriginalValues) != null) {
-						values.Add(part.GetValue(this.message, this.getOriginalValues));
+					string value = part.GetValue(this.message, this.getOriginalValues);
+					if (value != null) {
+						values.Add(value);
 					}
 				}
 
