@@ -270,7 +270,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 						}
 					}
 				}
-				currentType = currentType.BaseType.GetTypeInfo();
+				currentType = currentType.BaseType != null ? currentType.BaseType.GetTypeInfo() : null;
 			} while (currentType != null);
 
 			this.Constructors = this.MessageType.DeclaredConstructors.ToArray();

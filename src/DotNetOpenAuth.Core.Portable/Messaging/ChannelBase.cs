@@ -871,12 +871,12 @@ namespace DotNetOpenAuth.Messaging {
 				foreach (var field in fields) {
 					hiddenFields.AppendFormat(
 						"\t<input type=\"hidden\" name=\"{0}\" value=\"{1}\" />\r\n",
-						PortableUtilities.HtmlEncode(field.Key),
-						PortableUtilities.HtmlEncode(field.Value));
+						WebUtility.HtmlEncode(field.Key),
+						WebUtility.HtmlEncode(field.Value));
 				}
 				bodyWriter.WriteLine(
 					IndirectMessageFormPostFormat,
-					PortableUtilities.HtmlEncode(message.Recipient.AbsoluteUri),
+					WebUtility.HtmlEncode(message.Recipient.AbsoluteUri),
 					hiddenFields);
 				bodyWriter.Flush();
 				HttpResponseMessage response = new HttpResponseMessageWithOriginal(message) {

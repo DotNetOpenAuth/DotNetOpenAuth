@@ -10,6 +10,7 @@ namespace DotNetOpenAuth {
 	using System.Collections.ObjectModel;
 	using System.Globalization;
 	using System.Linq;
+	using System.Net;
 	using System.Net.Http;
 	using System.Reflection;
 	using System.Text;
@@ -90,7 +91,7 @@ namespace DotNetOpenAuth {
 				foreach (var pair in query.Split(AmperstandArray, StringSplitOptions.RemoveEmptyEntries)) {
 					var keyValue = pair.Split(EqualsArray, 2);
 					for (int i = 0; i < keyValue.Length; i++) {
-						keyValue[i] = Uri.UnescapeDataString(keyValue[i]);
+						keyValue[i] = WebUtility.UrlDecode(keyValue[i]);
 					}
 
 					if (keyValue.Length == 1) {
@@ -290,10 +291,6 @@ namespace DotNetOpenAuth {
 			}
 
 			return new string(randomString);
-		}
-
-		internal static string HtmlEncode(string value) {
-			throw new NotImplementedException();
 		}
 
 		/// <summary>

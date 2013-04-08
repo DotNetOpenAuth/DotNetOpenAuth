@@ -128,7 +128,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 					if (this.memberDeclaredType.IsGenericType &&
 						this.memberDeclaredType.GetGenericTypeDefinition() == typeof(Nullable<>)) {
 						// It's a nullable type.  Try again to look up an appropriate converter for the underlying type.
-						Type underlyingType = Nullable.GetUnderlyingType(this.memberDeclaredType.GetType());
+						Type underlyingType = Nullable.GetUnderlyingType(this.memberDeclaredType.AsType());
 						ValueMapping underlyingMapping;
 						if (converters.TryGetValue(underlyingType.GetTypeInfo(), out underlyingMapping)) {
 							this.converter = new ValueMapping(
