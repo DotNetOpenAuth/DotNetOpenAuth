@@ -86,7 +86,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 				return Convert.FromBase64String(str);
 			};
 			Map<Uri>(uri => uri.AbsoluteUri, uri => uri.OriginalString, safeUri);
-			Map<DateTime>(dt => dt.ToUniversalTime().ToString("o", CultureInfo.InvariantCulture), null, str => DateTime.Parse(str, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal));
+			Map<DateTime>(dt => dt.ToUniversalTimeSafe().ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture), null, str => DateTime.Parse(str, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal));
 			Map<TimeSpan>(ts => ts.ToString(), null, str => TimeSpan.Parse(str));
 			Map<byte[]>(safeFromByteArray, null, safeToByteArray);
 			Map<bool>(value => value.ToString().ToLowerInvariant(), null, safeBool);
