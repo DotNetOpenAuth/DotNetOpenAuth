@@ -51,7 +51,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions.AttributeExchange {
 		/// <summary>
 		/// Verifies that the class is serializable.
 		/// </summary>
-		[Test]
+		[Test, Ignore("Serialization is not portable class library compatible.")]
 		public void Serializable() {
 			var store = new StoreResponse();
 			store.Succeeded = false;

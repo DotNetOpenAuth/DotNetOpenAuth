@@ -21,7 +21,7 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// Verifies that the PositiveAuthenticationResponseSnapshot is serializable,
 		/// as required by the <see cref="OpenIdRelyingPartyAjaxControlBase"/> class.
 		/// </summary>
-		[Test]
+		[Test, Ignore("Serialization is not portable class library compatible.")]
 		public void Serializable() {
 			var response = new Mock<IAuthenticationResponse>(MockBehavior.Strict);
 			response.Setup(o => o.ClaimedIdentifier).Returns(VanityUri);
