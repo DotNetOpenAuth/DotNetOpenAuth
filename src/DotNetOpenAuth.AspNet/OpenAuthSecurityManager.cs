@@ -58,6 +58,15 @@ namespace DotNetOpenAuth.AspNet {
 
 		#region Constructors and Destructors
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OpenAuthSecurityManager"/> class.
+        /// </summary>
+        /// <param name="requestContext">
+        /// The request context. 
+        /// </param>
+        public OpenAuthSecurityManager(HttpContextBase requestContext)
+            : this(requestContext, provider: null, dataProvider: null) { }
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OpenAuthSecurityManager"/> class.
 		/// </summary>
@@ -72,9 +81,6 @@ namespace DotNetOpenAuth.AspNet {
 		/// </param>
 		public OpenAuthSecurityManager(
 			HttpContextBase requestContext, IAuthenticationClient provider, IOpenAuthDataProvider dataProvider) {
-			Requires.NotNull(requestContext, "requestContext");
-			Requires.NotNull(provider, "provider");
-			Requires.NotNull(dataProvider, "dataProvider");
 
 			this.requestContext = requestContext;
 			this.dataProvider = dataProvider;
