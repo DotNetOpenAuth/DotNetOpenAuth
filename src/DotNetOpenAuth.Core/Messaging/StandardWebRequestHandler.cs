@@ -167,7 +167,7 @@ namespace DotNetOpenAuth.Messaging {
 					}
 				} else {
 					Logger.Http.ErrorFormat(
-						"{0} connecting to {0}",
+						"{0} connecting to {1}",
 						ex.Status,
 						request.RequestUri);
 				}

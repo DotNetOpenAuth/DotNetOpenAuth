@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System.ComponentModel;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
+	using System.Globalization;
 	using System.IO;
 	using System.Net;
 	using System.Net.Mime;
@@ -318,6 +319,7 @@ namespace DotNetOpenAuth.Messaging {
 			writer.Write(body);
 			writer.Flush();
 			this.ResponseStream.Seek(0, SeekOrigin.Begin);
+			this.Headers[HttpResponseHeader.ContentLength] = this.ResponseStream.Length.ToString(CultureInfo.InvariantCulture);
 		}
 
 		/// <summary>
