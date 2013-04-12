@@ -69,6 +69,11 @@ namespace DotNetOpenAuth.OpenId {
 		/// </remarks>
 		[SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline", Justification = "Some things just can't be done in a field initializer.")]
 		static UriIdentifier() {
+			if (Type.GetType("Mono.Runtime") != null) {
+				// Uri scheme registration doesn't work on mono.
+				return;
+			}
+
 			// Our first attempt to handle trailing periods in path segments is to leverage
 			// full trust if it's available to rewrite the rules.
 			// In fact this is the ONLY way in .NET 3.5 (and arguably in .NET 4.0) to send

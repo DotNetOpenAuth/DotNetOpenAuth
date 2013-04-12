@@ -267,7 +267,12 @@ namespace OpenIdProviderMvc.Controllers {
 			}
 
 			Uri userLocalIdentifier = Models.User.GetClaimedIdentifierForUser(User.Identity.Name);
-			return authReq.LocalIdentifier == userLocalIdentifier ||
+
+			// Assuming the URLs on the web server are not case sensitive (on Windows servers they almost never are),
+			// and usernames aren't either, compare the identifiers without case sensitivity.
+			// No reason to do this for the PPID identifiers though, since they *can* be case sensitive and are highly
+			// unlikely to be typed in by the user anyway.
+			return string.Equals(authReq.LocalIdentifier.ToString(), userLocalIdentifier.ToString(), StringComparison.OrdinalIgnoreCase) ||
 				authReq.LocalIdentifier == PpidGeneration.PpidIdentifierProvider.GetIdentifier(userLocalIdentifier, authReq.Realm);
 		}
 	}
