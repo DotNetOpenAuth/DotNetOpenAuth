@@ -113,7 +113,7 @@ namespace DotNetOpenAuth.OAuth2 {
 			if (this.AuthorizationTracker == null) {
 				var context = this.Channel.GetHttpContext();
 
-				string xsrfKey = MessagingUtilities.GetNonCryptoRandomDataAsBase64(16);
+				string xsrfKey = MessagingUtilities.GetNonCryptoRandomDataAsBase64(16, useWeb64: true);
 				cookie = new HttpCookie(XsrfCookieName, xsrfKey) {
 					HttpOnly = true,
 					Secure = FormsAuthentication.RequireSSL,
