@@ -25,6 +25,10 @@
 		<file src="$OutputPath45$$identity$.pdb" target="lib\net45-full\" />
 		<file src="$OutputPath45$$identity$.xml" target="lib\net45-full\" />
 
+		<file src="$OutputPath45$signed\$identity$.Portable.dll" target="lib\net45-full\" />
+		<file src="$OutputPath45$$identity$.Portable.pdb" target="lib\net45-full\" />
+		<file src="$OutputPath45$$identity$.Portable.xml" target="lib\net45-full\" />
+
 		<file src="content\Core\web.config.transform" target="content\web.config.transform" />
 
 		<file src="..\src\$Identity$\**\*.cs" target="src" exclude="..\src\$Identity$\obj\**" />
