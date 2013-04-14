@@ -18,7 +18,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// </summary>
 		/// <returns>An instance of <see cref="HttpMessageHandler"/>.</returns>
 		/// <remarks>
-		/// An instance of <see cref="WebRequestHandler" /> is recommended where available;
+		/// An instance of WebRequestHandler is recommended where available;
 		/// otherwise an instance of <see cref="HttpClientHandler" /> is recommended.
 		/// </remarks>
 		public virtual HttpMessageHandler CreateHttpMessageHandler() {

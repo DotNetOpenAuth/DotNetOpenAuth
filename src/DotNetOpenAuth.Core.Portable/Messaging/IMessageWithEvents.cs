@@ -7,7 +7,7 @@
 namespace DotNetOpenAuth.Messaging {
 	/// <summary>
 	/// An interface that messages wishing to perform custom serialization/deserialization
-	/// may implement to be notified of <see cref="Channel"/> events.
+	/// may implement to be notified of <see cref="ChannelBase"/> events.
 	/// </summary>
 	internal interface IMessageWithEvents : IMessage {
 		/// <summary>

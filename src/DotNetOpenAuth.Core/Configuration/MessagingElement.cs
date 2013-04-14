@@ -168,7 +168,7 @@ namespace DotNetOpenAuth.Configuration {
 		}
 
 		/// <summary>
-		/// Gets or sets the configuration for the <see cref="UntrustedWebRequestHandler"/> class.
+		/// Gets or sets the configuration for the UntrustedWebRequestHandler class.
 		/// </summary>
 		/// <value>The untrusted web request.</value>
 		[ConfigurationProperty(UntrustedWebRequestElementName)]

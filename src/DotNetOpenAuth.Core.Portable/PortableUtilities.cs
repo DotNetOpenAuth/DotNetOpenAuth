@@ -266,6 +266,12 @@ namespace DotNetOpenAuth {
 			}
 		}
 
+		/// <summary>
+		/// Returns a read only instance of the specified list.
+		/// </summary>
+		/// <typeparam name="T">The type of elements in the list.</typeparam>
+		/// <param name="list">The list.</param>
+		/// <returns>The readonly list.</returns>
 		internal static IReadOnlyList<T> AsReadOnly<T>(this IList<T> list) {
 			Requires.NotNull(list, "list");
 			return list as IReadOnlyList<T> ?? new ReadOnlyCollection<T>(list);
@@ -353,6 +359,8 @@ namespace DotNetOpenAuth {
 		/// <summary>
 		/// Provides equivalent behavior to Uri.HexEscape, which is missing from portable libraries.
 		/// </summary>
+		/// <param name="value">The character to convert.</param>
+		/// <returns>A 3-character sequence beginning with the % sign, followed by two hexadecimal characters.</returns>
 		internal static string HexEscape(char value) {
 			return string.Format(CultureInfo.InvariantCulture, "%{0:X2}", (int)value);
 		}
@@ -381,11 +389,18 @@ namespace DotNetOpenAuth {
 				sb.Append(EscapeUriDataStringRfc3986(pair.Value));
 				sb.Append('&');
 			}
+
 			sb.Length--; // remove trailing &
 
 			return sb.ToString();
 		}
 
+		/// <summary>
+		/// Initializes a new dictionary based on the contents of the specified key=value sequence.
+		/// Entries with null keys are dropped. Duplicate keys are handled with last-one-wins policy.
+		/// </summary>
+		/// <param name="value">The sequence of key=value pairs..</param>
+		/// <returns>The new dictionary.</returns>
 		internal static Dictionary<string, string> ToDictionaryDropNullKeys(this IEnumerable<KeyValuePair<string, string>> value) {
 			var dictionary = new Dictionary<string, string>();
 
@@ -605,6 +620,37 @@ namespace DotNetOpenAuth {
 		}
 
 		/// <summary>
+		/// A thread-safe, non-crypto random number generator.
+		/// </summary>
+		private static class ThreadSafeRandom {
+			/// <summary>
+			/// The initializer of all new <see cref="Random"/> instances.
+			/// </summary>
+			private static readonly Random threadRandomInitializer = new Random();
+
+			/// <summary>
+			/// A thread-local instance of <see cref="Random"/>
+			/// </summary>
+			[ThreadStatic]
+			private static Random threadRandom;
+
+			/// <summary>
+			/// Gets a random number generator for use on the current thread only.
+			/// </summary>
+			public static Random RandomNumberGenerator {
+				get {
+					if (threadRandom == null) {
+						lock (threadRandomInitializer) {
+							threadRandom = new Random(threadRandomInitializer.Next());
+						}
+					}
+
+					return threadRandom;
+				}
+			}
+		}
+
+		/// <summary>
 		/// Manages an individual deferred ToString call.
 		/// </summary>
 		/// <typeparam name="T">The type of object to be serialized as a string.</typeparam>
@@ -639,37 +685,6 @@ namespace DotNetOpenAuth {
 			/// </returns>
 			public override string ToString() {
 				return this.toString(this.obj) ?? string.Empty;
-			}
-		}
-
-		/// <summary>
-		/// A thread-safe, non-crypto random number generator.
-		/// </summary>
-		private static class ThreadSafeRandom {
-			/// <summary>
-			/// The initializer of all new <see cref="Random"/> instances.
-			/// </summary>
-			private static readonly Random threadRandomInitializer = new Random();
-
-			/// <summary>
-			/// A thread-local instance of <see cref="Random"/>
-			/// </summary>
-			[ThreadStatic]
-			private static Random threadRandom;
-
-			/// <summary>
-			/// Gets a random number generator for use on the current thread only.
-			/// </summary>
-			public static Random RandomNumberGenerator {
-				get {
-					if (threadRandom == null) {
-						lock (threadRandomInitializer) {
-							threadRandom = new Random(threadRandomInitializer.Next());
-						}
-					}
-
-					return threadRandom;
-				}
 			}
 		}
 	}

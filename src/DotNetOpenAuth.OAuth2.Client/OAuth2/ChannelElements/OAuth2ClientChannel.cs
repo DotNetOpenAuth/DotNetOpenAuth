@@ -69,7 +69,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// The <see cref="HttpWebRequest"/> prepared to send the request.
 		/// </returns>
 		/// <remarks>
-		/// This method must be overridden by a derived class, unless the <see cref="Channel.RequestCoreAsync"/> method
+		/// This method must be overridden by a derived class, unless the <see cref="ChannelBase.RequestCoreAsync"/> method
 		/// is overridden and does not require this method.
 		/// </remarks>
 		protected override HttpRequestMessage CreateHttpRequest(IDirectedProtocolMessage request) {

@@ -1,4 +1,10 @@
-﻿namespace DotNetOpenAuth.Messaging {
+﻿//-----------------------------------------------------------------------
+// <copyright file="Channel.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
@@ -11,6 +17,9 @@
 	using DotNetOpenAuth.Configuration;
 	using Validation;
 
+	/// <summary>
+	/// Derivation of ChannelBase that adds desktop-specific behavior.
+	/// </summary>
 	public abstract class Channel : ChannelBase {
 		/// <summary>
 		/// A default set of XML dictionary reader quotas that are relatively safe from causing unbounded memory consumption.
@@ -21,7 +30,7 @@
 			MaxBytesPerRead = 8 * 1024,
 			MaxStringContentLength = 16 * 1024,
 		};
-		
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Channel"/> class.
 		/// </summary>

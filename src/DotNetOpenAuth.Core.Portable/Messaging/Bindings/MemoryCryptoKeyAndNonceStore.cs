@@ -66,7 +66,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// be processed within before being discarded as an expired message.
 		/// If the binding element is applicable to your channel, this expiration window
 		/// is retrieved or set using the
-		/// <see cref="StandardExpirationBindingElement.MaximumMessageAge"/> property.
+		/// <see cref="ChannelBase.MaximumMessageLifetime"/> property.
 		/// </remarks>
 		public bool StoreNonce(string context, string nonce, DateTime timestampUtc) {
 			return this.nonceStore.StoreNonce(context, nonce, timestampUtc);

@@ -83,6 +83,7 @@ namespace DotNetOpenAuth {
 						string.Join(", ", new string[] { typeof(Page).FullName, typeof(IEmbeddedResourceRetrieval).FullName })));
 			}
 		}
+
 		/// <summary>
 		/// Validates that a URL will be resolvable at runtime.
 		/// </summary>

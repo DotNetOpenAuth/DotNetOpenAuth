@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="Channel.cs" company="Outercurve Foundation">
+// <copyright file="ChannelBase.cs" company="Outercurve Foundation">
 //     Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -131,7 +131,7 @@ namespace DotNetOpenAuth.Messaging {
 		private int maximumIndirectMessageUrlLength;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Channel" /> class.
+		/// Initializes a new instance of the <see cref="ChannelBase" /> class.
 		/// </summary>
 		/// <param name="messageTypeProvider">A class prepared to analyze incoming messages and indicate what concrete
 		/// message types can deserialize from it.</param>
@@ -185,6 +185,12 @@ namespace DotNetOpenAuth.Messaging {
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the maximum clock skew allowed.
+		/// </summary>
+		/// <value>
+		/// The maximum clock skew.
+		/// </value>
 		public TimeSpan MaximumClockSkew { get; set; }
 
 		/// <summary>
@@ -197,6 +203,12 @@ namespace DotNetOpenAuth.Messaging {
 			get { return this.MaximumMessageLifetimeNoSkew + this.MaximumClockSkew; }
 		}
 
+		/// <summary>
+		/// Gets or sets the maximum message lifetime without taking clock skew into account.
+		/// </summary>
+		/// <value>
+		/// The maximum message lifetime no skew.
+		/// </value>
 		public TimeSpan MaximumMessageLifetimeNoSkew { get; set; }
 
 		/// <summary>
@@ -349,7 +361,6 @@ namespace DotNetOpenAuth.Messaging {
 		/// <returns>
 		/// True if the expected message was recognized and deserialized.  False otherwise.
 		/// </returns>
-		/// <exception cref="InvalidOperationException">Thrown when <see cref="HttpContext.Current" /> is null.</exception>
 		/// <exception cref="ProtocolException">Thrown when a request message of an unexpected type is received.</exception>
 		public async Task<TRequest> TryReadFromRequestAsync<TRequest>(HttpRequestMessage httpRequest, CancellationToken cancellationToken)
 			where TRequest : class, IProtocolMessage {
@@ -906,7 +917,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="request">The message to send.</param>
 		/// <returns>The <see cref="HttpWebRequest"/> prepared to send the request.</returns>
 		/// <remarks>
-		/// This method must be overridden by a derived class, unless the <see cref="Channel.RequestCoreAsync"/> method
+		/// This method must be overridden by a derived class, unless the <see cref="RequestCoreAsync"/> method
 		/// is overridden and does not require this method.
 		/// </remarks>
 		protected virtual HttpRequestMessage CreateHttpRequest(IDirectedProtocolMessage request) {
@@ -1308,10 +1319,31 @@ namespace DotNetOpenAuth.Messaging {
 		/// Puts binding elements in their correct outgoing message processing order.
 		/// </summary>
 		private class BindingElementOutgoingMessageApplicationOrder : IComparer<MessageProtections> {
-			private BindingElementOutgoingMessageApplicationOrder() { }
-
+			/// <summary>
+			/// Gets the singleton instance.
+			/// </summary>
 			internal static readonly IComparer<MessageProtections> Default = new BindingElementOutgoingMessageApplicationOrder();
 
+			/// <summary>
+			/// Prevents a default instance of the <see cref="BindingElementOutgoingMessageApplicationOrder"/> class from being created.
+			/// </summary>
+			private BindingElementOutgoingMessageApplicationOrder() { }
+
+			/// <summary>
+			/// Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other.
+			/// </summary>
+			/// <param name="x">The first object to compare.</param>
+			/// <param name="y">The second object to compare.</param>
+			/// <returns>
+			/// Value
+			/// Condition
+			/// Less than zero
+			/// <paramref name="x" /> is less than <paramref name="y" />.
+			/// Zero
+			/// <paramref name="x" /> equals <paramref name="y" />.
+			/// Greater than zero
+			/// <paramref name="x" /> is greater than <paramref name="y" />.
+			/// </returns>
 			public int Compare(MessageProtections x, MessageProtections y) {
 				ErrorUtilities.VerifyInternal(x != MessageProtections.None || y != MessageProtections.None, "This comparison function should only be used to compare protection binding elements.  Otherwise we change the order of user-defined message transformations.");
 
