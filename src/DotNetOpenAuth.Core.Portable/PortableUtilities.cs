@@ -12,6 +12,7 @@ namespace DotNetOpenAuth {
 	using System.Linq;
 	using System.Net;
 	using System.Net.Http;
+	using System.Net.Http.Headers;
 	using System.Reflection;
 	using System.Text;
 	using System.Threading.Tasks;
@@ -43,6 +44,28 @@ namespace DotNetOpenAuth {
 		/// </summary>
 		internal static Random NonCryptoRandomDataGenerator {
 			get { return ThreadSafeRandom.RandomNumberGenerator; }
+		}
+
+		/// <summary>
+		/// Gets the assembly file version of the executing assembly, otherwise falls back to the assembly version.
+		/// </summary>
+		internal static string AssemblyFileVersion {
+			get { return ThisAssembly.AssemblyInformationalVersion; }
+		}
+
+		/// <summary>
+		/// Gets a human-readable description of the library name and version, including
+		/// whether the build is an official or private one.
+		/// </summary>
+		internal static string LibraryVersion {
+			get { return ThisAssembly.AssemblyProduct + " " + ThisAssembly.AssemblyInformationalVersion; }
+		}
+
+		/// <summary>
+		/// Gets an HTTP header that can be included in outbound requests.
+		/// </summary>
+		internal static ProductInfoHeaderValue LibraryVersionHeader {
+			get { return new ProductInfoHeaderValue(ThisAssembly.AssemblyProduct, AssemblyFileVersion); }
 		}
 
 		/// <summary>

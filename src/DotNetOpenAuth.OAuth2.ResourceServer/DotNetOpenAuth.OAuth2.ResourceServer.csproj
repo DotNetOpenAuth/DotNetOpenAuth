@@ -19,6 +19,9 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\DotNetOpenAuth.OAuth.Common\OAuth\ChannelElements\OAuthPrincipal.cs">
+      <Link>OAuth2\ChannelElements\OAuthPrincipal.cs</Link>
+    </Compile>
     <Compile Include="Configuration\OAuth2ResourceServerSection.cs" />
     <Compile Include="OAuth2\ChannelElements\OAuth2ResourceServerChannel.cs" />
     <Compile Include="OAuth2\IAccessTokenAnalyzer.cs" />

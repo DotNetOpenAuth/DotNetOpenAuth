@@ -32,61 +32,9 @@ namespace DotNetOpenAuth {
 		internal const string DefaultNamespace = "DotNetOpenAuth";
 
 		/// <summary>
-		/// A lazily-assembled string that describes the version of the library.
-		/// </summary>
-		private static readonly Lazy<string> libraryVersionLazy = new Lazy<string>(delegate {
-			var assembly = Assembly.GetExecutingAssembly();
-			string assemblyFullName = assembly.FullName;
-			bool official = assemblyFullName.Contains("PublicKeyToken=2780ccd10d57b246");
-			assemblyFullName = assemblyFullName.Replace(assembly.GetName().Version.ToString(), AssemblyFileVersion);
-
-			// We use InvariantCulture since this is used for logging.
-			return string.Format(CultureInfo.InvariantCulture, "{0} ({1})", assemblyFullName, official ? "official" : "private");
-		});
-
-		/// <summary>
-		/// A lazily-assembled string that describes the version of the library.
-		/// </summary>
-		private static readonly Lazy<ProductInfoHeaderValue> libraryVersionHeaderLazy = new Lazy<ProductInfoHeaderValue>(delegate {
-			var assemblyName = Assembly.GetExecutingAssembly().GetName();
-			return new ProductInfoHeaderValue(assemblyName.Name, AssemblyFileVersion);
-		});
-
-		/// <summary>
 		/// The web.config file-specified provider of web resource URLs.
 		/// </summary>
 		private static IEmbeddedResourceRetrieval embeddedResourceRetrieval = MessagingElement.Configuration.EmbeddedResourceRetrievalProvider.CreateInstance(null, false, null);
-
-		/// <summary>
-		/// Gets a human-readable description of the library name and version, including
-		/// whether the build is an official or private one.
-		/// </summary>
-		internal static string LibraryVersion {
-			get { return libraryVersionLazy.Value; }
-		}
-
-		/// <summary>
-		/// Gets an HTTP header that can be included in outbound requests.
-		/// </summary>
-		internal static ProductInfoHeaderValue LibraryVersionHeader {
-			get { return libraryVersionHeaderLazy.Value; }
-		}
-
-		/// <summary>
-		/// Gets the assembly file version of the executing assembly, otherwise falls back to the assembly version.
-		/// </summary>
-		internal static string AssemblyFileVersion {
-			get {
-				var assembly = Assembly.GetExecutingAssembly();
-				var attributes = assembly.GetCustomAttributes(typeof(AssemblyFileVersionAttribute), false);
-				if (attributes.Length == 1) {
-					var fileVersionAttribute = (AssemblyFileVersionAttribute)attributes[0];
-					return fileVersionAttribute.Version;
-				}
-
-				return assembly.GetName().Version.ToString();
-			}
-		}
 
 		/// <summary>
 		/// Tests for equality between two objects.  Safely handles the case where one or both are null.

@@ -6,12 +6,7 @@
 
 namespace DotNetOpenAuth.OAuth {
 	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using System.Net.Cache;
 	using System.Net.Http;
-	using System.Text;
-	using System.Threading.Tasks;
 
 	/// <summary>
 	/// Creates default instances of required dependencies.
@@ -43,7 +38,7 @@ namespace DotNetOpenAuth.OAuth {
 		public HttpClient CreateHttpClient(HttpMessageHandler handler) {
 			handler = handler ?? this.CreateHttpMessageHandler();
 			var client = new HttpClient(handler);
-			client.DefaultRequestHeaders.UserAgent.Add(Util.LibraryVersionHeader);
+			client.DefaultRequestHeaders.UserAgent.Add(PortableUtilities.LibraryVersionHeader);
 			return client;
 		}
 	}

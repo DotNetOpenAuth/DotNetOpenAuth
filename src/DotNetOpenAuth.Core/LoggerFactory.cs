@@ -51,7 +51,7 @@ namespace DotNetOpenAuth {
 		internal static ILog CreateWithBanner(string name) {
 			Requires.NotNullOrEmpty(name, "name");
 			ILog log = Create(name);
-			log.Info(Util.LibraryVersion);
+			log.Info(PortableUtilities.LibraryVersion);
 			return log;
 		}
 

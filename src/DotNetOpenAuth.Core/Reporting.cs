@@ -375,7 +375,7 @@ namespace DotNetOpenAuth {
 			var channel = new HttpClientHandler();
 			channel.AllowAutoRedirect = false;
 			var webRequestHandler = new HttpClient(channel);
-			webRequestHandler.DefaultRequestHeaders.UserAgent.Add(Util.LibraryVersionHeader);
+			webRequestHandler.DefaultRequestHeaders.UserAgent.Add(PortableUtilities.LibraryVersionHeader);
 			return webRequestHandler;
 		}
 
@@ -389,7 +389,7 @@ namespace DotNetOpenAuth {
 			try {
 				var writer = new StreamWriter(stream, Encoding.UTF8);
 				writer.WriteLine(reportOriginIdentity.ToString("B"));
-				writer.WriteLine(Util.LibraryVersion);
+				writer.WriteLine(PortableUtilities.LibraryVersion);
 				writer.WriteLine(".NET Framework {0}", Environment.Version);
 
 				foreach (var observation in observations) {

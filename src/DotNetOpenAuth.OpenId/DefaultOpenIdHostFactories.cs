@@ -51,7 +51,7 @@ namespace DotNetOpenAuth.OpenId {
 				client = new HttpClient(handler);
 			}
 
-			client.DefaultRequestHeaders.UserAgent.Add(Util.LibraryVersionHeader);
+			client.DefaultRequestHeaders.UserAgent.Add(PortableUtilities.LibraryVersionHeader);
 			return client;
 		}
 	}
