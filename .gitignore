@@ -15,7 +15,6 @@ PrecompiledWeb
 *.user
 *.tmp
 *.ldf
-*.mdf
 *.swx
 .dotest
 *.Publish.xml
