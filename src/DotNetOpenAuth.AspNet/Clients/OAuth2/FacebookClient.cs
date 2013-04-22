@@ -39,6 +39,11 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// </summary>
 		private readonly string appSecret;
 
+        /// <summary>
+        /// The scope.
+        /// </summary>
+        private readonly string scope;
+
 		#endregion
 
 		#region Constructors and Destructors
@@ -52,13 +57,14 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <param name="appSecret">
 		/// The app secret.
 		/// </param>
-		public FacebookClient(string appId, string appSecret)
+		public FacebookClient(string appId, string appSecret, string scope = "email")
 			: base("facebook") {
 			Requires.NotNullOrEmpty(appId, "appId");
 			Requires.NotNullOrEmpty(appSecret, "appSecret");
 
 			this.appId = appId;
 			this.appSecret = appSecret;
+            this.scope = scope;
 		}
 
 		#endregion
@@ -79,7 +85,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 				new Dictionary<string, string> {
 					{ "client_id", this.appId },
 					{ "redirect_uri", returnUrl.AbsoluteUri },
-					{ "scope", "email" },
+					{ "scope", this.scope },
 				});
 			return builder.Uri;
 		}
