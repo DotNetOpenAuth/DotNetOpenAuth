@@ -49,8 +49,11 @@ public partial class OP_CheckAuthRejectsSharedAssociationHandles : System.Web.UI
 			var opStore = new StandardProviderApplicationStore();
 			opStore.StoreAssociation(AssociationRelyingPartyType.Smart, association);
 			var op = new OpenIdProvider(opStore);
+			op.SecuritySettings.ProtectDownlevelReplayAttacks = false; // avoids the OP forcing a private association for OpenID 1.1 endpoints.
 			op.Channel.PrepareResponse(assertion);
-			Debug.Assert(signedAssertion.AssociationHandle == association.Handle);
+			if (signedAssertion.AssociationHandle != association.Handle) {
+				throw new ApplicationException("Internal test error when preparing signed assertion.");
+			}
 
 			// Send the assertion via check_auth to the Provider for confirmation.
 			var checkAuthRequest = new CheckAuthenticationRequest(assertion, rp.Channel);

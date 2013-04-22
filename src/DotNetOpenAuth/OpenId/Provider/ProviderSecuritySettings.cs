@@ -116,7 +116,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// This gives the provider an opportunity to verify its own nonce
 		/// to protect against replay attacks.</para>
 		/// </remarks>
-		internal bool ProtectDownlevelReplayAttacks { get; set; }
+		public bool ProtectDownlevelReplayAttacks { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether outgoing extensions are always signed.
