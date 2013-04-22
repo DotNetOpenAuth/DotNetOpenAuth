@@ -20,6 +20,7 @@
 			<URI><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/OP/GSALevel1.aspx"))%></URI>
 			<URI><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/OP/MaxAuthAge.aspx"))%></URI>
 			<URI><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/OP/ReplayProtection.aspx"))%></URI>
+			<URI><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/OP/CheckAuthSharedSecret.aspx"))%></URI>
 			<URI><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/XP/Selector.aspx"))%></URI>
 		</Service>
 	</XRD>

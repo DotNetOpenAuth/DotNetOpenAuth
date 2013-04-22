@@ -131,7 +131,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="provider">The provider to get an association for.</param>
 		/// <returns>The existing or new association; <c>null</c> if none existed and one could not be created.</returns>
-		internal Association GetOrCreateAssociation(IProviderEndpoint provider) {
+		public Association GetOrCreateAssociation(IProviderEndpoint provider) {
 			return this.GetExistingAssociation(provider) ?? this.CreateNewAssociation(provider);
 		}
 

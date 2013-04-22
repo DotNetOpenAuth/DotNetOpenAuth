@@ -18,7 +18,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	/// The message sent from the Provider to the Relying Party to confirm/deny
 	/// the validity of an assertion that was signed by a private Provider secret.
 	/// </summary>
-	internal class CheckAuthenticationResponse : DirectResponseBase {
+	public class CheckAuthenticationResponse : DirectResponseBase {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="CheckAuthenticationResponse"/> class
 		/// for use by the Relying Party.
@@ -56,7 +56,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// Gets or sets a value indicating whether the signature of the verification request is valid.
 		/// </summary>
 		[MessagePart("is_valid", IsRequired = true)]
-		internal bool IsValid { get; set; }
+		public bool IsValid { get; set; }
 
 		/// <summary>
 		/// Gets or sets the handle the relying party should invalidate if <see cref="IsValid"/> is true.

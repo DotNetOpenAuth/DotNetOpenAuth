@@ -18,6 +18,7 @@
 		<siteMapNode url="~/OP/GSALevel1.aspx" title="OP properly responds to GSA level 1 authentication requests" />
 		<siteMapNode url="~/OP/MaxAuthAge.aspx" title="OP supports the PAPE extension's max_auth_age parameter" />
 		<siteMapNode url="~/OP/ReplayProtection.aspx" title="OP provides replay protection via nonce checks" />
+		<siteMapNode url="~/OP/CheckAuthSharedSecret.aspx" title="OP rejects check_auth messages with shared association handles" />
 		<siteMapNode url="~/OP/GSAInfoCard.aspx" title="Managed Card issuer presents GSA-compliant Card" />
 		<siteMapNode url="~/RP/HMACSHA256.aspx" title="RP supports HMAC-SHA256 associations" />
 		<siteMapNode url="~/RP/UnsolicitedAssertions.aspx" title="RP accepts unsolicited assertions" />

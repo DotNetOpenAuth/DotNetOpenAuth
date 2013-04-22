@@ -44,7 +44,7 @@ namespace DotNetOpenAuth.OpenId.Messages {
 		/// This value will commonly be from <see cref="SignedResponseRequest.ReturnTo"/>,
 		/// but for unsolicited assertions may come from the Provider performing RP discovery
 		/// to find the appropriate return_to URL to use.</param>
-		internal PositiveAssertionResponse(Version version, Uri relyingPartyReturnTo)
+		public PositiveAssertionResponse(Version version, Uri relyingPartyReturnTo)
 			: base(version, relyingPartyReturnTo) {
 		}
 
