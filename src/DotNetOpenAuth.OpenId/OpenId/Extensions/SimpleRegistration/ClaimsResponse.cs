@@ -209,7 +209,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 					// of language and country based on user settings.
 					try {
 						this.culture = CultureInfo.GetCultureInfo(cultureString);
-					} catch (CultureNotFoundException) {
+					} catch (ArgumentException) { // CultureNotFoundException derives from this, and .NET 3.5 throws the base type
 						// Fallback to just reporting a culture based on language.
 						this.culture = CultureInfo.GetCultureInfo(this.Language);
 					}
