@@ -44,6 +44,10 @@
   <ItemGroup>
     <Compile Include="AuthenticationResult.cs" />
     <Compile Include="Clients\DictionaryExtensions.cs" />
+    <Compile Include="Clients\OAuth2\AzureADClaims.cs" />
+    <Compile Include="Clients\OAuth2\AzureADClient.cs" />
+    <Compile Include="Clients\OAuth2\AzureADGraph.cs" />
+    <Compile Include="Clients\OAuth2\AzureADHeader.cs" />
     <Compile Include="Clients\OAuth2\WindowsLiveClient.cs" />
     <Compile Include="Clients\OAuth\AuthenticationOnlyCookieOAuthTokenManager.cs">
       <SubType>Code</SubType>
