@@ -79,9 +79,7 @@ namespace DotNetOpenAuth.AspNet {
 		/// <param name="dataProvider">
 		/// The data provider. 
 		/// </param>
-		public OpenAuthSecurityManager(
-			HttpContextBase requestContext, IAuthenticationClient provider, IOpenAuthDataProvider dataProvider) {
-
+		public OpenAuthSecurityManager(HttpContextBase requestContext, IAuthenticationClient provider, IOpenAuthDataProvider dataProvider) {
 			this.requestContext = requestContext;
 			this.dataProvider = dataProvider;
 			this.authenticationProvider = provider;
@@ -154,8 +152,7 @@ namespace DotNetOpenAuth.AspNet {
 			Uri uri;
 			if (!string.IsNullOrEmpty(returnUrl)) {
 				uri = UriHelper.ConvertToAbsoluteUri(returnUrl, this.requestContext);
-			}
-			else {
+			} else {
 				uri = this.requestContext.Request.GetPublicFacingUrl();
 			}
 
@@ -214,8 +211,7 @@ namespace DotNetOpenAuth.AspNet {
 				Uri uri;
 				if (!string.IsNullOrEmpty(returnUrl)) {
 					uri = UriHelper.ConvertToAbsoluteUri(returnUrl, this.requestContext);
-				}
-				else {
+				} else {
 					uri = this.requestContext.Request.GetPublicFacingUrl();
 				}
 
@@ -240,12 +236,10 @@ namespace DotNetOpenAuth.AspNet {
 					}
 
 					return result;
-				}
-				catch (HttpException exception) {
+				} catch (HttpException exception) {
 					return new AuthenticationResult(exception.GetBaseException(), this.authenticationProvider.ProviderName);
 				}
-			}
-			else {
+			} else {
 				return this.authenticationProvider.VerifyAuthentication(this.requestContext);
 			}
 		}
@@ -295,8 +289,7 @@ namespace DotNetOpenAuth.AspNet {
 				byte[] encryptedCookieBytes = HttpServerUtility.UrlTokenDecode(cookie.Value);
 				byte[] decryptedCookieBytes = MachineKeyUtil.Unprotect(encryptedCookieBytes, AntiXsrfPurposeString, "Token: " + queryStringSessionId);
 				usernameInCookie = Encoding.UTF8.GetString(decryptedCookieBytes);
-			}
-			catch {
+			} catch {
 				return false;
 			}
 
