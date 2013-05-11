@@ -33,9 +33,16 @@ public partial class OP_CheckAuthRejectsSharedAssociationHandles : System.Web.UI
 		testResultDisplay.ProviderEndpoint = endpoint.ProviderEndpoint;
 		testResultDisplay.ProtocolVersion = endpoint.Version;
 
+		if (ForceSHA1Association.Checked) {
+			rp.SecuritySettings.MaximumHashBitLength = 160;
+		}
+
 		try {
 			// Establish a shared association with that provider endpoint.
-			Association association = rp.AssociationManager.GetOrCreateAssociation(endpoint);
+			Association association = rp.AssociationManager.CreateNewAssociation(endpoint);
+			if (association == null) {
+				throw new ApplicationException("Unable to establish an association with the Provider");
+			}
 
 			// Forge an assertion from the Provider.
 			var assertion = new PositiveAssertionResponse(endpoint.Version, new Uri(Request.Url, Request.Url.AbsolutePath));

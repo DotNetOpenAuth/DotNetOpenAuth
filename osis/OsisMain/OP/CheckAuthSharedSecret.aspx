@@ -14,6 +14,8 @@
 				ErrorMessage="Enter an identifier first." Display="Dynamic" />
 			<asp:Label ID="errorLabel" runat="server" EnableViewState="False" ForeColor="Red"
 				Visible="False" />
+			<br />
+			<asp:CheckBox runat="server" ID="ForceSHA1Association" Text="Use SHA-1 instead of SHA-256 association"/>
 		</asp:View>
 		<asp:View ID="View2" runat="server">
 			<osis:TestResultDisplay runat="server" ID="testResultDisplay" />
