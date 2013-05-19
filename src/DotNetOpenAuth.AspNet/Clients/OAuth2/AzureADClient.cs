@@ -149,7 +149,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 					{ "response_type", "code" },
 					{ "resource", this.resource },
 				});
-			 return builder.Uri;
+				return builder.Uri;
 		}
 
 		/// <summary>
@@ -208,7 +208,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 						{ "client_secret", this.appSecret },
 						{ "code", authorizationCode },
 						{ "grant_type", "authorization_code" },
-						{"api_version","1.0"},
+						{ "api_version", "1.0" },
 					});
 
 				WebRequest tokenRequest = WebRequest.Create(TokenEndpoint);
