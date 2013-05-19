@@ -696,11 +696,14 @@ namespace DotNetOpenAuth.Messaging {
 		/// Gets a NON-cryptographically strong random string of base64 characters.
 		/// </summary>
 		/// <param name="binaryLength">The length of the byte sequence to generate.</param>
-		/// <returns>A base64 encoding of the generated random data,
-		/// whose length in characters will likely be greater than <paramref name="binaryLength"/>.</returns>
-		internal static string GetNonCryptoRandomDataAsBase64(int binaryLength) {
+		/// <param name="useWeb64">A value indicating whether web64 encoding is used to avoid the need to escape characters.</param>
+		/// <returns>
+		/// A base64 encoding of the generated random data,
+		/// whose length in characters will likely be greater than <paramref name="binaryLength" />.
+		/// </returns>
+		internal static string GetNonCryptoRandomDataAsBase64(int binaryLength, bool useWeb64 = false) {
 			byte[] uniq_bytes = GetNonCryptoRandomData(binaryLength);
-			string uniq = Convert.ToBase64String(uniq_bytes);
+			string uniq = useWeb64 ? ConvertToBase64WebSafeString(uniq_bytes) : Convert.ToBase64String(uniq_bytes);
 			return uniq;
 		}
 

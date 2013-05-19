@@ -105,8 +105,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// The app secret.
 		/// </param>
 		public AzureADClient(string appId, string appSecret)
-			: this(appId, appSecret, GraphResource)
-		{
+			: this(appId, appSecret, GraphResource) {
 		}
 
 		/// <summary>
@@ -122,8 +121,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// The resource of oauth request.
 		/// </param>
 		public AzureADClient(string appId, string appSecret, string resource)
-			: base("azuread")
-		{
+			: base("azuread") {
 			Requires.NotNullOrEmpty(appId, "appId");
 			Requires.NotNullOrEmpty(appSecret, "appSecret");
 			Requires.NotNullOrEmpty(resource, "resource");
@@ -161,21 +159,17 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// The access token.
 		/// </param>
 		/// <returns>A dictionary of profile data.</returns>
-		protected override IDictionary<string, string> GetUserData(string accessToken)
-		{
+		protected override IDictionary<string, string> GetUserData(string accessToken) {
 			IDictionary<string, string> userData = new Dictionary<string, string>();
-			try
-			{
+			try {
 				AzureADGraph graphData;
 				WebRequest request =
 					WebRequest.Create(
 						GraphEndpoint + this.tenantid + "/users/" + this.userid + "?api-version=2013-04-05");
 				request.Headers = new WebHeaderCollection();
 				request.Headers.Add("authorization", accessToken);
-				using (var response = request.GetResponse())
-				{
-					using (var responseStream = response.GetResponseStream())
-					{
+				using (var response = request.GetResponse()) {
+					using (var responseStream = response.GetResponseStream()) {
 						graphData = JsonHelper.Deserialize<AzureADGraph>(responseStream);
 					}
 				}
@@ -186,9 +180,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 				userData.AddItemIfNotEmpty("name", graphData.DisplayName);
 
 				return userData;
-			}
-			catch (Exception e)
-			{
+			} catch (Exception e) {
 				System.Diagnostics.Debug.WriteLine(e.ToStringDescriptive());
 				return userData;
 			}
@@ -206,10 +198,8 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <returns>
 		/// The access token.
 		/// </returns>
-		protected override string QueryAccessToken(Uri returnUrl, string authorizationCode)
-		{
-			try
-			{
+		protected override string QueryAccessToken(Uri returnUrl, string authorizationCode) {
+			try {
 				var entity =
 					MessagingUtilities.CreateQueryString(
 						new Dictionary<string, string> {
@@ -226,25 +216,20 @@ namespace DotNetOpenAuth.AspNet.Clients {
 				tokenRequest.ContentLength = entity.Length;
 				tokenRequest.Method = "POST";
 
-				using (Stream requestStream = tokenRequest.GetRequestStream())
-				{
+				using (Stream requestStream = tokenRequest.GetRequestStream()) {
 					var writer = new StreamWriter(requestStream);
 					writer.Write(entity);
 					writer.Flush();
 				}
 
 				HttpWebResponse tokenResponse = (HttpWebResponse)tokenRequest.GetResponse();
-				if (tokenResponse.StatusCode == HttpStatusCode.OK)
-				{
-					using (Stream responseStream = tokenResponse.GetResponseStream())
-					{
+				if (tokenResponse.StatusCode == HttpStatusCode.OK) {
+					using (Stream responseStream = tokenResponse.GetResponseStream()) {
 						var tokenData = JsonHelper.Deserialize<OAuth2AccessTokenData>(responseStream);
-						if (tokenData != null)
-						{
+						if (tokenData != null) {
 							AzureADClaims claimsAD;
 							claimsAD = this.ParseAccessToken(tokenData.AccessToken, true);
-							if (claimsAD != null)
-							{
+							if (claimsAD != null) {
 								this.tenantid = claimsAD.Tid;
 								this.userid = claimsAD.Oid;
 								return tokenData.AccessToken;
@@ -255,9 +240,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 				}
 
 				return null;
-			}
-			catch (Exception e)
-			{
+			} catch (Exception e) {
 				System.Diagnostics.Debug.WriteLine(e.ToStringDescriptive());
 				return null;
 			}
@@ -272,8 +255,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <returns>
 		/// Decoded string as string using UTF8 encoding.
 		/// </returns>
-		private static string Base64URLdecode(string str)
-		{
+		private static string Base64URLdecode(string str) {
 			System.Text.UTF8Encoding encoder = new System.Text.UTF8Encoding();
 			return encoder.GetString(Base64URLdecodebyte(str));
 		}
@@ -287,8 +269,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <returns>
 		/// Decoded string as bytes.
 		/// </returns>
-		private static byte[] Base64URLdecodebyte(string str)
-		{
+		private static byte[] Base64URLdecodebyte(string str) {
 			// First replace chars and then pad per spec
 			str = str.Replace('-', '+').Replace('_', '/');
 			str = str.PadRight(str.Length + ((4 - (str.Length % 4)) % 4), '=');
@@ -310,53 +291,42 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <returns>
 		/// True if same, false otherwise.
 		/// </returns>
-		private static bool ValidateSig(byte[] uval, byte[] sval, byte[] certthumb)
-		{
-			try
-			{
+		private static bool ValidateSig(byte[] uval, byte[] sval, byte[] certthumb) {
+			try {
 				bool ret = false;
 
 				X509Certificate2[] certx509 = GetEncodingCert();
 				string certthumbhex = string.Empty;
 
 				// Get the hexadecimail representation of the certthumbprint
-				for (int i = 0; i < certthumb.Length; i++)
-				{
+				for (int i = 0; i < certthumb.Length; i++) {
 					certthumbhex += certthumb[i].ToString("X2");
 				}
 
-				for (int c = 0; c < certx509.Length; c++)
-				{
+				for (int c = 0; c < certx509.Length; c++) {
 					// Skip any cert that does not have the same thumbprint as token
-					if (certx509[c].Thumbprint.ToLower() != certthumbhex.ToLower())
-					{
+					if (certx509[c].Thumbprint.ToLower() != certthumbhex.ToLower()) {
 						continue;
 					}
 					X509SecurityToken tok = new X509SecurityToken(certx509[c]);
-					if (tok == null)
-					{
+					if (tok == null) {
 						return false;
 					}
-					for (int i = 0; i < tok.SecurityKeys.Count; i++)
-					{
+					for (int i = 0; i < tok.SecurityKeys.Count; i++) {
 						X509AsymmetricSecurityKey key = tok.SecurityKeys[i] as X509AsymmetricSecurityKey;
 						RSACryptoServiceProvider rsa = key.GetAsymmetricAlgorithm(SecurityAlgorithms.RsaSha256Signature, false) as RSACryptoServiceProvider;
 
-						if (rsa == null)
-						{
+						if (rsa == null) {
 							continue;
 						}
 						ret = rsa.VerifyData(uval, hash, sval);
-						if (ret == true)
-						{
+						if (ret == true) {
 							return ret;
 						}
 					}
 				}
 				return ret;
-			}
-			catch (CryptographicException e)
-			{
+			} catch (CryptographicException e) {
 				Console.WriteLine(e.ToStringDescriptive());
 				return false;
 			}
@@ -368,44 +338,34 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <returns>
 		/// The encoding certificate.
 		/// </returns>
-		private static X509Certificate2[] GetEncodingCert()
-		{
-			if (encodingcert != null)
-			{
+		private static X509Certificate2[] GetEncodingCert() {
+			if (encodingcert != null) {
 				return encodingcert;
 			}
-			try
-			{
+			try {
 				// Lock for exclusive access
-				lock (typeof(AzureADClient))
-				{
+				lock (typeof(AzureADClient)) {
 					XmlDocument doc = new XmlDocument();
 
 					WebRequest request =
 					WebRequest.Create(MetaDataEndpoint);
-					using (WebResponse response = request.GetResponse())
-					{
-						using (Stream responseStream = response.GetResponseStream())
-						{
+					using (WebResponse response = request.GetResponse()) {
+						using (Stream responseStream = response.GetResponseStream()) {
 							doc.Load(responseStream);
 							XmlNodeList list = doc.GetElementsByTagName("X509Certificate");
 							encodingcert = new X509Certificate2[list.Count];
-							for (int i = 0; i < list.Count; i++)
-							{
+							for (int i = 0; i < list.Count; i++) {
 								byte[] todecode_byte = Convert.FromBase64String(list[i].InnerText);
 								encodingcert[i] = new X509Certificate2(todecode_byte);
 							}
-							if (hash == null)
-							{
+							if (hash == null) {
 								hash = SHA256.Create();
 							}
 						}
 					}
 				}
 				return encodingcert;
-			}
-			catch (Exception e)
-			{
+			} catch (Exception e) {
 				System.Diagnostics.Debug.WriteLine(e.ToStringDescriptive());
 				return null;
 			}
@@ -423,10 +383,8 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <returns>
 		/// The claims as an object and null in case of failure.
 		/// </returns>
-		private AzureADClaims ParseAccessToken(string token, bool validate)
-		{
-			try
-			{
+		private AzureADClaims ParseAccessToken(string token, bool validate) {
+			try {
 				// This is the encoded JWT token split into the 3 parts
 				string[] strparts = token.Split('.');
 
@@ -434,8 +392,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 				string jwtHeader, jwtClaims;
 				string jwtb64Header, jwtb64Claims, jwtb64Sig;
 				byte[] jwtSig;
-				if (strparts.Length != 3)
-				{
+				if (strparts.Length != 3) {
 					return null;
 				}
 				jwtb64Header = strparts[0];
@@ -450,34 +407,28 @@ namespace DotNetOpenAuth.AspNet.Clients {
 				AzureADClaims claimsAD = s1.Deserialize<AzureADClaims>(jwtClaims);
 				AzureADHeader headerAD = s1.Deserialize<AzureADHeader>(jwtHeader);
 
-				if (validate)
-				{
+				if (validate) {
 					// Check to see if the token is valid
 					// Check if its JWT and RSA encoded
-					if (headerAD.Typ.ToUpper() != "JWT")
-					{
+					if (headerAD.Typ.ToUpper() != "JWT") {
 						return null;
 					}
 
 					// Check if its JWT and RSA encoded
-					if (headerAD.Alg.ToUpper() != "RS256")
-					{
+					if (headerAD.Alg.ToUpper() != "RS256") {
 						return null;
 					}
-					if (string.IsNullOrEmpty(headerAD.X5t))
-					{
+					if (string.IsNullOrEmpty(headerAD.X5t)) {
 						return null;
 					}
 
 					// Check audience to be graph
-					if (claimsAD.Aud.ToLower().ToLower() != GraphResource.ToLower())
-					{
+					if (claimsAD.Aud.ToLower().ToLower() != GraphResource.ToLower()) {
 						return null;
 					}
 
 					// Check issuer to be sts
-					if (claimsAD.Iss.ToLower().IndexOf(STSName.ToLower()) != 0)
-					{
+					if (claimsAD.Iss.ToLower().IndexOf(STSName.ToLower()) != 0) {
 						return null;
 					}
 
@@ -486,22 +437,18 @@ namespace DotNetOpenAuth.AspNet.Clients {
 					double secsnow = span.TotalSeconds;
 					double nbfsecs = Convert.ToDouble(claimsAD.Nbf);
 					double expsecs = Convert.ToDouble(claimsAD.Exp);
-					if ((nbfsecs - 100 > secsnow) || (secsnow > expsecs + 100))
-					{
+					if ((nbfsecs - 100 > secsnow) || (secsnow > expsecs + 100)) {
 						return null;
 					}
 
 					// Validate the signature of the token
 					string tokUnsigned = jwtb64Header + "." + jwtb64Claims;
-					if (!ValidateSig(Encoding.UTF8.GetBytes(tokUnsigned), jwtSig, Base64URLdecodebyte(headerAD.X5t)))
-					{
+					if (!ValidateSig(Encoding.UTF8.GetBytes(tokUnsigned), jwtSig, Base64URLdecodebyte(headerAD.X5t))) {
 						return null;
 					}
 				}
 				return claimsAD;
-			}
-			catch (Exception e)
-			{
+			} catch (Exception e) {
 				System.Diagnostics.Debug.WriteLine(e.ToStringDescriptive());
 				return null;
 			}

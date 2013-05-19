@@ -75,7 +75,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken) {
 			string bearerToken = this.BearerToken;
 			if (bearerToken == null) {
-				ErrorUtilities.VerifyProtocol(!this.Authorization.AccessTokenExpirationUtc.HasValue || this.Authorization.AccessTokenExpirationUtc < DateTime.UtcNow || this.Authorization.RefreshToken != null, ClientStrings.AuthorizationExpired);
+				ErrorUtilities.VerifyProtocol(!this.Authorization.AccessTokenExpirationUtc.HasValue || this.Authorization.AccessTokenExpirationUtc >= DateTime.UtcNow || this.Authorization.RefreshToken != null, ClientStrings.AuthorizationExpired);
 
 				if (this.Authorization.AccessTokenExpirationUtc.HasValue && this.Authorization.AccessTokenExpirationUtc.Value < DateTime.UtcNow) {
 					ErrorUtilities.VerifyProtocol(this.Authorization.RefreshToken != null, ClientStrings.AccessTokenRefreshFailed);
