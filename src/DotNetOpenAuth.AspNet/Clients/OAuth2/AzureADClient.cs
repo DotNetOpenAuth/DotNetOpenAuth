@@ -30,17 +30,17 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <summary>
 		/// The authorization endpoint.
 		/// </summary>
-		private const string AuthorizationEndpoint = "https://login.windows.net/global/oauth2/authorize";
+		private const string AuthorizationEndpoint = "https://login.windows.net/common/oauth2/authorize";
 
 		/// <summary>
 		/// The token endpoint.
 		/// </summary>
-		private const string TokenEndpoint = "https://login.windows.net/global/oauth2/token";
+		private const string TokenEndpoint = "https://login.windows.net/common/oauth2/token";
 
 		/// <summary>
 		/// The name of the graph resource.
 		/// </summary>
-		private const string GraphResource = "00000002-0000-0000-c000-000000000000/graph.windows.net";
+		private const string GraphResource = "https://graph.windows.net";
 
 		/// <summary>
 		/// The URL to get the token decoding certificate from.
@@ -151,7 +151,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 					{ "response_type", "code" },
 					{ "resource", this.resource },
 				});
-			return builder.Uri;
+			 return builder.Uri;
 		}
 
 		/// <summary>
@@ -169,7 +169,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 				AzureADGraph graphData;
 				WebRequest request =
 					WebRequest.Create(
-						GraphEndpoint + this.tenantid + "/users/" + this.userid + "?api-version=0.9");
+						GraphEndpoint + this.tenantid + "/users/" + this.userid + "?api-version=2013-04-05");
 				request.Headers = new WebHeaderCollection();
 				request.Headers.Add("authorization", accessToken);
 				using (var response = request.GetResponse())
@@ -218,6 +218,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 						{ "client_secret", this.appSecret },
 						{ "code", authorizationCode },
 						{ "grant_type", "authorization_code" },
+						{"api_version","1.0"},
 					});
 
 				WebRequest tokenRequest = WebRequest.Create(TokenEndpoint);
