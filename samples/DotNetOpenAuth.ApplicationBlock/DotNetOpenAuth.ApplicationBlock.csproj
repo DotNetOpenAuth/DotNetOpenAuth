@@ -94,20 +94,23 @@
     <Compile Include="CustomExtensions\Acme.cs" />
     <Compile Include="CustomExtensions\AcmeRequest.cs" />
     <Compile Include="CustomExtensions\AcmeResponse.cs" />
-    <Compile Include="Facebook\FacebookClient.cs" />
-    <Compile Include="Facebook\FacebookGraph.cs" />
+    <Compile Include="OAuth2\Facebook\FacebookClient.cs" />
+    <Compile Include="OAuth2\Facebook\FacebookGraph.cs" />
     <Compile Include="CustomExtensions\UIRequestAtRelyingPartyFactory.cs" />
-    <Compile Include="GoogleConsumer.cs" />
+    <Compile Include="OAuth1\GoogleConsumer.cs" />
     <Compile Include="InMemoryClientAuthorizationTracker.cs" />
     <Compile Include="InMemoryTokenManager.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="OAuth2\Google\GoogleClient.cs" />
+    <Compile Include="OAuth2\Google\GoogleGraph.cs" />
+    <Compile Include="OAuth2\IOAuth2Graph.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TwitterConsumer.cs" />
+    <Compile Include="OAuth1\TwitterConsumer.cs" />
     <Compile Include="Util.cs" />
-    <Compile Include="WindowsLiveClient.cs" />
-    <Compile Include="WindowsLiveGraph.cs" />
-    <Compile Include="YammerConsumer.cs" />
+    <Compile Include="OAuth2\WindowsLive\WindowsLiveClient.cs" />
+    <Compile Include="OAuth2\WindowsLive\WindowsLiveGraph.cs" />
+    <Compile Include="OAuth1\YammerConsumer.cs" />
     <Compile Include="YubikeyRelyingParty.cs" />
   </ItemGroup>
   <ItemGroup>
