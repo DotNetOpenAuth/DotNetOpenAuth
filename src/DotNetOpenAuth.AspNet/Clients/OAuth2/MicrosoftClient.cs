@@ -48,12 +48,12 @@ namespace DotNetOpenAuth.AspNet.Clients {
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MicrosoftClient"/> class.
-		/// Requests a scope of "wl.signin" by default.
+		/// Requests a scope of "wl.basic" by default, but "wl.signin" is a good minimal alternative.
 		/// </summary>
 		/// <param name="appId">The app id.</param>
 		/// <param name="appSecret">The app secret.</param>
 		public MicrosoftClient(string appId, string appSecret)
-			: this("microsoft", appId, appSecret, "wl.signin")
+			: this(appId, appSecret, "wl.basic")
 		{
 		}
 
