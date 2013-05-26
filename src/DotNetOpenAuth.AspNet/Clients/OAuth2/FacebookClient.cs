@@ -42,7 +42,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <summary>
 		/// The scope.
 		/// </summary>
-		private readonly string scope;
+		private readonly string[] scope;
 
 		#endregion
 
@@ -74,7 +74,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <param name="scope">
 		/// The scope of authorization to request when authenticating with Facebook. The default is "email".
 		/// </param>
-		public FacebookClient(string appId, string appSecret, string scope)
+		public FacebookClient(string appId, string appSecret, params string[] scope)
 			: base("facebook") {
 			Requires.NotNullOrEmpty(appId, "appId");
 			Requires.NotNullOrEmpty(appSecret, "appSecret");
@@ -103,7 +103,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 				new Dictionary<string, string> {
 					{ "client_id", this.appId },
 					{ "redirect_uri", returnUrl.AbsoluteUri },
-					{ "scope", this.scope },
+					{ "scope", string.Join(" ", this.scope) },
 				});
 			return builder.Uri;
 		}
