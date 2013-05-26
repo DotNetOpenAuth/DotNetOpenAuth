@@ -57,6 +57,11 @@ namespace DotNetOpenAuth.ApplicationBlock {
 		/// https://developers.google.com/accounts/docs/OAuth2Login
 		/// </remarks>
 		public static class Scopes {
+			public const string PlusMe = "https://www.googleapis.com/auth/plus.me";
+
+			/// <summary>
+			/// Scopes that cover queries for user data.
+			/// </summary>
 			public static class UserInfo {
 				/// <summary>
 				/// Gain read-only access to basic profile information, including a user identifier, name, profile photo, profile URL, country, language, timezone, and birthdate.
@@ -68,8 +73,6 @@ namespace DotNetOpenAuth.ApplicationBlock {
 				/// </summary>
 				public const string Email = "https://www.googleapis.com/auth/userinfo.email";
 			}
-
-			public const string PlusMe = "https://www.googleapis.com/auth/plus.me";
 
 			public static class Drive {
 				/// <summary>

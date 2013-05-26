@@ -21,61 +21,61 @@ namespace DotNetOpenAuth.ApplicationBlock {
 		private static DataContractJsonSerializer jsonSerializer = new DataContractJsonSerializer(typeof(FacebookGraph));
 
 		/// <summary>
-		/// Gets the user's Facebook ID
+		/// Gets or sets the user's Facebook ID
 		/// </summary>
 		[DataMember(Name = "id")]
 		public string Id { get; set; }
 
 		/// <summary>
-		/// Gets the user's full name
+		/// Gets or sets the user's full name
 		/// </summary>
 		[DataMember(Name = "name")]
 		public string Name { get; set; }
 
 		/// <summary>
-		/// Gets the user's first name
+		/// Gets or sets the user's first name
 		/// </summary>
 		[DataMember(Name = "first_name")]
 		public string FirstName { get; set; }
 
 		/// <summary>
-		/// The user's middle name
+		/// Gets or sets the user's middle name
 		/// </summary>
 		[DataMember(Name = "middle_name")]
 		public string MiddleName { get; set; }
 
 		/// <summary>
-		/// The user's last name
+		/// Gets or sets the user's last name
 		/// </summary>
 		[DataMember(Name = "last_name")]
 		public string LastName { get; set; }
 
 		/// <summary>
-		/// The user's gender: female or male
+		/// Gets or sets the user's gender: female or male
 		/// </summary>
 		[DataMember(Name = "gender")]
 		public string Gender { get; set; }
 
 		/// <summary>
-		/// The user's locale
+		/// Gets or sets the user's locale
 		/// </summary>
 		[DataMember(Name = "locale")]
 		public string Locale { get; set; }
 
 		/// <summary>
-		/// The user's languages
+		/// Gets or sets the user's languages
 		/// </summary>
 		[DataMember(Name = "languages")]
 		public FacebookIdName[] Languages { get; set; }
 
 		/// <summary>
-		/// The URL of the profile for the user on Facebook
+		/// Gets or sets the URL of the profile for the user on Facebook
 		/// </summary>
 		[DataMember(Name = "link")]
 		public Uri Link { get; set; }
 
 		/// <summary>
-		/// The user's Facebook username
+		/// Gets or sets the user's Facebook username
 		/// </summary>
 		[DataMember(Name = "username")]
 		public string Username { get; set; }
@@ -87,13 +87,13 @@ namespace DotNetOpenAuth.ApplicationBlock {
 		// installed
 
 		/// <summary>
-		/// The user's timezone offset from UTC
+		/// Gets or sets the user's timezone offset from UTC
 		/// </summary>
 		[DataMember(Name = "timezone")]
 		public int? Timezone { get; set; }
 
 		/// <summary>
-		/// The last time the user's profile was updated; changes to the languages, link, timezone, verified, interested_in, favorite_athletes, favorite_teams, and video_upload_limits are not not reflected in this value
+		/// Gets or sets the last time the user's profile was updated; changes to the languages, link, timezone, verified, interested_in, favorite_athletes, favorite_teams, and video_upload_limits are not not reflected in this value
 		/// string containing an ISO-8601 datetime
 		/// </summary>
 		[DataMember(Name = "updated_time")]
@@ -104,7 +104,7 @@ namespace DotNetOpenAuth.ApplicationBlock {
 		// bio
 
 		/// <summary>
-		/// The user's birthday
+		/// Gets or sets the user's birthday
 		/// Date string in MM/DD/YYYY format
 		/// </summary>
 		[DataMember(Name = "birthday")]
@@ -123,31 +123,31 @@ namespace DotNetOpenAuth.ApplicationBlock {
 		// education
 
 		/// <summary>
-		/// The proxied or contact email address granted by the user
+		/// Gets or sets the proxied or contact email address granted by the user
 		/// </summary>
 		[DataMember(Name = "email")]
 		public string Email { get; set; }
 
 		/// <summary>
-		/// The user's hometown
+		/// Gets or sets the user's hometown
 		/// </summary>
 		[DataMember(Name = "hometown")]
 		public FacebookIdName Hometown { get; set; }
 
 		/// <summary>
-		/// The genders the user is interested in
+		/// Gets or sets the genders the user is interested in
 		/// </summary>
 		[DataMember(Name = "interested_in")]
 		public string[] InterestedIn { get; set; }
 
 		/// <summary>
-		/// The user's current city
+		/// Gets or sets the user's current city
 		/// </summary>
 		[DataMember(Name = "location")]
 		public FacebookIdName Location { get; set; }
 
 		/// <summary>
-		/// The user's political view
+		/// Gets or sets the user's political view
 		/// </summary>
 		[DataMember(Name = "political")]
 		public string Political { get; set; }
@@ -155,40 +155,40 @@ namespace DotNetOpenAuth.ApplicationBlock {
 		// payment_pricepoints
 
 		/// <summary>
-		/// The user's favorite athletes; this field is deprecated and will be removed in the near future
+		/// Gets or sets the user's favorite athletes; this field is deprecated and will be removed in the near future
 		/// </summary>
 		[Obsolete]
 		[DataMember(Name = "favorite_athletes")]
 		public FacebookIdName[] FavoriteAthletes { get; set; }
 
 		/// <summary>
-		/// The user's favorite teams; this field is deprecated and will be removed in the near future
+		/// Gets or sets the user's favorite teams; this field is deprecated and will be removed in the near future
 		/// </summary>
 		[Obsolete]
 		[DataMember(Name = "favorite_teams")]
 		public FacebookIdName[] FavoriteTeams { get; set; }
 
 		/// <summary>
-		/// The URL of the user's profile pic (only returned if you explicitly specify a 'fields=picture' param)
+		/// Gets or sets the URL of the user's profile pic (only returned if you explicitly specify a 'fields=picture' param)
 		/// If the "October 2012 Breaking Changes" migration setting is enabled for your app, this field will be an object with the url and is_silhouette fields; is_silhouette is true if the user has not uploaded a profile picture
 		/// </summary>
 		[DataMember(Name = "picture")]
 		public FacebookPicture Picture { get; set; }
 
 		/// <summary>
-		/// The user's favorite quotes
+		/// Gets or sets the user's favorite quotes
 		/// </summary>
 		[DataMember(Name = "quotes")]
 		public Uri Quotes { get; set; }
 
 		/// <summary>
-		/// The user's relationship status: Single, In a relationship, Engaged, Married, It's complicated, In an open relationship, Widowed, Separated, Divorced, In a civil union, In a domestic partnership
+		/// Gets or sets the user's relationship status: Single, In a relationship, Engaged, Married, It's complicated, In an open relationship, Widowed, Separated, Divorced, In a civil union, In a domestic partnership
 		/// </summary>
 		[DataMember(Name = "relationship_status")]
 		public string RelationshipStatus { get; set; }
 
 		/// <summary>
-		/// The user's religion
+		/// Gets or sets the user's religion
 		/// </summary>
 		[DataMember(Name = "religion")]
 		public string Religion { get; set; }
@@ -196,7 +196,7 @@ namespace DotNetOpenAuth.ApplicationBlock {
 		// security_settings
 
 		/// <summary>
-		/// The user's significant other
+		/// Gets or sets the user's significant other
 		/// </summary>
 		[DataMember(Name = "significant_other")]
 		public FacebookIdName SignificantOther { get; set; }
@@ -204,12 +204,10 @@ namespace DotNetOpenAuth.ApplicationBlock {
 		// video_upload_limits
 
 		/// <summary>
-		/// The URL of the user's personal website
+		/// Gets or sets the URL of the user's personal website
 		/// </summary>
 		[DataMember(Name = "website")]
 		public Uri Website { get; set; }
-
-		// work
 
 		public DateTime? BirthdayDT {
 			get {

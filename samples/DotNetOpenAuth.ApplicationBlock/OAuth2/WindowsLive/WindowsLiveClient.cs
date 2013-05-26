@@ -45,7 +45,6 @@ namespace DotNetOpenAuth.ApplicationBlock {
 						// &type=small 96x96
 						// &type=medium 96x96
 						// &type=large 448x448
-
 						windowsLiveGraph.AvatarUrl = new Uri("https://apis.live.net/v5.0/me/picture?access_token=" + Uri.EscapeDataString(authState.AccessToken));
 
 						return windowsLiveGraph;

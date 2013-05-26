@@ -20,61 +20,61 @@ namespace DotNetOpenAuth.ApplicationBlock {
 		private static DataContractJsonSerializer jsonSerializer = new DataContractJsonSerializer(typeof(GoogleGraph));
 
 		/// <summary>
-		/// Gets the value of this field is an immutable identifier for the logged-in user, and may be used when creating and managing user sessions in your application. This identifier is the same regardless of the client_id. This provides the ability to correlate profile information across multiple applications in the same organization. The value of this field is the same as the value of the userid field returned by the TokenInfo endpoint.
+		/// Gets or sets the value of this field is an immutable identifier for the logged-in user, and may be used when creating and managing user sessions in your application. This identifier is the same regardless of the client_id. This provides the ability to correlate profile information across multiple applications in the same organization. The value of this field is the same as the value of the userid field returned by the TokenInfo endpoint.
 		/// </summary>
 		[DataMember(Name = "id", IsRequired = true)]
 		public string Id { get; set; }
 
 		/// <summary>
-		/// Gets the email address of the logged in user
+		/// Gets or sets the email address of the logged in user
 		/// </summary>
 		[DataMember(Name = "email")]
 		public string Email { get; set; }
 
 		/// <summary>
-		/// Gets a flag that indicates whether or not Google has been able to verify the email address.
+		/// Gets or sets a flag that indicates whether or not Google has been able to verify the email address.
 		/// </summary>
 		[DataMember(Name = "verified_email")]
 		public bool? VerifiedEmail { get; set; }
 
 		/// <summary>
-		/// Gets the full name of the logged in user
+		/// Gets or sets the full name of the logged in user
 		/// </summary>
 		[DataMember(Name = "name", IsRequired = true)]
 		public string Name { get; set; }
 
 		/// <summary>
-		/// Gets the first name of the logged in user
+		/// Gets or sets the first name of the logged in user
 		/// </summary>
 		[DataMember(Name = "given_name")]
 		public string GivenName { get; set; }
 
 		/// <summary>
-		/// Gets the last name of the logged in user
+		/// Gets or sets the last name of the logged in user
 		/// </summary>
 		[DataMember(Name = "family_name")]
 		public string FamilyName { get; set; }
 
 		/// <summary>
-		/// Gets the URL to the user's profile picture. If the user has no public profile, this field is not included.
+		/// Gets or sets the URL to the user's profile picture. If the user has no public profile, this field is not included.
 		/// </summary>
 		[DataMember(Name = "picture")]
 		public Uri Picture { get; set; }
 
 		/// <summary>
-		/// Gets the user's registered locale. If the user has no public profile, this field is not included.
+		/// Gets or sets the user's registered locale. If the user has no public profile, this field is not included.
 		/// </summary>
 		[DataMember(Name = "locale")]
 		public string Locale { get; set; }
 
 		/// <summary>
-		/// Gets the default timezone of the logged in user
+		/// Gets or sets the default timezone of the logged in user
 		/// </summary>
 		[DataMember(Name = "timezone")]
 		public string Timezone { get; set; }
 
 		/// <summary>
-		/// Gets the gender of the logged in user (other|female|male)
+		/// Gets or sets the gender of the logged in user (other|female|male)
 		/// </summary>
 		[DataMember(Name = "gender")]
 		public string Gender { get; set; }

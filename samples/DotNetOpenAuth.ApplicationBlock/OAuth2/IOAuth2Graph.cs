@@ -4,7 +4,27 @@
 	using System.Linq;
 	using System.Text;
 
-	public enum HumanGender { Unknown, Male, Female, Other }
+	public enum HumanGender {
+		/// <summary>
+		/// The gender is unknown.
+		/// </summary>
+		Unknown,
+
+		/// <summary>
+		/// The gender is male.
+		/// </summary>
+		Male,
+
+		/// <summary>
+		/// The gender is female.
+		/// </summary>
+		Female,
+
+		/// <summary>
+		/// Hmmmm... What could this be?
+		/// </summary>
+		Other,
+	}
 
 	public interface IOAuth2Graph {
 		string Id { get; }
