@@ -39,10 +39,10 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// </summary>
 		private readonly string appSecret;
 
-        /// <summary>
-        /// The scope.
-        /// </summary>
-        private readonly string scope;
+		/// <summary>
+		/// The scope.
+		/// </summary>
+		private readonly string scope;
 
 		#endregion
 
@@ -57,6 +57,9 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <param name="appSecret">
 		/// The app secret.
 		/// </param>
+		/// <param name="scope">
+		/// The scope of authorization to request when authenticating with Facebook. The default is "email".
+		/// </param>
 		public FacebookClient(string appId, string appSecret, string scope = "email")
 			: base("facebook") {
 			Requires.NotNullOrEmpty(appId, "appId");
@@ -64,7 +67,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 
 			this.appId = appId;
 			this.appSecret = appSecret;
-            this.scope = scope;
+			this.scope = scope;
 		}
 
 		#endregion
