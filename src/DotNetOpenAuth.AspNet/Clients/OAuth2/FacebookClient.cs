@@ -49,6 +49,20 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		#region Constructors and Destructors
 
 		/// <summary>
+		/// Initializes a new instance of the <see cref="FacebookClient"/> class
+		/// with "email" as the scope.
+		/// </summary>
+		/// <param name="appId">
+		/// The app id.
+		/// </param>
+		/// <param name="appSecret">
+		/// The app secret.
+		/// </param>
+		public FacebookClient(string appId, string appSecret)
+			: this(appId, appSecret, "email") {
+		}
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="FacebookClient"/> class.
 		/// </summary>
 		/// <param name="appId">
@@ -60,10 +74,11 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <param name="scope">
 		/// The scope of authorization to request when authenticating with Facebook. The default is "email".
 		/// </param>
-		public FacebookClient(string appId, string appSecret, string scope = "email")
+		public FacebookClient(string appId, string appSecret, string scope)
 			: base("facebook") {
 			Requires.NotNullOrEmpty(appId, "appId");
 			Requires.NotNullOrEmpty(appSecret, "appSecret");
+			Requires.NotNullOrEmpty(scope, "scope");
 
 			this.appId = appId;
 			this.appSecret = appSecret;
