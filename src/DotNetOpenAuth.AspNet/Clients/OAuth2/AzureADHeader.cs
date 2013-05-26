@@ -4,8 +4,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-namespace DotNetOpenAuth.AspNet.Clients
-{
+namespace DotNetOpenAuth.AspNet.Clients {
 	using System;
 	using System.ComponentModel;
 	using System.Diagnostics.CodeAnalysis;
@@ -21,8 +20,7 @@ namespace DotNetOpenAuth.AspNet.Clients
 	[EditorBrowsable(EditorBrowsableState.Never)]
 	[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "AzureAD", Justification = "Brand name")]
 
-	public class AzureADHeader
-	{
+	public class AzureADHeader {
 		#region Public Properties
 
 		/// <summary>
