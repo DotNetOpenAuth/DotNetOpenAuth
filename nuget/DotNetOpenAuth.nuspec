@@ -13,8 +13,7 @@
 		<summary>OpenID, OAuth, &amp; InfoCard library for web and desktop applications.</summary>
 		<description>
 			Add OpenID 1.1/2.0, OAuth 1.0(a), &amp; InfoCard authentication and authorization functionality for client and server applications.
-			This allows your (web) application to issue identities or accept issued identites from other web applications, and even access your users'
-			data on other services.
+			This allows your (web) application to issue identities or accept issued identites from other web applications, and even access your users' data on other services.
 		</description>
 		<language>en-US</language>
 		<dependencies>
@@ -24,6 +23,10 @@
 			<dependency id="DotNetOpenAuth.OAuth.ServiceProvider" version="[$version$]" />
 			<dependency id="DotNetOpenAuth.OpenIdInfoCard.UI" version="[$version$]" />
 			<dependency id="DotNetOpenAuth.OpenIdOAuth" version="[$version$]" />
+
+			<dependency id="DotNetOpenAuth.OAuth2.Client.UI" version="[$version$]" />
+			<dependency id="DotNetOpenAuth.OAuth2.AuthorizationServer" version="[$version$]" />
+			<dependency id="DotNetOpenAuth.OAuth2.ResourceServer" version="[$version$]" />
 		</dependencies>
 	</metadata>
 	<files>

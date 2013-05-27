@@ -370,7 +370,8 @@ namespace DotNetOpenAuth.Messaging {
 
 			if (httpHost != null) {
 				ErrorUtilities.VerifySupported(request.Url.Scheme == Uri.UriSchemeHttps || request.Url.Scheme == Uri.UriSchemeHttp, "Only HTTP and HTTPS are supported protocols.");
-				string scheme = serverVariables["HTTP_X_FORWARDED_PROTO"] ?? request.Url.Scheme;
+				string scheme = serverVariables["HTTP_X_FORWARDED_PROTO"] ??
+					(string.Equals(serverVariables["HTTP_FRONT_END_HTTPS"], "on", StringComparison.OrdinalIgnoreCase) ? Uri.UriSchemeHttps : request.Url.Scheme);
 				Uri hostAndPort = new Uri(scheme + Uri.SchemeDelimiter + serverVariables["HTTP_HOST"]);
 				UriBuilder publicRequestUri = new UriBuilder(request.Url);
 				publicRequestUri.Scheme = scheme;
@@ -603,6 +604,23 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Assembles the content of the HTTP Authorization or WWW-Authenticate header.
+		/// </summary>
+		/// <param name="scheme">The scheme.</param>
+		/// <param name="fields">The fields to include.</param>
+		/// <returns>A value prepared for an HTTP header.</returns>
+		internal static string AssembleAuthorizationHeader(string scheme, IEnumerable<KeyValuePair<string, string>> fields) {
+			Requires.NotNullOrEmpty(scheme, "scheme");
+			Requires.NotNull(fields, "fields");
+
+			var authorization = new StringBuilder();
+			authorization.Append(scheme);
+			authorization.Append(" ");
+			authorization.Append(AssembleAuthorizationHeader(fields));
+			return authorization.ToString();
+		}
+
+		/// <summary>
 		/// Parses the authorization header.
 		/// </summary>
 		/// <param name="scheme">The scheme.  Must not be null or empty.</param>
@@ -690,11 +708,14 @@ namespace DotNetOpenAuth.Messaging {
 		/// Gets a NON-cryptographically strong random string of base64 characters.
 		/// </summary>
 		/// <param name="binaryLength">The length of the byte sequence to generate.</param>
-		/// <returns>A base64 encoding of the generated random data,
-		/// whose length in characters will likely be greater than <paramref name="binaryLength"/>.</returns>
-		internal static string GetNonCryptoRandomDataAsBase64(int binaryLength) {
+		/// <param name="useWeb64">A value indicating whether web64 encoding is used to avoid the need to escape characters.</param>
+		/// <returns>
+		/// A base64 encoding of the generated random data,
+		/// whose length in characters will likely be greater than <paramref name="binaryLength" />.
+		/// </returns>
+		internal static string GetNonCryptoRandomDataAsBase64(int binaryLength, bool useWeb64 = false) {
 			byte[] uniq_bytes = GetNonCryptoRandomData(binaryLength);
-			string uniq = Convert.ToBase64String(uniq_bytes);
+			string uniq = useWeb64 ? ConvertToBase64WebSafeString(uniq_bytes) : Convert.ToBase64String(uniq_bytes);
 			return uniq;
 		}
 

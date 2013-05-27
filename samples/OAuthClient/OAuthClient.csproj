@@ -73,6 +73,8 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="AzureAD.aspx" />
+    <Content Include="Google.aspx" />
     <Content Include="Default.aspx" />
     <Content Include="Facebook.aspx" />
     <Content Include="favicon.ico" />
@@ -103,6 +105,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Code\Logging.cs" />
+    <Compile Include="AzureAD.aspx.cs">
+      <DependentUpon>AzureAD.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="AzureAD.aspx.designer.cs">
+      <DependentUpon>AzureAD.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Google.aspx.cs">
+      <DependentUpon>Google.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Google.aspx.designer.cs">
+      <DependentUpon>Google.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Facebook.aspx.cs">
       <DependentUpon>Facebook.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

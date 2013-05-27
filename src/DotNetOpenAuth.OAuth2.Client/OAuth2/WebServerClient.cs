@@ -107,7 +107,7 @@ namespace DotNetOpenAuth.OAuth2 {
 			// If the host is implementing the authorization tracker though, they're handling this protection themselves.
 			var cookies = new List<CookieHeaderValue>();
 			if (this.AuthorizationTracker == null) {
-				string xsrfKey = MessagingUtilities.GetNonCryptoRandomDataAsBase64(16);
+				string xsrfKey = MessagingUtilities.GetNonCryptoRandomDataAsBase64(16, useWeb64: true);
 				cookies.Add(new CookieHeaderValue(XsrfCookieName, xsrfKey) {
 					HttpOnly = true,
 					Secure = FormsAuthentication.RequireSSL,

@@ -61,6 +61,7 @@ EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "DotNetOpenAuth.TestWeb", "DotNetOpenAuth.TestWeb\", "{47A84EF7-68C3-4D47-926A-9CCEA6518531}"
 	ProjectSection(WebsiteProperties) = preProject
 		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.5"
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
 		ProjectReferences = "{f8284738-3b5d-4733-a511-38c23f4a763f}|DotNetOpenAuth.OpenId.Provider.dll;{60426312-6AE5-4835-8667-37EDEA670222}|DotNetOpenAuth.Core.dll;{3896A32A-E876-4C23-B9B8-78E17D134CD3}|DotNetOpenAuth.OpenId.dll;{26DC877F-5987-48DD-9DDB-E62F2DE0E150}|Org.Mentalis.Security.Cryptography.dll;{F4CD3C04-6037-4946-B7A5-34BFC96A75D2}|Mono.Math.dll;"
 		Debug.AspNetCompiler.VirtualPath = "/DotNetOpenAuth.TestWeb"
 		Debug.AspNetCompiler.PhysicalPath = "DotNetOpenAuth.TestWeb\"
@@ -88,6 +89,7 @@ EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "InfoCardRelyingParty", "..\samples\InfoCardRelyingParty\", "{6EB90284-BD15-461C-BBF2-131CF55F7C8B}"
 	ProjectSection(WebsiteProperties) = preProject
 		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.5"
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
 		ProjectReferences = "{60426312-6ae5-4835-8667-37edea670222}|DotNetOpenAuth.Core.dll;{173e7b8d-e751-46e2-a133-f72297c0d2f4}|DotNetOpenAuth.Core.UI.dll;{408d10b8-34ba-4cbd-b7aa-feb1907aba4c}|DotNetOpenAuth.InfoCard.dll;{e040eb58-b4d2-457b-a023-ae6ef3bd34de}|DotNetOpenAuth.InfoCard.UI.dll;"
 		Debug.AspNetCompiler.VirtualPath = "/InfoCardRelyingParty"
 		Debug.AspNetCompiler.PhysicalPath = "..\samples\InfoCardRelyingParty\"
