@@ -10,7 +10,10 @@ namespace DotNetOpenAuth.ApplicationBlock {
 	using System.IO;
 	using System.Linq;
 	using System.Net;
+	using System.Net.Http;
 	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2;
@@ -29,15 +32,12 @@ namespace DotNetOpenAuth.ApplicationBlock {
 			: base(WindowsLiveDescription) {
 		}
 
-		public IOAuth2Graph GetGraph(IAuthorizationState authState, string[] fields = null) {
+		public async Task<IOAuth2Graph> GetGraphAsync(IAuthorizationState authState, string[] fields = null, CancellationToken cancellationToken = default(CancellationToken)) {
 			if ((authState != null) && (authState.AccessToken != null)) {
-				WebRequest request = WebRequest.Create("https://apis.live.net/v5.0/me?access_token=" + Uri.EscapeDataString(authState.AccessToken));
-				WebResponse response = request.GetResponse();
-
-				if (response != null) {
-					Stream responseStream = response.GetResponseStream();
-
-					if (responseStream != null) {
+				var httpClient = new HttpClient(this.CreateAuthorizingHandler(authState));
+				using (var response = await httpClient.GetAsync("https://apis.live.net/v5.0/me", cancellationToken)) {
+					response.EnsureSuccessStatusCode();
+					using (var responseStream = await response.Content.ReadAsStreamAsync()) {
 						// string debugJsonStr = new StreamReader(responseStream).ReadToEnd();
 						WindowsLiveGraph windowsLiveGraph = WindowsLiveGraph.Deserialize(responseStream);
 
@@ -45,7 +45,8 @@ namespace DotNetOpenAuth.ApplicationBlock {
 						// &type=small 96x96
 						// &type=medium 96x96
 						// &type=large 448x448
-						windowsLiveGraph.AvatarUrl = new Uri("https://apis.live.net/v5.0/me/picture?access_token=" + Uri.EscapeDataString(authState.AccessToken));
+						windowsLiveGraph.AvatarUrl =
+							new Uri("https://apis.live.net/v5.0/me/picture?access_token=" + Uri.EscapeDataString(authState.AccessToken));
 
 						return windowsLiveGraph;
 					}

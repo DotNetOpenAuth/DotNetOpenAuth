@@ -10,7 +10,10 @@ namespace DotNetOpenAuth.ApplicationBlock {
 	using System.IO;
 	using System.Linq;
 	using System.Net;
+	using System.Net.Http;
 	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2;
@@ -29,17 +32,15 @@ namespace DotNetOpenAuth.ApplicationBlock {
 			: base(FacebookDescription) {
 		}
 
-		public IOAuth2Graph GetGraph(IAuthorizationState authState, string[] fields = null) {
+		public async Task<IOAuth2Graph> GetGraphAsync(IAuthorizationState authState, string[] fields = null, CancellationToken cancellationToken = default(CancellationToken)) {
 			if ((authState != null) && (authState.AccessToken != null)) {
+				var httpClient = new HttpClient(this.CreateAuthorizingHandler(authState));
 				string fieldsStr = (fields == null) || (fields.Length == 0) ? FacebookGraph.Fields.Defaults : string.Join(",", fields);
 
-				WebRequest request = WebRequest.Create("https://graph.Facebook.com/me?access_token=" + Uri.EscapeDataString(authState.AccessToken) + "&fields=" + fieldsStr);
-				WebResponse response = request.GetResponse();
-
-				if (response != null) {
-					Stream responseStream = response.GetResponseStream();
-
-					if (responseStream != null) {
+				using (
+					var response = await httpClient.GetAsync("https://graph.Facebook.com/me?fields=" + fieldsStr, cancellationToken)) {
+					response.EnsureSuccessStatusCode();
+					using (var responseStream = await response.Content.ReadAsStreamAsync()) {
 						return FacebookGraph.Deserialize(responseStream);
 					}
 				}

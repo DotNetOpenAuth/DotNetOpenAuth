@@ -32,7 +32,7 @@
 							// alternatively you can ask for more information
 							// facebookClient.RequestUserAuthorization(scope: new[] { FacebookClient.Scopes.Email, FacebookClient.Scopes.UserBirthday });
 						} else {
-							IOAuth2Graph oauth2Graph = facebookClient.GetGraph(authorization);
+							IOAuth2Graph oauth2Graph = await facebookClient.GetGraphAsync(authorization, cancellationToken: ct);
 							//// IOAuth2Graph oauth2Graph = facebookClient.GetGraph(authorization, new[] { FacebookGraph.Fields.Defaults, FacebookGraph.Fields.Email, FacebookGraph.Fields.Picture, FacebookGraph.Fields.Birthday });
 
 							this.nameLabel.Text = HttpUtility.HtmlEncode(oauth2Graph.Name);

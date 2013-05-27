@@ -43,7 +43,7 @@
 								// alternatively you can ask for more information
 								// windowsLiveClient.RequestUserAuthorization(scope: new[] { WindowsLiveClient.Scopes.SignIn, WindowsLiveClient.Scopes.Emails, WindowsLiveClient.Scopes.Birthday });
 							} else {
-								IOAuth2Graph oauth2Graph = windowsLiveClient.GetGraph(authorization);
+								IOAuth2Graph oauth2Graph = await windowsLiveClient.GetGraphAsync(authorization, cancellationToken: ct);
 
 								this.nameLabel.Text = HttpUtility.HtmlEncode(oauth2Graph.Name);
 							}

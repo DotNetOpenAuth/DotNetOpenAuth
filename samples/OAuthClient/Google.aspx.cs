@@ -5,11 +5,9 @@
 	using System.Net;
 	using System.Web;
 	using System.Web.UI;
-
 	using DotNetOpenAuth.ApplicationBlock;
-	using DotNetOpenAuth.OAuth2;
-
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OAuth2;
 
 	public partial class Google : System.Web.UI.Page
 	{
@@ -33,7 +31,7 @@
 							// alternatively you can ask for more information
 							// googleClient.RequestUserAuthorization(scope: new[] { GoogleClient.Scopes.UserInfo.Profile, GoogleClient.Scopes.UserInfo.Email });
 						} else {
-							IOAuth2Graph oauth2Graph = googleClient.GetGraph(authorization);
+							IOAuth2Graph oauth2Graph = await googleClient.GetGraphAsync(authorization, cancellationToken: ct);
 
 							this.nameLabel.Text = HttpUtility.HtmlEncode(oauth2Graph.Name);
 						}

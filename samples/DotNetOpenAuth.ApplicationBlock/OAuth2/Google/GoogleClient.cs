@@ -10,7 +10,10 @@ namespace DotNetOpenAuth.ApplicationBlock {
 	using System.IO;
 	using System.Linq;
 	using System.Net;
+	using System.Net.Http;
 	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2;
@@ -32,15 +35,12 @@ namespace DotNetOpenAuth.ApplicationBlock {
 			: base(GoogleDescription) {
 		}
 
-		public IOAuth2Graph GetGraph(IAuthorizationState authState, string[] fields = null) {
+		public async Task<IOAuth2Graph> GetGraphAsync(IAuthorizationState authState, string[] fields = null, CancellationToken cancellationToken = default(CancellationToken)) {
 			if ((authState != null) && (authState.AccessToken != null)) {
-				WebRequest request = WebRequest.Create("https://www.googleapis.com/oauth2/v1/userinfo?access_token=" + Uri.EscapeDataString(authState.AccessToken));
-				WebResponse response = request.GetResponse();
-
-				if (response != null) {
-					Stream responseStream = response.GetResponseStream();
-
-					if (responseStream != null) {
+				var httpClient = new HttpClient(this.CreateAuthorizingHandler(authState));
+				using (var response = await httpClient.GetAsync("https://www.googleapis.com/oauth2/v1/userinfo", cancellationToken)) {
+					response.EnsureSuccessStatusCode();
+					using (var responseStream = await response.Content.ReadAsStreamAsync()) {
 						return GoogleGraph.Deserialize(responseStream);
 					}
 				}
