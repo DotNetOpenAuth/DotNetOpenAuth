@@ -17,8 +17,8 @@ namespace DotNetOpenAuth.ApplicationBlock
 	{
 		private static readonly AuthorizationServerDescription AzureADDescription = new AuthorizationServerDescription
 		{
-			TokenEndpoint = new Uri("https://login.windows.net/global/oauth2/token"),
-			AuthorizationEndpoint = new Uri("https://login.windows.net/global/oauth2/authorize?resource=00000002-0000-0000-c000-000000000000/graph.windows.net"),
+			TokenEndpoint = new Uri("https://login.windows.net/common/oauth2/token"),
+			AuthorizationEndpoint = new Uri("https://login.windows.net/common/oauth2/authorize?resource=00000002-0000-0000-c000-000000000000/graph.windows.net"),
 		};
 
 		/// <summary>
