@@ -882,7 +882,7 @@ namespace DotNetOpenAuth.Messaging {
 			Requires.NotNull(crypto, "crypto");
 			Requires.NotNull(buffer, "buffer");
 
-			using (var symmetricCrypto = new RijndaelManaged()) {
+			using (var symmetricCrypto = SymmetricAlgorithm.Create()) {
 				symmetricCrypto.Mode = CipherMode.CBC;
 
 				using (var encryptedStream = new MemoryStream()) {
@@ -924,7 +924,7 @@ namespace DotNetOpenAuth.Messaging {
 				byte[] encryptedPrequel = encryptedStreamReader.ReadBuffer(4096);
 				byte[] prequel = crypto.Decrypt(encryptedPrequel, false);
 
-				using (var symmetricCrypto = new RijndaelManaged()) {
+				using (var symmetricCrypto = SymmetricAlgorithm.Create()) {
 					symmetricCrypto.Mode = CipherMode.CBC;
 
 					byte[] symmetricKey = new byte[symmetricCrypto.Key.Length];
@@ -1959,7 +1959,7 @@ namespace DotNetOpenAuth.Messaging {
 		private static SymmetricAlgorithm CreateSymmetricAlgorithm(byte[] key) {
 			SymmetricAlgorithm result = null;
 			try {
-				result = new RijndaelManaged();
+				result = SymmetricAlgorithm.Create();
 				result.Mode = CipherMode.CBC;
 				result.Key = key;
 				return result;
