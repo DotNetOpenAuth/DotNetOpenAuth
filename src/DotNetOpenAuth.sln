@@ -58,37 +58,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetOpenAuth.Test", "DotN
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetOpenAuth.ApplicationBlock", "..\samples\DotNetOpenAuth.ApplicationBlock\DotNetOpenAuth.ApplicationBlock.csproj", "{AA78D112-D889-414B-A7D4-467B34C7B663}"
 EndProject
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "DotNetOpenAuth.TestWeb", "DotNetOpenAuth.TestWeb\", "{47A84EF7-68C3-4D47-926A-9CCEA6518531}"
-	ProjectSection(WebsiteProperties) = preProject
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.5"
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
-		ProjectReferences = "{f8284738-3b5d-4733-a511-38c23f4a763f}|DotNetOpenAuth.OpenId.Provider.dll;{60426312-6AE5-4835-8667-37EDEA670222}|DotNetOpenAuth.Core.dll;{3896A32A-E876-4C23-B9B8-78E17D134CD3}|DotNetOpenAuth.OpenId.dll;{26DC877F-5987-48DD-9DDB-E62F2DE0E150}|Org.Mentalis.Security.Cryptography.dll;{F4CD3C04-6037-4946-B7A5-34BFC96A75D2}|Mono.Math.dll;"
-		Debug.AspNetCompiler.VirtualPath = "/DotNetOpenAuth.TestWeb"
-		Debug.AspNetCompiler.PhysicalPath = "DotNetOpenAuth.TestWeb\"
-		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\DotNetOpenAuth.TestWeb\"
-		Debug.AspNetCompiler.Updateable = "false"
-		Debug.AspNetCompiler.ForceOverwrite = "true"
-		Debug.AspNetCompiler.FixedNames = "false"
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.VirtualPath = "/DotNetOpenAuth.TestWeb"
-		Release.AspNetCompiler.PhysicalPath = "DotNetOpenAuth.TestWeb\"
-		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\DotNetOpenAuth.TestWeb\"
-		Release.AspNetCompiler.Updateable = "false"
-		Release.AspNetCompiler.ForceOverwrite = "true"
-		Release.AspNetCompiler.FixedNames = "false"
-		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "5073"
-		DefaultWebSiteLanguage = "Visual C#"
-		StartServerOnDebug = "false"
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIdProviderWebForms", "..\samples\OpenIdProviderWebForms\OpenIdProviderWebForms.csproj", "{2A59DE0A-B76A-4B42-9A33-04D34548353D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIdProviderMvc", "..\samples\OpenIdProviderMvc\OpenIdProviderMvc.csproj", "{AEA29D4D-396F-47F6-BC81-B58D4B855245}"
 EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "InfoCardRelyingParty", "..\samples\InfoCardRelyingParty\", "{6EB90284-BD15-461C-BBF2-131CF55F7C8B}"
 	ProjectSection(WebsiteProperties) = preProject
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.5"
 		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
 		ProjectReferences = "{60426312-6ae5-4835-8667-37edea670222}|DotNetOpenAuth.Core.dll;{173e7b8d-e751-46e2-a133-f72297c0d2f4}|DotNetOpenAuth.Core.UI.dll;{408d10b8-34ba-4cbd-b7aa-feb1907aba4c}|DotNetOpenAuth.InfoCard.dll;{e040eb58-b4d2-457b-a023-ae6ef3bd34de}|DotNetOpenAuth.InfoCard.UI.dll;"
 		Debug.AspNetCompiler.VirtualPath = "/InfoCardRelyingParty"
@@ -242,11 +217,6 @@ Global
 		{AA78D112-D889-414B-A7D4-467B34C7B663}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AA78D112-D889-414B-A7D4-467B34C7B663}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AA78D112-D889-414B-A7D4-467B34C7B663}.Release|Any CPU.Build.0 = Release|Any CPU
-		{47A84EF7-68C3-4D47-926A-9CCEA6518531}.CodeAnalysis|Any CPU.ActiveCfg = Debug|Any CPU
-		{47A84EF7-68C3-4D47-926A-9CCEA6518531}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{47A84EF7-68C3-4D47-926A-9CCEA6518531}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{47A84EF7-68C3-4D47-926A-9CCEA6518531}.Release|Any CPU.ActiveCfg = Debug|Any CPU
-		{47A84EF7-68C3-4D47-926A-9CCEA6518531}.Release|Any CPU.Build.0 = Debug|Any CPU
 		{2A59DE0A-B76A-4B42-9A33-04D34548353D}.CodeAnalysis|Any CPU.ActiveCfg = CodeAnalysis|Any CPU
 		{2A59DE0A-B76A-4B42-9A33-04D34548353D}.CodeAnalysis|Any CPU.Build.0 = CodeAnalysis|Any CPU
 		{2A59DE0A-B76A-4B42-9A33-04D34548353D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU

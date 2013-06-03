@@ -17,7 +17,6 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.Provider;
 	using DotNetOpenAuth.OpenId.RelyingParty;
-	using DotNetOpenAuth.Test.Hosting;
 	using NUnit.Framework;
 
 	[TestFixture]
@@ -122,24 +121,6 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 			var response = await rp.Channel.RequestAsync<DirectErrorResponse>(nonOpenIdMessage, CancellationToken.None);
 			Assert.IsNotNull(response.ErrorMessage);
 			Assert.AreEqual(Protocol.Default.Version, response.Version);
-		}
-
-		[Test, Category("HostASPNET")]
-		public async Task BadRequestsGenerateValidErrorResponsesHosted() {
-			try {
-				using (AspNetHost host = AspNetHost.CreateHost(TestWebDirectory)) {
-					Uri opEndpoint = new Uri(host.BaseUri, "/OpenIdProviderEndpoint.ashx");
-					var rp = new OpenIdRelyingParty(null);
-					var nonOpenIdMessage = new Mocks.TestDirectedMessage();
-					nonOpenIdMessage.Recipient = opEndpoint;
-					nonOpenIdMessage.HttpMethods = HttpDeliveryMethods.PostRequest;
-					MessagingTestBase.GetStandardTestMessage(MessagingTestBase.FieldFill.AllRequired, nonOpenIdMessage);
-					var response = await rp.Channel.RequestAsync<DirectErrorResponse>(nonOpenIdMessage, CancellationToken.None);
-					Assert.IsNotNull(response.ErrorMessage);
-				}
-			} catch (FileNotFoundException ex) {
-				Assert.Inconclusive("Unable to execute hosted ASP.NET tests because {0} could not be found.  {1}", ex.FileName, ex.FusionLog);
-			}
 		}
 	}
 }
