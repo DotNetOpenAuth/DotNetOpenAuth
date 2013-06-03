@@ -14,12 +14,8 @@
 
 	<ItemGroup>
 		<SampleProjects Include="**\*.csproj;**\*.vbproj" />
-		<SampleSites Include="InfoCardRelyingParty" />
 
 		<ProjectsToClean Include="@(SampleProjects)" />
-		<ProjectsToClean Include="$(SolutionPath)">
-			<Targets>@(SampleSites->'%(Identity):Clean')</Targets>
-		</ProjectsToClean>
 
 		<_SampleWebConfigs Include="$(ProjectRoot)samples\*\web.config" />
 		<PublishableWebSamples Include="@(_SampleWebConfigs->'%(RootDir)%(Directory)')" />
@@ -28,9 +24,6 @@
 	<Target Name="Build" DependsOnTargets="SkipVerification">
 		<ItemGroup>
 			<SampleProjectsToBuild Include="@(SampleProjects)" />
-			<SampleProjectsToBuild Include="$(SolutionPath)">
-				<Targets>%(SampleSites.Identity)</Targets>
-			</SampleProjectsToBuild>
 		</ItemGroup>
 
 		<MSBuild Projects="@(SampleProjectsToBuild)" Targets="%(SampleProjectsToBuild.Targets)" BuildInParallel="$(BuildInParallel)" />

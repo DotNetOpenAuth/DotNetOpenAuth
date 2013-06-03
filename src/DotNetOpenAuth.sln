@@ -34,8 +34,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OpenID", "OpenID", "{034D5B
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OAuth2", "OAuth2", "{1E2CBAA5-60A3-4AED-912E-541F5753CDC6}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "InfoCard", "InfoCard", "{8A5CEDB9-7F8A-4BE2-A1B9-97130F453277}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{E9ED920D-1F83-48C0-9A4B-09CCE505FE6D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Project Templates", "Project Templates", "{B9EB8729-4B54-4453-B089-FE6761BA3057}"
@@ -61,29 +59,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIdProviderWebForms", "..\samples\OpenIdProviderWebForms\OpenIdProviderWebForms.csproj", "{2A59DE0A-B76A-4B42-9A33-04D34548353D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIdProviderMvc", "..\samples\OpenIdProviderMvc\OpenIdProviderMvc.csproj", "{AEA29D4D-396F-47F6-BC81-B58D4B855245}"
-EndProject
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "InfoCardRelyingParty", "..\samples\InfoCardRelyingParty\", "{6EB90284-BD15-461C-BBF2-131CF55F7C8B}"
-	ProjectSection(WebsiteProperties) = preProject
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
-		ProjectReferences = "{60426312-6ae5-4835-8667-37edea670222}|DotNetOpenAuth.Core.dll;{173e7b8d-e751-46e2-a133-f72297c0d2f4}|DotNetOpenAuth.Core.UI.dll;{408d10b8-34ba-4cbd-b7aa-feb1907aba4c}|DotNetOpenAuth.InfoCard.dll;{e040eb58-b4d2-457b-a023-ae6ef3bd34de}|DotNetOpenAuth.InfoCard.UI.dll;"
-		Debug.AspNetCompiler.VirtualPath = "/InfoCardRelyingParty"
-		Debug.AspNetCompiler.PhysicalPath = "..\samples\InfoCardRelyingParty\"
-		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\InfoCardRelyingParty\"
-		Debug.AspNetCompiler.Updateable = "true"
-		Debug.AspNetCompiler.ForceOverwrite = "true"
-		Debug.AspNetCompiler.FixedNames = "false"
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.VirtualPath = "/InfoCardRelyingParty"
-		Release.AspNetCompiler.PhysicalPath = "..\samples\InfoCardRelyingParty\"
-		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\InfoCardRelyingParty\"
-		Release.AspNetCompiler.Updateable = "true"
-		Release.AspNetCompiler.ForceOverwrite = "true"
-		Release.AspNetCompiler.FixedNames = "false"
-		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "59719"
-		DefaultWebSiteLanguage = "Visual Basic"
-		StartServerOnDebug = "false"
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIdRelyingPartyMvc", "..\samples\OpenIdRelyingPartyMvc\OpenIdRelyingPartyMvc.csproj", "{07B193F1-68AD-4E9C-98AF-BEFB5E9403CB}"
 EndProject
@@ -228,11 +203,6 @@ Global
 		{AEA29D4D-396F-47F6-BC81-B58D4B855245}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AEA29D4D-396F-47F6-BC81-B58D4B855245}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AEA29D4D-396F-47F6-BC81-B58D4B855245}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6EB90284-BD15-461C-BBF2-131CF55F7C8B}.CodeAnalysis|Any CPU.ActiveCfg = Debug|Any CPU
-		{6EB90284-BD15-461C-BBF2-131CF55F7C8B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6EB90284-BD15-461C-BBF2-131CF55F7C8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6EB90284-BD15-461C-BBF2-131CF55F7C8B}.Release|Any CPU.ActiveCfg = Debug|Any CPU
-		{6EB90284-BD15-461C-BBF2-131CF55F7C8B}.Release|Any CPU.Build.0 = Debug|Any CPU
 		{07B193F1-68AD-4E9C-98AF-BEFB5E9403CB}.CodeAnalysis|Any CPU.ActiveCfg = Debug|Any CPU
 		{07B193F1-68AD-4E9C-98AF-BEFB5E9403CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{07B193F1-68AD-4E9C-98AF-BEFB5E9403CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
@@ -491,7 +461,6 @@ Global
 		{CD57219F-24F4-4136-8741-6063D0D7A031} = {20B5E173-C3C4-49F8-BD25-E69044075B4D}
 		{034D5B5B-7D00-4A9D-8AFE-4A476E0575B1} = {B4C6F647-C046-4B54-BE12-7701C4119EE7}
 		{1E2CBAA5-60A3-4AED-912E-541F5753CDC6} = {B4C6F647-C046-4B54-BE12-7701C4119EE7}
-		{8A5CEDB9-7F8A-4BE2-A1B9-97130F453277} = {B4C6F647-C046-4B54-BE12-7701C4119EE7}
 		{2DA24D4F-6918-43CF-973C-BC9D818F8E90} = {B4C6F647-C046-4B54-BE12-7701C4119EE7}
 		{AA78D112-D889-414B-A7D4-467B34C7B663} = {B4C6F647-C046-4B54-BE12-7701C4119EE7}
 		{2A59DE0A-B76A-4B42-9A33-04D34548353D} = {034D5B5B-7D00-4A9D-8AFE-4A476E0575B1}
@@ -507,7 +476,6 @@ Global
 		{E135F455-0669-49F8-9207-07FCA8C8FC79} = {1E2CBAA5-60A3-4AED-912E-541F5753CDC6}
 		{C78E8235-1D46-43EB-A912-80B522C4E9AE} = {1E2CBAA5-60A3-4AED-912E-541F5753CDC6}
 		{58A3721F-5B5C-4CA7-BE39-91640B5B4924} = {1E2CBAA5-60A3-4AED-912E-541F5753CDC6}
-		{6EB90284-BD15-461C-BBF2-131CF55F7C8B} = {8A5CEDB9-7F8A-4BE2-A1B9-97130F453277}
 		{5C65603B-235F-47E6-B536-06385C60DE7F} = {E9ED920D-1F83-48C0-9A4B-09CCE505FE6D}
 		{A78F8FC6-7B03-4230-BE41-761E400D6810} = {B9EB8729-4B54-4453-B089-FE6761BA3057}
 		{17932639-1F50-48AF-B0A5-E2BF832F82CC} = {B9EB8729-4B54-4453-B089-FE6761BA3057}
