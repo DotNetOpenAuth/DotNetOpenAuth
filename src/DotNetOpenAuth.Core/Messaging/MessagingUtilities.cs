@@ -2062,7 +2062,7 @@ namespace DotNetOpenAuth.Messaging {
 			/// </summary>
 			/// <param name="context">The context in which the result is executed. The context information includes the controller, HTTP content, request context, and route data.</param>
 			public override void ExecuteResult(ControllerContext context) {
-				// TODO: fix this to be asynchronous.
+				// TODO 5.0: fix this to be asynchronous.
 				this.response.SendAsync(context.HttpContext).GetAwaiter().GetResult();
 			}
 		}

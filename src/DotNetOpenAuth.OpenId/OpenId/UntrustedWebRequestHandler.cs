@@ -312,7 +312,7 @@ namespace DotNetOpenAuth.OpenId {
 					// We don't want to blindly set all ServicePoints to not use the Expect header
 					// as that would be a security hole allowing any visitor to a web site change
 					// the web site's global behavior when calling that host.
-					// TODO: verify that this still works in DNOA 5.0
+					// TODO 5.0: verify that this still works in DNOA 5.0
 					var servicePoint = ServicePointManager.FindServicePoint(request.RequestUri);
 					Logger.Http.InfoFormat(
 						"HTTP POST to {0} resulted in 417 Expectation Failed.  Changing ServicePoint to not use Expect: Continue next time.",
