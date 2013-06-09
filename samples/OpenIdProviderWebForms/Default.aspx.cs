@@ -14,22 +14,22 @@
 	/// </summary>
 	public partial class _default : System.Web.UI.Page {
 		protected void Page_Load(object sender, EventArgs e) {
-			this.RegisterAsyncTask(
-				new PageAsyncTask(
-					async ct => {
-						if (Request.QueryString["rp"] != null) {
+			if (Request.QueryString["rp"] != null) {
+				this.RegisterAsyncTask(
+					new PageAsyncTask(
+						async ct => {
 							if (Page.User.Identity.IsAuthenticated) {
 								await this.SendAssertionAsync(Request.QueryString["rp"]);
 							} else {
 								FormsAuthentication.RedirectToLoginPage();
 							}
-						} else {
-							TextBox relyingPartySite = (TextBox)this.loginView.FindControl("relyingPartySite");
-							if (relyingPartySite != null) {
-								relyingPartySite.Focus();
-							}
-						}
-					}));
+						}));
+			} else {
+				TextBox relyingPartySite = (TextBox)this.loginView.FindControl("relyingPartySite");
+				if (relyingPartySite != null) {
+					relyingPartySite.Focus();
+				}
+			}
 		}
 
 		protected async void sendAssertionButton_Click(object sender, EventArgs e) {
