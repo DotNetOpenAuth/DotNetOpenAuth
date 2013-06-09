@@ -67,7 +67,8 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 
 			var window = new CheckIdWindow(userIdentityPageBase, request);
 
-			bool isRPDiscoverable = await request.IsReturnUrlDiscoverableAsync(cancellationToken: cancellationToken) == RelyingPartyDiscoveryResult.Success;
+			IHostFactories hostFactories = new DefaultOpenIdHostFactories();
+			bool isRPDiscoverable = await request.IsReturnUrlDiscoverableAsync(hostFactories, cancellationToken) == RelyingPartyDiscoveryResult.Success;
 			window.discoverableYesLabel.Visibility = isRPDiscoverable ? Visibility.Visible : Visibility.Collapsed;
 			window.discoverableNoLabel.Visibility = isRPDiscoverable ? Visibility.Collapsed : Visibility.Visible;
 

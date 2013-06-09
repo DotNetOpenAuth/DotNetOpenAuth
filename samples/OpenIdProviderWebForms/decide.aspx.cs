@@ -5,6 +5,7 @@ namespace OpenIdProviderWebForms {
 	using System.Web.Security;
 	using System.Web.UI;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.Provider;
@@ -25,7 +26,7 @@ namespace OpenIdProviderWebForms {
 				}
 
 				this.relyingPartyVerificationResultLabel.Text =
-					await ProviderEndpoint.PendingRequest.IsReturnUrlDiscoverableAsync() == RelyingPartyDiscoveryResult.Success ? "passed" : "failed";
+					await ProviderEndpoint.PendingRequest.IsReturnUrlDiscoverableAsync(new DefaultOpenIdHostFactories()) == RelyingPartyDiscoveryResult.Success ? "passed" : "failed";
 
 				this.realmLabel.Text = ProviderEndpoint.PendingRequest.Realm.ToString();
 
