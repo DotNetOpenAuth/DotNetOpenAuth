@@ -27,8 +27,8 @@
 					ConsumerSecret = "samplesecret",
 				});
 				dc.Users.InsertOnSubmit(new User {
-					OpenIDFriendlyIdentifier = "=arnott",
-					OpenIDClaimedIdentifier = "=!9B72.7DD1.50A9.5CCD",
+					OpenIDFriendlyIdentifier = "http://blog.nerdbank.net/",
+					OpenIDClaimedIdentifier = "http://blog.nerdbank.net/",
 					Age = 27,
 					FullName = "Andrew Arnott",
 					FavoriteSites = new System.Data.Linq.EntitySet<FavoriteSite> {
