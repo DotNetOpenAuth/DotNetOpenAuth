@@ -64,27 +64,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIdRelyingPartyMvc", "..
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIdRelyingPartyWebForms", "..\samples\OpenIdRelyingPartyWebForms\OpenIdRelyingPartyWebForms.csproj", "{1E8AEA89-BF69-47A1-B290-E8B0FE588700}"
 EndProject
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "OpenIdRelyingPartyClassicAsp", "..\samples\OpenIdRelyingPartyClassicAsp\", "{BBACD972-014D-478F-9B07-56B9E1D4CC73}"
-	ProjectSection(WebsiteProperties) = preProject
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
-		Debug.AspNetCompiler.VirtualPath = "/OpenIdRelyingPartyClassicAsp"
-		Debug.AspNetCompiler.PhysicalPath = "..\samples\OpenIdRelyingPartyClassicAsp\"
-		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\OpenIdRelyingPartyClassicAsp\"
-		Debug.AspNetCompiler.Updateable = "true"
-		Debug.AspNetCompiler.ForceOverwrite = "true"
-		Debug.AspNetCompiler.FixedNames = "false"
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.VirtualPath = "/OpenIdRelyingPartyClassicAsp"
-		Release.AspNetCompiler.PhysicalPath = "..\samples\OpenIdRelyingPartyClassicAsp\"
-		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\OpenIdRelyingPartyClassicAsp\"
-		Release.AspNetCompiler.Updateable = "true"
-		Release.AspNetCompiler.ForceOverwrite = "true"
-		Release.AspNetCompiler.FixedNames = "false"
-		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "10318"
-		StartServerOnDebug = "false"
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OAuthConsumerWpf", "..\samples\OAuthConsumerWpf\OAuthConsumerWpf.csproj", "{6EC36418-DBC5-4AD1-A402-413604AA7A08}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIdOfflineProvider", "..\samples\OpenIdOfflineProvider\OpenIdOfflineProvider.csproj", "{5C65603B-235F-47E6-B536-06385C60DE7F}"
@@ -214,11 +193,6 @@ Global
 		{1E8AEA89-BF69-47A1-B290-E8B0FE588700}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1E8AEA89-BF69-47A1-B290-E8B0FE588700}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1E8AEA89-BF69-47A1-B290-E8B0FE588700}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BBACD972-014D-478F-9B07-56B9E1D4CC73}.CodeAnalysis|Any CPU.ActiveCfg = Debug|Any CPU
-		{BBACD972-014D-478F-9B07-56B9E1D4CC73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BBACD972-014D-478F-9B07-56B9E1D4CC73}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BBACD972-014D-478F-9B07-56B9E1D4CC73}.Release|Any CPU.ActiveCfg = Debug|Any CPU
-		{BBACD972-014D-478F-9B07-56B9E1D4CC73}.Release|Any CPU.Build.0 = Debug|Any CPU
 		{6EC36418-DBC5-4AD1-A402-413604AA7A08}.CodeAnalysis|Any CPU.ActiveCfg = CodeAnalysis|Any CPU
 		{6EC36418-DBC5-4AD1-A402-413604AA7A08}.CodeAnalysis|Any CPU.Build.0 = CodeAnalysis|Any CPU
 		{6EC36418-DBC5-4AD1-A402-413604AA7A08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -467,7 +441,6 @@ Global
 		{AEA29D4D-396F-47F6-BC81-B58D4B855245} = {034D5B5B-7D00-4A9D-8AFE-4A476E0575B1}
 		{07B193F1-68AD-4E9C-98AF-BEFB5E9403CB} = {034D5B5B-7D00-4A9D-8AFE-4A476E0575B1}
 		{1E8AEA89-BF69-47A1-B290-E8B0FE588700} = {034D5B5B-7D00-4A9D-8AFE-4A476E0575B1}
-		{BBACD972-014D-478F-9B07-56B9E1D4CC73} = {034D5B5B-7D00-4A9D-8AFE-4A476E0575B1}
 		{B64A1E7E-6A15-4B91-AF13-7D48F7DA5942} = {034D5B5B-7D00-4A9D-8AFE-4A476E0575B1}
 		{0B4EB2A8-283D-48FB-BCD0-85B8DFFE05E4} = {034D5B5B-7D00-4A9D-8AFE-4A476E0575B1}
 		{F289B925-4307-4BEC-B411-885CE70E3379} = {034D5B5B-7D00-4A9D-8AFE-4A476E0575B1}

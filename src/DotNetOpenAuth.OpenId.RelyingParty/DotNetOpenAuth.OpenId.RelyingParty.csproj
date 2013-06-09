@@ -21,7 +21,6 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="OpenId\Interop\IOpenIdRelyingParty.cs" />
     <Compile Include="OpenId\RelyingParty\Behaviors\AXFetchAsSregTransform.cs" />
     <Compile Include="OpenId\RelyingParty\Behaviors\GsaIcamProfile.cs" />
     <Compile Include="OpenId\ChannelElements\ExtensionsBindingElementRelyingParty.cs" />
@@ -32,9 +31,6 @@
     <Compile Include="OpenId\ChannelElements\ReturnToNonceBindingElement.cs" />
     <Compile Include="OpenId\RelyingParty\Extensions\ExtensionsInteropHelper.cs" />
     <Compile Include="OpenId\HostMetaDiscoveryService.cs" />
-    <Compile Include="OpenId\Interop\AuthenticationResponseShim.cs" />
-    <Compile Include="OpenId\Interop\ClaimsResponseShim.cs" />
-    <Compile Include="OpenId\Interop\OpenIdRelyingPartyShim.cs" />
     <Compile Include="OpenId\Messages\AssociateDiffieHellmanRelyingPartyResponse.cs" />
     <Compile Include="OpenId\Messages\AssociateRequestRelyingParty.cs" />
     <Compile Include="OpenId\Messages\IAssociateSuccessfulResponseRelyingParty.cs" />
