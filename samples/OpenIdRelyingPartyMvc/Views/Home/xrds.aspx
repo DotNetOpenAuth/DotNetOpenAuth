@@ -16,7 +16,7 @@ is default.aspx.
 			<%-- Every page with an OpenID login should be listed here. --%>
 			<%-- We use the Authenticate action instead of Login because Authenticate
 			     is the action that receives OpenId assertions. --%>
-			<URI><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/user/authenticate"))%></URI>
+			<URI><%=new Uri(Request.Url, Response.ApplyAppPathModifier("~/User/Authenticate"))%></URI>
 		</Service>
 	</XRD>
 </xrds:XRDS>
