@@ -33,7 +33,7 @@
 								var accessTokenMessage = await consumer.ProcessUserAuthorizationAsync(this.Request.Url);
 								if (accessTokenMessage != null) {
 									Session["WcfAccessToken"] = accessTokenMessage.AccessToken;
-									this.authorizationLabel.Text = "Authorized!  Access token: " + accessTokenMessage.AccessToken;
+									this.authorizationLabel.Text = "Authorized!  Access token: " + accessTokenMessage.AccessToken.Token;
 								}
 							}
 						}
