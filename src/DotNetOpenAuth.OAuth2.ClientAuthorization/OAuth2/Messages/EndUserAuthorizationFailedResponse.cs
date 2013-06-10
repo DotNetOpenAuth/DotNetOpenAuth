@@ -7,11 +7,11 @@
 namespace DotNetOpenAuth.OAuth2.Messages {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Runtime.Remoting.Messaging;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// The message that an Authorization Server responds to a Client with when the user denies a user authorization request.
@@ -40,7 +40,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		}
 
 		/// <summary>
-		/// Gets or sets the error.
+		/// Gets or sets the error. Usually one of <see cref="Protocol.EndUserAuthorizationRequestErrorCodes"/>
 		/// </summary>
 		/// <value>
 		/// One of the values given in <see cref="Protocol.EndUserAuthorizationRequestErrorCodes"/>.

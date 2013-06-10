@@ -8,6 +8,9 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Threading;
+	using System.Threading.Tasks;
+
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId;
@@ -24,7 +27,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		/// Verifies that the signatures generated match Known Good signatures.
 		/// </summary>
 		[Test]
-		public void SignaturesMatchKnownGood() {
+		public async Task SignaturesMatchKnownGood() {
 			Protocol protocol = Protocol.V20;
 			var settings = new ProviderSecuritySettings();
 			var cryptoStore = new MemoryCryptoKeyStore();
@@ -41,7 +44,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 			message.ProviderEndpoint = new Uri("http://provider");
 			signedMessage.UtcCreationDate = DateTime.Parse("1/1/2009");
 			signedMessage.AssociationHandle = handle;
-			Assert.IsNotNull(signer.ProcessOutgoingMessage(message));
+			Assert.IsNotNull(await signer.ProcessOutgoingMessageAsync(message, CancellationToken.None));
 			Assert.AreEqual("o9+uN7qTaUS9v0otbHTuNAtbkpBm14+es9QnNo6IHD4=", signedMessage.Signature);
 		}
 
@@ -49,7 +52,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		/// Verifies that all parameters in ExtraData in signed responses are signed.
 		/// </summary>
 		[Test]
-		public void SignedResponsesIncludeExtraDataInSignature() {
+		public async Task SignedResponsesIncludeExtraDataInSignature() {
 			Protocol protocol = Protocol.Default;
 			SigningBindingElement sbe = new ProviderSigningBindingElement(new ProviderAssociationHandleEncoder(new MemoryCryptoKeyStore()), new ProviderSecuritySettings());
 			sbe.Channel = new TestChannel(this.MessageDescriptions);
@@ -60,7 +63,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 			response.ExtraData["someunsigned"] = "value";
 			response.ExtraData["openid.somesigned"] = "value";
 
-			Assert.IsNotNull(sbe.ProcessOutgoingMessage(response));
+			Assert.IsNotNull(await sbe.ProcessOutgoingMessageAsync(response, CancellationToken.None));
 			ITamperResistantOpenIdMessage signedResponse = (ITamperResistantOpenIdMessage)response;
 
 			// Make sure that the extra parameters are signed.
@@ -76,14 +79,14 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		/// Regression test for bug #45 (https://github.com/AArnott/dotnetopenid/issues/45)
 		/// </summary>
 		[Test, ExpectedException(typeof(ProtocolException))]
-		public void MissingSignedParameter() {
+		public async Task MissingSignedParameter() {
 			var cryptoStore = new MemoryCryptoKeyStore();
 			byte[] associationSecret = Convert.FromBase64String("rsSwv1zPWfjPRQU80hciu8FPDC+GONAMJQ/AvSo1a2M=");
 			string handle = "{634477555066085461}{TTYcIg==}{32}";
 			cryptoStore.StoreKey(ProviderAssociationKeyStorage.PrivateAssociationBucket, handle, new CryptoKey(associationSecret, DateTime.UtcNow.AddDays(1)));
 
 			var signer = new ProviderSigningBindingElement(new ProviderAssociationKeyStorage(cryptoStore), new ProviderSecuritySettings());
-			var testChannel = new TestChannel(new OpenIdProviderMessageFactory());
+			var testChannel = new TestChannel(new OpenIdProviderMessageFactory(), new IChannelBindingElement[0], this.HostFactories);
 			signer.Channel = testChannel;
 
 			var buggyRPMessage = new Dictionary<string, string>() {
@@ -101,7 +104,7 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 			};
 			var message = (CheckAuthenticationRequest)testChannel.Receive(buggyRPMessage, new MessageReceivingEndpoint(OPUri, HttpDeliveryMethods.PostRequest));
 			var originalResponse = new IndirectSignedResponse(message, signer.Channel);
-			signer.ProcessIncomingMessage(originalResponse);
+			await signer.ProcessIncomingMessageAsync(originalResponse, CancellationToken.None);
 		}
 	}
 }

@@ -7,8 +7,12 @@
 namespace DotNetOpenAuth.Test.OpenId.Provider {
 	using System;
 	using System.IO;
+	using System.Net.Http;
 	using System.Runtime.Serialization;
 	using System.Runtime.Serialization.Formatters.Binary;
+	using System.Threading;
+	using System.Threading.Tasks;
+
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Messages;
@@ -21,24 +25,24 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 		/// Verifies the user_setup_url is set properly for immediate negative responses.
 		/// </summary>
 		[Test]
-		public void UserSetupUrl() {
+		public async Task UserSetupUrl() {
 			// Construct a V1 immediate request
 			Protocol protocol = Protocol.V11;
 			OpenIdProvider provider = this.CreateProvider();
-			CheckIdRequest immediateRequest = new CheckIdRequest(protocol.Version, OPUri, DotNetOpenAuth.OpenId.AuthenticationRequestMode.Immediate);
+			var immediateRequest = new CheckIdRequest(protocol.Version, OPUri, DotNetOpenAuth.OpenId.AuthenticationRequestMode.Immediate);
 			immediateRequest.Realm = RPRealmUri;
 			immediateRequest.ReturnTo = RPUri;
 			immediateRequest.LocalIdentifier = "http://somebody";
-			AuthenticationRequest request = new AuthenticationRequest(provider, immediateRequest);
+			var request = new AuthenticationRequest(provider, immediateRequest);
 
 			// Now simulate the request being rejected and extract the user_setup_url
 			request.IsAuthenticated = false;
-			Uri userSetupUrl = ((NegativeAssertionResponse)request.Response).UserSetupUrl;
+			Uri userSetupUrl = ((NegativeAssertionResponse)await request.GetResponseAsync(CancellationToken.None)).UserSetupUrl;
 			Assert.IsNotNull(userSetupUrl);
 
 			// Now construct a new request as if it had just come in.
-			HttpRequestInfo httpRequest = new HttpRequestInfo("GET", userSetupUrl);
-			var setupRequest = (AuthenticationRequest)provider.GetRequest(httpRequest);
+			var httpRequest = new HttpRequestMessage(HttpMethod.Get, userSetupUrl);
+			var setupRequest = (AuthenticationRequest)await provider.GetRequestAsync(httpRequest);
 			var setupRequestMessage = (CheckIdRequest)setupRequest.RequestMessage;
 
 			// And make sure all the right properties are set.

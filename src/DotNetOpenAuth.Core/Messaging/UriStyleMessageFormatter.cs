@@ -7,7 +7,6 @@
 namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Security.Cryptography;
 	using System.Text;
@@ -15,6 +14,7 @@ namespace DotNetOpenAuth.Messaging {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.Messaging.Reflection;
+	using Validation;
 
 	/// <summary>
 	/// A serializer for <see cref="DataBag"/>-derived types
@@ -46,7 +46,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="decodeOnceOnly">The nonce store to use to ensure that this instance is only decoded once.</param>
 		protected internal UriStyleMessageFormatter(ICryptoKeyStore cryptoKeyStore = null, string bucket = null, bool signed = false, bool encrypted = false, bool compressed = false, TimeSpan? minimumAge = null, TimeSpan? maximumAge = null, INonceStore decodeOnceOnly = null)
 			: base(cryptoKeyStore, bucket, signed, encrypted, compressed, minimumAge, maximumAge, decodeOnceOnly) {
-			Requires.True((cryptoKeyStore != null && !string.IsNullOrEmpty(bucket)) || (!signed && !encrypted), null);
+			Requires.That((cryptoKeyStore != null && !string.IsNullOrEmpty(bucket)) || (!signed && !encrypted), null, "Signing or encryption requires a cryptoKeyStore and bucket.");
 		}
 
 		/// <summary>

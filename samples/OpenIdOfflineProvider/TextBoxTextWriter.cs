@@ -6,10 +6,10 @@
 
 namespace DotNetOpenAuth.OpenIdOfflineProvider {
 	using System;
-	using System.Diagnostics.Contracts;
 	using System.IO;
 	using System.Text;
 	using System.Windows.Controls;
+	using Validation;
 
 	/// <summary>
 	/// A text writer that appends all write calls to a text box.
@@ -20,7 +20,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// </summary>
 		/// <param name="box">The text box to append log messages to.</param>
 		internal TextBoxTextWriter(TextBox box) {
-			Contract.Requires(box != null);
+			Requires.NotNull(box, "box");
 			this.Box = box;
 		}
 
@@ -65,14 +65,6 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// </exception>
 		public override void Write(string value) {
 			this.Box.Dispatcher.BeginInvoke((Action<string>)this.AppendText, value);
-		}
-
-		/// <summary>
-		/// Verifies conditions that should be true for any valid state of this object.
-		/// </summary>
-		[ContractInvariantMethod]
-		private void ObjectInvariant() {
-			Contract.Invariant(this.Box != null);
 		}
 
 		/// <summary>

@@ -15,12 +15,12 @@ namespace DotNetOpenAuth.OpenId {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Xrds;
 	using DotNetOpenAuth.Yadis;
+	using Validation;
 
 	/// <summary>
 	/// An XRI style of OpenID Identifier.
 	/// </summary>
 	[Serializable]
-	[ContractVerification(true)]
 	[Pure]
 	public sealed class XriIdentifier : Identifier {
 		/// <summary>
@@ -45,7 +45,7 @@ namespace DotNetOpenAuth.OpenId {
 		internal XriIdentifier(string xri)
 			: this(xri, false) {
 			Requires.NotNullOrEmpty(xri, "xri");
-			Requires.Format(IsValidXri(xri), OpenIdStrings.InvalidXri);
+			RequiresEx.Format(IsValidXri(xri), OpenIdStrings.InvalidXri);
 		}
 
 		/// <summary>
@@ -59,8 +59,8 @@ namespace DotNetOpenAuth.OpenId {
 		internal XriIdentifier(string xri, bool requireSsl)
 			: base(xri, requireSsl) {
 			Requires.NotNullOrEmpty(xri, "xri");
-			Requires.Format(IsValidXri(xri), OpenIdStrings.InvalidXri);
-			Contract.Assume(xri != null); // Proven by IsValidXri
+			RequiresEx.Format(IsValidXri(xri), OpenIdStrings.InvalidXri);
+			Assumes.True(xri != null); // Proven by IsValidXri
 			this.OriginalXri = xri;
 			this.canonicalXri = CanonicalizeXri(xri);
 		}
@@ -75,7 +75,6 @@ namespace DotNetOpenAuth.OpenId {
 		/// </summary>
 		internal string CanonicalXri {
 			get {
-				Contract.Ensures(Contract.Result<string>() != null);
 				return this.canonicalXri;
 			}
 		}
@@ -169,7 +168,6 @@ namespace DotNetOpenAuth.OpenId {
 		/// True if the secure conversion was successful.
 		/// False if the Identifier was originally created with an explicit HTTP scheme.
 		/// </returns>
-		[ContractVerification(false)] // bugs/limitations in CC static analysis
 		internal override bool TryRequireSsl(out Identifier secureIdentifier) {
 			secureIdentifier = IsDiscoverySecureEndToEnd ? this : new XriIdentifier(this, true);
 			return true;
@@ -183,10 +181,9 @@ namespace DotNetOpenAuth.OpenId {
 		/// <remarks>The canonical form, per the OpenID spec, is no scheme and no whitespace on either end.</remarks>
 		private static string CanonicalizeXri(string xri) {
 			Requires.NotNull(xri, "xri");
-			Contract.Ensures(Contract.Result<string>() != null);
 			xri = xri.Trim();
 			if (xri.StartsWith(XriScheme, StringComparison.OrdinalIgnoreCase)) {
-				Contract.Assume(XriScheme.Length <= xri.Length); // should be implied by StartsWith
+				Assumes.True(XriScheme.Length <= xri.Length); // should be implied by StartsWith
 				xri = xri.Substring(XriScheme.Length);
 			}
 			return xri;

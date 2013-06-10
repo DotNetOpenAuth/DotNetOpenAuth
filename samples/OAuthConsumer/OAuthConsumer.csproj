@@ -10,6 +10,7 @@
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\src\</SolutionDir>
   </PropertyGroup>
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -23,9 +24,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>OAuthConsumer</RootNamespace>
     <AssemblyName>OAuthConsumer</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFrameworkProfile />
-    <UseIISExpress>false</UseIISExpress>
+    <UseIISExpress>true</UseIISExpress>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -48,12 +49,19 @@
     <DefineConstants>$(DefineConstants);SAMPLESONLY</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="log4net">
-      <HintPath>..\..\lib\log4net.dll</HintPath>
+    <Reference Include="log4net, Version=1.2.11.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\src\packages\log4net.2.0.0\lib\net40-full\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\src\packages\Newtonsoft.Json.4.5.11\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.WebRequest" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Drawing" />
@@ -77,6 +85,7 @@
     <Content Include="images\Sign-in-with-Twitter-darker.png" />
     <Content Include="SampleWcf.aspx" />
     <Content Include="Yammer.aspx" />
+    <Content Include="packages.config" />
     <None Include="Service References\SampleServiceProvider\DataApi.disco" />
     <None Include="Service References\SampleServiceProvider\configuration91.svcinfo" />
     <None Include="Service References\SampleServiceProvider\configuration.svcinfo" />
@@ -98,9 +107,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\DotNetOpenAuth.ApplicationBlock\InMemoryTokenManager.cs">
-      <Link>Code\InMemoryTokenManager.cs</Link>
-    </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -109,12 +115,14 @@
     </Compile>
     <Compile Include="GoogleApps2Legged.aspx.cs">
       <DependentUpon>GoogleApps2Legged.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="GoogleApps2Legged.aspx.designer.cs">
       <DependentUpon>GoogleApps2Legged.aspx</DependentUpon>
     </Compile>
     <Compile Include="SampleWcf.aspx.cs">
       <DependentUpon>SampleWcf.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="SampleWcf.aspx.designer.cs">
       <DependentUpon>SampleWcf.aspx</DependentUpon>
@@ -126,23 +134,27 @@
     </Compile>
     <Compile Include="SignInWithTwitter.aspx.cs">
       <DependentUpon>SignInWithTwitter.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="SignInWithTwitter.aspx.designer.cs">
       <DependentUpon>SignInWithTwitter.aspx</DependentUpon>
     </Compile>
     <Compile Include="TracePage.aspx.cs">
       <DependentUpon>TracePage.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="TracePage.aspx.designer.cs">
       <DependentUpon>TracePage.aspx</DependentUpon>
     </Compile>
     <Compile Include="Twitter.aspx.cs">
       <DependentUpon>Twitter.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Code\Logging.cs" />
     <Compile Include="Code\TracePageAppender.cs" />
     <Compile Include="GoogleAddressBook.aspx.cs">
       <DependentUpon>GoogleAddressBook.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Twitter.aspx.designer.cs">
@@ -150,6 +162,7 @@
     </Compile>
     <Compile Include="Yammer.aspx.cs">
       <DependentUpon>Yammer.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Yammer.aspx.designer.cs">
       <DependentUpon>Yammer.aspx</DependentUpon>
@@ -205,12 +218,11 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>False</UseIIS>
+          <UseIIS>True</UseIIS>
           <AutoAssignPort>False</AutoAssignPort>
           <DevelopmentServerPort>59721</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>
-          </IISUrl>
+          <IISUrl>http://localhost:59721/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>
@@ -221,4 +233,5 @@
     </VisualStudio>
   </ProjectExtensions>
   <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))\EnlistmentInfo.targets" Condition=" '$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))' != '' " />
+  <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
 </Project>

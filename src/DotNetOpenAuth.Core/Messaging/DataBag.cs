@@ -8,7 +8,7 @@ namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
+	using Validation;
 
 	/// <summary>
 	/// A collection of message parts that will be serialized into a single string,
@@ -42,7 +42,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="version">The DataBag version.</param>
 		protected DataBag(Version version) {
-			Contract.Requires(version != null);
+			Requires.NotNull(version, "version");
 			this.version = version;
 		}
 

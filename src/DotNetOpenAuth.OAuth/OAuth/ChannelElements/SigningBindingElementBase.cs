@@ -9,19 +9,20 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using System.Collections.Generic;
 	using System.Collections.Specialized;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Linq;
 	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.Messaging.Reflection;
+	using Validation;
 
 	/// <summary>
 	/// A binding element that signs outgoing messages and verifies the signature on incoming messages.
 	/// </summary>
-	[ContractClass(typeof(SigningBindingElementBaseContract))]
 	public abstract class SigningBindingElementBase : ITamperProtectionChannelBindingElement {
 		/// <summary>
 		/// The signature method this binding element uses.
@@ -80,11 +81,12 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// Signs the outgoing message.
 		/// </summary>
 		/// <param name="message">The message to sign.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The protections (if any) that this binding element applied to the message.
 		/// Null if this binding element did not even apply to this binding element.
 		/// </returns>
-		public MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
+		public Task<MessageProtections?> ProcessOutgoingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
 			var signedMessage = message as ITamperResistantOAuthMessage;
 			if (signedMessage != null && this.IsMessageApplicable(signedMessage)) {
 				if (this.SignatureCallback != null) {
@@ -96,29 +98,30 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 				signedMessage.SignatureMethod = this.signatureMethod;
 				Logger.Bindings.DebugFormat("Signing {0} message using {1}.", message.GetType().Name, this.signatureMethod);
 				signedMessage.Signature = this.GetSignature(signedMessage);
-				return MessageProtections.TamperProtection;
+				return MessageProtectionTasks.TamperProtection;
 			}
 
-			return null;
+			return MessageProtectionTasks.Null;
 		}
 
 		/// <summary>
 		/// Verifies the signature on an incoming message.
 		/// </summary>
 		/// <param name="message">The message whose signature should be verified.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The protections (if any) that this binding element applied to the message.
 		/// Null if this binding element did not even apply to this binding element.
 		/// </returns>
 		/// <exception cref="InvalidSignatureException">Thrown if the signature is invalid.</exception>
-		public MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
+		public Task<MessageProtections?> ProcessIncomingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
 			var signedMessage = message as ITamperResistantOAuthMessage;
 			if (signedMessage != null && this.IsMessageApplicable(signedMessage)) {
 				Logger.Bindings.DebugFormat("Verifying incoming {0} message signature of: {1}", message.GetType().Name, signedMessage.Signature);
 
 				if (!string.Equals(signedMessage.SignatureMethod, this.signatureMethod, StringComparison.Ordinal)) {
 					Logger.Bindings.WarnFormat("Expected signature method '{0}' but received message with a signature method of '{1}'.", this.signatureMethod, signedMessage.SignatureMethod);
-					return MessageProtections.None;
+					return MessageProtectionTasks.None;
 				}
 
 				if (this.SignatureCallback != null) {
@@ -132,10 +135,10 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 					throw new InvalidSignatureException(message);
 				}
 
-				return MessageProtections.TamperProtection;
+				return MessageProtectionTasks.TamperProtection;
 			}
 
-			return null;
+			return MessageProtectionTasks.Null;
 		}
 
 		#endregion
@@ -152,13 +155,13 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		[SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = "Unavoidable")]
 		internal static string ConstructSignatureBaseString(ITamperResistantOAuthMessage message, MessageDictionary messageDictionary) {
 			Requires.NotNull(message, "message");
-			Requires.NotNullOrEmpty(message.HttpMethod, "message.HttpMethod");
+			Requires.NotNull(message.HttpMethod, "message.HttpMethod");
 			Requires.NotNull(messageDictionary, "messageDictionary");
 			ErrorUtilities.VerifyInternal(messageDictionary.Message == message, "Message references are not equal.");
 
 			List<string> signatureBaseStringElements = new List<string>(3);
 
-			signatureBaseStringElements.Add(message.HttpMethod.ToUpperInvariant());
+			signatureBaseStringElements.Add(message.HttpMethod.ToString().ToUpperInvariant());
 
 			// For multipart POST messages, only include the message parts that are NOT
 			// in the POST entity (those parts that may appear in an OAuth authorization header).

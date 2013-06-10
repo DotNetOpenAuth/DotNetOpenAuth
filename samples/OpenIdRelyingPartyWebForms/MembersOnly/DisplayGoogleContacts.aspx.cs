@@ -3,6 +3,7 @@
 	using System.Linq;
 	using System.Text;
 	using System.Web;
+	using System.Web.UI;
 	using System.Web.UI.WebControls;
 	using System.Xml.Linq;
 	using DotNetOpenAuth.ApplicationBlock;
@@ -10,17 +11,25 @@
 
 	public partial class DisplayGoogleContacts : System.Web.UI.Page {
 		protected void Page_Load(object sender, EventArgs e) {
-			if (!string.IsNullOrEmpty(State.GoogleAccessToken)) {
-				this.MultiView1.ActiveViewIndex = 1;
-				if (State.FetchResponse != null && State.FetchResponse.Attributes.Contains(WellKnownAttributes.Contact.Email)) {
-					this.emailLabel.Text = State.FetchResponse.Attributes[WellKnownAttributes.Contact.Email].Values[0];
-				} else {
-					this.emailLabel.Text = "unavailable";
-				}
-				this.claimedIdLabel.Text = this.User.Identity.Name;
-				var contactsDocument = GoogleConsumer.GetContacts(Global.GoogleWebConsumer, State.GoogleAccessToken, 25, 1);
-				this.RenderContacts(contactsDocument);
-			}
+			this.RegisterAsyncTask(
+				new PageAsyncTask(
+					async ct => {
+						if (!string.IsNullOrEmpty(State.GoogleAccessToken.Token)) {
+							this.MultiView1.ActiveViewIndex = 1;
+							if (State.FetchResponse != null && State.FetchResponse.Attributes.Contains(WellKnownAttributes.Contact.Email)) {
+								this.emailLabel.Text = State.FetchResponse.Attributes[WellKnownAttributes.Contact.Email].Values[0];
+							} else {
+								this.emailLabel.Text = "unavailable";
+							}
+							this.claimedIdLabel.Text = this.User.Identity.Name;
+							var google = new GoogleConsumer {
+								ConsumerKey = Global.GoogleWebConsumer.ConsumerKey,
+								ConsumerSecret = Global.GoogleWebConsumer.ConsumerSecret,
+							};
+							var contactsDocument = await google.GetContactsAsync(State.GoogleAccessToken);
+							this.RenderContacts(contactsDocument);
+						}
+					}));
 		}
 
 		private void RenderContacts(XDocument contactsDocument) {

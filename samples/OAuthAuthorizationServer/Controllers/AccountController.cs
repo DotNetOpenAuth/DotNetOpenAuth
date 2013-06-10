@@ -1,13 +1,12 @@
 ﻿namespace OAuthAuthorizationServer.Controllers {
 	using System;
 	using System.Linq;
+	using System.Threading.Tasks;
 	using System.Web.Mvc;
 	using System.Web.Security;
-
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.RelyingParty;
-
 	using OAuthAuthorizationServer.Code;
 	using OAuthAuthorizationServer.Models;
 
@@ -21,16 +20,17 @@
 		}
 
 		[HttpPost]
-		public ActionResult LogOn(LogOnModel model, string returnUrl) {
+		public async Task<ActionResult> LogOn(LogOnModel model, string returnUrl) {
 			if (ModelState.IsValid) {
 				var rp = new OpenIdRelyingParty();
-				var request = rp.CreateRequest(model.UserSuppliedIdentifier, Realm.AutoDetect, new Uri(Request.Url, Url.Action("Authenticate")));
+				var request = await rp.CreateRequestAsync(model.UserSuppliedIdentifier, Realm.AutoDetect, new Uri(Request.Url, Url.Action("Authenticate")));
 				if (request != null) {
 					if (returnUrl != null) {
 						request.AddCallbackArguments("returnUrl", returnUrl);
 					}
 
-					return request.RedirectingResponse.AsActionResult();
+					var response = await request.GetRedirectingResponseAsync();
+					return response.AsActionResult();
 				} else {
 					ModelState.AddModelError(string.Empty, "The identifier you supplied is not recognized as a valid OpenID Identifier.");
 				}
@@ -40,9 +40,9 @@
 			return View(model);
 		}
 
-		public ActionResult Authenticate(string returnUrl) {
+		public async Task<ActionResult> Authenticate(string returnUrl) {
 			var rp = new OpenIdRelyingParty();
-			var response = rp.GetResponse();
+			var response = await rp.GetResponseAsync(Request);
 			if (response != null) {
 				switch (response.Status) {
 					case AuthenticationStatus.Authenticated:

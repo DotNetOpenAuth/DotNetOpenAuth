@@ -6,10 +6,14 @@
 
 namespace DotNetOpenAuth.AspNet.Test {
 	using System;
+	using System.Collections.Specialized;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
 	using DotNetOpenAuth.AspNet;
 	using DotNetOpenAuth.AspNet.Clients;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.Messages;
 	using Moq;
 	using NUnit.Framework;
@@ -29,57 +33,55 @@ namespace DotNetOpenAuth.AspNet.Test {
 		}
 
 		[TestCase]
-		public void RequestAuthenticationInvokeMethodOnWebWorker() {
+		public async Task RequestAuthenticationInvokeMethodOnWebWorker() {
 			// Arrange
+			var returnUri = new Uri("http://live.com/my/path.cshtml?q=one");
 			var webWorker = new Mock<IOAuthWebWorker>(MockBehavior.Strict);
 			webWorker
-				.Setup(w => w.RequestAuthentication(It.Is<Uri>(u => u.ToString().Equals("http://live.com/my/path.cshtml?q=one"))))
+				.Setup(w => w.RequestAuthenticationAsync(returnUri, It.IsAny<CancellationToken>()))
+				.Returns(Task.FromResult(new Uri("http://someauth/uri")))
 				.Verifiable();
 
 			var client = new MockOAuthClient(webWorker.Object);
-			var returnUri = new Uri("http://live.com/my/path.cshtml?q=one");
 			var context = new Mock<HttpContextBase>();
 
 			// Act
-			client.RequestAuthentication(context.Object, returnUri);
+			await client.RequestAuthenticationAsync(context.Object, returnUri);
 
 			// Assert
 			webWorker.Verify();
 		}
 
 		[TestCase]
-		public void VerifyAuthenticationFailsIfResponseTokenIsNull() {
+		public async Task VerifyAuthenticationFailsIfResponseTokenIsNull() {
 			// Arrange
 			var webWorker = new Mock<IOAuthWebWorker>(MockBehavior.Strict);
-			webWorker.Setup(w => w.ProcessUserAuthorization()).Returns((AuthorizedTokenResponse)null);
+			webWorker.Setup(w => w.ProcessUserAuthorizationAsync(It.IsAny<HttpContextBase>(), CancellationToken.None)).Returns(Task.FromResult<AccessTokenResponse>(null));
 
 			var client = new MockOAuthClient(webWorker.Object);
 			var context = new Mock<HttpContextBase>();
 
 			// Act
-			client.VerifyAuthentication(context.Object);
+			await client.VerifyAuthenticationAsync(context.Object);
 
 			// Assert
 			webWorker.Verify();
 		}
 
 		[TestCase]
-		public void VerifyAuthenticationFailsIfAccessTokenIsInvalid() {
+		public async Task VerifyAuthenticationFailsIfAccessTokenIsInvalid() {
 			// Arrange
 			var endpoint = new MessageReceivingEndpoint("http://live.com/path/?a=b", HttpDeliveryMethods.GetRequest);
 			var request = new AuthorizedTokenRequest(endpoint, new Version("1.0"));
-			var response = new AuthorizedTokenResponse(request) {
-				AccessToken = "invalid token"
-			};
 
 			var webWorker = new Mock<IOAuthWebWorker>(MockBehavior.Strict);
-			webWorker.Setup(w => w.ProcessUserAuthorization()).Returns(response).Verifiable();
+			webWorker.Setup(w => w.ProcessUserAuthorizationAsync(It.IsAny<HttpContextBase>(), CancellationToken.None)).Returns(Task.FromResult<AccessTokenResponse>(null)).Verifiable();
 
 			var client = new MockOAuthClient(webWorker.Object);
 			var context = new Mock<HttpContextBase>();
 
 			// Act
-			AuthenticationResult result = client.VerifyAuthentication(context.Object);
+			AuthenticationResult result = await client.VerifyAuthenticationAsync(context.Object);
 
 			// Assert
 			webWorker.Verify();
@@ -88,22 +90,21 @@ namespace DotNetOpenAuth.AspNet.Test {
 		}
 
 		[TestCase]
-		public void VerifyAuthenticationSucceeds() {
+		public async Task VerifyAuthenticationSucceeds() {
 			// Arrange
 			var endpoint = new MessageReceivingEndpoint("http://live.com/path/?a=b", HttpDeliveryMethods.GetRequest);
 			var request = new AuthorizedTokenRequest(endpoint, new Version("1.0"));
-			var response = new AuthorizedTokenResponse(request) {
-				AccessToken = "ok"
-			};
 
 			var webWorker = new Mock<IOAuthWebWorker>(MockBehavior.Strict);
-			webWorker.Setup(w => w.ProcessUserAuthorization()).Returns(response).Verifiable();
+			webWorker
+				.Setup(w => w.ProcessUserAuthorizationAsync(It.IsAny<HttpContextBase>(), CancellationToken.None))
+				.Returns(Task.FromResult(new AccessTokenResponse("ok", "secret", new NameValueCollection()))).Verifiable();
 
 			var client = new MockOAuthClient(webWorker.Object);
 			var context = new Mock<HttpContextBase>();
 
 			// Act
-			AuthenticationResult result = client.VerifyAuthentication(context.Object);
+			AuthenticationResult result = await client.VerifyAuthenticationAsync(context.Object);
 
 			// Assert
 			webWorker.Verify();
@@ -113,7 +114,6 @@ namespace DotNetOpenAuth.AspNet.Test {
 			Assert.AreEqual("12345", result.ProviderUserId);
 			Assert.AreEqual("super", result.UserName);
 			Assert.IsNotNull(result.ExtraData);
-			Assert.IsTrue(result.ExtraData.ContainsKey("accesstoken"));
 			Assert.AreEqual("ok", result.ExtraData["accesstoken"]);
 		}
 
@@ -133,12 +133,12 @@ namespace DotNetOpenAuth.AspNet.Test {
 				: base("mockoauth", worker) {
 			}
 
-			protected override AuthenticationResult VerifyAuthenticationCore(AuthorizedTokenResponse response) {
-				if (response.AccessToken == "ok") {
-					return new AuthenticationResult(true, "mockoauth", "12345", "super", response.ExtraData);
+			protected override Task<AuthenticationResult> VerifyAuthenticationCoreAsync(AccessTokenResponse response, CancellationToken cancellationToken) {
+				if (response.AccessToken.Token == "ok") {
+					return Task.FromResult(new AuthenticationResult(true, "mockoauth", "12345", "super", response.ExtraData));
 				}
 
-				return AuthenticationResult.Failed;
+				return Task.FromResult(AuthenticationResult.Failed);
 			}
 		}
 	}

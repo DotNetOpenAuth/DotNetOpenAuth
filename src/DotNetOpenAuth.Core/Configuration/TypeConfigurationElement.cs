@@ -8,15 +8,10 @@ namespace DotNetOpenAuth.Configuration {
 	using System;
 	using System.Configuration;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.IO;
 	using System.Reflection;
 	using System.Web;
-#if CLR4
 	using System.Xaml;
-#else
-	using System.Windows.Markup;
-#endif
 	using DotNetOpenAuth.Messaging;
 
 	/// <summary>
@@ -80,11 +75,12 @@ namespace DotNetOpenAuth.Configuration {
 		/// Creates an instance of the type described in the .config file.
 		/// </summary>
 		/// <param name="defaultValue">The value to return if no type is given in the .config file.</param>
-		/// <returns>The newly instantiated type.</returns>
-		public T CreateInstance(T defaultValue) {
-			Contract.Ensures(Contract.Result<T>() != null || Contract.Result<T>() == defaultValue);
-
-			return this.CreateInstance(defaultValue, false);
+		/// <param name="hostFactories">The host factories.</param>
+		/// <returns>
+		/// The newly instantiated type.
+		/// </returns>
+		public T CreateInstance(T defaultValue, IHostFactories hostFactories) {
+			return this.CreateInstance(defaultValue, false, hostFactories);
 		}
 
 		/// <summary>
@@ -92,11 +88,13 @@ namespace DotNetOpenAuth.Configuration {
 		/// </summary>
 		/// <param name="defaultValue">The value to return if no type is given in the .config file.</param>
 		/// <param name="allowInternals">if set to <c>true</c> then internal types may be instantiated.</param>
-		/// <returns>The newly instantiated type.</returns>
+		/// <param name="hostFactories">The host factories.</param>
+		/// <returns>
+		/// The newly instantiated type.
+		/// </returns>
 		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "No apparent problem.  False positive?")]
-		public T CreateInstance(T defaultValue, bool allowInternals) {
-			Contract.Ensures(Contract.Result<T>() != null || Contract.Result<T>() == defaultValue);
-
+		public T CreateInstance(T defaultValue, bool allowInternals, IHostFactories hostFactories) {
+			T instance;
 			if (this.CustomType != null) {
 				if (!allowInternals) {
 					// Although .NET will usually prevent our instantiating non-public types,
@@ -104,7 +102,7 @@ namespace DotNetOpenAuth.Configuration {
 					// But we don't want the host site to be able to do this, so we check ourselves.
 					ErrorUtilities.VerifyArgument((this.CustomType.Attributes & TypeAttributes.Public) != 0, Strings.ConfigurationTypeMustBePublic, this.CustomType.FullName);
 				}
-				return (T)Activator.CreateInstance(this.CustomType);
+				instance = (T)Activator.CreateInstance(this.CustomType);
 			} else if (!string.IsNullOrEmpty(this.XamlSource)) {
 				string source = this.XamlSource;
 				if (source.StartsWith("~/", StringComparison.Ordinal)) {
@@ -112,11 +110,18 @@ namespace DotNetOpenAuth.Configuration {
 					source = HttpContext.Current.Server.MapPath(source);
 				}
 				using (Stream xamlFile = File.OpenRead(source)) {
-					return CreateInstanceFromXaml(xamlFile);
+					instance = CreateInstanceFromXaml(xamlFile);
 				}
 			} else {
-				return defaultValue;
+				instance = defaultValue;
 			}
+
+			var requiresHostFactories = instance as IRequireHostFactories;
+			if (requiresHostFactories != null) {
+				requiresHostFactories.HostFactories = hostFactories;
+			}
+
+			return instance;
 		}
 
 		/// <summary>
@@ -132,12 +137,7 @@ namespace DotNetOpenAuth.Configuration {
 		/// be present.
 		/// </remarks>
 		private static T CreateInstanceFromXaml(Stream xaml) {
-			Contract.Ensures(Contract.Result<T>() != null);
-#if CLR4
 			return (T)XamlServices.Load(xaml);
-#else
-			return (T)XamlReader.Load(xaml);
-#endif
 		}
 	}
 }

@@ -1,6 +1,7 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<PropertyGroup>
-		<NetfxVer>2.0</NetfxVer>
+		<NetfxVer>4.5</NetfxVer>
+		<TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
 		<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
 		<ProjectRoot Condition="'$(ProjectRoot)' == ''">$(MSBuildProjectDirectory)\..\..\</ProjectRoot>
 		<OutputAssembly>DotNetOpenAuth</OutputAssembly>
@@ -9,11 +10,20 @@
 		<DocumentationFile>$(ILMergeOutputXmlDocs)</DocumentationFile>
 	</PropertyGroup>
 
-	<ItemGroup>
-		<MRefDependencies Include="$(ProjectRoot)lib\log4net.dll" />
-		<MRefDependencies Include="$(ProjectRoot)lib\System.Web.Mvc.dll" />
-	</ItemGroup>
-
 	<Import Project="$(ProjectRoot)Tools\sandcastle.targets" />
+
+	<ItemGroup>
+		<MRefDependencyProjects Include="$(ProjectRoot)src\DotNetOpenAuth.Core\DotNetOpenAuth.Core.csproj" />
+		<MRefDependencyProjects Include="$(ProjectRoot)src\DotNetOpenAuth.OAuth2.Client\DotNetOpenAuth.OAuth2.Client.csproj" />
+	</ItemGroup>
+	
+	<Target Name="CollectMRefDependencies">
+		<MSBuild
+			Projects="@(MRefDependencyProjects)"
+			Targets="ResolveAssemblyReferences"
+			BuildInParallel="$(BuildInParallel)">
+			<Output TaskParameter="TargetOutputs" ItemName="MRefDependencies" />
+		</MSBuild>
+	</Target>
 
 </Project>

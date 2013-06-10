@@ -4,18 +4,19 @@
 	using System.IdentityModel.Claims;
 	using System.IdentityModel.Policy;
 	using System.Linq;
+	using System.Security.Principal;
 	using System.Web;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 
 	public class OAuthPrincipalAuthorizationPolicy : IAuthorizationPolicy {
 		private readonly Guid uniqueId = Guid.NewGuid();
-		private readonly OAuthPrincipal principal;
+		private readonly IPrincipal principal;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OAuthPrincipalAuthorizationPolicy"/> class.
 		/// </summary>
 		/// <param name="principal">The principal.</param>
-		public OAuthPrincipalAuthorizationPolicy(OAuthPrincipal principal) {
+		public OAuthPrincipalAuthorizationPolicy(IPrincipal principal) {
 			this.principal = principal;
 		}
 

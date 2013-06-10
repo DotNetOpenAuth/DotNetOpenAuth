@@ -8,6 +8,9 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 	using System.IO;
 	using System.Runtime.Serialization;
 	using System.Runtime.Serialization.Formatters.Binary;
+	using System.Threading;
+	using System.Threading.Tasks;
+
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.Provider;
@@ -20,7 +23,7 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 		/// Verifies that IsApproved controls which response message is returned.
 		/// </summary>
 		[Test]
-		public void IsApprovedDeterminesReturnedMessage() {
+		public async Task IsApprovedDeterminesReturnedMessage() {
 			var op = CreateProvider();
 			Protocol protocol = Protocol.V20;
 			var req = new SignedResponseRequest(protocol.Version, OPUri, AuthenticationRequestMode.Setup);
@@ -30,15 +33,15 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 			Assert.IsFalse(anonReq.IsApproved.HasValue);
 
 			anonReq.IsApproved = false;
-			Assert.IsInstanceOf<NegativeAssertionResponse>(anonReq.Response);
+			Assert.IsInstanceOf<NegativeAssertionResponse>(await anonReq.GetResponseAsync(CancellationToken.None));
 
 			anonReq.IsApproved = true;
-			Assert.IsInstanceOf<IndirectSignedResponse>(anonReq.Response);
-			Assert.IsNotInstanceOf<PositiveAssertionResponse>(anonReq.Response);
+			Assert.IsInstanceOf<IndirectSignedResponse>(await anonReq.GetResponseAsync(CancellationToken.None));
+			Assert.IsNotInstanceOf<PositiveAssertionResponse>(await anonReq.GetResponseAsync(CancellationToken.None));
 		}
 
 		/// <summary>
-		/// Verifies that the AuthenticationRequest method is serializable.
+		/// Verifies that the AnonymousRequest type is serializable.
 		/// </summary>
 		[Test]
 		public void Serializable() {

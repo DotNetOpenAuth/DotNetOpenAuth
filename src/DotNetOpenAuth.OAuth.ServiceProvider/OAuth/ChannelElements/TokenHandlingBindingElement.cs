@@ -8,12 +8,14 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth.Messages;
+	using Validation;
 
 	/// <summary>
 	/// A binding element for Service Providers to manage the 
@@ -68,6 +70,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// Prepares a message for sending based on the rules of this channel binding element.
 		/// </summary>
 		/// <param name="message">The message to prepare for sending.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The protections (if any) that this binding element applied to the message.
 		/// Null if this binding element did not even apply to this binding element.
@@ -76,13 +79,13 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// Implementations that provide message protection must honor the
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
-		public MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
+		public Task<MessageProtections?> ProcessOutgoingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
 			var userAuthResponse = message as UserAuthorizationResponse;
 			if (userAuthResponse != null && userAuthResponse.Version >= Protocol.V10a.Version) {
 				var requestToken = this.tokenManager.GetRequestToken(userAuthResponse.RequestToken);
 				requestToken.VerificationCode = userAuthResponse.VerificationCode;
 				this.tokenManager.UpdateToken(requestToken);
-				return MessageProtections.None;
+				return MessageProtectionTasks.None;
 			}
 
 			// Hook to store the token and secret on its way down to the Consumer.
@@ -98,10 +101,10 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 				}
 				this.tokenManager.UpdateToken(requestToken);
 
-				return MessageProtections.None;
+				return MessageProtectionTasks.None;
 			}
 
-			return null;
+			return MessageProtectionTasks.Null;
 		}
 
 		/// <summary>
@@ -109,6 +112,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// validates an incoming message based on the rules of this channel binding element.
 		/// </summary>
 		/// <param name="message">The incoming message to process.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The protections (if any) that this binding element applied to the message.
 		/// Null if this binding element did not even apply to this binding element.
@@ -121,13 +125,13 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// Implementations that provide message protection must honor the
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
-		public MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
+		public Task<MessageProtections?> ProcessIncomingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
 			var authorizedTokenRequest = message as AuthorizedTokenRequest;
 			if (authorizedTokenRequest != null) {
 				if (authorizedTokenRequest.Version >= Protocol.V10a.Version) {
 					string expectedVerifier = this.tokenManager.GetRequestToken(authorizedTokenRequest.RequestToken).VerificationCode;
 					ErrorUtilities.VerifyProtocol(string.Equals(authorizedTokenRequest.VerificationCode, expectedVerifier, StringComparison.Ordinal), OAuthStrings.IncorrectVerifier);
-					return MessageProtections.None;
+					return MessageProtectionTasks.None;
 				}
 
 				this.VerifyThrowTokenTimeToLive(authorizedTokenRequest);
@@ -143,7 +147,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 				this.VerifyThrowTokenNotExpired(accessResourceRequest);
 			}
 
-			return null;
+			return MessageProtectionTasks.Null;
 		}
 
 		#endregion

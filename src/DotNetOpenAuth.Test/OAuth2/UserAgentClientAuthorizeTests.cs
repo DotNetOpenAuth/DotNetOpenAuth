@@ -8,7 +8,10 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Net.Http;
 	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OAuth2;
@@ -20,61 +23,77 @@ namespace DotNetOpenAuth.Test.OAuth2 {
 	[TestFixture]
 	public class UserAgentClientAuthorizeTests : OAuth2TestBase {
 		[Test]
-		public void AuthorizationCodeGrant() {
-			var coordinator = new OAuth2Coordinator<UserAgentClient>(
-				AuthorizationServerDescription,
-				AuthorizationServerMock,
-				new UserAgentClient(AuthorizationServerDescription),
-				client => {
-					var authState = new AuthorizationState(TestScopes) {
-						Callback = ClientCallback,
-					};
-					var request = client.PrepareRequestUserAuthorization(authState);
-					Assert.AreEqual(EndUserAuthorizationResponseType.AuthorizationCode, request.ResponseType);
-					client.Channel.Respond(request);
-					var incoming = client.Channel.ReadFromRequest();
-					var result = client.ProcessUserAuthorization(authState, incoming);
-					Assert.That(result.AccessToken, Is.Not.Null.And.Not.Empty);
-					Assert.That(result.RefreshToken, Is.Not.Null.And.Not.Empty);
-				},
-				server => {
-					var request = server.ReadAuthorizationRequest();
+		public async Task AuthorizationCodeGrant() {
+			Handle(AuthorizationServerDescription.AuthorizationEndpoint).By(
+				async (req, ct) => {
+					var server = new AuthorizationServer(AuthorizationServerMock);
+					var request = await server.ReadAuthorizationRequestAsync(req, ct);
 					Assert.That(request, Is.Not.Null);
-					server.ApproveAuthorizationRequest(request, ResourceOwnerUsername);
-					server.HandleTokenRequest().Respond();
+					var response = server.PrepareApproveAuthorizationRequest(request, ResourceOwnerUsername);
+					return await server.Channel.PrepareResponseAsync(response, ct);
 				});
-			coordinator.Run();
+			Handle(AuthorizationServerDescription.TokenEndpoint).By(
+				async (req, ct) => {
+					var server = new AuthorizationServer(AuthorizationServerMock);
+					return await server.HandleTokenRequestAsync(req, ct);
+				});
+			{
+				var client = new UserAgentClient(AuthorizationServerDescription, ClientId, ClientSecret, this.HostFactories);
+				var authState = new AuthorizationState(TestScopes) { Callback = ClientCallback, };
+				var request = client.PrepareRequestUserAuthorization(authState);
+				Assert.AreEqual(EndUserAuthorizationResponseType.AuthorizationCode, request.ResponseType);
+				var authRequestRedirect = await client.Channel.PrepareResponseAsync(request);
+				Uri authRequestResponse;
+				this.HostFactories.AllowAutoRedirects = false;
+				using (var httpClient = this.HostFactories.CreateHttpClient()) {
+					using (var httpResponse = await httpClient.GetAsync(authRequestRedirect.Headers.Location)) {
+						authRequestResponse = httpResponse.Headers.Location;
+					}
+				}
+				var incoming =
+					await
+					client.Channel.ReadFromRequestAsync(
+						new HttpRequestMessage(HttpMethod.Get, authRequestResponse), CancellationToken.None);
+				var result = await client.ProcessUserAuthorizationAsync(authState, incoming, CancellationToken.None);
+				Assert.That(result.AccessToken, Is.Not.Null.And.Not.Empty);
+				Assert.That(result.RefreshToken, Is.Not.Null.And.Not.Empty);
+			}
 		}
 
 		[Test]
-		public void ImplicitGrant() {
+		public async Task ImplicitGrant() {
 			var coordinatorClient = new UserAgentClient(AuthorizationServerDescription);
-			var coordinator = new OAuth2Coordinator<UserAgentClient>(
-				AuthorizationServerDescription,
-				AuthorizationServerMock,
-				coordinatorClient,
-				client => {
-					var authState = new AuthorizationState(TestScopes) {
-						Callback = ClientCallback,
-					};
-					var request = client.PrepareRequestUserAuthorization(authState, implicitResponseType: true);
-					Assert.That(request.ResponseType, Is.EqualTo(EndUserAuthorizationResponseType.AccessToken));
-					client.Channel.Respond(request);
-					var incoming = client.Channel.ReadFromRequest();
-					var result = client.ProcessUserAuthorization(authState, incoming);
-					Assert.That(result.AccessToken, Is.Not.Null.And.Not.Empty);
-					Assert.That(result.RefreshToken, Is.Null);
-				},
-				server => {
-					var request = server.ReadAuthorizationRequest();
+			coordinatorClient.ClientCredentialApplicator = null; // implicit grant clients don't need a secret.
+			Handle(AuthorizationServerDescription.AuthorizationEndpoint).By(
+				async (req, ct) => {
+					var server = new AuthorizationServer(AuthorizationServerMock);
+					var request = await server.ReadAuthorizationRequestAsync(req, ct);
 					Assert.That(request, Is.Not.Null);
 					IAccessTokenRequest accessTokenRequest = (EndUserAuthorizationImplicitRequest)request;
 					Assert.That(accessTokenRequest.ClientAuthenticated, Is.False);
-					server.ApproveAuthorizationRequest(request, ResourceOwnerUsername);
+					var response = server.PrepareApproveAuthorizationRequest(request, ResourceOwnerUsername);
+					return await server.Channel.PrepareResponseAsync(response, ct);
 				});
+			{
+				var client = new UserAgentClient(AuthorizationServerDescription, ClientId, ClientSecret, this.HostFactories);
+				var authState = new AuthorizationState(TestScopes) { Callback = ClientCallback, };
+				var request = client.PrepareRequestUserAuthorization(authState, implicitResponseType: true);
+				Assert.That(request.ResponseType, Is.EqualTo(EndUserAuthorizationResponseType.AccessToken));
+				var authRequestRedirect = await client.Channel.PrepareResponseAsync(request);
+				Uri authRequestResponse;
+				this.HostFactories.AllowAutoRedirects = false;
+				using (var httpClient = this.HostFactories.CreateHttpClient()) {
+					using (var httpResponse = await httpClient.GetAsync(authRequestRedirect.Headers.Location)) {
+						authRequestResponse = httpResponse.Headers.Location;
+					}
+				}
 
-			coordinatorClient.ClientCredentialApplicator = null; // implicit grant clients don't need a secret.
-			coordinator.Run();
+				var incoming =
+					await client.Channel.ReadFromRequestAsync(new HttpRequestMessage(HttpMethod.Get, authRequestResponse), CancellationToken.None);
+				var result = await client.ProcessUserAuthorizationAsync(authState, incoming, CancellationToken.None);
+				Assert.That(result.AccessToken, Is.Not.Null.And.Not.Empty);
+				Assert.That(result.RefreshToken, Is.Null);
+			}
 		}
 	}
 }

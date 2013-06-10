@@ -8,10 +8,10 @@ namespace DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
+	using Validation;
 
 	/// <summary>
 	/// The PAPE response part of an OpenID Authentication response message.
@@ -83,7 +83,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy {
 			}
 
 			set {
-				Requires.True(!value.HasValue || value.Value.Kind != DateTimeKind.Unspecified, "value", OpenIdStrings.UnspecifiedDateTimeKindNotAllowed);
+				Requires.That(!value.HasValue || value.Value.Kind != DateTimeKind.Unspecified, "value", OpenIdStrings.UnspecifiedDateTimeKindNotAllowed);
 
 				// Make sure that whatever is set here, it becomes UTC time.
 				if (value.HasValue) {

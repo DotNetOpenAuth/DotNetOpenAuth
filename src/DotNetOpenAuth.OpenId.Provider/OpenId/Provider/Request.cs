@@ -7,19 +7,19 @@
 namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
+	using Validation;
 
 	/// <summary>
-	/// Implements the <see cref="IRequest"/> interface for all incoming
+	/// Implements the <see cref="IRequest" /> interface for all incoming
 	/// request messages to an OpenID Provider.
 	/// </summary>
 	[Serializable]
-	[ContractClass(typeof(RequestContract))]
-	[ContractVerification(true)]
 	internal abstract class Request : IRequest {
 		/// <summary>
 		/// The incoming request message.
@@ -93,34 +93,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <value>Defaults to the <see cref="OpenIdProvider.SecuritySettings"/> on the <see cref="OpenIdProvider"/>.</value>
 		public ProviderSecuritySettings SecuritySettings { get; set; }
 
-		/// <summary>
-		/// Gets the response to send to the user agent.
-		/// </summary>
-		/// <exception cref="InvalidOperationException">Thrown if <see cref="IsResponseReady"/> is <c>false</c>.</exception>
-		internal IProtocolMessage Response {
-			get {
-				Requires.ValidState(this.IsResponseReady, OpenIdStrings.ResponseNotReady);
-				Contract.Ensures(Contract.Result<IProtocolMessage>() != null);
-
-				if (this.responseExtensions.Count > 0) {
-					var extensibleResponse = this.ResponseMessage as IProtocolMessageWithExtensions;
-					ErrorUtilities.VerifyOperation(extensibleResponse != null, MessagingStrings.MessageNotExtensible, this.ResponseMessage.GetType().Name);
-					foreach (var extension in this.responseExtensions) {
-						// It's possible that a prior call to this property
-						// has already added some/all of the extensions to the message.
-						// We don't have to worry about deleting old ones because
-						// this class provides no facility for removing extensions
-						// that are previously added.
-						if (!extensibleResponse.Extensions.Contains(extension)) {
-							extensibleResponse.Extensions.Add(extension);
-						}
-					}
-				}
-
-				return this.ResponseMessage;
-			}
-		}
-
 		#endregion
 
 		/// <summary>
@@ -130,11 +102,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		protected internal IDirectedProtocolMessage RequestMessage {
 			get { return this.request; }
 		}
-
-		/// <summary>
-		/// Gets the response message, once <see cref="IsResponseReady"/> is <c>true</c>.
-		/// </summary>
-		protected abstract IProtocolMessage ResponseMessage { get; }
 
 		/// <summary>
 		/// Gets the protocol version used in the request.
@@ -206,5 +173,40 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Gets the response to send to the user agent.
+		/// </summary>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>The response.</returns>
+		/// <exception cref="InvalidOperationException">Thrown if <see cref="IsResponseReady" /> is <c>false</c>.</exception>
+		internal async Task<IProtocolMessage> GetResponseAsync(CancellationToken cancellationToken) {
+			RequiresEx.ValidState(this.IsResponseReady, OpenIdStrings.ResponseNotReady);
+
+			if (this.responseExtensions.Count > 0) {
+				var responseMessage = await this.GetResponseMessageAsync(cancellationToken);
+				var extensibleResponse = responseMessage as IProtocolMessageWithExtensions;
+				ErrorUtilities.VerifyOperation(extensibleResponse != null, MessagingStrings.MessageNotExtensible, responseMessage.GetType().Name);
+				foreach (var extension in this.responseExtensions) {
+					// It's possible that a prior call to this property
+					// has already added some/all of the extensions to the message.
+					// We don't have to worry about deleting old ones because
+					// this class provides no facility for removing extensions
+					// that are previously added.
+					if (!extensibleResponse.Extensions.Contains(extension)) {
+						extensibleResponse.Extensions.Add(extension);
+					}
+				}
+			}
+
+			return await this.GetResponseMessageAsync(cancellationToken);
+		}
+
+		/// <summary>
+		/// Gets the response message, once <see cref="IsResponseReady" /> is <c>true</c>.
+		/// </summary>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>The response message.</returns>
+		protected abstract Task<IProtocolMessage> GetResponseMessageAsync(CancellationToken cancellationToken);
 	}
 }

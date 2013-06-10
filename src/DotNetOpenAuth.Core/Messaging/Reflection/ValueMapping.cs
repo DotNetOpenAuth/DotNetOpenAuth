@@ -6,12 +6,11 @@
 
 namespace DotNetOpenAuth.Messaging.Reflection {
 	using System;
-	using System.Diagnostics.Contracts;
+	using Validation;
 
 	/// <summary>
 	/// A pair of conversion functions to map some type to a string and back again.
 	/// </summary>
-	[ContractVerification(true)]
 	internal struct ValueMapping {
 		/// <summary>
 		/// The mapping function that converts some custom type to a string.
@@ -35,7 +34,8 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <param name="toString">The mapping function that converts some custom value to a string.</param>
 		/// <param name="toOriginalString">The mapping function that converts some custom value to its original (non-normalized) string.  May be null if the same as the <paramref name="toString"/> function.</param>
 		/// <param name="toValue">The mapping function that converts a string to some custom value.</param>
-		internal ValueMapping(Func<object, string> toString, Func<object, string> toOriginalString, Func<string, object> toValue) {
+		internal ValueMapping(Func<object, string> toString, Func<object, string> toOriginalString, Func<string, object> toValue)
+			: this() {
 			Requires.NotNull(toString, "toString");
 			Requires.NotNull(toValue, "toValue");
 
@@ -48,8 +48,11 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// Initializes a new instance of the <see cref="ValueMapping"/> struct.
 		/// </summary>
 		/// <param name="encoder">The encoder.</param>
-		internal ValueMapping(IMessagePartEncoder encoder) {
+		internal ValueMapping(IMessagePartEncoder encoder)
+			: this() {
 			Requires.NotNull(encoder, "encoder");
+
+			this.Encoder = encoder;
 			var nullEncoder = encoder as IMessagePartNullEncoder;
 			string nullString = nullEncoder != null ? nullEncoder.EncodedNullValue : null;
 
@@ -63,5 +66,10 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			this.StringToValue = str => (str != null) ? encoder.Decode(str) : null;
 			this.ValueToOriginalString = obj => (obj != null) ? originalStringEncode(obj) : nullString;
 		}
+
+		/// <summary>
+		/// Gets the encoder.
+		/// </summary>
+		internal IMessagePartEncoder Encoder { get; private set; }
 	}
 }

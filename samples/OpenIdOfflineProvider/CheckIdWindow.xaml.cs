@@ -7,9 +7,10 @@
 namespace DotNetOpenAuth.OpenIdOfflineProvider {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Windows;
 	using System.Windows.Controls;
 	using System.Windows.Data;
@@ -19,7 +20,9 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 	using System.Windows.Media.Imaging;
 	using System.Windows.Shapes;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Provider;
+	using Validation;
 
 	/// <summary>
 	/// Interaction logic for CheckIdWindow.xaml
@@ -28,10 +31,10 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="CheckIdWindow"/> class.
 		/// </summary>
-		/// <param name="provider">The OpenID Provider host.</param>
+		/// <param name="userIdentityPageBase">The base URI upon which user identity pages are created.</param>
 		/// <param name="request">The incoming authentication request.</param>
-		private CheckIdWindow(HostedProvider provider, IAuthenticationRequest request) {
-			Contract.Requires(request != null);
+		private CheckIdWindow(Uri userIdentityPageBase, IAuthenticationRequest request) {
+			Requires.NotNull(request, "request");
 
 			this.InitializeComponent();
 
@@ -40,13 +43,9 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 			this.immediateModeLabel.Visibility = request.Immediate ? Visibility.Visible : Visibility.Collapsed;
 			this.setupModeLabel.Visibility = request.Immediate ? Visibility.Collapsed : Visibility.Visible;
 
-			bool isRPDiscoverable = request.IsReturnUrlDiscoverable(provider.Provider.Channel.WebRequestHandler) == RelyingPartyDiscoveryResult.Success;
-			this.discoverableYesLabel.Visibility = isRPDiscoverable ? Visibility.Visible : Visibility.Collapsed;
-			this.discoverableNoLabel.Visibility = isRPDiscoverable ? Visibility.Collapsed : Visibility.Visible;
-
 			if (request.IsDirectedIdentity) {
-				this.claimedIdentifierBox.Text = provider.UserIdentityPageBase.AbsoluteUri;
-				this.localIdentifierBox.Text = provider.UserIdentityPageBase.AbsoluteUri;
+				this.claimedIdentifierBox.Text = userIdentityPageBase.AbsoluteUri;
+				this.localIdentifierBox.Text = userIdentityPageBase.AbsoluteUri;
 			} else {
 				this.claimedIdentifierBox.Text = request.ClaimedIdentifier;
 				this.localIdentifierBox.Text = request.LocalIdentifier;
@@ -56,13 +55,23 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// <summary>
 		/// Processes an authentication request by a popup window.
 		/// </summary>
-		/// <param name="provider">The OpenID Provider host.</param>
+		/// <param name="userIdentityPageBase">The base URI upon which user identity pages are created.</param>
 		/// <param name="request">The incoming authentication request.</param>
-		internal static void ProcessAuthentication(HostedProvider provider, IAuthenticationRequest request) {
-			Contract.Requires(provider != null);
-			Contract.Requires(request != null);
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// A task that completes with the asynchronous operation.
+		/// </returns>
+		internal static async Task ProcessAuthenticationAsync(Uri userIdentityPageBase, IAuthenticationRequest request, CancellationToken cancellationToken) {
+			Requires.NotNull(userIdentityPageBase, "userIdentityPageBase");
+			Requires.NotNull(request, "request");
 
-			var window = new CheckIdWindow(provider, request);
+			var window = new CheckIdWindow(userIdentityPageBase, request);
+
+			IHostFactories hostFactories = new DefaultOpenIdHostFactories();
+			bool isRPDiscoverable = await request.IsReturnUrlDiscoverableAsync(hostFactories, cancellationToken) == RelyingPartyDiscoveryResult.Success;
+			window.discoverableYesLabel.Visibility = isRPDiscoverable ? Visibility.Visible : Visibility.Collapsed;
+			window.discoverableNoLabel.Visibility = isRPDiscoverable ? Visibility.Collapsed : Visibility.Visible;
+
 			bool? result = window.ShowDialog();
 
 			// If the user pressed Esc or cancel, just send a negative assertion.

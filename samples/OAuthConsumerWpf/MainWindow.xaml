@@ -92,30 +92,20 @@
                 </Grid.ColumnDefinitions>
                 <Label Grid.Row="0">Request Token URL</Label>
                 <TextBox Grid.Column="1" x:Name="requestTokenUrlBox" />
-                <ComboBox Grid.Column="2" x:Name="requestTokenHttpMethod" SelectedIndex="1">
-                    <ComboBox.Items>
-                        <ComboBoxItem>GET</ComboBoxItem>
-                        <ComboBoxItem>POST</ComboBoxItem>
-                    </ComboBox.Items>
-                </ComboBox>
+                <Label Grid.Column="2">POST</Label>
                 <Label Grid.Row="1">Authorize URL</Label>
                 <TextBox Grid.Row="1" Grid.Column="1" x:Name="authorizeUrlBox" />
                 <Label Grid.Row="1" Grid.Column="2">GET</Label>
                 <Label Grid.Row="2">Access Token URL</Label>
                 <TextBox Grid.Row="2" Grid.Column="1" x:Name="accessTokenUrlBox" />
-                <ComboBox Grid.Row="2" Grid.Column="2" x:Name="accessTokenHttpMethod" SelectedIndex="1">
-                    <ComboBox.Items>
-                        <ComboBoxItem>GET</ComboBoxItem>
-                        <ComboBoxItem>POST</ComboBoxItem>
-                    </ComboBox.Items>
-                </ComboBox>
+                <Label Grid.Row="2" Grid.Column="2">POST</Label>
                 <Label Grid.Row="3">Resource URL</Label>
                 <TextBox Grid.Row="3" Grid.Column="1" x:Name="resourceUrlBox" />
                 <ComboBox Grid.Row="3" Grid.Column="2" x:Name="resourceHttpMethodList" SelectedIndex="0">
                     <ComboBox.Items>
-                        <ComboBoxItem>GET w/ header</ComboBoxItem>
-                        <ComboBoxItem>GET w/ querystring</ComboBoxItem>
-                        <ComboBoxItem>POST</ComboBoxItem>
+						<ComboBoxItem>GET w/ header</ComboBoxItem>
+						<ComboBoxItem>GET w/ querystring</ComboBoxItem>
+						<ComboBoxItem>POST</ComboBoxItem>
                     </ComboBox.Items>
                 </ComboBox>
                 <Label Grid.Row="4">Consumer key</Label>
@@ -123,10 +113,9 @@
                 <Label Grid.Row="5">Consumer secret</Label>
                 <TextBox Grid.Row="5" Grid.Column="1" x:Name="consumerSecretBox" Grid.ColumnSpan="2"/>
                 <Label Grid.Row="6">OAuth version</Label>
-                <ComboBox Grid.Row="6" Grid.Column="1" SelectedIndex="1" x:Name="oauthVersion">
+                <ComboBox Grid.Row="6" Grid.Column="1" SelectedIndex="0" x:Name="oauthVersion">
                     <ComboBox.Items>
-                        <ComboBoxItem>1.0</ComboBoxItem>
-                        <ComboBoxItem>1.0a</ComboBoxItem>
+                        <ComboBoxItem>RFC 5849</ComboBoxItem>
                     </ComboBox.Items>
                 </ComboBox>
                 <Button Grid.Row="7" Grid.Column="1" x:Name="beginButton" Click="beginButton_Click">Begin</Button>
@@ -153,27 +142,26 @@
                     <ColumnDefinition Width="auto" />
                 </Grid.ColumnDefinitions>
                 <Label Grid.Row="1" TabIndex="202">Token Endpoint URL</Label>
-                <TextBox Grid.Row="1" Grid.Column="1" x:Name="oauth2TokenEndpointBox" Text="http://localhost:18916/OAuthTokenEndpoint.ashx" TabIndex="203" />
+				<TextBox Grid.Row="1" Grid.Column="1" x:Name="oauth2TokenEndpointBox" Text="http://localhost:23603/api/token" TabIndex="203" />
                 <Label Grid.Row="1" Grid.Column="2" TabIndex="204">POST</Label>
                 <Label Grid.Row="2" TabIndex="205">User Authorization URL</Label>
-                <TextBox Grid.Row="2" Grid.Column="1" x:Name="oauth2AuthorizationUrlBox" Text="http://localhost:18916/Account/Authorize" TabIndex="206" />
+				<TextBox Grid.Row="2" Grid.Column="1" x:Name="oauth2AuthorizationUrlBox" Text="http://localhost:23603/user/Authorize" TabIndex="206" />
                 <Label Grid.Row="2" Grid.Column="2" TabIndex="207">GET</Label>
                 <Label Grid.Row="0" TabIndex="200">Grant Type</Label>
                 <ComboBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" x:Name="flowBox" SelectedIndex="0" TabIndex="201">
                     <ComboBox.Items>
                         <ComboBoxItem>Authorization Code</ComboBoxItem>
                         <ComboBoxItem>Implicit Grant</ComboBoxItem>
-                        <ComboBoxItem>Resource Owner Password Credentials</ComboBoxItem>
+                        <!--<ComboBoxItem>Resource Owner Password Credentials</ComboBoxItem>-->
                     </ComboBox.Items>
                 </ComboBox>
                 <Label Grid.Row="3" TabIndex="207">Resource URL</Label>
-                <TextBox Grid.Row="3" Grid.Column="1" x:Name="oauth2ResourceUrlBox" Text="http://localhost:18916/" TabIndex="208" />
+				<TextBox Grid.Row="3" Grid.Column="1" x:Name="oauth2ResourceUrlBox" Text="http://localhost:23603/api/values" TabIndex="208" />
                 <ComboBox Grid.Row="3" Grid.Column="2" x:Name="oauth2ResourceHttpMethodList" SelectedIndex="0" TabIndex="209">
                     <ComboBox.Items>
-                        <ComboBoxItem>GET w/ header</ComboBoxItem>
-                        <ComboBoxItem>GET w/ querystring</ComboBoxItem>
-                        <ComboBoxItem>POST</ComboBoxItem>
-                    </ComboBox.Items>
+						<ComboBoxItem>GET</ComboBoxItem>
+						<ComboBoxItem>POST</ComboBoxItem>
+					</ComboBox.Items>
                 </ComboBox>
                 <Label Grid.Row="4" TabIndex="210">Client Identifier</Label>
                 <TextBox Grid.Row="4" Grid.Column="1" x:Name="oauth2ClientIdentifierBox" Grid.ColumnSpan="2" Text="a" TabIndex="211" />
@@ -184,7 +172,7 @@
                 <Label Grid.Row="7" TabIndex="216">OAuth 2.0 version</Label>
                 <ComboBox Grid.Row="7" Grid.Column="1" SelectedIndex="0" x:Name="oauth2Version" TabIndex="217">
                     <ComboBox.Items>
-                        <ComboBoxItem>2.0 DRAFT 16</ComboBoxItem>
+                        <ComboBoxItem>RFC 6749</ComboBoxItem>
                     </ComboBox.Items>
                 </ComboBox>
                 <Button Grid.Row="8" Grid.Column="1" x:Name="oauth2BeginButton" Click="oauth2BeginButton_Click" TabIndex="218">Begin</Button>

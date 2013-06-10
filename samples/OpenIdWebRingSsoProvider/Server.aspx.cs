@@ -13,7 +13,11 @@
 		}
 
 		protected void providerEndpoint1_AuthenticationChallenge(object sender, AuthenticationChallengeEventArgs e) {
-			Util.ProcessAuthenticationChallenge(e.Request);
+			this.RegisterAsyncTask(
+				new PageAsyncTask(
+					async ct => {
+						await Util.ProcessAuthenticationChallengeAsync(e.Request, ct);
+					}));
 		}
 	}
 }

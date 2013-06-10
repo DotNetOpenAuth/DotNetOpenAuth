@@ -8,14 +8,16 @@ namespace DotNetOpenAuth.OpenId.Provider.Extensions.UI {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Linq;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Extensions.UI;
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.Provider;
 	using DotNetOpenAuth.Xrds;
+	using Validation;
 
 	/// <summary>
 	/// OpenID User Interface extension 1.0 request message.
@@ -35,8 +37,8 @@ namespace DotNetOpenAuth.OpenId.Provider.Extensions.UI {
 		/// Gets the URL of the RP icon for the OP to display.
 		/// </summary>
 		/// <param name="realm">The realm of the RP where the authentication request originated.</param>
-		/// <param name="webRequestHandler">The web request handler to use for discovery.
-		/// Usually available via <see cref="Channel.WebRequestHandler">OpenIdProvider.Channel.WebRequestHandler</see>.</param>
+		/// <param name="hostFactories">The host factories.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// A sequence of the RP's icons it has available for the Provider to display, in decreasing preferred order.
 		/// </returns>
@@ -51,13 +53,11 @@ namespace DotNetOpenAuth.OpenId.Provider.Extensions.UI {
 		/// &lt;/Service&gt;
 		/// </example>
 		/// </remarks>
-		public static IEnumerable<Uri> GetRelyingPartyIconUrls(Realm realm, IDirectWebRequestHandler webRequestHandler) {
-			Contract.Requires(realm != null);
-			Contract.Requires(webRequestHandler != null);
-			ErrorUtilities.VerifyArgumentNotNull(realm, "realm");
-			ErrorUtilities.VerifyArgumentNotNull(webRequestHandler, "webRequestHandler");
+		public static async Task<IEnumerable<Uri>> GetRelyingPartyIconUrlsAsync(Realm realm, IHostFactories hostFactories, CancellationToken cancellationToken) {
+			Requires.NotNull(realm, "realm");
+			Requires.NotNull(hostFactories, "hostFactories");
 
-			XrdsDocument xrds = realm.Discover(webRequestHandler, false);
+			XrdsDocument xrds = await realm.DiscoverAsync(hostFactories, false, cancellationToken);
 			if (xrds == null) {
 				return Enumerable.Empty<Uri>();
 			} else {

@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
+	using Validation;
 
 	/// <summary>
 	/// A message sent by a web application Client to the AuthorizationServer
@@ -24,8 +25,8 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		internal EndUserAuthorizationRequestC(AuthorizationServerDescription authorizationServer)
 			: base(authorizationServer.AuthorizationEndpoint, authorizationServer.Version) {
 			Requires.NotNull(authorizationServer, "authorizationServer");
-			Requires.True(authorizationServer.Version != null, "authorizationServer");
-			Requires.True(authorizationServer.AuthorizationEndpoint != null, "authorizationServer");
+			Requires.That(authorizationServer.Version != null, "authorizationServer", "requires Version");
+			Requires.That(authorizationServer.AuthorizationEndpoint != null, "authorizationServer", "requires AuthorizationEndpoint");
 		}
 	}
 }

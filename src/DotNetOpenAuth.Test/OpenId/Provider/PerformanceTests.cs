@@ -37,10 +37,10 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 		public void AssociateDH() {
 			var associateRequest = this.CreateAssociateRequest(OPUri);
 			MeasurePerformance(
-				() => {
-					IRequest request = this.provider.GetRequest(associateRequest);
-					var response = this.provider.PrepareResponse(request);
-					Assert.IsInstanceOf<AssociateSuccessfulResponse>(response.OriginalMessage);
+				async delegate {
+					IRequest request = await this.provider.GetRequestAsync(associateRequest);
+					var response = await this.provider.PrepareResponseAsync(request);
+					Assert.IsInstanceOf<AssociateSuccessfulResponse>(((HttpResponseMessageWithOriginal)response).OriginalMessage);
 				},
 				maximumAllowedUnitTime: 3.5e6f,
 				iterations: 1);
@@ -50,10 +50,10 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 		public void AssociateClearText() {
 			var associateRequest = this.CreateAssociateRequest(OPUriSsl); // SSL will cause a plaintext association
 			MeasurePerformance(
-				() => {
-					IRequest request = this.provider.GetRequest(associateRequest);
-					var response = this.provider.PrepareResponse(request);
-					Assert.IsInstanceOf<AssociateSuccessfulResponse>(response.OriginalMessage);
+				async delegate {
+					IRequest request = await this.provider.GetRequestAsync(associateRequest);
+					var response = await this.provider.PrepareResponseAsync(request);
+					Assert.IsInstanceOf<AssociateSuccessfulResponse>(((HttpResponseMessageWithOriginal)response).OriginalMessage);
 				},
 				maximumAllowedUnitTime: 1.5e4f,
 				iterations: 1000);
@@ -82,11 +82,11 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 				this.provider.SecuritySettings);
 			var checkidRequest = this.CreateCheckIdRequest(true);
 			MeasurePerformance(
-				() => {
-					var request = (IAuthenticationRequest)this.provider.GetRequest(checkidRequest);
+				async delegate {
+					var request = (IAuthenticationRequest)await this.provider.GetRequestAsync(checkidRequest);
 					request.IsAuthenticated = true;
-					var response = this.provider.PrepareResponse(request);
-					Assert.IsInstanceOf<PositiveAssertionResponse>(response.OriginalMessage);
+					var response = await this.provider.PrepareResponseAsync(request);
+					Assert.IsInstanceOf<PositiveAssertionResponse>(((HttpResponseMessageWithOriginal)response).OriginalMessage);
 				},
 				maximumAllowedUnitTime: 6.8e4f);
 		}

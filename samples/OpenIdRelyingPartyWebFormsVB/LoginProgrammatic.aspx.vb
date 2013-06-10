@@ -1,4 +1,5 @@
 ﻿Imports System.Net
+Imports System.Threading
 Imports System.Web.Security
 Imports DotNetOpenAuth.Messaging
 Imports DotNetOpenAuth.OpenId
@@ -15,13 +16,13 @@ Public Class LoginProgrammatic
 		args.IsValid = Identifier.IsValid(args.Value)
 	End Sub
 
-	Protected Sub loginButton_Click(ByVal sender As Object, ByVal e As EventArgs)
+	Protected Async Sub loginButton_Click(ByVal sender As Object, ByVal e As EventArgs)
 		If Not Me.Page.IsValid Then
 			Return
 			' don't login if custom validation failed.
 		End If
 		Try
-			Dim request As IAuthenticationRequest = relyingParty.CreateRequest(Me.openIdBox.Text)
+			Dim request As IAuthenticationRequest = Await relyingParty.CreateRequestAsync(Me.openIdBox.Text)
 			' This is where you would add any OpenID extensions you wanted
 			' to include in the authentication request.
 			request.AddExtension(New ClaimsRequest() With { _
@@ -32,7 +33,7 @@ Public Class LoginProgrammatic
 			.TimeZone = DemandLevel.Require _
 			})
 			' Send your visitor to their Provider for authentication.
-			request.RedirectToProvider()
+			Await request.RedirectToProviderAsync()
 		Catch ex As ProtocolException
 			' The user probably entered an Identifier that 
 			' was not a valid OpenID endpoint.
@@ -41,7 +42,7 @@ Public Class LoginProgrammatic
 		End Try
 	End Sub
 
-	Protected Sub Page_Load(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Load
+	Protected Async Sub Page_Load(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Load
 		Me.openIdBox.Focus()
 		' For debugging/testing, we allow remote clearing of all associations...
 		' NOT a good idea on a production site.
@@ -53,7 +54,7 @@ Public Class LoginProgrammatic
 			builder.Query = Nothing
 			Me.Response.Redirect(builder.Uri.AbsoluteUri)
 		End If
-		Dim response As IAuthenticationResponse = relyingParty.GetResponse
+		Dim response As IAuthenticationResponse = Await relyingParty.GetResponseAsync(New HttpRequestWrapper(Request))
 		If response IsNot Nothing Then
 			Select Case response.Status
 				Case AuthenticationStatus.Authenticated

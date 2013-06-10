@@ -12,6 +12,8 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	using System.Linq;
 	using System.Security.Cryptography;
 	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OAuth2.AuthServer.ChannelElements;
@@ -37,6 +39,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// Prepares a message for sending based on the rules of this channel binding element.
 		/// </summary>
 		/// <param name="message">The message to prepare for sending.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The protections (if any) that this binding element applied to the message.
 		/// Null if this binding element did not even apply to this binding element.
@@ -45,7 +48,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// Implementations that provide message protection must honor the
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
-		public override MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
+		public override Task<MessageProtections?> ProcessOutgoingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
 			var directResponse = message as IDirectResponseProtocolMessage;
 			var request = directResponse != null ? directResponse.OriginatingRequest as IAccessTokenRequestInternal : null;
 
@@ -55,7 +58,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 				var codeFormatter = AuthorizationCode.CreateFormatter(this.AuthorizationServer);
 				var code = authCodeCarrier.AuthorizationDescription;
 				authCodeCarrier.Code = codeFormatter.Serialize(code);
-				return MessageProtections.None;
+				return MessageProtectionTasks.None;
 			}
 
 			// Serialize the refresh token, if applicable.
@@ -74,7 +77,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 				accessTokenResponse.AccessToken = accessTokenResponse.AuthorizationDescription.Serialize();
 			}
 
-			return null;
+			return MessageProtectionTasks.Null;
 		}
 
 		/// <summary>
@@ -82,6 +85,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// validates an incoming message based on the rules of this channel binding element.
 		/// </summary>
 		/// <param name="message">The incoming message to process.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The protections (if any) that this binding element applied to the message.
 		/// Null if this binding element did not even apply to this binding element.
@@ -98,12 +102,12 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		[SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "incorrectclientcredentials", Justification = "Protocol requirement")]
 		[SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "authorizationexpired", Justification = "Protocol requirement")]
 		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "DotNetOpenAuth.Messaging.ErrorUtilities.VerifyProtocol(System.Boolean,System.String,System.Object[])", Justification = "Protocol requirement")]
-		public override MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
+		public override Task<MessageProtections?> ProcessIncomingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
 			var authCodeCarrier = message as IAuthorizationCodeCarryingRequest;
 			if (authCodeCarrier != null) {
 				var authorizationCodeFormatter = AuthorizationCode.CreateFormatter(this.AuthorizationServer);
 				var authorizationCode = new AuthorizationCode();
-				authorizationCodeFormatter.Deserialize(authorizationCode, message, authCodeCarrier.Code, Protocol.code);
+				authorizationCodeFormatter.Deserialize(authorizationCode, authCodeCarrier.Code, message, Protocol.code);
 				authCodeCarrier.AuthorizationDescription = authorizationCode;
 			}
 
@@ -111,11 +115,11 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			if (refreshTokenCarrier != null) {
 				var refreshTokenFormatter = RefreshToken.CreateFormatter(this.AuthorizationServer.CryptoKeyStore);
 				var refreshToken = new RefreshToken();
-				refreshTokenFormatter.Deserialize(refreshToken, message, refreshTokenCarrier.RefreshToken, Protocol.refresh_token);
+				refreshTokenFormatter.Deserialize(refreshToken, refreshTokenCarrier.RefreshToken, message, Protocol.refresh_token);
 				refreshTokenCarrier.AuthorizationDescription = refreshToken;
 			}
 
-			return null;
+			return MessageProtectionTasks.Null;
 		}
 	}
 }

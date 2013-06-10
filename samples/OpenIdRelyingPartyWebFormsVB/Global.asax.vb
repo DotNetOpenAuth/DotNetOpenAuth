@@ -4,7 +4,6 @@ Imports System.Configuration
 Imports System.IO
 Imports System.Text
 Imports System.Web
-Imports DotNetOpenAuth.ApplicationBlock
 Imports OpenIdRelyingPartyWebFormsVB
 
 Public Class Global_asax

@@ -9,7 +9,6 @@ namespace DotNetOpenAuth.OAuth {
 	using System.Collections.Generic;
 	using System.ComponentModel;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Security.Principal;
 	using System.ServiceModel.Channels;
@@ -23,6 +22,7 @@ namespace DotNetOpenAuth.OAuth {
 	using DotNetOpenAuth.OpenId.Extensions.OAuth;
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.Provider;
+	using Validation;
 
 	/// <summary>
 	/// A web application that allows access via OAuth and can respond to OpenID+OAuth requests.
@@ -41,7 +41,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// </summary>
 		/// <param name="serviceDescription">The endpoints and behavior on the Service Provider.</param>
 		/// <param name="tokenManager">The host's method of storing and recalling tokens and secrets.</param>
-		public ServiceProviderOpenIdProvider(ServiceProviderDescription serviceDescription, IServiceProviderTokenManager tokenManager)
+		public ServiceProviderOpenIdProvider(ServiceProviderHostDescription serviceDescription, IServiceProviderTokenManager tokenManager)
 			: base(serviceDescription, tokenManager) {
 		}
 
@@ -51,7 +51,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="serviceDescription">The service description.</param>
 		/// <param name="tokenManager">The token manager.</param>
 		/// <param name="messageTypeProvider">The message type provider.</param>
-		public ServiceProviderOpenIdProvider(ServiceProviderDescription serviceDescription, IServiceProviderTokenManager tokenManager, OAuthServiceProviderMessageFactory messageTypeProvider)
+		public ServiceProviderOpenIdProvider(ServiceProviderHostDescription serviceDescription, IServiceProviderTokenManager tokenManager, OAuthServiceProviderMessageFactory messageTypeProvider)
 			: base(serviceDescription, tokenManager, messageTypeProvider) {
 		}
 
@@ -61,7 +61,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="serviceDescription">The service description.</param>
 		/// <param name="tokenManager">The token manager.</param>
 		/// <param name="nonceStore">The nonce store.</param>
-		public ServiceProviderOpenIdProvider(ServiceProviderDescription serviceDescription, IServiceProviderTokenManager tokenManager, INonceStore nonceStore)
+		public ServiceProviderOpenIdProvider(ServiceProviderHostDescription serviceDescription, IServiceProviderTokenManager tokenManager, INonceStore nonceStore)
 			: base(serviceDescription, tokenManager, nonceStore) {
 		}
 
@@ -72,7 +72,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// <param name="tokenManager">The token manager.</param>
 		/// <param name="nonceStore">The nonce store.</param>
 		/// <param name="messageTypeProvider">The message type provider.</param>
-		public ServiceProviderOpenIdProvider(ServiceProviderDescription serviceDescription, IServiceProviderTokenManager tokenManager, INonceStore nonceStore, OAuthServiceProviderMessageFactory messageTypeProvider)
+		public ServiceProviderOpenIdProvider(ServiceProviderHostDescription serviceDescription, IServiceProviderTokenManager tokenManager, INonceStore nonceStore, OAuthServiceProviderMessageFactory messageTypeProvider)
 			: base(serviceDescription, tokenManager, nonceStore, messageTypeProvider) {
 		}
 
@@ -92,7 +92,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// </remarks>
 		public AuthorizationRequest ReadAuthorizationRequest(IHostProcessedRequest openIdRequest) {
 			Requires.NotNull(openIdRequest, "openIdRequest");
-			Requires.ValidState(this.TokenManager is ICombinedOpenIdProviderTokenManager);
+			RequiresEx.ValidState(this.TokenManager is ICombinedOpenIdProviderTokenManager);
 			var openidTokenManager = this.TokenManager as ICombinedOpenIdProviderTokenManager;
 			ErrorUtilities.VerifyOperation(openidTokenManager != null, OAuthStrings.OpenIdOAuthExtensionRequiresSpecialTokenManagerInterface, typeof(IOpenIdOAuthTokenManager).FullName);
 
@@ -122,8 +122,8 @@ namespace DotNetOpenAuth.OAuth {
 		[Obsolete("Call the overload that doesn't take a consumerKey instead.")]
 		public void AttachAuthorizationResponse(IHostProcessedRequest openIdAuthenticationRequest, string consumerKey, string scope) {
 			Requires.NotNull(openIdAuthenticationRequest, "openIdAuthenticationRequest");
-			Requires.True((consumerKey == null) == (scope == null), null);
-			Requires.ValidState(this.TokenManager is ICombinedOpenIdProviderTokenManager);
+			Requires.That((consumerKey == null) == (scope == null), null, "consumerKey and scope must either be both provided or both omitted.");
+			RequiresEx.ValidState(this.TokenManager is ICombinedOpenIdProviderTokenManager);
 			var openidTokenManager = (ICombinedOpenIdProviderTokenManager)this.TokenManager;
 			ErrorUtilities.VerifyArgument(consumerKey == null || consumerKey == openidTokenManager.GetConsumerKey(openIdAuthenticationRequest.Realm), OAuthStrings.OpenIdOAuthRealmConsumerKeyDoNotMatch);
 
@@ -138,7 +138,7 @@ namespace DotNetOpenAuth.OAuth {
 		[SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Justification = "We want to take IAuthenticationRequest because that's the only supported use case.")]
 		public void AttachAuthorizationResponse(IHostProcessedRequest openIdAuthenticationRequest, string scope) {
 			Requires.NotNull(openIdAuthenticationRequest, "openIdAuthenticationRequest");
-			Requires.ValidState(this.TokenManager is ICombinedOpenIdProviderTokenManager);
+			RequiresEx.ValidState(this.TokenManager is ICombinedOpenIdProviderTokenManager);
 
 			var openidTokenManager = this.TokenManager as ICombinedOpenIdProviderTokenManager;
 			IOpenIdMessageExtension response;

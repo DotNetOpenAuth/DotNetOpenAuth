@@ -7,14 +7,16 @@
 namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Net;
 	using System.Security;
 	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.Messages;
+	using Validation;
 
 	/// <summary>
 	/// Manages the establishment, storage and retrieval of associations at the relying party.
@@ -130,15 +132,17 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// a new association of one does not already exist.
 		/// </summary>
 		/// <param name="provider">The provider to get an association for.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>The existing or new association; <c>null</c> if none existed and one could not be created.</returns>
-		internal Association GetOrCreateAssociation(IProviderEndpoint provider) {
-			return this.GetExistingAssociation(provider) ?? this.CreateNewAssociation(provider);
+		internal async Task<Association> GetOrCreateAssociationAsync(IProviderEndpoint provider, CancellationToken cancellationToken) {
+			return this.GetExistingAssociation(provider) ?? await this.CreateNewAssociationAsync(provider, cancellationToken);
 		}
 
 		/// <summary>
 		/// Creates a new association with a given Provider.
 		/// </summary>
 		/// <param name="provider">The provider to create an association with.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The newly created association, or null if no association can be created with
 		/// the given Provider given the current security settings.
@@ -146,9 +150,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <remarks>
 		/// A new association is created and returned even if one already exists in the
 		/// association store.
-		/// Any new association is automatically added to the <see cref="associationStore"/>.
+		/// Any new association is automatically added to the <see cref="associationStore" />.
 		/// </remarks>
-		private Association CreateNewAssociation(IProviderEndpoint provider) {
+		private async Task<Association> CreateNewAssociationAsync(IProviderEndpoint provider, CancellationToken cancellationToken) {
 			Requires.NotNull(provider, "provider");
 
 			// If there is no association store, there is no point in creating an association.
@@ -160,7 +164,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				var associateRequest = AssociateRequestRelyingParty.Create(this.securitySettings, provider);
 
 				const int RenegotiateRetries = 1;
-				return this.CreateNewAssociation(provider, associateRequest, RenegotiateRetries);
+				return await this.CreateNewAssociationAsync(provider, associateRequest, RenegotiateRetries, cancellationToken);
 			} catch (VerificationException ex) {
 				// See Trac ticket #163.  In partial trust host environments, the
 				// Diffie-Hellman implementation we're using for HTTP OP endpoints
@@ -178,11 +182,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="provider">The provider to create an association with.</param>
 		/// <param name="associateRequest">The associate request.  May be <c>null</c>, which will always result in a <c>null</c> return value..</param>
 		/// <param name="retriesRemaining">The number of times to try the associate request again if the Provider suggests it.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The newly created association, or null if no association can be created with
 		/// the given Provider given the current security settings.
 		/// </returns>
-		private Association CreateNewAssociation(IProviderEndpoint provider, AssociateRequest associateRequest, int retriesRemaining) {
+		/// <exception cref="ProtocolException">Create if an error occurs while creating the new association.</exception>
+		private async Task<Association> CreateNewAssociationAsync(IProviderEndpoint provider, AssociateRequest associateRequest, int retriesRemaining, CancellationToken cancellationToken) {
 			Requires.NotNull(provider, "provider");
 
 			if (associateRequest == null || retriesRemaining < 0) {
@@ -191,8 +197,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				return null;
 			}
 
+			Exception exception = null;
 			try {
-				var associateResponse = this.channel.Request(associateRequest);
+				var associateResponse = await this.channel.RequestAsync(associateRequest, cancellationToken);
 				var associateSuccessfulResponse = associateResponse as IAssociateSuccessfulResponseRelyingParty;
 				var associateUnsuccessfulResponse = associateResponse as AssociateUnsuccessfulResponse;
 				if (associateSuccessfulResponse != null) {
@@ -224,23 +231,27 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 						associateUnsuccessfulResponse.SessionType);
 
 					associateRequest = AssociateRequestRelyingParty.Create(this.securitySettings, provider, associateUnsuccessfulResponse.AssociationType, associateUnsuccessfulResponse.SessionType);
-					return this.CreateNewAssociation(provider, associateRequest, retriesRemaining - 1);
+					return await this.CreateNewAssociationAsync(provider, associateRequest, retriesRemaining - 1, cancellationToken);
 				} else {
 					throw new ProtocolException(MessagingStrings.UnexpectedMessageReceivedOfMany);
 				}
 			} catch (ProtocolException ex) {
-				// If the association failed because the remote server can't handle Expect: 100 Continue headers,
-				// then our web request handler should have already accomodated for future calls.  Go ahead and
-				// immediately make one of those future calls now to try to get the association to succeed.
-				if (StandardWebRequestHandler.IsExceptionFrom417ExpectationFailed(ex)) {
-					return this.CreateNewAssociation(provider, associateRequest, retriesRemaining - 1);
-				}
-
-				// Since having associations with OPs is not totally critical, we'll log and eat
-				// the exception so that auth may continue in dumb mode.
-				Logger.OpenId.ErrorFormat("An error occurred while trying to create an association with {0}.  {1}", provider.Uri, ex);
-				return null;
+				exception = ex;
 			}
+
+			Assumes.NotNull(exception);
+
+			// If the association failed because the remote server can't handle Expect: 100 Continue headers,
+			// then our web request handler should have already accomodated for future calls.  Go ahead and
+			// immediately make one of those future calls now to try to get the association to succeed.
+			if (UntrustedWebRequestHandler.IsExceptionFrom417ExpectationFailed(exception)) {
+				return await this.CreateNewAssociationAsync(provider, associateRequest, retriesRemaining - 1, cancellationToken);
+			}
+
+			// Since having associations with OPs is not totally critical, we'll log and eat
+			// the exception so that auth may continue in dumb mode.
+			Logger.OpenId.ErrorFormat("An error occurred while trying to create an association with {0}.  {1}", provider.Uri, exception);
+			return null;
 		}
 	}
 }

@@ -119,46 +119,32 @@ namespace RelyingPartyLogic {
 
 		/// <summary>
 		/// Determines whether a given set of resource owner credentials is valid based on the authorization server's user database
-		/// and if so records an authorization entry such that subsequent calls to <see cref="IsAuthorizationValid"/> would
+		/// and if so records an authorization entry such that subsequent calls to <see cref="IsAuthorizationValid" /> would
 		/// return <c>true</c>.
 		/// </summary>
 		/// <param name="userName">Username on the account.</param>
 		/// <param name="password">The user's password.</param>
-		/// <param name="accessRequest">
-		/// The access request the credentials came with.
-		/// This may be useful if the authorization server wishes to apply some policy based on the client that is making the request.
-		/// </param>
-		/// <param name="canonicalUserName">
-		/// Receives the canonical username (normalized for the resource server) of the user, for valid credentials;
-		/// Or <c>null</c> if the return value is false.
-		/// </param>
+		/// <param name="accessRequest">The access request the credentials came with.
+		/// This may be useful if the authorization server wishes to apply some policy based on the client that is making the request.</param>
 		/// <returns>
-		///   <c>true</c> if the given credentials are valid and the authorization granted; otherwise, <c>false</c>.
+		/// A value that describes the result of the authorization check.
 		/// </returns>
-		/// <exception cref="NotSupportedException">
-		/// May be thrown if the authorization server does not support the resource owner password credential grant type.
-		/// </exception>
-		public bool TryAuthorizeResourceOwnerCredentialGrant(string userName, string password, IAccessTokenRequest accessRequest, out string canonicalUserName) {
+		public AutomatedUserAuthorizationCheckResponse CheckAuthorizeResourceOwnerCredentialGrant(string userName, string password, IAccessTokenRequest accessRequest) {
 			// This web site delegates user authentication to OpenID Providers, and as such no users have local passwords with this server.
 			throw new NotSupportedException();
 		}
 
 		/// <summary>
 		/// Determines whether an access token request given a client credential grant should be authorized
-		/// and if so records an authorization entry such that subsequent calls to <see cref="IsAuthorizationValid"/> would
+		/// and if so records an authorization entry such that subsequent calls to <see cref="IsAuthorizationValid" /> would
 		/// return <c>true</c>.
 		/// </summary>
-		/// <param name="accessRequest">
-		/// The access request the credentials came with.
-		/// This may be useful if the authorization server wishes to apply some policy based on the client that is making the request.
-		/// </param>
+		/// <param name="accessRequest">The access request the credentials came with.
+		/// This may be useful if the authorization server wishes to apply some policy based on the client that is making the request.</param>
 		/// <returns>
-		///   <c>true</c> if the given credentials are valid and the authorization granted; otherwise, <c>false</c>.
+		/// A value that describes the result of the authorization check.
 		/// </returns>
-		/// <exception cref="NotSupportedException">
-		/// May be thrown if the authorization server does not support the client credential grant type.
-		/// </exception>
-		public bool TryAuthorizeClientCredentialsGrant(IAccessTokenRequest accessRequest) {
+		public AutomatedAuthorizationCheckResponse CheckAuthorizeClientCredentialsGrant(IAccessTokenRequest accessRequest) {
 			throw new NotImplementedException();
 		}
 

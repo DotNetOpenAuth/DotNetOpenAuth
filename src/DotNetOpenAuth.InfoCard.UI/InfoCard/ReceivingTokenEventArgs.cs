@@ -8,9 +8,9 @@ namespace DotNetOpenAuth.InfoCard {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.IdentityModel.Tokens;
 	using System.Security.Cryptography.X509Certificates;
+	using Validation;
 
 	/// <summary>
 	/// Arguments for the <see cref="InfoCardSelector.ReceivingToken"/> event.
@@ -74,7 +74,7 @@ namespace DotNetOpenAuth.InfoCard {
 		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "False positive")]
 		public void AddDecryptingToken(X509Certificate2 certificate) {
 			Requires.NotNull(certificate, "certificate");
-			Requires.True(certificate.HasPrivateKey, "certificate");
+			Requires.That(certificate.HasPrivateKey, "certificate", "requires private key");
 			var cert = new X509SecurityToken(certificate);
 			try {
 				this.AddDecryptingToken(cert);

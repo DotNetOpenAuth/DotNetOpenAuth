@@ -16,18 +16,11 @@
 		</dependencies>
 	</metadata>
 	<files>
-		<file src="$OutputPath35$signed\DotNetOpenAuth.OAuth2.ClientAuthorization.dll" target="lib\net35-full" />
-		<file src="$OutputPath40$signed\DotNetOpenAuth.OAuth2.ClientAuthorization.dll" target="lib\net40-full" />
 		<file src="$OutputPath45$signed\DotNetOpenAuth.OAuth2.ClientAuthorization.dll" target="lib\net45-full" />
-
-		<file src="$OutputPath35$DotNetOpenAuth.OAuth2.ClientAuthorization.pdb" target="lib\net35-full" />
-		<file src="$OutputPath40$DotNetOpenAuth.OAuth2.ClientAuthorization.pdb" target="lib\net40-full" />
 		<file src="$OutputPath45$DotNetOpenAuth.OAuth2.ClientAuthorization.pdb" target="lib\net45-full" />
-
-		<file src="$OutputPath35$DotNetOpenAuth.OAuth2.ClientAuthorization.xml" target="lib\net35-full" />
-		<file src="$OutputPath40$DotNetOpenAuth.OAuth2.ClientAuthorization.xml" target="lib\net40-full" />
 		<file src="$OutputPath45$DotNetOpenAuth.OAuth2.ClientAuthorization.xml" target="lib\net45-full" />
 
 		<file src="..\src\DotNetOpenAuth.OAuth2.ClientAuthorization\**\*.cs" target="src" />
+		<file src="$GeneratedAssemblyInfoSourceFile$" target="src" />
 	</files>
 </package>

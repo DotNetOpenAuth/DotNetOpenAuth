@@ -7,8 +7,9 @@
 namespace DotNetOpenAuth.OpenId.Provider.Behaviors {
 	using System;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Behaviors;
 	using DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy;
@@ -53,6 +54,7 @@ namespace DotNetOpenAuth.OpenId.Provider.Behaviors {
 		/// Called when a request is received by the Provider.
 		/// </summary>
 		/// <param name="request">The incoming request.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// 	<c>true</c> if this behavior owns this request and wants to stop other behaviors
 		/// from handling it; <c>false</c> to allow other behaviors to process this request.
@@ -62,26 +64,27 @@ namespace DotNetOpenAuth.OpenId.Provider.Behaviors {
 		/// should not change the properties on the instance of <see cref="ProviderSecuritySettings"/>
 		/// itself as that instance may be shared across many requests.
 		/// </remarks>
-		bool IProviderBehavior.OnIncomingRequest(IRequest request) {
-			return false;
+		Task<bool> IProviderBehavior.OnIncomingRequestAsync(IRequest request, CancellationToken cancellationToken) {
+			return Task.FromResult(false);
 		}
 
 		/// <summary>
 		/// Called when the Provider is preparing to send a response to an authentication request.
 		/// </summary>
 		/// <param name="request">The request that is configured to generate the outgoing response.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// 	<c>true</c> if this behavior owns this request and wants to stop other behaviors
 		/// from handling it; <c>false</c> to allow other behaviors to process this request.
 		/// </returns>
-		bool IProviderBehavior.OnOutgoingResponse(IAuthenticationRequest request) {
+		async Task<bool> IProviderBehavior.OnOutgoingResponseAsync(IAuthenticationRequest request, CancellationToken cancellationToken) {
 			// Nothing to do for negative assertions.
 			if (!request.IsAuthenticated.Value) {
 				return false;
 			}
 
 			var requestInternal = (Provider.AuthenticationRequest)request;
-			var responseMessage = (IProtocolMessageWithExtensions)requestInternal.Response;
+			var responseMessage = (IProtocolMessageWithExtensions)await requestInternal.GetResponseAsync(cancellationToken);
 
 			// Only apply our special policies if the RP requested it.
 			var papeRequest = request.GetExtension<PolicyRequest>();

@@ -37,8 +37,8 @@ namespace OpenIdProviderWebForms.Code {
 
 		internal static ServiceProviderOpenIdProvider ServiceProvider { get; private set; }
 
-		internal static ServiceProviderDescription GetServiceDescription() {
-			return new ServiceProviderDescription {
+		internal static ServiceProviderHostDescription GetServiceDescription() {
+			return new ServiceProviderHostDescription {
 				TamperProtectionElements = new ITamperProtectionChannelBindingElement[] { new HmacSha1SigningBindingElement() },
 			};
 		}

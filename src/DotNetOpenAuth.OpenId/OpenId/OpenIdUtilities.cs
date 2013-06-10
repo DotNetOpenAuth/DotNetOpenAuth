@@ -8,17 +8,24 @@ namespace DotNetOpenAuth.OpenId {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.IO;
 	using System.Linq;
+	using System.Net;
+	using System.Net.Cache;
+	using System.Net.Http;
 	using System.Text.RegularExpressions;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
 	using System.Web.UI;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.Extensions;
+	using DotNetOpenAuth.OpenId.RelyingParty;
+
 	using Org.Mentalis.Security.Cryptography;
+	using Validation;
 
 	/// <summary>
 	/// A set of utilities especially useful to OpenID.
@@ -69,12 +76,28 @@ namespace DotNetOpenAuth.OpenId {
 		/// </summary>
 		/// <returns>The association handle.</returns>
 		public static string GenerateRandomAssociationHandle() {
-			Contract.Ensures(!string.IsNullOrEmpty(Contract.Result<string>()));
-
 			// Generate the handle.  It must be unique, and preferably unpredictable,
 			// so we use a time element and a random data element to generate it.
 			string uniq = MessagingUtilities.GetCryptoRandomDataAsBase64(4);
 			return string.Format(CultureInfo.InvariantCulture, "{{{0}}}{{{1}}}", DateTime.UtcNow.Ticks, uniq);
+		}
+
+		/// <summary>
+		/// Immediately sends a redirect response to the browser to initiate an authentication request.
+		/// </summary>
+		/// <param name="authenticationRequest">The authentication request to send via redirect.</param>
+		/// <param name="context">The context.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// A task that completes with the asynchronous operation.
+		/// </returns>
+		public static async Task RedirectToProviderAsync(this IAuthenticationRequest authenticationRequest, HttpContextBase context = null, CancellationToken cancellationToken = default(CancellationToken)) {
+			Requires.NotNull(authenticationRequest, "authenticationRequest");
+			Verify.Operation(context != null || HttpContext.Current != null, MessagingStrings.HttpContextRequired);
+
+			context = context ?? new HttpContextWrapper(HttpContext.Current);
+			var response = await authenticationRequest.GetRedirectingResponseAsync(cancellationToken);
+			await response.SendAsync(context, cancellationToken);
 		}
 
 		/// <summary>
@@ -180,6 +203,51 @@ namespace DotNetOpenAuth.OpenId {
 			new Realm(fullyQualifiedRealm); // throws if not valid
 
 			return fullyQualifiedRealm;
+		}
+
+		/// <summary>
+		/// Creates a new HTTP client for use by OpenID relying parties and providers.
+		/// </summary>
+		/// <param name="hostFactories">The host factories.</param>
+		/// <param name="requireSsl">if set to <c>true</c> [require SSL].</param>
+		/// <param name="cachePolicy">The cache policy.</param>
+		/// <returns>An HttpClient instance with appropriate caching policies set for OpenID operations.</returns>
+		internal static HttpClient CreateHttpClient(this IHostFactories hostFactories, bool requireSsl, RequestCachePolicy cachePolicy = null) {
+			Requires.NotNull(hostFactories, "hostFactories");
+
+			var rootHandler = hostFactories.CreateHttpMessageHandler();
+			var handler = rootHandler;
+			bool sslRequiredSet = false, cachePolicySet = false;
+			do {
+				var webRequestHandler = handler as WebRequestHandler;
+				var untrustedHandler = handler as UntrustedWebRequestHandler;
+				var delegatingHandler = handler as DelegatingHandler;
+				if (webRequestHandler != null) {
+					if (cachePolicy != null) {
+						webRequestHandler.CachePolicy = cachePolicy;
+						cachePolicySet = true;
+					}
+				} else if (untrustedHandler != null) {
+					untrustedHandler.IsSslRequired = requireSsl;
+					sslRequiredSet = true;
+				}
+
+				if (delegatingHandler != null) {
+					handler = delegatingHandler.InnerHandler;
+				} else {
+					break;
+				}
+			}
+			while (true);
+
+			if (cachePolicy != null && !cachePolicySet) {
+				Logger.OpenId.Warn(
+					"Unable to set cache policy due to HttpMessageHandler instances not being of type WebRequestHandler.");
+			}
+
+			ErrorUtilities.VerifyProtocol(!requireSsl || sslRequiredSet, "Unable to set RequireSsl on message handler because no HttpMessageHandler was of type {0}.", typeof(UntrustedWebRequestHandler).FullName);
+
+			return hostFactories.CreateHttpClient(rootHandler);
 		}
 
 		/// <summary>

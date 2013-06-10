@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Gmail address book demo" Language="C#" MasterPageFile="~/MasterPage.master"
+﻿<%@ Page Title="Gmail address book demo" Language="C#" MasterPageFile="~/MasterPage.master" Async="true"
 	AutoEventWireup="true" Inherits="OAuthConsumer.GoogleAddressBook" Codebehind="GoogleAddressBook.aspx.cs" %>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="Body" runat="Server">

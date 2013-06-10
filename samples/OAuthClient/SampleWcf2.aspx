@@ -1,4 +1,4 @@
-﻿<%@ Page Title="OAuth 2.0 client (web server flow)" Language="C#" MasterPageFile="~/MasterPage.master"
+﻿<%@ Page Title="OAuth 2.0 client (web server flow)" Language="C#" MasterPageFile="~/MasterPage.master" Async="true"
 	AutoEventWireup="true" Inherits="OAuthClient.SampleWcf2" CodeBehind="SampleWcf2.aspx.cs" %>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="Body" runat="Server">

@@ -6,9 +6,9 @@
 
 namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using DotNetOpenAuth.Messaging.Bindings;
+	using Validation;
 
 	/// <summary>
 	/// Wraps a standard <see cref="ICryptoKeyStore"/> so that it behaves as an association store.
@@ -25,7 +25,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="keyStore">The key store.</param>
 		internal CryptoKeyStoreAsRelyingPartyAssociationStore(ICryptoKeyStore keyStore) {
 			Requires.NotNull(keyStore, "keyStore");
-			Contract.Ensures(this.keyStore == keyStore);
 			this.keyStore = keyStore;
 		}
 

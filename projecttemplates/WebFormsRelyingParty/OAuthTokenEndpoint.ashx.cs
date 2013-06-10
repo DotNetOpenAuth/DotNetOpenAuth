@@ -8,16 +8,19 @@ namespace WebFormsRelyingParty {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Threading.Tasks;
 	using System.Web;
 	using System.Web.SessionState;
+	using DotNetOpenAuth.ApplicationBlock;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2;
 	using RelyingPartyLogic;
+	using WebFormsRelyingParty.Code;
 
 	/// <summary>
 	/// An OAuth 2.0 token endpoint.
 	/// </summary>
-	public class OAuthTokenEndpoint : IHttpHandler, IRequiresSessionState {
+	public class OAuthTokenEndpoint : HttpAsyncHandlerBase, IRequiresSessionState {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OAuthTokenEndpoint"/> class.
 		/// </summary>
@@ -30,16 +33,14 @@ namespace WebFormsRelyingParty {
 		/// <returns>
 		/// true if the <see cref="T:System.Web.IHttpHandler"/> instance is reusable; otherwise, false.
 		/// </returns>
-		public bool IsReusable {
+		public override bool IsReusable {
 			get { return true; }
 		}
 
-		/// <summary>
-		/// Enables processing of HTTP Web requests by a custom HttpHandler that implements the <see cref="T:System.Web.IHttpHandler"/> interface.
-		/// </summary>
-		/// <param name="context">An <see cref="T:System.Web.HttpContext"/> object that provides references to the intrinsic server objects (for example, Request, Response, Session, and Server) used to service HTTP requests.</param>
-		public void ProcessRequest(HttpContext context) {
-			OAuthServiceProvider.AuthorizationServer.HandleTokenRequest().Respond();
+		protected override async Task ProcessRequestAsync(HttpContext context) {
+			var serviceProvider = OAuthServiceProvider.AuthorizationServer;
+			var response = await serviceProvider.HandleTokenRequestAsync(new HttpRequestWrapper(context.Request), context.Response.ClientDisconnectedToken);
+			await response.SendAsync(new HttpContextWrapper(context), context.Response.ClientDisconnectedToken);
 		}
 	}
 }

@@ -8,16 +8,15 @@ namespace DotNetOpenAuth.Configuration {
 	using System;
 	using System.Collections.Generic;
 	using System.Configuration;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// A collection of <see cref="TypeConfigurationElement&lt;T&gt;"/>.
 	/// </summary>
 	/// <typeparam name="T">The type that all types specified in the elements must derive from.</typeparam>
-	[ContractVerification(true)]
 	internal class TypeConfigurationCollection<T> : ConfigurationElementCollection
 		where T : class {
 		/// <summary>
@@ -42,12 +41,14 @@ namespace DotNetOpenAuth.Configuration {
 		/// Creates instances of all the types listed in the collection.
 		/// </summary>
 		/// <param name="allowInternals">if set to <c>true</c> then internal types may be instantiated.</param>
-		/// <returns>A sequence of instances generated from types in this collection.  May be empty, but never null.</returns>
-		internal IEnumerable<T> CreateInstances(bool allowInternals) {
-			Contract.Ensures(Contract.Result<IEnumerable<T>>() != null);
+		/// <param name="hostFactories">The host factories.</param>
+		/// <returns>
+		/// A sequence of instances generated from types in this collection.  May be empty, but never null.
+		/// </returns>
+		internal IEnumerable<T> CreateInstances(bool allowInternals, IHostFactories hostFactories) {
 			return from element in this.Cast<TypeConfigurationElement<T>>()
 			       where !element.IsEmpty
-			       select element.CreateInstance(default(T), allowInternals);
+			       select element.CreateInstance(default(T), allowInternals, hostFactories);
 		}
 
 		/// <summary>
@@ -68,7 +69,7 @@ namespace DotNetOpenAuth.Configuration {
 		/// An <see cref="T:System.Object"/> that acts as the key for the specified <see cref="T:System.Configuration.ConfigurationElement"/>.
 		/// </returns>
 		protected override object GetElementKey(ConfigurationElement element) {
-			Contract.Assume(element != null); // this should be Contract.Requires in base class.
+			Requires.NotNull(element, "element");
 			TypeConfigurationElement<T> typedElement = (TypeConfigurationElement<T>)element;
 			return (!string.IsNullOrEmpty(typedElement.TypeName) ? typedElement.TypeName : typedElement.XamlSource) ?? string.Empty;
 		}

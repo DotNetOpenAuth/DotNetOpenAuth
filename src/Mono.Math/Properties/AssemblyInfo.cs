@@ -7,7 +7,6 @@
 // We DON'T put an AssemblyVersionAttribute in here because it is generated in the build.
 
 using System;
-using System.Diagnostics.Contracts;
 using System.Net;
 using System.Reflection;
 using System.Resources;
@@ -20,15 +19,7 @@ using System.Web.UI;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Mono Math")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("DotNetOpenAuth")]
-[assembly: AssemblyCopyright("Copyright © 2011 Outercurve Foundation")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-[assembly: NeutralResourcesLanguage("en-US")]
+[assembly: AssemblyCopyright("Copyright © 2012 Outercurve Foundation")]
 [assembly: CLSCompliant(true)]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
@@ -38,8 +29,6 @@ using System.Web.UI;
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("7d73990c-47c0-4256-9f20-a893add9e289")]
-
-[assembly: ContractVerification(true)]
 
 #if StrongNameSigned
 // See comment at top of this file.  We need this so that strong-naming doesn't

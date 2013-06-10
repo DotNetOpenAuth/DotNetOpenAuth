@@ -9,13 +9,17 @@ namespace DotNetOpenAuth.Test.Messaging {
 	using System.Collections.Generic;
 	using System.Collections.Specialized;
 	using System.Diagnostics;
+	using System.Globalization;
 	using System.IO;
+	using System.Linq;
 	using System.Net;
+	using System.Net.Http;
 	using System.Text;
 	using System.Text.RegularExpressions;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Test.Mocks;
+	using Moq;
 	using NUnit.Framework;
 
 	[TestFixture]
@@ -103,11 +107,6 @@ namespace DotNetOpenAuth.Test.Messaging {
 		}
 
 		[Test, ExpectedException(typeof(ArgumentNullException))]
-		public void ApplyHeadersToResponseNullListenerResponse() {
-			MessagingUtilities.ApplyHeadersToResponse(new WebHeaderCollection(), (HttpListenerResponse)null);
-		}
-
-		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void ApplyHeadersToResponseNullHeaders() {
 			MessagingUtilities.ApplyHeadersToResponse(null, new HttpResponseWrapper(new HttpResponse(new StringWriter())));
 		}
@@ -144,54 +143,25 @@ namespace DotNetOpenAuth.Test.Messaging {
 		}
 
 		/// <summary>
-		/// Verifies the overall format of the multipart POST is correct.
-		/// </summary>
-		[Test]
-		public void PostMultipart() {
-			var httpHandler = new TestWebRequestHandler();
-			bool callbackTriggered = false;
-			httpHandler.Callback = req => {
-				Match m = Regex.Match(req.ContentType, "multipart/form-data; boundary=(.+)");
-				Assert.IsTrue(m.Success, "Content-Type HTTP header not set correctly.");
-				string boundary = m.Groups[1].Value;
-				boundary = boundary.Substring(0, boundary.IndexOf(';')); // trim off charset
-				string expectedEntity = "--{0}\r\nContent-Disposition: form-data; name=\"a\"\r\n\r\nb\r\n--{0}--\r\n";
-				expectedEntity = string.Format(expectedEntity, boundary);
-				string actualEntity = httpHandler.RequestEntityAsString;
-				Assert.AreEqual(expectedEntity, actualEntity);
-				callbackTriggered = true;
-				Assert.AreEqual(req.ContentLength, actualEntity.Length);
-				IncomingWebResponse resp = new CachedDirectWebResponse();
-				return resp;
-			};
-			var request = (HttpWebRequest)WebRequest.Create("http://someserver");
-			var parts = new[] {
-				MultipartPostPart.CreateFormPart("a", "b"),
-			};
-			request.PostMultipart(httpHandler, parts);
-			Assert.IsTrue(callbackTriggered);
-		}
-
-		/// <summary>
 		/// Verifies proper behavior of GetHttpVerb
 		/// </summary>
 		[Test]
 		public void GetHttpVerbTest() {
-			Assert.AreEqual("GET", MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.GetRequest));
-			Assert.AreEqual("POST", MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.PostRequest));
-			Assert.AreEqual("HEAD", MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.HeadRequest));
-			Assert.AreEqual("DELETE", MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.DeleteRequest));
-			Assert.AreEqual("PUT", MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.PutRequest));
-			Assert.AreEqual("PATCH", MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.PatchRequest));
-			Assert.AreEqual("OPTIONS", MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.OptionsRequest));
+			Assert.AreEqual(HttpMethod.Get, MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.GetRequest));
+			Assert.AreEqual(HttpMethod.Post, MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.PostRequest));
+			Assert.AreEqual(HttpMethod.Head, MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.HeadRequest));
+			Assert.AreEqual(HttpMethod.Delete, MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.DeleteRequest));
+			Assert.AreEqual(HttpMethod.Put, MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.PutRequest));
+			Assert.AreEqual(new HttpMethod("PATCH"), MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.PatchRequest));
+			Assert.AreEqual(HttpMethod.Options, MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.OptionsRequest));
 
-			Assert.AreEqual("GET", MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.GetRequest | HttpDeliveryMethods.AuthorizationHeaderRequest));
-			Assert.AreEqual("POST", MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.PostRequest | HttpDeliveryMethods.AuthorizationHeaderRequest));
-			Assert.AreEqual("HEAD", MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.HeadRequest | HttpDeliveryMethods.AuthorizationHeaderRequest));
-			Assert.AreEqual("DELETE", MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.DeleteRequest | HttpDeliveryMethods.AuthorizationHeaderRequest));
-			Assert.AreEqual("PUT", MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.PutRequest | HttpDeliveryMethods.AuthorizationHeaderRequest));
-			Assert.AreEqual("PATCH", MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.PatchRequest | HttpDeliveryMethods.AuthorizationHeaderRequest));
-			Assert.AreEqual("OPTIONS", MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.OptionsRequest | HttpDeliveryMethods.AuthorizationHeaderRequest));
+			Assert.AreEqual(HttpMethod.Get, MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.GetRequest | HttpDeliveryMethods.AuthorizationHeaderRequest));
+			Assert.AreEqual(HttpMethod.Post, MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.PostRequest | HttpDeliveryMethods.AuthorizationHeaderRequest));
+			Assert.AreEqual(HttpMethod.Head, MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.HeadRequest | HttpDeliveryMethods.AuthorizationHeaderRequest));
+			Assert.AreEqual(HttpMethod.Delete, MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.DeleteRequest | HttpDeliveryMethods.AuthorizationHeaderRequest));
+			Assert.AreEqual(HttpMethod.Put, MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.PutRequest | HttpDeliveryMethods.AuthorizationHeaderRequest));
+			Assert.AreEqual(new HttpMethod("PATCH"), MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.PatchRequest | HttpDeliveryMethods.AuthorizationHeaderRequest));
+			Assert.AreEqual(HttpMethod.Options, MessagingUtilities.GetHttpVerb(HttpDeliveryMethods.OptionsRequest | HttpDeliveryMethods.AuthorizationHeaderRequest));
 		}
 
 		/// <summary>

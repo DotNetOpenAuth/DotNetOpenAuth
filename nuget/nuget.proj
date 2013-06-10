@@ -16,20 +16,6 @@
 		<MSBuild
 			Projects="$(ProjectRoot)src\DotNetOpenAuth\DotNetOpenAuth.proj"
 			Targets="@(ProductTargets)"
-			Properties="TargetFrameworkVersion=v3.5"
-			BuildInParallel="$(BuildInParallel)">
-			<Output TaskParameter="TargetOutputs" ItemName="TargetOutputs35"/>
-		</MSBuild>
-		<MSBuild
-			Projects="$(ProjectRoot)src\DotNetOpenAuth\DotNetOpenAuth.proj"
-			Targets="@(ProductTargets)"
-			Properties="TargetFrameworkVersion=v4.0"
-			BuildInParallel="$(BuildInParallel)">
-			<Output TaskParameter="TargetOutputs" ItemName="TargetOutputs40"/>
-		</MSBuild>
-		<MSBuild
-			Projects="$(ProjectRoot)src\DotNetOpenAuth\DotNetOpenAuth.proj"
-			Targets="@(ProductTargets)"
 			Properties="TargetFrameworkVersion=v4.5"
 			BuildInParallel="$(BuildInParallel)">
 			<Output TaskParameter="TargetOutputs" ItemName="TargetOutputs45"/>
@@ -37,7 +23,7 @@
 		<MSBuild
 			Projects="$(ProjectRoot)src\DotNetOpenAuth.AspNet\DotNetOpenAuth.AspNet.csproj"
 			Targets="@(AspNetTargets)"
-			Properties="TargetFrameworkVersion=v4.0"
+			Properties="TargetFrameworkVersion=v4.5"
 			BuildInParallel="$(BuildInParallel)">
 		</MSBuild>
 		<MSBuild
@@ -48,19 +34,11 @@
 		</MSBuild>
 
 		<ItemGroup>
-			<ResignedAssembliesOutputs Include="@(TargetOutputs35)" Condition=" '%(MSBuildSourceTargetName)' == 'Sign' ">
-				<TargetFramework>v3.5</TargetFramework>
-			</ResignedAssembliesOutputs>
-			<ResignedAssembliesOutputs Include="@(TargetOutputs40)" Condition=" '%(MSBuildSourceTargetName)' == 'Sign' ">
-				<TargetFramework>v4.0</TargetFramework>
-			</ResignedAssembliesOutputs>
 			<ResignedAssembliesOutputs Include="@(TargetOutputs45)" Condition=" '%(MSBuildSourceTargetName)' == 'Sign' ">
 				<TargetFramework>v4.5</TargetFramework>
 			</ResignedAssembliesOutputs>
 		</ItemGroup>
 		<PropertyGroup>
-			<OutputPath35 Condition=" '%(MSBuildSourceTargetName)' == 'GetOutputPath' ">@(TargetOutputs35)</OutputPath35>
-			<OutputPath40 Condition=" '%(MSBuildSourceTargetName)' == 'GetOutputPath' ">@(TargetOutputs40)</OutputPath40>
 			<OutputPath45 Condition=" '%(MSBuildSourceTargetName)' == 'GetOutputPath' ">@(TargetOutputs45)</OutputPath45>
 		</PropertyGroup>
 	</Target>
@@ -68,19 +46,13 @@
 	<Target Name="Build" DependsOnTargets="BuildIntermediates" Returns="@(NuGetPackages)">
 		<ItemGroup>
 			<NuGetProperties Include="version=$(NuGetPackageVersion)" />
-			<NuGetProperties Include="oauth2version=$(OAuth2PackagesVersion)" />
-			<NuGetProperties Include="OutputPath35=$(OutputPath35)" />
-			<NuGetProperties Include="OutputPath40=$(OutputPath40)" />
+			<NuGetProperties Include="oauth2version=$(NuGetPackageVersion)" />
 			<NuGetProperties Include="OutputPath45=$(OutputPath45)" />
-			<NuGetProperties Include="IntermediatePath=$(IntermediatePath40)" />
+			<NuGetProperties Include="IntermediatePath=$(IntermediatePath45)" />
 
-			<NuGetSpecifications Include="*.nuspec" Exclude="*oauth2*.nuspec;DotNetOpenAuth.nuspec">
+			<NuGetSpecifications Include="*.nuspec" Exclude="DotNetOpenAuth.nuspec">
 				<Symbols>true</Symbols>
 				<PackageVersion>$(NuGetPackageVersion)</PackageVersion>
-			</NuGetSpecifications>
-			<NuGetSpecifications Include="*oauth2*.nuspec" Exclude="DotNetOpenAuth.nuspec">
-				<Symbols>true</Symbols>
-				<PackageVersion>$(OAuth2PackagesVersion)</PackageVersion>
 			</NuGetSpecifications>
 			<NuGetSpecifications Include="DotNetOpenAuth.nuspec">
 				<PackageVersion>$(NuGetPackageVersion)</PackageVersion>
@@ -93,7 +65,7 @@
 		</PropertyGroup>
 		<ItemGroup>
 			<NuGetSpecifications>
-				<Properties>$(_NuGetProperties);Identity=%(FileName);GeneratedAssemblyInfoSourceFile=$(IntermediatePath40)%(FileName).Version.cs</Properties>
+				<Properties>$(_NuGetProperties);Identity=%(FileName);GeneratedAssemblyInfoSourceFile=$(IntermediatePath45)%(FileName).Version.cs</Properties>
 			</NuGetSpecifications>
 		</ItemGroup>
 

@@ -1,4 +1,4 @@
-<%@ Page Language="C#" AutoEventWireup="true" Inherits="OpenIdProviderWebForms.server" CodeBehind="server.aspx.cs" ValidateRequest="false" %>
+<%@ Page Language="C#" AutoEventWireup="true" Inherits="OpenIdProviderWebForms.server" CodeBehind="server.aspx.cs" ValidateRequest="false" Async="true" EnableSessionState="true" %>
 
 <%@ Register Assembly="DotNetOpenAuth.OpenId.Provider.UI" Namespace="DotNetOpenAuth.OpenId.Provider" TagPrefix="openid" %>
 <html>

@@ -8,12 +8,16 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.Specialized;
-	using System.Diagnostics.Contracts;
 	using System.Net;
+	using System.Net.Http;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
-
+	using System.Xml;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2.Messages;
+
+	using Validation;
 
 	/// <summary>
 	/// The messaging channel used by OAuth 2.0 Clients.
@@ -32,10 +36,11 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		};
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="OAuth2ClientChannel"/> class.
+		/// Initializes a new instance of the <see cref="OAuth2ClientChannel" /> class.
 		/// </summary>
-		internal OAuth2ClientChannel()
-			: base(MessageTypes) {
+		/// <param name="hostFactories">The host factories.</param>
+		internal OAuth2ClientChannel(IHostFactories hostFactories)
+			: base(MessageTypes, hostFactories: hostFactories) {
 		}
 
 		/// <summary>
@@ -50,6 +55,13 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		public ClientCredentialApplicator ClientCredentialApplicator { get; set; }
 
 		/// <summary>
+		/// Gets quotas used when deserializing JSON.
+		/// </summary>
+		public XmlDictionaryReaderQuotas JsonReaderQuotas {
+			get { return this.XmlDictionaryReaderQuotas; }
+		}
+
+		/// <summary>
 		/// Prepares an HTTP request that carries a given message.
 		/// </summary>
 		/// <param name="request">The message to send.</param>
@@ -57,11 +69,11 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// The <see cref="HttpWebRequest"/> prepared to send the request.
 		/// </returns>
 		/// <remarks>
-		/// This method must be overridden by a derived class, unless the <see cref="Channel.RequestCore"/> method
+		/// This method must be overridden by a derived class, unless the <see cref="Channel.RequestCoreAsync"/> method
 		/// is overridden and does not require this method.
 		/// </remarks>
-		protected override HttpWebRequest CreateHttpRequest(IDirectedProtocolMessage request) {
-			HttpWebRequest httpRequest;
+		protected override HttpRequestMessage CreateHttpRequest(IDirectedProtocolMessage request) {
+			HttpRequestMessage httpRequest;
 			if ((request.HttpMethods & HttpDeliveryMethods.GetRequest) != 0) {
 				httpRequest = InitializeRequestAsGet(request);
 			} else if ((request.HttpMethods & HttpDeliveryMethods.PostRequest) != 0) {
@@ -77,20 +89,22 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// Gets the protocol message that may be in the given HTTP response.
 		/// </summary>
 		/// <param name="response">The response that is anticipated to contain an protocol message.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The deserialized message parts, if found.  Null otherwise.
 		/// </returns>
 		/// <exception cref="ProtocolException">Thrown when the response is not valid.</exception>
-		protected override IDictionary<string, string> ReadFromResponseCore(IncomingWebResponse response) {
+		protected override async Task<IDictionary<string, string>> ReadFromResponseCoreAsync(HttpResponseMessage response, CancellationToken cancellationToken) {
 			// The spec says direct responses should be JSON objects, but Facebook uses HttpFormUrlEncoded instead, calling it text/plain
 			// Others return text/javascript.  Again bad.
-			string body = response.GetResponseReader().ReadToEnd();
-			if (response.ContentType.MediaType == JsonEncoded || response.ContentType.MediaType == JsonTextEncoded) {
+			string body = await response.Content.ReadAsStringAsync();
+			var contentType = response.Content.Headers.ContentType.MediaType;
+			if (contentType == JsonEncoded || contentType == JsonTextEncoded) {
 				return this.DeserializeFromJson(body);
-			} else if (response.ContentType.MediaType == HttpFormUrlEncoded || response.ContentType.MediaType == PlainTextEncoded) {
+			} else if (contentType == HttpFormUrlEncoded || contentType == PlainTextEncoded) {
 				return HttpUtility.ParseQueryString(body).ToDictionary();
 			} else {
-				throw ErrorUtilities.ThrowProtocol(ClientStrings.UnexpectedResponseContentType, response.ContentType.MediaType);
+				throw ErrorUtilities.ThrowProtocol(ClientStrings.UnexpectedResponseContentType, contentType);
 			}
 		}
 
@@ -98,21 +112,24 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// Gets the protocol message that may be embedded in the given HTTP request.
 		/// </summary>
 		/// <param name="request">The request to search for an embedded message.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The deserialized message, if one is found.  Null otherwise.
 		/// </returns>
-		protected override IDirectedProtocolMessage ReadFromRequestCore(HttpRequestBase request) {
-			Logger.Channel.DebugFormat("Incoming HTTP request: {0} {1}", request.HttpMethod, request.GetPublicFacingUrl().AbsoluteUri);
+		protected override Task<IDirectedProtocolMessage> ReadFromRequestCoreAsync(HttpRequestMessage request, CancellationToken cancellationToken) {
+			Requires.NotNull(request, "request");
 
-			var fields = request.GetQueryStringBeforeRewriting().ToDictionary();
+			Logger.Channel.DebugFormat("Incoming HTTP request: {0} {1}", request.Method, request.RequestUri.AbsoluteUri);
+
+			var fields = HttpUtility.ParseQueryString(request.RequestUri.Query).ToDictionary();
 
 			// Also read parameters from the fragment, if it's available.
 			// Typically the fragment is not available because the browser doesn't send it to a web server
 			// but this request may have been fabricated by an installed desktop app, in which case
 			// the fragment is available.
-			string fragment = request.GetPublicFacingUrl().Fragment;
+			string fragment = request.RequestUri.Fragment;
 			if (!string.IsNullOrEmpty(fragment)) {
-				foreach (var pair in HttpUtility.ParseQueryString(fragment.Substring(1)).ToDictionary()) {
+				foreach (var pair in HttpUtility.ParseQueryString(fragment.Substring(1)).AsKeyValuePairs()) {
 					fields.Add(pair.Key, pair.Value);
 				}
 			}
@@ -125,7 +142,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 				return null;
 			}
 
-			return (IDirectedProtocolMessage)this.Receive(fields, recipient);
+			return Task.FromResult((IDirectedProtocolMessage)this.Receive(fields, recipient));
 		}
 
 		/// <summary>
@@ -139,7 +156,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <remarks>
 		/// This method implements spec OAuth V1.0 section 5.3.
 		/// </remarks>
-		protected override OutgoingWebResponse PrepareDirectResponse(IProtocolMessage response) {
+		protected override HttpResponseMessage PrepareDirectResponse(IProtocolMessage response) {
 			// Clients don't ever send direct responses.
 			throw new NotImplementedException();
 		}
@@ -148,7 +165,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// Performs additional processing on an outgoing web request before it is sent to the remote server.
 		/// </summary>
 		/// <param name="request">The request.</param>
-		protected override void PrepareHttpWebRequest(HttpWebRequest request) {
+		protected override void PrepareHttpWebRequest(HttpRequestMessage request) {
 			base.PrepareHttpWebRequest(request);
 
 			if (this.ClientCredentialApplicator != null) {

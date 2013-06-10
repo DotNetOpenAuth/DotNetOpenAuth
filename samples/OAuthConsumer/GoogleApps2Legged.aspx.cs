@@ -12,28 +12,20 @@
 	using DotNetOpenAuth.OAuth.Messages;
 
 	public partial class GoogleApps2Legged : System.Web.UI.Page {
-		private InMemoryTokenManager TokenManager {
-			get {
-				var tokenManager = (InMemoryTokenManager)Application["GoogleTokenManager"];
-				if (tokenManager == null) {
-					string consumerKey = ConfigurationManager.AppSettings["googleConsumerKey"];
-					string consumerSecret = ConfigurationManager.AppSettings["googleConsumerSecret"];
-					if (!string.IsNullOrEmpty(consumerKey)) {
-						tokenManager = new InMemoryTokenManager(consumerKey, consumerSecret);
-						Application["GoogleTokenManager"] = tokenManager;
-					}
-				}
-
-				return tokenManager;
-			}
+		protected void Page_Load(object sender, EventArgs e) {
+			this.RegisterAsyncTask(
+				new PageAsyncTask(
+					async ct => {
+						var google = new GoogleConsumer();
+						var accessToken = await google.RequestNewClientAccountAsync();
+						using (var httpClient = google.CreateHttpClient(accessToken.AccessToken)) {
+							await httpClient.GetAsync("http://someUri", Response.ClientDisconnectedToken);
+						}
+					}));
 		}
 
-		protected void Page_Load(object sender, EventArgs e) {
-			var google = new WebConsumer(GoogleConsumer.ServiceDescription, this.TokenManager);
-			string accessToken = google.RequestNewClientAccount();
-			////string tokenSecret = google.TokenManager.GetTokenSecret(accessToken);
-			MessageReceivingEndpoint ep = null; // set up your authorized call here.
-			google.PrepareAuthorizedRequestAndSend(ep, accessToken);
+		protected void getAddressBookButton_Click(object sender, EventArgs e) {
+			throw new NotImplementedException();
 		}
 	}
 }

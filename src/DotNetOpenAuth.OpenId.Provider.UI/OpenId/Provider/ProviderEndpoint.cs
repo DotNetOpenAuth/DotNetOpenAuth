@@ -8,14 +8,17 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
 	using System.Collections.Generic;
 	using System.ComponentModel;
-	using System.Diagnostics.Contracts;
+	using System.Net.Http;
 	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
 	using System.Web.UI;
 	using System.Web.UI.WebControls;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
+	using Validation;
 
 	/// <summary>
 	/// An OpenID Provider control that automatically responds to certain
@@ -43,12 +46,14 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// <summary>
 		/// Backing field for the <see cref="Provider"/> property.
 		/// </summary>
-		private static OpenIdProvider provider;
+		private Lazy<OpenIdProvider> provider;
 
 		/// <summary>
-		/// The lock that must be obtained when initializing the provider field.
+		/// Initializes a new instance of the <see cref="ProviderEndpoint"/> class.
 		/// </summary>
-		private static object providerInitializerLock = new object();
+		public ProviderEndpoint() {
+			this.provider = new Lazy<OpenIdProvider>(this.CreateProvider);
+		}
 
 		/// <summary>
 		/// Fired when an incoming OpenID request is an authentication challenge
@@ -64,30 +69,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		public event EventHandler<AnonymousRequestEventArgs> AnonymousRequest;
 
 		/// <summary>
-		/// Gets or sets the <see cref="OpenIdProvider"/> instance to use for all instances of this control.
-		/// </summary>
-		/// <value>The default value is an <see cref="OpenIdProvider"/> instance initialized according to the web.config file.</value>
-		public static OpenIdProvider Provider {
-			get {
-				Contract.Ensures(Contract.Result<OpenIdProvider>() != null);
-				if (provider == null) {
-					lock (providerInitializerLock) {
-						if (provider == null) {
-							provider = CreateProvider();
-						}
-					}
-				}
-
-				return provider;
-			}
-
-			set {
-				Requires.NotNull(value, "value");
-				provider = value;
-			}
-		}
-
-		/// <summary>
 		/// Gets or sets an incoming OpenID authentication request that has not yet been responded to.
 		/// </summary>
 		/// <remarks>
@@ -98,15 +79,14 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </remarks>
 		public static IAuthenticationRequest PendingAuthenticationRequest {
 			get {
-				Requires.ValidState(HttpContext.Current != null, MessagingStrings.HttpContextRequired);
-				Requires.ValidState(HttpContext.Current.Session != null, MessagingStrings.SessionRequired);
-				Contract.Ensures(Contract.Result<IAuthenticationRequest>() == null || PendingRequest != null);
+				RequiresEx.ValidState(HttpContext.Current != null, MessagingStrings.HttpContextRequired);
+				RequiresEx.ValidState(HttpContext.Current.Session != null, MessagingStrings.SessionRequired);
 				return HttpContext.Current.Session[PendingRequestKey] as IAuthenticationRequest;
 			}
 
 			set {
-				Requires.ValidState(HttpContext.Current != null, MessagingStrings.HttpContextRequired);
-				Requires.ValidState(HttpContext.Current.Session != null, MessagingStrings.SessionRequired);
+				RequiresEx.ValidState(HttpContext.Current != null, MessagingStrings.HttpContextRequired);
+				RequiresEx.ValidState(HttpContext.Current.Session != null, MessagingStrings.SessionRequired);
 				HttpContext.Current.Session[PendingRequestKey] = value;
 			}
 		}
@@ -122,15 +102,14 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </remarks>
 		public static IAnonymousRequest PendingAnonymousRequest {
 			get {
-				Requires.ValidState(HttpContext.Current != null, MessagingStrings.HttpContextRequired);
-				Requires.ValidState(HttpContext.Current.Session != null, MessagingStrings.SessionRequired);
-				Contract.Ensures(Contract.Result<IAnonymousRequest>() == null || PendingRequest != null);
+				RequiresEx.ValidState(HttpContext.Current != null, MessagingStrings.HttpContextRequired);
+				RequiresEx.ValidState(HttpContext.Current.Session != null, MessagingStrings.SessionRequired);
 				return HttpContext.Current.Session[PendingRequestKey] as IAnonymousRequest;
 			}
 
 			set {
-				Requires.ValidState(HttpContext.Current != null, MessagingStrings.HttpContextRequired);
-				Requires.ValidState(HttpContext.Current.Session != null, MessagingStrings.SessionRequired);
+				RequiresEx.ValidState(HttpContext.Current != null, MessagingStrings.HttpContextRequired);
+				RequiresEx.ValidState(HttpContext.Current.Session != null, MessagingStrings.SessionRequired);
 				HttpContext.Current.Session[PendingRequestKey] = value;
 			}
 		}
@@ -146,15 +125,30 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </remarks>
 		public static IHostProcessedRequest PendingRequest {
 			get {
-				Requires.ValidState(HttpContext.Current != null, MessagingStrings.HttpContextRequired);
-				Requires.ValidState(HttpContext.Current.Session != null, MessagingStrings.SessionRequired);
+				RequiresEx.ValidState(HttpContext.Current != null, MessagingStrings.HttpContextRequired);
+				RequiresEx.ValidState(HttpContext.Current.Session != null, MessagingStrings.SessionRequired);
 				return HttpContext.Current.Session[PendingRequestKey] as IHostProcessedRequest;
 			}
 
 			set {
-				Requires.ValidState(HttpContext.Current != null, MessagingStrings.HttpContextRequired);
-				Requires.ValidState(HttpContext.Current.Session != null, MessagingStrings.SessionRequired);
+				RequiresEx.ValidState(HttpContext.Current != null, MessagingStrings.HttpContextRequired);
+				RequiresEx.ValidState(HttpContext.Current.Session != null, MessagingStrings.SessionRequired);
 				HttpContext.Current.Session[PendingRequestKey] = value;
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets the <see cref="OpenIdProvider"/> instance to use for all instances of this control.
+		/// </summary>
+		/// <value>The default value is an <see cref="OpenIdProvider"/> instance initialized according to the web.config file.</value>
+		public OpenIdProvider Provider {
+			get {
+				return this.provider.Value;
+			}
+
+			set {
+				Requires.NotNull(value, "value");
+				this.provider = new Lazy<OpenIdProvider>(() => value, LazyThreadSafetyMode.PublicationOnly);
 			}
 		}
 
@@ -175,12 +169,16 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		}
 
 		/// <summary>
-		/// Sends the response for the <see cref="PendingAuthenticationRequest"/> and clears the property.
+		/// Sends the response for the <see cref="PendingAuthenticationRequest" /> and clears the property.
 		/// </summary>
-		public static void SendResponse() {
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The response message.
+		/// </returns>
+		public Task<HttpResponseMessage> PrepareResponseAsync(CancellationToken cancellationToken = default(CancellationToken)) {
 			var pendingRequest = PendingRequest;
 			PendingRequest = null;
-			Provider.SendResponse(pendingRequest);
+			return this.Provider.PrepareResponseAsync(pendingRequest, cancellationToken);
 		}
 
 		/// <summary>
@@ -192,41 +190,46 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		protected override void OnLoad(EventArgs e) {
 			base.OnLoad(e);
 
-			// There is the unusual scenario that this control is hosted by
-			// an ASP.NET web page that has other UI on it to that the user
-			// might see, including controls that cause a postback to occur.
-			// We definitely want to ignore postbacks, since any openid messages
-			// they contain will be old.
-			if (this.Enabled && !this.Page.IsPostBack) {
-				// Use the explicitly given state store on this control if there is one.  
-				// Then try the configuration file specified one.  Finally, use the default
-				// in-memory one that's built into OpenIdProvider.
-				// determine what incoming message was received
-				IRequest request = Provider.GetRequest();
-				if (request != null) {
-					PendingRequest = null;
+			this.Page.RegisterAsyncTask(new PageAsyncTask(async cancellationToken => {
+				// There is the unusual scenario that this control is hosted by
+				// an ASP.NET web page that has other UI on it to that the user
+				// might see, including controls that cause a postback to occur.
+				// We definitely want to ignore postbacks, since any openid messages
+				// they contain will be old.
+				if (this.Enabled && !this.Page.IsPostBack) {
+					// Use the explicitly given state store on this control if there is one.  
+					// Then try the configuration file specified one.  Finally, use the default
+					// in-memory one that's built into OpenIdProvider.
+					// determine what incoming message was received
+					IRequest request = await Provider.GetRequestAsync(new HttpRequestWrapper(this.Context.Request), cancellationToken);
+					if (request != null) {
+						PendingRequest = null;
 
-					// process the incoming message appropriately and send the response
-					IAuthenticationRequest idrequest;
-					IAnonymousRequest anonRequest;
-					if ((idrequest = request as IAuthenticationRequest) != null) {
-						PendingAuthenticationRequest = idrequest;
-						this.OnAuthenticationChallenge(idrequest);
-					} else if ((anonRequest = request as IAnonymousRequest) != null) {
-						PendingAnonymousRequest = anonRequest;
-						if (!this.OnAnonymousRequest(anonRequest)) {
-							// This is a feature not supported by the OP, so
-							// go ahead and set disapproved so we can send a response.
-							Logger.OpenId.Warn("An incoming anonymous OpenID request message was detected, but the ProviderEndpoint.AnonymousRequest event is not handled, so returning cancellation message to relying party.");
-							anonRequest.IsApproved = false;
+						// process the incoming message appropriately and send the response
+						IAuthenticationRequest idrequest;
+						IAnonymousRequest anonRequest;
+						if ((idrequest = request as IAuthenticationRequest) != null) {
+							PendingAuthenticationRequest = idrequest;
+							this.OnAuthenticationChallenge(idrequest);
+						} else if ((anonRequest = request as IAnonymousRequest) != null) {
+							PendingAnonymousRequest = anonRequest;
+							if (!this.OnAnonymousRequest(anonRequest)) {
+								// This is a feature not supported by the OP, so
+								// go ahead and set disapproved so we can send a response.
+								Logger.OpenId.Warn(
+									"An incoming anonymous OpenID request message was detected, but the ProviderEndpoint.AnonymousRequest event is not handled, so returning cancellation message to relying party.");
+								anonRequest.IsApproved = false;
+							}
+						}
+						if (request.IsResponseReady) {
+							PendingAuthenticationRequest = null;
+							var response = await Provider.PrepareResponseAsync(request, cancellationToken);
+							await response.SendAsync(new HttpContextWrapper(this.Context), cancellationToken);
+							this.Context.Response.End();
 						}
 					}
-					if (request.IsResponseReady) {
-						PendingAuthenticationRequest = null;
-						Provider.SendResponse(request);
-					}
 				}
-			}
+			}));
 		}
 
 		/// <summary>
@@ -259,9 +262,8 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// Creates the default OpenIdProvider to use.
 		/// </summary>
 		/// <returns>The new instance of OpenIdProvider.</returns>
-		private static OpenIdProvider CreateProvider() {
-			Contract.Ensures(Contract.Result<OpenIdProvider>() != null);
-			return new OpenIdProvider(OpenIdElement.Configuration.Provider.ApplicationStore.CreateInstance(OpenIdProvider.HttpApplicationStore));
+		private OpenIdProvider CreateProvider() {
+			return new OpenIdProvider(OpenIdElement.Configuration.Provider.ApplicationStore.CreateInstance(OpenIdProvider.GetHttpApplicationStore(new HttpContextWrapper(this.Context)), null));
 		}
 	}
 }

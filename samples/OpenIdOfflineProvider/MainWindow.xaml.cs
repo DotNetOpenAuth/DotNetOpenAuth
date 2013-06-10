@@ -8,14 +8,21 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
-	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.IO;
 	using System.Linq;
 	using System.Net;
+	using System.Net.Http;
+	using System.Net.Http.Headers;
 	using System.Runtime.InteropServices;
+	using System.ServiceModel;
 	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
+	using System.Web.Http;
+	using System.Web.Http.Routing;
+	using System.Web.Http.SelfHost;
 	using System.Windows;
 	using System.Windows.Controls;
 	using System.Windows.Data;
@@ -31,15 +38,16 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 	using log4net;
 	using log4net.Appender;
 	using log4net.Core;
+	using Validation;
 
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
 	/// </summary>
 	public partial class MainWindow : Window, IDisposable {
 		/// <summary>
-		/// The OpenID Provider host object.
+		/// The main window for the app.
 		/// </summary>
-		private HostedProvider hostedProvider = new HostedProvider();
+		internal static MainWindow Instance;
 
 		/// <summary>
 		/// The logger the application may use.
@@ -47,17 +55,22 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		private ILog logger = log4net.LogManager.GetLogger(typeof(MainWindow));
 
 		/// <summary>
+		/// The HTTP listener that acts as the OpenID Provider socket.
+		/// </summary>
+		private HttpSelfHostServer hostServer;
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="MainWindow"/> class.
 		/// </summary>
 		public MainWindow() {
 			this.InitializeComponent();
-			this.hostedProvider.ProcessRequest = this.ProcessRequest;
 			TextWriterAppender boxLogger = log4net.LogManager.GetRepository().GetAppenders().OfType<TextWriterAppender>().FirstOrDefault(a => a.Name == "TextBoxAppender");
 			if (boxLogger != null) {
 				boxLogger.Writer = new TextBoxTextWriter(this.logBox);
 			}
 
-			this.startProvider();
+			Instance = this;
+			this.StartProviderAsync();
 		}
 
 		#region IDisposable Members
@@ -75,12 +88,11 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
 		protected virtual void Dispose(bool disposing) {
 			if (disposing) {
-				var host = this.hostedProvider as IDisposable;
-				if (host != null) {
-					host.Dispose();
+				if (this.hostServer != null) {
+					this.hostServer.Dispose();
 				}
 
-				this.hostedProvider = null;
+				this.hostServer = null;
 			}
 		}
 
@@ -91,80 +103,33 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// </summary>
 		/// <param name="e">The <see cref="System.ComponentModel.CancelEventArgs"/> instance containing the event data.</param>
 		protected override void OnClosing(System.ComponentModel.CancelEventArgs e) {
-			this.stopProvider();
+			this.StopProviderAsync();
 			base.OnClosing(e);
 		}
 
 		/// <summary>
-		/// Processes an incoming request at the OpenID Provider endpoint.
+		/// Adds a set of HTTP headers to an <see cref="HttpResponse"/> instance,
+		/// taking care to set some headers to the appropriate properties of
+		/// <see cref="HttpResponse" />
 		/// </summary>
-		/// <param name="requestInfo">The request info.</param>
-		/// <param name="response">The response.</param>
-		private void ProcessRequest(HttpRequestBase requestInfo, HttpListenerResponse response) {
-			IRequest request = this.hostedProvider.Provider.GetRequest(requestInfo);
-			if (request == null) {
-				App.Logger.Error("A request came in that did not carry an OpenID message.");
-				response.ContentType = "text/html";
-				response.StatusCode = (int)HttpStatusCode.BadRequest;
-				using (StreamWriter sw = new StreamWriter(response.OutputStream)) {
-					sw.WriteLine("<html><body>This is an OpenID Provider endpoint.</body></html>");
+		/// <param name="headers">The headers to add.</param>
+		/// <param name="response">The <see cref="HttpListenerResponse"/> instance to set the appropriate values to.</param>
+		private static void ApplyHeadersToResponse(HttpResponseHeaders headers, HttpListenerResponse response) {
+			Requires.NotNull(headers, "headers");
+			Requires.NotNull(response, "response");
+
+			foreach (var header in headers) {
+				switch (header.Key) {
+					case "Content-Type":
+						response.ContentType = header.Value.First();
+						break;
+
+					// Add more special cases here as necessary.
+					default:
+						response.AddHeader(header.Key, header.Value.First());
+						break;
 				}
-				return;
 			}
-
-			this.Dispatcher.Invoke((Action)delegate {
-				if (!request.IsResponseReady) {
-					var authRequest = request as IAuthenticationRequest;
-					if (authRequest != null) {
-						switch (this.checkidRequestList.SelectedIndex) {
-							case 0:
-								if (authRequest.IsDirectedIdentity) {
-									string userIdentityPageBase = this.hostedProvider.UserIdentityPageBase.AbsoluteUri;
-									if (this.capitalizedHostName.IsChecked.Value) {
-										userIdentityPageBase = (this.hostedProvider.UserIdentityPageBase.Scheme + Uri.SchemeDelimiter + this.hostedProvider.UserIdentityPageBase.Authority).ToUpperInvariant() + this.hostedProvider.UserIdentityPageBase.PathAndQuery;
-									}
-									string leafPath = "directedidentity";
-									if (this.directedIdentityTrailingPeriodsCheckbox.IsChecked.Value) {
-										leafPath += ".";
-									}
-									authRequest.ClaimedIdentifier = Identifier.Parse(userIdentityPageBase + leafPath, true);
-									authRequest.LocalIdentifier = authRequest.ClaimedIdentifier;
-								}
-								authRequest.IsAuthenticated = true;
-								break;
-							case 1:
-								authRequest.IsAuthenticated = false;
-								break;
-							case 2:
-								IntPtr oldForegroundWindow = NativeMethods.GetForegroundWindow();
-								bool stoleFocus = NativeMethods.SetForegroundWindow(this);
-								CheckIdWindow.ProcessAuthentication(this.hostedProvider, authRequest);
-								if (stoleFocus) {
-									NativeMethods.SetForegroundWindow(oldForegroundWindow);
-								}
-								break;
-						}
-					}
-				}
-			});
-
-			this.hostedProvider.Provider.PrepareResponse(request).Send(response);
-		}
-
-		/// <summary>
-		/// Starts the provider.
-		/// </summary>
-		private void startProvider() {
-			this.hostedProvider.StartProvider();
-			this.opIdentifierLabel.Content = this.hostedProvider.OPIdentifier;
-		}
-
-		/// <summary>
-		/// Stops the provider.
-		/// </summary>
-		private void stopProvider() {
-			this.hostedProvider.StopProvider();
-			this.opIdentifierLabel.Content = string.Empty;
 		}
 
 		/// <summary>
@@ -187,6 +152,65 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// <param name="e">The <see cref="System.Windows.RoutedEventArgs"/> instance containing the event data.</param>
 		private void ClearLogButton_Click(object sender, RoutedEventArgs e) {
 			this.logBox.Clear();
+		}
+
+		/// <summary>
+		/// Starts the provider.
+		/// </summary>
+		/// <returns>A task that completes when the asynchronous operation is finished.</returns>
+		private async Task StartProviderAsync() {
+			Exception exception = null;
+			try {
+				Verify.Operation(this.hostServer == null, "Server already started.");
+
+				int port = 45235;
+				var baseUri = new UriBuilder("http", "localhost", port);
+				var configuration = new HttpSelfHostConfiguration(baseUri.Uri);
+				configuration.Routes.MapHttpRoute("default", "{controller}/{id}", new { controller = "Home", id = RouteParameter.Optional });
+				try {
+					var hostServer = new HttpSelfHostServer(configuration);
+					await hostServer.OpenAsync();
+					this.hostServer = hostServer;
+				} catch (AddressAccessDeniedException ex) {
+					// If this throws an exception, use an elevated command prompt and execute:
+					// netsh http add urlacl url=http://+:45235/ user=YOUR_USERNAME_HERE
+					string message = string.Format(
+						CultureInfo.CurrentCulture,
+						"Use an elevated command prompt and execute: \nnetsh http add urlacl url=http://+:{0}/ user={1}\\{2}",
+						port,
+						Environment.UserDomainName,
+						Environment.UserName);
+					throw new InvalidOperationException(message, ex);
+				}
+
+				this.opIdentifierLabel.Content = baseUri.Uri.AbsoluteUri;
+			} catch (InvalidOperationException ex) {
+				exception = ex;
+			}
+
+			if (exception != null) {
+				if (MessageBox.Show(exception.Message, "Configuration error", MessageBoxButton.OKCancel, MessageBoxImage.Error)
+					== MessageBoxResult.OK) {
+					await this.StartProviderAsync();
+					return;
+				} else {
+					this.Close();
+				}
+			}
+		}
+
+		/// <summary>
+		/// Stops the provider.
+		/// </summary>
+		/// <returns>A task that completes when the asynchronous operation is finished.</returns>
+		private async Task StopProviderAsync() {
+			if (this.hostServer != null) {
+				await this.hostServer.CloseAsync();
+				this.hostServer.Dispose();
+				this.hostServer = null;
+			}
+
+			this.opIdentifierLabel.Content = string.Empty;
 		}
 	}
 }

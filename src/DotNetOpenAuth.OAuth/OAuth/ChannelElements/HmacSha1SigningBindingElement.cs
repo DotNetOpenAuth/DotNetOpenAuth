@@ -7,7 +7,6 @@
 namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using System;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Security.Cryptography;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
@@ -34,7 +33,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "False positive.")]
 		protected override string GetSignature(ITamperResistantOAuthMessage message) {
 			string key = GetConsumerAndTokenSecretString(message);
-			using (HashAlgorithm hasher = new HMACSHA1(Encoding.ASCII.GetBytes(key))) {
+			using (var hasher = HmacAlgorithms.Create(HmacAlgorithms.HmacSha1, Encoding.ASCII.GetBytes(key))) {
 				string baseString = ConstructSignatureBaseString(message, this.Channel.MessageDescriptions.GetAccessor(message));
 				byte[] digest = hasher.ComputeHash(Encoding.ASCII.GetBytes(baseString));
 				return Convert.ToBase64String(digest);

@@ -8,7 +8,6 @@ namespace DotNetOpenAuth.Configuration {
 	using System;
 	using System.Collections.Generic;
 	using System.Configuration;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 
@@ -76,7 +75,6 @@ namespace DotNetOpenAuth.Configuration {
 		/// </summary>
 		public static ReportingElement Configuration {
 			get {
-				Contract.Ensures(Contract.Result<ReportingElement>() != null);
 				return (ReportingElement)ConfigurationManager.GetSection(ReportingElementName) ?? new ReportingElement();
 			}
 		}

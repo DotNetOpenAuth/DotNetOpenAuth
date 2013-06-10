@@ -7,12 +7,12 @@
 namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.IO;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
+	using Validation;
 
 	/// <summary>
 	/// A signed and encrypted serialization of an association.
@@ -58,6 +58,9 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		/// <param name="stream">The stream.</param>
 		public void Serialize(Stream stream) {
+			Requires.NotNull(stream, "stream");
+			Requires.That(stream.CanWrite, "stream", "requires stream.CanWrite");
+
 			var writer = new BinaryWriter(stream);
 			writer.Write(this.IsPrivateAssociation);
 			writer.WriteBuffer(this.Secret);
@@ -70,9 +73,12 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		/// <param name="stream">The stream.</param>
 		public void Deserialize(Stream stream) {
+			Requires.NotNull(stream, "stream");
+			Requires.That(stream.CanRead, "stream", "requires stream.CanRead");
+
 			var reader = new BinaryReader(stream);
 			this.IsPrivateAssociation = reader.ReadBoolean();
-			this.Secret = reader.ReadBuffer();
+			this.Secret = reader.ReadBuffer(256);
 			this.ExpiresUtc = TimestampEncoder.Epoch + TimeSpan.FromSeconds(reader.ReadInt32());
 		}
 
@@ -88,7 +94,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		internal static IDataBagFormatter<AssociationDataBag> CreateFormatter(ICryptoKeyStore cryptoKeyStore, string bucket, TimeSpan? minimumAge = null) {
 			Requires.NotNull(cryptoKeyStore, "cryptoKeyStore");
 			Requires.NotNullOrEmpty(bucket, "bucket");
-			Contract.Ensures(Contract.Result<IDataBagFormatter<AssociationDataBag>>() != null);
 			return new BinaryDataBagFormatter<AssociationDataBag>(cryptoKeyStore, bucket, signed: true, encrypted: true, minimumAge: minimumAge);
 		}
 	}

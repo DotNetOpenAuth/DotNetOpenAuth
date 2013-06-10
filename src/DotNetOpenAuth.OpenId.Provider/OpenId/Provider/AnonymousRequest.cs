@@ -7,9 +7,11 @@
 namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
+	using Validation;
 
 	/// <summary>
 	/// Provides access to a host Provider to read an incoming extension-only checkid request message,
@@ -31,7 +33,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		internal AnonymousRequest(OpenIdProvider provider, SignedResponseRequest request)
 			: base(provider, request) {
 			Requires.NotNull(provider, "provider");
-			Requires.True(!(request is CheckIdRequest), "request");
+			Requires.That(!(request is CheckIdRequest), "request", "request cannot be CheckIdRequest");
 
 			this.positiveResponse = new IndirectSignedResponse(request);
 		}
@@ -75,16 +77,16 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		}
 
 		/// <summary>
-		/// Gets the response message, once <see cref="IsResponseReady"/> is <c>true</c>.
+		/// Gets the response message, once <see cref="IsResponseReady" /> is <c>true</c>.
 		/// </summary>
-		protected override IProtocolMessage ResponseMessage {
-			get {
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>The response message.</returns>
+		protected override async Task<IProtocolMessage> GetResponseMessageAsync(CancellationToken cancellationToken) {
 				if (this.IsApproved.HasValue) {
-					return this.IsApproved.Value ? (IProtocolMessage)this.positiveResponse : this.NegativeResponse;
+					return this.IsApproved.Value ? (IProtocolMessage)this.positiveResponse : await this.GetNegativeResponseAsync();
 				} else {
 					return null;
 				}
-			}
 		}
 
 		#endregion

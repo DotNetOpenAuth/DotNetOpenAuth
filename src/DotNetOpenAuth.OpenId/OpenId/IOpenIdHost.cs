@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OpenId {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Net.Http;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 
@@ -21,8 +22,8 @@ namespace DotNetOpenAuth.OpenId {
 		SecuritySettings SecuritySettings { get; }
 
 		/// <summary>
-		/// Gets the web request handler.
+		/// Gets the factory for various dependencies.
 		/// </summary>
-		IDirectWebRequestHandler WebRequestHandler { get; }
+		IHostFactories HostFactories { get; }
 	}
 }

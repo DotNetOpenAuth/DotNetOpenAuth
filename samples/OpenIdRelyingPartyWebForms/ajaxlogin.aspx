@@ -1,5 +1,5 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="ajaxlogin.aspx.cs" Inherits="OpenIdRelyingPartyWebForms.ajaxlogin"
-	ValidateRequest="false" MasterPageFile="~/Site.Master" %>
+	ValidateRequest="false" MasterPageFile="~/Site.Master" Async="true" %>
 
 <%@ Register Assembly="DotNetOpenAuth.OpenId.RelyingParty.UI" Namespace="DotNetOpenAuth.OpenId.RelyingParty" TagPrefix="openid" %>
 <asp:Content runat="server" ContentPlaceHolderID="head">

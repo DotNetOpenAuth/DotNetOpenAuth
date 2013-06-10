@@ -3,6 +3,7 @@
 	using System.Collections.Generic;
 	using System.Configuration;
 	using System.Linq;
+	using System.Net;
 	using System.Text;
 	using System.Web;
 	using System.Web.UI;
@@ -10,87 +11,79 @@
 	using System.Xml.Linq;
 	using System.Xml.XPath;
 	using DotNetOpenAuth.ApplicationBlock;
+	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth;
 
 	public partial class Twitter : System.Web.UI.Page {
-		private string AccessToken {
-			get { return (string)Session["TwitterAccessToken"]; }
+		private AccessToken AccessToken {
+			get { return (AccessToken)(Session["TwitterAccessToken"] ?? new AccessToken()); }
 			set { Session["TwitterAccessToken"] = value; }
 		}
 
-		private InMemoryTokenManager TokenManager {
-			get {
-				var tokenManager = (InMemoryTokenManager)Application["TwitterTokenManager"];
-				if (tokenManager == null) {
-					string consumerKey = ConfigurationManager.AppSettings["twitterConsumerKey"];
-					string consumerSecret = ConfigurationManager.AppSettings["twitterConsumerSecret"];
-					if (!string.IsNullOrEmpty(consumerKey)) {
-						tokenManager = new InMemoryTokenManager(consumerKey, consumerSecret);
-						Application["TwitterTokenManager"] = tokenManager;
-					}
-				}
-
-				return tokenManager;
-			}
-		}
-
 		protected void Page_Load(object sender, EventArgs e) {
-			if (this.TokenManager != null) {
-				this.MultiView1.ActiveViewIndex = 1;
+			this.RegisterAsyncTask(
+				new PageAsyncTask(
+					async ct => {
+						var twitter = new TwitterConsumer();
+						if (twitter.ConsumerKey != null) {
+							this.MultiView1.ActiveViewIndex = 1;
 
-				if (!IsPostBack) {
-					var twitter = new WebConsumer(TwitterConsumer.ServiceDescription, this.TokenManager);
-
-					// Is Twitter calling back with authorization?
-					var accessTokenResponse = twitter.ProcessUserAuthorization();
-					if (accessTokenResponse != null) {
-						this.AccessToken = accessTokenResponse.AccessToken;
-					} else if (this.AccessToken == null) {
-						// If we don't yet have access, immediately request it.
-						twitter.Channel.Send(twitter.PrepareRequestUserAuthorization());
-					}
-				}
-			}
+							if (!IsPostBack) {
+								// Is Twitter calling back with authorization?
+								var accessTokenResponse = await twitter.ProcessUserAuthorizationAsync(this.Request.Url);
+								if (accessTokenResponse != null) {
+									this.AccessToken = accessTokenResponse.AccessToken;
+								} else {
+									// If we don't yet have access, immediately request it.
+									Uri redirectUri = await twitter.RequestUserAuthorizationAsync(MessagingUtilities.GetPublicFacingUrl());
+									this.Response.Redirect(redirectUri.AbsoluteUri);
+								}
+							}
+						}
+					}));
 		}
 
 		protected void downloadUpdates_Click(object sender, EventArgs e) {
-			var twitter = new WebConsumer(TwitterConsumer.ServiceDescription, this.TokenManager);
-			XPathDocument updates = new XPathDocument(TwitterConsumer.GetUpdates(twitter, this.AccessToken).CreateReader());
-			XPathNavigator nav = updates.CreateNavigator();
-			var parsedUpdates = from status in nav.Select("/statuses/status").OfType<XPathNavigator>()
-								where !status.SelectSingleNode("user/protected").ValueAsBoolean
-								select new {
-									User = status.SelectSingleNode("user/name").InnerXml,
-									Status = status.SelectSingleNode("text").InnerXml,
-								};
+			this.RegisterAsyncTask(
+				new PageAsyncTask(
+					async ct => {
+						var twitter = new TwitterConsumer();
+						var statusesJson = await twitter.GetUpdatesAsync(this.AccessToken);
 
-			StringBuilder tableBuilder = new StringBuilder();
-			tableBuilder.Append("<table><tr><td>Name</td><td>Update</td></tr>");
+						StringBuilder tableBuilder = new StringBuilder();
+						tableBuilder.Append("<table><tr><td>Name</td><td>Update</td></tr>");
 
-			foreach (var update in parsedUpdates) {
-				tableBuilder.AppendFormat(
-					"<tr><td>{0}</td><td>{1}</td></tr>",
-					HttpUtility.HtmlEncode(update.User),
-					HttpUtility.HtmlEncode(update.Status));
-			}
-			tableBuilder.Append("</table>");
-			this.resultsPlaceholder.Controls.Add(new Literal { Text = tableBuilder.ToString() });
+						foreach (dynamic update in statusesJson) {
+							if (!update.user.@protected.Value) {
+								tableBuilder.AppendFormat(
+									"<tr><td>{0}</td><td>{1}</td></tr>",
+									HttpUtility.HtmlEncode(update.user.screen_name),
+									HttpUtility.HtmlEncode(update.text));
+							}
+						}
+
+						tableBuilder.Append("</table>");
+						this.resultsPlaceholder.Controls.Add(new Literal { Text = tableBuilder.ToString() });
+					}));
 		}
 
 		protected void uploadProfilePhotoButton_Click(object sender, EventArgs e) {
-			if (this.profilePhoto.PostedFile.ContentType == null) {
-				this.photoUploadedLabel.Visible = true;
-				this.photoUploadedLabel.Text = "Select a file first.";
-				return;
-			}
+			this.RegisterAsyncTask(
+				new PageAsyncTask(
+					async ct => {
+						if (this.profilePhoto.PostedFile.ContentType == null) {
+							this.photoUploadedLabel.Visible = true;
+							this.photoUploadedLabel.Text = "Select a file first.";
+							return;
+						}
 
-			var twitter = new WebConsumer(TwitterConsumer.ServiceDescription, this.TokenManager);
-			XDocument imageResult = TwitterConsumer.UpdateProfileImage(
-				twitter,
-				this.AccessToken,
-				this.profilePhoto.PostedFile.InputStream,
-				this.profilePhoto.PostedFile.ContentType);
-			this.photoUploadedLabel.Visible = true;
+						var twitter = new TwitterConsumer();
+						XDocument imageResult =
+							await
+							twitter.UpdateProfileImageAsync(
+								this.AccessToken, this.profilePhoto.PostedFile.InputStream, this.profilePhoto.PostedFile.ContentType);
+						this.photoUploadedLabel.Visible = true;
+					}));
 		}
 	}
 }

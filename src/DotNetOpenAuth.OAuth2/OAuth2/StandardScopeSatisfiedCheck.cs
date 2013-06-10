@@ -6,6 +6,7 @@
 
 namespace DotNetOpenAuth.OAuth2 {
 	using System.Collections.Generic;
+	using Validation;
 
 	/// <summary>
 	/// The default scope superset checker, which assumes that no scopes overlap.

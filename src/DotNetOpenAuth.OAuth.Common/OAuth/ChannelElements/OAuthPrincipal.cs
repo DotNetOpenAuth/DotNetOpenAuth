@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="OAuthPrincipal.cs" company="Outercurve Foundation">
-//     Copyright (c) Outercurve Foundation. All rights reserved.
+// <copyright file="OAuthPrincipal.cs" company="Andrew Arnott">
+//     Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -9,90 +9,37 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Runtime.InteropServices;
+	using System.Security.Claims;
 	using System.Security.Principal;
 
+	using Validation;
+
 	/// <summary>
-	/// Represents an OAuth consumer that is impersonating a known user on the system.
+	/// Utilities for dealing with OAuth claims and principals.
 	/// </summary>
-	[SuppressMessage("Microsoft.Interoperability", "CA1409:ComVisibleTypesShouldBeCreatable", Justification = "Not cocreatable.")]
-	[Serializable]
-	[ComVisible(true)]
-	public class OAuthPrincipal : IPrincipal {
+	internal static class OAuthPrincipal {
 		/// <summary>
-		/// The roles this user belongs to.
+		/// Creates a new instance of ClaimsPrincipal.
 		/// </summary>
-		private ICollection<string> roles;
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="OAuthPrincipal"/> class.
-		/// </summary>
-		/// <param name="userName">The username.</param>
-		/// <param name="roles">The roles this user belongs to.</param>
-		public OAuthPrincipal(string userName, string[] roles)
-			: this(new OAuthIdentity(userName), roles) {
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="OAuthPrincipal"/> class.
-		/// </summary>
-		/// <param name="identity">The identity.</param>
-		/// <param name="roles">The roles this user belongs to.</param>
-		internal OAuthPrincipal(OAuthIdentity identity, string[] roles) {
-			this.Identity = identity;
-			this.roles = roles;
-		}
-
-		/// <summary>
-		/// Gets or sets the access token used to create this principal.
-		/// </summary>
-		/// <value>A non-empty string.</value>
-		public string AccessToken { get; protected set; }
-
-		/// <summary>
-		/// Gets the roles that this principal has as a ReadOnlyCollection.
-		/// </summary>
-		public ReadOnlyCollection<string> Roles
-		{
-			get { return new ReadOnlyCollection<string>(this.roles.ToList()); }
-		}
-
-		#region IPrincipal Members
-
-		/// <summary>
-		/// Gets the identity of the current principal.
-		/// </summary>
-		/// <value></value>
+		/// <param name="userName">Name of the user.</param>
+		/// <param name="roles">The roles.</param>
 		/// <returns>
-		/// The <see cref="T:System.Security.Principal.IIdentity"/> object associated with the current principal.
+		/// A new instance of GenericPrincipal with a GenericIdentity, having the same username and roles as this OAuthPrincipal and OAuthIdentity
 		/// </returns>
-		public IIdentity Identity { get; private set; }
+		internal static ClaimsPrincipal CreatePrincipal(string userName, IEnumerable<string> roles = null) {
+			Requires.NotNullOrEmpty(userName, "userName");
 
-		/// <summary>
-		/// Determines whether the current principal belongs to the specified role.
-		/// </summary>
-		/// <param name="role">The name of the role for which to check membership.</param>
-		/// <returns>
-		/// true if the current principal is a member of the specified role; otherwise, false.
-		/// </returns>
-		/// <remarks>
-		/// The role membership check uses <see cref="StringComparer.OrdinalIgnoreCase"/>.
-		/// </remarks>
-		public bool IsInRole(string role) {
-			return this.roles.Contains(role, StringComparer.OrdinalIgnoreCase);
-		}
+			var claims = new List<Claim>();
+			claims.Add(new Claim(ClaimsIdentity.DefaultNameClaimType, userName));
+			if (roles != null) {
+				claims.AddRange(roles.Select(scope => new Claim(ClaimsIdentity.DefaultRoleClaimType, scope)));
+			}
 
-		#endregion
-
-		/// <summary>
-		/// Creates a new instance of GenericPrincipal based on this OAuthPrincipal.
-		/// </summary>
-		/// <returns>A new instance of GenericPrincipal with a GenericIdentity, having the same username and roles as this OAuthPrincipal and OAuthIdentity</returns>
-		public GenericPrincipal CreateGenericPrincipal()
-		{
-			return new GenericPrincipal(new GenericIdentity(this.Identity.Name), this.roles.ToArray());
+			var claimsIdentity = new ClaimsIdentity(claims, "OAuth 2 Bearer");
+			var principal = new ClaimsPrincipal(claimsIdentity);
+			return principal;
 		}
 	}
 }

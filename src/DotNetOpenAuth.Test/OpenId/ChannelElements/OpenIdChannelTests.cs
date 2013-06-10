@@ -10,7 +10,10 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 	using System.IO;
 	using System.Linq;
 	using System.Net;
+	using System.Net.Http;
 	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.Messaging.Reflection;
@@ -21,16 +24,13 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 	using NUnit.Framework;
 
 	[TestFixture]
-	public class OpenIdChannelTests : TestBase {
+	public class OpenIdChannelTests : OpenIdTestBase {
 		private static readonly TimeSpan maximumMessageAge = TimeSpan.FromHours(3); // good for tests, too long for production
 		private OpenIdChannel channel;
-		private Mocks.TestWebRequestHandler webHandler;
 
 		[SetUp]
 		public void Setup() {
-			this.webHandler = new Mocks.TestWebRequestHandler();
-			this.channel = new OpenIdRelyingPartyChannel(new MemoryCryptoKeyStore(), new NonceMemoryStore(maximumMessageAge), new RelyingPartySecuritySettings());
-			this.channel.WebRequestHandler = this.webHandler;
+			this.channel = new OpenIdRelyingPartyChannel(new MemoryCryptoKeyStore(), new MemoryNonceStore(maximumMessageAge), new RelyingPartySecuritySettings(), this.HostFactories);
 		}
 
 		[Test]
@@ -52,14 +52,14 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		/// Verifies that the channel sends direct message requests as HTTP POST requests.
 		/// </summary>
 		[Test]
-		public void DirectRequestsUsePost() {
+		public async Task DirectRequestsUsePost() {
 			IDirectedProtocolMessage requestMessage = new Mocks.TestDirectedMessage(MessageTransport.Direct) {
 				Recipient = new Uri("http://host"),
 				Name = "Andrew",
 			};
-			HttpWebRequest httpRequest = this.channel.CreateHttpRequestTestHook(requestMessage);
-			Assert.AreEqual("POST", httpRequest.Method);
-			StringAssert.Contains("Name=Andrew", this.webHandler.RequestEntityAsString);
+			var httpRequest = this.channel.CreateHttpRequestTestHook(requestMessage);
+			Assert.AreEqual(HttpMethod.Post, httpRequest.Method);
+			StringAssert.Contains("Name=Andrew", await httpRequest.Content.ReadAsStringAsync());
 		}
 
 		/// <summary>
@@ -72,16 +72,15 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		/// <see cref="OpenIdChannel.SendDirectMessageResponse"/> method.
 		/// </remarks>
 		[Test]
-		public void DirectResponsesSentUsingKeyValueForm() {
+		public async Task DirectResponsesSentUsingKeyValueForm() {
 			IProtocolMessage message = MessagingTestBase.GetStandardTestMessage(MessagingTestBase.FieldFill.AllRequired);
 			MessageDictionary messageFields = this.MessageDescriptions.GetAccessor(message);
 			byte[] expectedBytes = KeyValueFormEncoding.GetBytes(messageFields);
 			string expectedContentType = OpenIdChannel.KeyValueFormContentType;
 
-			OutgoingWebResponse directResponse = this.channel.PrepareDirectResponseTestHook(message);
-			Assert.AreEqual(expectedContentType, directResponse.Headers[HttpResponseHeader.ContentType]);
-			byte[] actualBytes = new byte[directResponse.ResponseStream.Length];
-			directResponse.ResponseStream.Read(actualBytes, 0, actualBytes.Length);
+			var directResponse = this.channel.PrepareDirectResponseTestHook(message);
+			Assert.AreEqual(expectedContentType, directResponse.Content.Headers.ContentType.MediaType);
+			byte[] actualBytes = await directResponse.Content.ReadAsByteArrayAsync();
 			Assert.IsTrue(MessagingUtilities.AreEquivalent(expectedBytes, actualBytes));
 		}
 
@@ -89,15 +88,15 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		/// Verifies that direct message responses are read in using the Key Value Form decoder.
 		/// </summary>
 		[Test]
-		public void DirectResponsesReceivedAsKeyValueForm() {
+		public async Task DirectResponsesReceivedAsKeyValueForm() {
 			var fields = new Dictionary<string, string> {
 				{ "var1", "value1" },
 				{ "var2", "value2" },
 			};
-			var response = new CachedDirectWebResponse {
-				CachedResponseStream = new MemoryStream(KeyValueFormEncoding.GetBytes(fields)),
+			var response = new HttpResponseMessage {
+				Content = new StreamContent(new MemoryStream(KeyValueFormEncoding.GetBytes(fields))),
 			};
-			Assert.IsTrue(MessagingUtilities.AreEquivalent(fields, this.channel.ReadFromResponseCoreTestHook(response)));
+			Assert.IsTrue(MessagingUtilities.AreEquivalent(fields, await this.channel.ReadFromResponseCoreAsyncTestHook(response, CancellationToken.None)));
 		}
 
 		/// <summary>
@@ -106,14 +105,14 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		[Test]
 		public void SendDirectMessageResponseHonorsHttpStatusCodes() {
 			IProtocolMessage message = MessagingTestBase.GetStandardTestMessage(MessagingTestBase.FieldFill.AllRequired);
-			OutgoingWebResponse directResponse = this.channel.PrepareDirectResponseTestHook(message);
-			Assert.AreEqual(HttpStatusCode.OK, directResponse.Status);
+			var directResponse = this.channel.PrepareDirectResponseTestHook(message);
+			Assert.AreEqual(HttpStatusCode.OK, directResponse.StatusCode);
 
 			var httpMessage = new TestDirectResponseMessageWithHttpStatus();
 			MessagingTestBase.GetStandardTestMessage(MessagingTestBase.FieldFill.AllRequired, httpMessage);
 			httpMessage.HttpStatusCode = HttpStatusCode.NotAcceptable;
 			directResponse = this.channel.PrepareDirectResponseTestHook(httpMessage);
-			Assert.AreEqual(HttpStatusCode.NotAcceptable, directResponse.Status);
+			Assert.AreEqual(HttpStatusCode.NotAcceptable, directResponse.StatusCode);
 		}
 	}
 }

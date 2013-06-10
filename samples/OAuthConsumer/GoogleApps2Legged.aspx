@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" MasterPageFile="~/MasterPage.master"CodeBehind="GoogleApps2Legged.aspx.cs" Inherits="OAuthConsumer.GoogleApps2Legged" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" MasterPageFile="~/MasterPage.master"CodeBehind="GoogleApps2Legged.aspx.cs" Inherits="OAuthConsumer.GoogleApps2Legged" Async="true" %>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="Body" runat="Server">
 	<asp:MultiView ID="MultiView1" runat="server" ActiveViewIndex="0">

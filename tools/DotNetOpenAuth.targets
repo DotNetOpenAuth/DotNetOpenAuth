@@ -15,32 +15,13 @@
 	</ItemDefinitionGroup>
 
 	<PropertyGroup>
-		<CodeContractsInstallDir>$(ProjectRoot)tools\Contracts\</CodeContractsInstallDir>
 		<DefineConstants Condition=" '$(SignAssembly)' == 'true' ">$(DefineConstants);StrongNameSigned</DefineConstants>
-		<DefineConstants Condition=" '$(ClrVersion)' == '4' ">$(DefineConstants);CLR4</DefineConstants>
-		<DefineConstants Condition=" '$(TargetFrameworkVersion)' == 'v4.5' ">$(DefineConstants);NetFx45</DefineConstants>
 		<AssemblySearchPaths>$(ProjectRoot)lib;$(AssemblySearchPaths)</AssemblySearchPaths>
-		<AssemblySearchPaths Condition="Exists('$(ProjectRoot)lib\net-$(TargetFrameworkVersion)')">$(ProjectRoot)lib\net-$(TargetFrameworkVersion);$(AssemblySearchPaths)</AssemblySearchPaths>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<DelaySignedAssemblies Include="$(TargetPath)" Condition=" '$(SuppressTargetPathDelaySignedAssembly)' != 'true' "/>
 	</ItemGroup>
-
-	<ItemGroup Condition=" '$(ClrVersion)' != '4' and '$(NoCodeContracts)' != 'true' ">
-		<Reference Include="Microsoft.Contracts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=736440c9b414ea16, processorArchitecture=MSIL">
-			<SpecificVersion>False</SpecificVersion>
-			<HintPath>..\..\lib\Microsoft.Contracts.dll</HintPath>
-		</Reference>
-	</ItemGroup>
-
-	<!-- This forces a build break when Code Contracts are not installed. -->
-	<PropertyGroup>
-		<CompileDependsOn>$(CompileDependsOn);CheckForCodeContracts</CompileDependsOn>
-	</PropertyGroup>
-	<Target Name="CheckForCodeContracts">
-		<Error Condition=" '$(CodeContractsImported)' != 'true' " Text="This project requires Code Contracts. Please install from: http://msdn.microsoft.com/en-us/devlabs/dd491992.aspx" />
-	</Target>
 
 	<!-- This is our multi-targeting aware shadow assembly generator. -->
 	<UsingTask AssemblyFile="$(ProjectRoot)\lib\DotNetOpenAuth.BuildTasks.dll" TaskName="Publicize" />
@@ -54,7 +35,6 @@
 	<Target Name="CreatePublicAccessors">
 		<PropertyGroup>
 			<VSVersionForTargetFramework>v10.0</VSVersionForTargetFramework>
-			<VSVersionForTargetFramework Condition=" '$(ClrVersion)' != '4' ">v9.0</VSVersionForTargetFramework>
 		</PropertyGroup>
 		<Publicize
 			Condition=" '%(ReferencePath.Shadow)' == 'true' "
@@ -125,6 +105,4 @@
 	</Target>
 
 	<Target Name="GetOutputPath" Outputs="$(OutputPath)" />
-
-	<Import Condition="'$(CodeContractsImported)' != 'true' AND ('$(DontImportCodeContracts)' != 'true' or '$(ImportCodeContractsFromToolset)' == 'true')" Project="$(CodeContractsInstallDir)\MsBuild\v4.0\Microsoft.CodeContracts.targets"/>
 </Project>

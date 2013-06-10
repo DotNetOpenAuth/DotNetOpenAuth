@@ -2,6 +2,8 @@ namespace OpenIdProviderMvc.Controllers {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Net;
+	using System.Threading.Tasks;
 	using System.Web;
 	using System.Web.Mvc;
 	using System.Web.Mvc.Ajax;
@@ -28,12 +30,13 @@ namespace OpenIdProviderMvc.Controllers {
 		public IFormsAuthentication FormsAuth { get; private set; }
 
 		[ValidateInput(false)]
-		public ActionResult Provider() {
-			IRequest request = OpenIdProvider.GetRequest();
+		public async Task<ActionResult> Provider() {
+			IRequest request = await OpenIdProvider.GetRequestAsync(this.Request, this.Response.ClientDisconnectedToken);
 			if (request != null) {
 				// Some requests are automatically handled by DotNetOpenAuth.  If this is one, go ahead and let it go.
 				if (request.IsResponseReady) {
-					return OpenIdProvider.PrepareResponse(request).AsActionResult();
+					var response = await OpenIdProvider.PrepareResponseAsync(request, this.Response.ClientDisconnectedToken);
+					return response.AsActionResult();
 				}
 
 				// This is apparently one that the host (the web site itself) has to respond to.
@@ -50,28 +53,28 @@ namespace OpenIdProviderMvc.Controllers {
 					}
 				}
 
-				return this.ProcessAuthRequest();
+				return await this.ProcessAuthRequest();
 			} else {
 				// No OpenID request was recognized.  This may be a user that stumbled on the OP Endpoint.  
 				return this.View();
 			}
 		}
 
-		public ActionResult ProcessAuthRequest() {
+		public async Task<ActionResult> ProcessAuthRequest() {
 			if (ProviderEndpoint.PendingRequest == null) {
 				return this.RedirectToAction("Index", "Home");
 			}
 
 			// Try responding immediately if possible.
-			ActionResult response;
-			if (this.AutoRespondIfPossible(out response)) {
+			ActionResult response = await this.AutoRespondIfPossibleAsync();
+			if (response != null) {
 				return response;
 			}
 
 			// We can't respond immediately with a positive result.  But if we still have to respond immediately...
 			if (ProviderEndpoint.PendingRequest.Immediate) {
 				// We can't stop to prompt the user -- we must just return a negative response.
-				return this.SendAssertion();
+				return await this.SendAssertion();
 			}
 
 			return this.RedirectToAction("AskUser");
@@ -82,16 +85,21 @@ namespace OpenIdProviderMvc.Controllers {
 		/// </summary>
 		/// <returns>The response for the user agent.</returns>
 		[Authorize]
-		public ActionResult AskUser() {
+		public async Task<ActionResult> AskUser() {
 			if (ProviderEndpoint.PendingRequest == null) {
 				// Oops... precious little we can confirm without a pending OpenID request.
 				return this.RedirectToAction("Index", "Home");
 			}
 
 			// The user MAY have just logged in.  Try again to respond automatically to the RP if appropriate.
-			ActionResult response;
-			if (this.AutoRespondIfPossible(out response)) {
+			ActionResult response = await this.AutoRespondIfPossibleAsync();
+			if (response != null) {
 				return response;
+			}
+
+			if (!ProviderEndpoint.PendingAuthenticationRequest.IsDirectedIdentity &&
+				!this.UserControlsIdentifier(ProviderEndpoint.PendingAuthenticationRequest)) {
+				return this.Redirect(this.Url.Action("LogOn", "Account", new { returnUrl = this.Request.Url }));
 			}
 
 			this.ViewData["Realm"] = ProviderEndpoint.PendingRequest.Realm;
@@ -100,7 +108,13 @@ namespace OpenIdProviderMvc.Controllers {
 		}
 
 		[HttpPost, Authorize, ValidateAntiForgeryToken]
-		public ActionResult AskUserResponse(bool confirmed) {
+		public async Task<ActionResult> AskUserResponse(bool confirmed) {
+			if (!ProviderEndpoint.PendingAuthenticationRequest.IsDirectedIdentity &&
+				!this.UserControlsIdentifier(ProviderEndpoint.PendingAuthenticationRequest)) {
+				// The user shouldn't have gotten this far without controlling the identifier we'd send an assertion for.
+				return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest);
+			}
+
 			if (ProviderEndpoint.PendingAnonymousRequest != null) {
 				ProviderEndpoint.PendingAnonymousRequest.IsApproved = confirmed;
 			} else if (ProviderEndpoint.PendingAuthenticationRequest != null) {
@@ -109,14 +123,14 @@ namespace OpenIdProviderMvc.Controllers {
 				throw new InvalidOperationException("There's no pending authentication request!");
 			}
 
-			return this.SendAssertion();
+			return await this.SendAssertion();
 		}
 
 		/// <summary>
 		/// Sends a positive or a negative assertion, based on how the pending request is currently marked.
 		/// </summary>
 		/// <returns>An MVC redirect result.</returns>
-		public ActionResult SendAssertion() {
+		public async Task<ActionResult> SendAssertion() {
 			var pendingRequest = ProviderEndpoint.PendingRequest;
 			var authReq = pendingRequest as IAuthenticationRequest;
 			var anonReq = pendingRequest as IAnonymousRequest;
@@ -175,17 +189,17 @@ namespace OpenIdProviderMvc.Controllers {
 				}
 			}
 
-			return OpenIdProvider.PrepareResponse(pendingRequest).AsActionResult();
+			var response = await OpenIdProvider.PrepareResponseAsync(pendingRequest, this.Response.ClientDisconnectedToken);
+			return response.AsActionResult();
 		}
 
 		/// <summary>
 		/// Attempts to formulate an automatic response to the RP if the user's profile allows it.
 		/// </summary>
-		/// <param name="response">Receives the ActionResult for the caller to return, or <c>null</c> if no automatic response can be made.</param>
-		/// <returns>A value indicating whether an automatic response is possible.</returns>
-		private bool AutoRespondIfPossible(out ActionResult response) {
+		/// <returns>The ActionResult for the caller to return, or <c>null</c> if no automatic response can be made.</returns>
+		private async Task<ActionResult> AutoRespondIfPossibleAsync() {
 			// If the odds are good we can respond to this one immediately (without prompting the user)...
-			if (ProviderEndpoint.PendingRequest.IsReturnUrlDiscoverable(OpenIdProvider.Channel.WebRequestHandler) == RelyingPartyDiscoveryResult.Success
+			if (await ProviderEndpoint.PendingRequest.IsReturnUrlDiscoverableAsync(OpenIdProvider.Channel.HostFactories, this.Response.ClientDisconnectedToken) == RelyingPartyDiscoveryResult.Success
 				&& User.Identity.IsAuthenticated
 				&& this.HasUserAuthorizedAutoLogin(ProviderEndpoint.PendingRequest)) {
 				// Is this is an identity authentication request? (as opposed to an anonymous request)...
@@ -194,21 +208,18 @@ namespace OpenIdProviderMvc.Controllers {
 					if (ProviderEndpoint.PendingAuthenticationRequest.IsDirectedIdentity
 						|| this.UserControlsIdentifier(ProviderEndpoint.PendingAuthenticationRequest)) {
 						ProviderEndpoint.PendingAuthenticationRequest.IsAuthenticated = true;
-						response = this.SendAssertion();
-						return true;
+						return await this.SendAssertion();
 					}
 				}
 
 				// If this is an anonymous request, we can respond to that too.
 				if (ProviderEndpoint.PendingAnonymousRequest != null) {
 					ProviderEndpoint.PendingAnonymousRequest.IsApproved = true;
-					response = this.SendAssertion();
-					return true;
+					return await this.SendAssertion();
 				}
 			}
 
-			response = null;
-			return false;
+			return null;
 		}
 
 		/// <summary>
@@ -254,7 +265,12 @@ namespace OpenIdProviderMvc.Controllers {
 			}
 
 			Uri userLocalIdentifier = Models.User.GetClaimedIdentifierForUser(User.Identity.Name);
-			return authReq.LocalIdentifier == userLocalIdentifier ||
+
+			// Assuming the URLs on the web server are not case sensitive (on Windows servers they almost never are),
+			// and usernames aren't either, compare the identifiers without case sensitivity.
+			// No reason to do this for the PPID identifiers though, since they *can* be case sensitive and are highly
+			// unlikely to be typed in by the user anyway.
+			return string.Equals(authReq.LocalIdentifier.ToString(), userLocalIdentifier.ToString(), StringComparison.OrdinalIgnoreCase) ||
 				authReq.LocalIdentifier == PpidGeneration.PpidIdentifierProvider.GetIdentifier(userLocalIdentifier, authReq.Realm);
 		}
 	}

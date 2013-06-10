@@ -7,14 +7,12 @@
 namespace DotNetOpenAuth.Configuration {
 	using System;
 	using System.Configuration;
-	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 
 	/// <summary>
 	/// Represents the &lt;messaging&gt; element in the host's .config file.
 	/// </summary>
-	[ContractVerification(true)]
 	public class MessagingElement : ConfigurationSection {
 		/// <summary>
 		/// The name of the &lt;webResourceUrlProvider&gt; sub-element.
@@ -75,7 +73,6 @@ namespace DotNetOpenAuth.Configuration {
 		/// </summary>
 		public static MessagingElement Configuration {
 			get {
-				Contract.Ensures(Contract.Result<MessagingElement>() != null);
 				return (MessagingElement)ConfigurationManager.GetSection(MessagingElementName) ?? new MessagingElement();
 			}
 		}
@@ -171,7 +168,7 @@ namespace DotNetOpenAuth.Configuration {
 		}
 
 		/// <summary>
-		/// Gets or sets the configuration for the <see cref="UntrustedWebRequestHandler"/> class.
+		/// Gets or sets the configuration for the UntrustedWebRequestHandler class.
 		/// </summary>
 		/// <value>The untrusted web request.</value>
 		[ConfigurationProperty(UntrustedWebRequestElementName)]

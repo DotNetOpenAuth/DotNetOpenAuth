@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="loginProgrammatic.aspx.cs"
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="loginProgrammatic.aspx.cs" Async="true"
 	Inherits="OpenIdRelyingPartyWebForms.loginProgrammatic" MasterPageFile="~/Site.Master" %>
 <asp:Content ID="Content1" runat="server" ContentPlaceHolderID="Main">
 	<h2>Login Page </h2>

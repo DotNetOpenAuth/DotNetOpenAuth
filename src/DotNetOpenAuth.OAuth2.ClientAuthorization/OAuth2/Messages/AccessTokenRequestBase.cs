@@ -45,7 +45,24 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <summary>
 		/// Gets or sets the result of calling the authorization server host's access token creation method.
 		/// </summary>
-		AccessTokenResult IAccessTokenRequestInternal.AccessTokenResult { get; set; }
+		IAccessTokenResult IAccessTokenRequestInternal.AccessTokenResult { get; set; }
+
+		/// <summary>
+		/// Gets the username of the authorizing user, when applicable.
+		/// </summary>
+		/// <value>
+		/// A non-empty string; or <c>null</c> when no user has authorized this access token.
+		/// </value>
+		public virtual string UserName {
+			get {
+				IAccessTokenRequestInternal request = this;
+				if (request.AccessTokenResult != null && request.AccessTokenResult.AccessToken != null) {
+					return request.AccessTokenResult.AccessToken.User;
+				}
+
+				return null;
+			}
+		}
 
 		/// <summary>
 		/// Gets the type of the grant.

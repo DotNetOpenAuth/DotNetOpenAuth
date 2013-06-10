@@ -475,6 +475,11 @@
 											</xs:complexType>
 										</xs:element>
 										<xs:element name="discoveryServices">
+											<xs:annotation>
+												<xs:documentation>
+													Adds or removes OpenID discovery mechanisms to use on OpenID identifiers.
+												</xs:documentation>
+											</xs:annotation>
 											<xs:complexType>
 												<xs:choice minOccurs="0" maxOccurs="unbounded">
 													<xs:element name="add">
@@ -500,6 +505,24 @@
 														</xs:complexType>
 													</xs:element>
 												</xs:choice>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="hostMetaDiscovery">
+											<xs:annotation>
+												<xs:documentation>
+													Customizes the non-standard host-meta discovery process, when that discovery service is enabled.
+												</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:attribute name="enableCertificateValidationCache" type="xs:boolean" default="false">
+													<xs:annotation>
+														<xs:documentation>
+															Allows DotNetOpenAuth to remember X509Certificates that it has already verified are valid
+															to avoid validating them each time.  Use when operating on a server with long delays when
+															validating certificates.
+														</xs:documentation>
+													</xs:annotation>
+												</xs:attribute>
 											</xs:complexType>
 										</xs:element>
 										<xs:element name="store">
@@ -922,6 +945,14 @@
 								<xs:complexType>
 									<xs:choice minOccurs="0" maxOccurs="unbounded">
 									</xs:choice>
+									<xs:attribute name="maxAuthorizationTime" type="xs:string">
+										<xs:annotation>
+											<xs:documentation>
+												The maximum time a user can take at the authorization server before the client considers
+												the authorization lost.
+											</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
 								</xs:complexType>
 							</xs:element>
 							<xs:element name="authorizationServer">

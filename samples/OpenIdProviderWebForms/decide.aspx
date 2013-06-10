@@ -1,5 +1,5 @@
 <%@ Page Language="C#" AutoEventWireup="true" Inherits="OpenIdProviderWebForms.decide"
-	CodeBehind="decide.aspx.cs" MasterPageFile="~/Site.Master" %>
+	CodeBehind="decide.aspx.cs" MasterPageFile="~/Site.Master" Async="true" EnableSessionState="true" %>
 
 <%@ Register Src="ProfileFields.ascx" TagName="ProfileFields" TagPrefix="uc1" %>
 <asp:Content runat="server" ContentPlaceHolderID="Main">

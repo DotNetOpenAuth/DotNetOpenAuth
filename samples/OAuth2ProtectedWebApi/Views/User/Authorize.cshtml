@@ -1,0 +1,14 @@
+﻿@{
+	ViewBag.Title = "Authorize";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Authorize</h2>
+
+@using (Html.BeginForm("Respond", "User", FormMethod.Post)) {
+	@AntiForgery.GetHtml()
+	@Html.Hidden("request", this.ViewData["request"])
+	<p>Are you sure you want to allow the client to access your data, with this scope: <b>@string.Join(" ", (IEnumerable<string>)ViewData["Scope"])</b></p>
+	<input type="submit" name="approval" value="true" />
+	<input type="submit" name="approval" value="false" />
+}

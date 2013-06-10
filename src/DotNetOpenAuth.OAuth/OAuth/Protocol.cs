@@ -9,10 +9,10 @@ namespace DotNetOpenAuth.OAuth {
 	using System.Collections.Generic;
 	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// An enumeration of the OAuth protocol versions supported by this library.
@@ -58,6 +58,31 @@ namespace DotNetOpenAuth.OAuth {
 		/// The scheme to use in Authorization header message requests.
 		/// </summary>
 		internal const string AuthorizationHeaderScheme = "OAuth";
+
+		/// <summary>
+		/// The name of the 'oauth_callback' parameter.
+		/// </summary>
+		internal const string CallbackParameter = "oauth_callback";
+
+		/// <summary>
+		/// The name of the 'oauth_callback_confirmed' parameter.
+		/// </summary>
+		internal const string CallbackConfirmedParameter = "oauth_callback_confirmed";
+
+		/// <summary>
+		/// The name of the 'oauth_token' parameter.
+		/// </summary>
+		internal const string TokenParameter = "oauth_token";
+
+		/// <summary>
+		/// The name of the 'oauth_token_secret' parameter.
+		/// </summary>
+		internal const string TokenSecretParameter = "oauth_token_secret";
+
+		/// <summary>
+		/// The name of the 'oauth_verifier' parameter.
+		/// </summary>
+		internal const string VerifierParameter = "oauth_verifier";
 
 		/// <summary>
 		/// Gets the <see cref="Protocol"/> instance with values initialized for V1.0 of the protocol.
@@ -141,7 +166,7 @@ namespace DotNetOpenAuth.OAuth {
 		/// <returns>A matching <see cref="Protocol"/> instance.</returns>
 		internal static Protocol Lookup(Version version) {
 			Requires.NotNull(version, "version");
-			Requires.InRange(AllVersions.Any(p => p.Version == version), "version");
+			Requires.Range(AllVersions.Any(p => p.Version == version), "version");
 			return AllVersions.First(p => p.Version == version);
 		}
 	}

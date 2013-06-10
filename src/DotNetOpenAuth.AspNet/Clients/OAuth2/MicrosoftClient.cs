@@ -7,9 +7,11 @@
 namespace DotNetOpenAuth.AspNet.Clients {
 	using System;
 	using System.Collections.Generic;
+	using System.Collections.Specialized;
 	using System.IO;
 	using System.Net;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// The Microsoft account client.
@@ -20,12 +22,12 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <summary>
 		/// The authorization endpoint.
 		/// </summary>
-		private const string AuthorizationEndpoint = "https://oauth.live.com/authorize";
+		private const string AuthorizationEndpoint = "https://login.live.com/oauth20_authorize.srf";
 
 		/// <summary>
 		/// The token endpoint.
 		/// </summary>
-		private const string TokenEndpoint = "https://oauth.live.com/token";
+		private const string TokenEndpoint = "https://login.live.com/oauth20_token.srf";
 
 		/// <summary>
 		/// The _app id.
@@ -37,21 +39,34 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// </summary>
 		private readonly string appSecret;
 
+		/// <summary>
+		/// The requested scopes.
+		/// </summary>
+		private readonly string[] requestedScopes;
+
 		#endregion
 
 		#region Constructors and Destructors
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MicrosoftClient"/> class.
+		/// Requests a scope of "wl.basic" by default, but "wl.signin" is a good minimal alternative.
 		/// </summary>
-		/// <param name="appId">
-		/// The app id.
-		/// </param>
-		/// <param name="appSecret">
-		/// The app secret.
-		/// </param>
+		/// <param name="appId">The app id.</param>
+		/// <param name="appSecret">The app secret.</param>
 		public MicrosoftClient(string appId, string appSecret)
-			: this("microsoft", appId, appSecret) {
+			: this(appId, appSecret, "wl.basic")
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="MicrosoftClient"/> class.
+		/// </summary>
+		/// <param name="appId">The app id.</param>
+		/// <param name="appSecret">The app secret.</param>
+		/// <param name="requestedScopes">One or more requested scopes.</param>
+		public MicrosoftClient(string appId, string appSecret, params string[] requestedScopes)
+			: this("microsoft", appId, appSecret, requestedScopes) {
 		}
 
 		/// <summary>
@@ -60,16 +75,25 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <param name="providerName">The provider name.</param>
 		/// <param name="appId">The app id.</param>
 		/// <param name="appSecret">The app secret.</param>
-		protected MicrosoftClient(string providerName, string appId, string appSecret)
+		/// <param name="requestedScopes">One or more requested scopes.</param>
+		protected MicrosoftClient(string providerName, string appId, string appSecret, string[] requestedScopes)
 			: base(providerName) {
 			Requires.NotNullOrEmpty(appId, "appId");
 			Requires.NotNullOrEmpty(appSecret, "appSecret");
 
 			this.appId = appId;
 			this.appSecret = appSecret;
+			this.requestedScopes = requestedScopes;
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Gets the identifier for this client as it is registered with Microsoft.
+		/// </summary>
+		protected string AppId {
+			get { return this.appId; }
+		}
 
 		#region Methods
 
@@ -85,7 +109,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 			builder.AppendQueryArgs(
 				new Dictionary<string, string> {
 					{ "client_id", this.appId },
-					{ "scope", "wl.basic" },
+					{ "scope", string.Join(" ", this.requestedScopes) },
 					{ "response_type", "code" },
 					{ "redirect_uri", returnUrl.AbsoluteUri },
 				});
@@ -102,7 +126,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <returns>
 		/// A dictionary contains key-value pairs of user data 
 		/// </returns>
-		protected override IDictionary<string, string> GetUserData(string accessToken) {
+		protected override NameValueCollection GetUserData(string accessToken) {
 			MicrosoftClientUserData graph;
 			var request =
 				WebRequest.Create(
@@ -113,7 +137,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 				}
 			}
 
-			var userData = new Dictionary<string, string>();
+			var userData = new NameValueCollection();
 			userData.AddItemIfNotEmpty("id", graph.Id);
 			userData.AddItemIfNotEmpty("username", graph.Name);
 			userData.AddItemIfNotEmpty("name", graph.Name);

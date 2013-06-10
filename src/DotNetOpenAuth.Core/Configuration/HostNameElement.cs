@@ -6,12 +6,10 @@
 
 namespace DotNetOpenAuth.Configuration {
 	using System.Configuration;
-	using System.Diagnostics.Contracts;
 
 	/// <summary>
 	/// Represents the name of a single host or a regex pattern for host names.
 	/// </summary>
-	[ContractVerification(true)]
 	internal class HostNameElement : ConfigurationElement {
 		/// <summary>
 		/// Gets the name of the @name attribute.

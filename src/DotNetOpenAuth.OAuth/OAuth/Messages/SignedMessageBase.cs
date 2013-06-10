@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.OAuth.Messages {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Net.Http;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OAuth.ChannelElements;
@@ -75,7 +76,7 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// <summary>
 		/// Gets or sets the HTTP method that will be used to transmit the message.
 		/// </summary>
-		string ITamperResistantOAuthMessage.HttpMethod {
+		HttpMethod ITamperResistantOAuthMessage.HttpMethod {
 			get { return this.HttpMethod; }
 			set { this.HttpMethod = value; }
 		}
@@ -169,7 +170,7 @@ namespace DotNetOpenAuth.OAuth.Messages {
 		/// <summary>
 		/// Gets or sets the HTTP method that will be used to transmit the message.
 		/// </summary>
-		protected string HttpMethod { get; set; }
+		protected HttpMethod HttpMethod { get; set; }
 
 		/// <summary>
 		/// Gets or sets the message signature.

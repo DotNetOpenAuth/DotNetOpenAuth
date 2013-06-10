@@ -1,5 +1,6 @@
 namespace OpenIdRelyingPartyWebForms {
 	using System.Web;
+	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OpenId.Extensions.AttributeExchange;
 	using DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
@@ -28,8 +29,8 @@ namespace OpenIdRelyingPartyWebForms {
 			set { HttpContext.Current.Session["PapePolicies"] = value; }
 		}
 
-		public static string GoogleAccessToken {
-			get { return HttpContext.Current.Session["GoogleAccessToken"] as string; }
+		public static AccessToken GoogleAccessToken {
+			get { return (AccessToken)(HttpContext.Current.Session["GoogleAccessToken"] ?? new AccessToken()); }
 			set { HttpContext.Current.Session["GoogleAccessToken"] = value; }
 		}
 
@@ -38,7 +39,7 @@ namespace OpenIdRelyingPartyWebForms {
 			FetchResponse = null;
 			FriendlyLoginName = null;
 			PapePolicies = null;
-			GoogleAccessToken = null;
+			GoogleAccessToken = new AccessToken();
 		}
 	}
 }

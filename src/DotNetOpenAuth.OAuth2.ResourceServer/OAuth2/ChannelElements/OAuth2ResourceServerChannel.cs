@@ -7,15 +7,20 @@
 namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Net;
+	using System.Net.Http;
+	using System.Net.Http.Headers;
 	using System.Net.Mime;
 	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.OAuth2.Messages;
+	using Validation;
+	using HttpRequestHeaders = DotNetOpenAuth.Messaging.HttpRequestHeaders;
 
 	/// <summary>
 	/// The channel for the OAuth protocol.
@@ -34,10 +39,11 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		private static readonly Version[] Versions = Protocol.AllVersions.Select(v => v.Version).ToArray();
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="OAuth2ResourceServerChannel"/> class.
+		/// Initializes a new instance of the <see cref="OAuth2ResourceServerChannel" /> class.
 		/// </summary>
-		protected internal OAuth2ResourceServerChannel()
-			: base(MessageTypes, Versions) {
+		/// <param name="hostFactories">The host factories.</param>
+		protected internal OAuth2ResourceServerChannel(IHostFactories hostFactories = null)
+			: base(MessageTypes, Versions, hostFactories ?? new OAuth.DefaultOAuthHostFactories()) {
 			// TODO: add signing (authenticated request) binding element.
 		}
 
@@ -45,13 +51,16 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// Gets the protocol message that may be embedded in the given HTTP request.
 		/// </summary>
 		/// <param name="request">The request to search for an embedded message.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The deserialized message, if one is found.  Null otherwise.
 		/// </returns>
-		protected override IDirectedProtocolMessage ReadFromRequestCore(HttpRequestBase request) {
+		protected override async Task<IDirectedProtocolMessage> ReadFromRequestCoreAsync(HttpRequestMessage request, CancellationToken cancellationToken) {
+			Requires.NotNull(request, "request");
+
 			var fields = new Dictionary<string, string>();
 			string accessToken;
-			if ((accessToken = SearchForBearerAccessTokenInRequest(request)) != null) {
+			if ((accessToken = await SearchForBearerAccessTokenInRequestAsync(request, cancellationToken)) != null) {
 				fields[Protocol.token_type] = Protocol.AccessTokenTypes.Bearer;
 				fields[Protocol.access_token] = accessToken;
 			}
@@ -77,11 +86,13 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// Gets the protocol message that may be in the given HTTP response.
 		/// </summary>
 		/// <param name="response">The response that is anticipated to contain an protocol message.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The deserialized message parts, if found.  Null otherwise.
 		/// </returns>
+		/// <exception cref="System.NotImplementedException">Always thrown.</exception>
 		/// <exception cref="ProtocolException">Thrown when the response is not valid.</exception>
-		protected override IDictionary<string, string> ReadFromResponseCore(IncomingWebResponse response) {
+		protected override Task<IDictionary<string, string>> ReadFromResponseCoreAsync(HttpResponseMessage response, CancellationToken cancellationToken) {
 			// We never expect resource servers to send out direct requests,
 			// and therefore won't have direct responses.
 			throw new NotImplementedException();
@@ -98,8 +109,8 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <remarks>
 		/// This method implements spec OAuth V1.0 section 5.3.
 		/// </remarks>
-		protected override OutgoingWebResponse PrepareDirectResponse(IProtocolMessage response) {
-			var webResponse = new OutgoingWebResponse();
+		protected override HttpResponseMessage PrepareDirectResponse(IProtocolMessage response) {
+			var webResponse = new HttpResponseMessage();
 
 			// The only direct response from a resource server is some authorization error (400, 401, 403).
 			var unauthorizedResponse = response as UnauthorizedResponse;
@@ -108,12 +119,12 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			// First initialize based on the specifics within the message.
 			ApplyMessageTemplate(response, webResponse);
 			if (!(response is IHttpDirectResponse)) {
-				webResponse.Status = HttpStatusCode.Unauthorized;
+				webResponse.StatusCode = HttpStatusCode.Unauthorized;
 			}
 
 			// Now serialize all the message parts into the WWW-Authenticate header.
 			var fields = this.MessageDescriptions.GetAccessor(response);
-			webResponse.Headers[HttpResponseHeader.WwwAuthenticate] = MessagingUtilities.AssembleAuthorizationHeader(unauthorizedResponse.Scheme, fields);
+			webResponse.Headers.WwwAuthenticate.Add(new AuthenticationHeaderValue(unauthorizedResponse.Scheme, MessagingUtilities.AssembleAuthorizationHeader(fields)));
 			return webResponse;
 		}
 
@@ -121,28 +132,28 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// Searches for a bearer access token in the request.
 		/// </summary>
 		/// <param name="request">The request.</param>
-		/// <returns>The bearer access token, if one exists.  Otherwise <c>null</c>.</returns>
-		private static string SearchForBearerAccessTokenInRequest(HttpRequestBase request) {
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The bearer access token, if one exists.  Otherwise <c>null</c>.
+		/// </returns>
+		private static async Task<string> SearchForBearerAccessTokenInRequestAsync(HttpRequestMessage request, CancellationToken cancellationToken) {
 			Requires.NotNull(request, "request");
 
 			// First search the authorization header.
-			string authorizationHeader = request.Headers[HttpRequestHeaders.Authorization];
-			if (!string.IsNullOrEmpty(authorizationHeader) && authorizationHeader.StartsWith(Protocol.BearerHttpAuthorizationSchemeWithTrailingSpace, StringComparison.OrdinalIgnoreCase)) {
-				return authorizationHeader.Substring(Protocol.BearerHttpAuthorizationSchemeWithTrailingSpace.Length);
+			var authorizationHeader = request.Headers.Authorization;
+			if (authorizationHeader != null && string.Equals(authorizationHeader.Scheme, Protocol.BearerHttpAuthorizationScheme, StringComparison.OrdinalIgnoreCase)) {
+				return authorizationHeader.Parameter;
 			}
 
 			// Failing that, scan the entity
-			if (!string.IsNullOrEmpty(request.Headers[HttpRequestHeaders.ContentType])) {
-				var contentType = new ContentType(request.Headers[HttpRequestHeaders.ContentType]);
-				if (string.Equals(contentType.MediaType, HttpFormUrlEncoded, StringComparison.Ordinal)) {
-					if (request.Form[Protocol.BearerTokenEncodedUrlParameterName] != null) {
-						return request.Form[Protocol.BearerTokenEncodedUrlParameterName];
-					}
+			foreach (var pair in await ParseUrlEncodedFormContentAsync(request, cancellationToken)) {
+				if (string.Equals(pair.Key, Protocol.BearerTokenEncodedUrlParameterName, StringComparison.Ordinal)) {
+					return pair.Value;
 				}
 			}
 
 			// Finally, check the least desirable location: the query string
-			var unrewrittenQuery = request.GetQueryStringBeforeRewriting();
+			var unrewrittenQuery = HttpUtility.ParseQueryString(request.RequestUri.Query);
 			if (!string.IsNullOrEmpty(unrewrittenQuery[Protocol.BearerTokenEncodedUrlParameterName])) {
 				return unrewrittenQuery[Protocol.BearerTokenEncodedUrlParameterName];
 			}

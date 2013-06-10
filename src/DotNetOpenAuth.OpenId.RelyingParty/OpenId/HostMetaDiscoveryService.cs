@@ -7,24 +7,31 @@
 namespace DotNetOpenAuth.OpenId {
 	using System;
 	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.IO;
 	using System.Linq;
 	using System.Net;
+	using System.Net.Cache;
+	using System.Net.Http;
+	using System.Net.Http.Headers;
 	using System.Security;
 	using System.Security.Cryptography;
 	using System.Security.Cryptography.X509Certificates;
 	using System.Security.Permissions;
 	using System.Text;
 	using System.Text.RegularExpressions;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Xml;
 	using System.Xml.XPath;
+	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using DotNetOpenAuth.Xrds;
 	using DotNetOpenAuth.Yadis;
+	using Validation;
 
 	/// <summary>
 	/// The discovery service to support host-meta based discovery, such as Google Apps for Domains.
@@ -35,7 +42,7 @@ namespace DotNetOpenAuth.OpenId {
 	/// and the XMLDSig spec referenced in that spec can be found at:
 	/// http://wiki.oasis-open.org/xri/XrdOne/XmlDsigProfile
 	/// </remarks>
-	public class HostMetaDiscoveryService : IIdentifierDiscoveryService {
+	public class HostMetaDiscoveryService : IIdentifierDiscoveryService, IRequireHostFactories {
 		/// <summary>
 		/// The URI template for discovery host-meta on domains hosted by
 		/// Google Apps for Domains.
@@ -53,11 +60,24 @@ namespace DotNetOpenAuth.OpenId {
 		private static readonly Regex HostMetaLink = new Regex(@"^Link: <(?<location>.+?)>; rel=""describedby http://reltype.google.com/openid/xrd-op""; type=""application/xrds\+xml""$");
 
 		/// <summary>
+		/// A set of certificate thumbprints that have been verified.
+		/// </summary>
+		private static readonly HashSet<string> ApprovedCertificateThumbprintCache = new HashSet<string>(StringComparer.Ordinal);
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="HostMetaDiscoveryService"/> class.
 		/// </summary>
 		public HostMetaDiscoveryService() {
 			this.TrustedHostMetaProxies = new List<HostMetaProxy>();
 		}
+
+		/// <summary>
+		/// Gets or sets the host factories used by this instance.
+		/// </summary>
+		/// <value>
+		/// The host factories.
+		/// </value>
+		public IHostFactories HostFactories { get; set; }
 
 		/// <summary>
 		/// Gets the set of URI templates to use to contact host-meta hosting proxies
@@ -94,31 +114,33 @@ namespace DotNetOpenAuth.OpenId {
 		/// Performs discovery on the specified identifier.
 		/// </summary>
 		/// <param name="identifier">The identifier to perform discovery on.</param>
-		/// <param name="requestHandler">The means to place outgoing HTTP requests.</param>
-		/// <param name="abortDiscoveryChain">if set to <c>true</c>, no further discovery services will be called for this identifier.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// A sequence of service endpoints yielded by discovery.  Must not be null, but may be empty.
 		/// </returns>
-		public IEnumerable<IdentifierDiscoveryResult> Discover(Identifier identifier, IDirectWebRequestHandler requestHandler, out bool abortDiscoveryChain) {
-			abortDiscoveryChain = false;
+		public async Task<IdentifierDiscoveryServiceResult> DiscoverAsync(Identifier identifier, CancellationToken cancellationToken) {
+			Requires.NotNull(identifier, "identifier");
+			Verify.Operation(this.HostFactories != null, Strings.HostFactoriesRequired);
+			cancellationToken.ThrowIfCancellationRequested();
 
 			// Google Apps are always URIs -- not XRIs.
 			var uriIdentifier = identifier as UriIdentifier;
 			if (uriIdentifier == null) {
-				return Enumerable.Empty<IdentifierDiscoveryResult>();
+				return new IdentifierDiscoveryServiceResult(Enumerable.Empty<IdentifierDiscoveryResult>());
 			}
 
 			var results = new List<IdentifierDiscoveryResult>();
-			string signingHost;
-			using (var response = GetXrdsResponse(uriIdentifier, requestHandler, out signingHost)) {
-				if (response != null) {
+			using (var response = await this.GetXrdsResponseAsync(uriIdentifier, cancellationToken)) {
+				if (response.Result != null) {
 					try {
-						var document = new XrdsDocument(XmlReader.Create(response.ResponseStream));
-						ValidateXmlDSig(document, uriIdentifier, response, signingHost);
+						var readerSettings = MessagingUtilities.CreateUntrustedXmlReaderSettings();
+						var responseStream = await response.Result.Content.ReadAsStreamAsync();
+						var document = new XrdsDocument(XmlReader.Create(responseStream, readerSettings));
+						await ValidateXmlDSigAsync(document, uriIdentifier, response.Result, response.SigningHost);
 						var xrds = GetXrdElements(document, uriIdentifier.Uri.Host);
 
 						// Look for claimed identifier template URIs for an additional XRDS document.
-						results.AddRange(GetExternalServices(xrds, uriIdentifier, requestHandler));
+						results.AddRange(await this.GetExternalServicesAsync(xrds, uriIdentifier, cancellationToken));
 
 						// If we couldn't find any claimed identifiers, look for OP identifiers.
 						// Normally this would be the opposite (OP Identifiers take precedence over
@@ -128,15 +150,13 @@ namespace DotNetOpenAuth.OpenId {
 						if (results.Count == 0) {
 							results.AddRange(xrds.CreateServiceEndpoints(uriIdentifier, uriIdentifier));
 						}
-
-						abortDiscoveryChain = true;
 					} catch (XmlException ex) {
-						Logger.Yadis.ErrorFormat("Error while parsing XRDS document at {0} pointed to by host-meta: {1}", response.FinalUri, ex);
+						Logger.Yadis.ErrorFormat("Error while parsing XRDS document at {0} pointed to by host-meta: {1}", response.Result.RequestMessage.RequestUri, ex);
 					}
 				}
 			}
 
-			return results;
+			return new IdentifierDiscoveryServiceResult(results, abortDiscoveryChain: true);
 		}
 
 		#endregion
@@ -159,49 +179,11 @@ namespace DotNetOpenAuth.OpenId {
 		/// <returns>A sequence of services.</returns>
 		private static IEnumerable<ServiceElement> GetDescribedByServices(IEnumerable<XrdElement> xrds) {
 			Requires.NotNull(xrds, "xrds");
-			Contract.Ensures(Contract.Result<IEnumerable<ServiceElement>>() != null);
 
 			var describedBy = from xrd in xrds
 							  from service in xrd.SearchForServiceTypeUris(p => "http://www.iana.org/assignments/relation/describedby")
 							  select service;
 			return describedBy;
-		}
-
-		/// <summary>
-		/// Gets the services for an identifier that are described by an external XRDS document.
-		/// </summary>
-		/// <param name="xrds">The XRD elements to search for described-by services.</param>
-		/// <param name="identifier">The identifier under discovery.</param>
-		/// <param name="requestHandler">The request handler.</param>
-		/// <returns>The discovered services.</returns>
-		private static IEnumerable<IdentifierDiscoveryResult> GetExternalServices(IEnumerable<XrdElement> xrds, UriIdentifier identifier, IDirectWebRequestHandler requestHandler) {
-			Requires.NotNull(xrds, "xrds");
-			Requires.NotNull(identifier, "identifier");
-			Requires.NotNull(requestHandler, "requestHandler");
-			Contract.Ensures(Contract.Result<IEnumerable<IdentifierDiscoveryResult>>() != null);
-
-			var results = new List<IdentifierDiscoveryResult>();
-			foreach (var serviceElement in GetDescribedByServices(xrds)) {
-				var templateNode = serviceElement.Node.SelectSingleNode("google:URITemplate", serviceElement.XmlNamespaceResolver);
-				var nextAuthorityNode = serviceElement.Node.SelectSingleNode("google:NextAuthority", serviceElement.XmlNamespaceResolver);
-				if (templateNode != null) {
-					Uri externalLocation = new Uri(templateNode.Value.Trim().Replace("{%uri}", Uri.EscapeDataString(identifier.Uri.AbsoluteUri)));
-					string nextAuthority = nextAuthorityNode != null ? nextAuthorityNode.Value.Trim() : identifier.Uri.Host;
-					try {
-						using (var externalXrdsResponse = GetXrdsResponse(identifier, requestHandler, externalLocation)) {
-							XrdsDocument externalXrds = new XrdsDocument(XmlReader.Create(externalXrdsResponse.ResponseStream));
-							ValidateXmlDSig(externalXrds, identifier, externalXrdsResponse, nextAuthority);
-							results.AddRange(GetXrdElements(externalXrds, identifier).CreateServiceEndpoints(identifier, identifier));
-						}
-					} catch (ProtocolException ex) {
-						Logger.Yadis.WarnFormat("HTTP GET error while retrieving described-by XRDS document {0}: {1}", externalLocation.AbsoluteUri, ex);
-					} catch (XmlException ex) {
-						Logger.Yadis.ErrorFormat("Error while parsing described-by XRDS document {0}: {1}", externalLocation.AbsoluteUri, ex);
-					}
-				}
-			}
-
-			return results;
 		}
 
 		/// <summary>
@@ -211,9 +193,12 @@ namespace DotNetOpenAuth.OpenId {
 		/// <param name="identifier">The identifier under discovery.</param>
 		/// <param name="response">The response.</param>
 		/// <param name="signingHost">The host name on the certificate that should be used to verify the signature in the XRDS.</param>
+		/// <returns>
+		/// A task that completes with the asynchronous operation.
+		/// </returns>
 		/// <exception cref="ProtocolException">Thrown if the XRDS document has an invalid or a missing signature.</exception>
 		[SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "XmlDSig", Justification = "xml")]
-		private static void ValidateXmlDSig(XrdsDocument document, UriIdentifier identifier, IncomingWebResponse response, string signingHost) {
+		private static async Task ValidateXmlDSigAsync(XrdsDocument document, UriIdentifier identifier, HttpResponseMessage response, string signingHost) {
 			Requires.NotNull(document, "document");
 			Requires.NotNull(identifier, "identifier");
 			Requires.NotNull(response, "response");
@@ -232,32 +217,19 @@ namespace DotNetOpenAuth.OpenId {
 			ErrorUtilities.VerifyProtocol(certNodes.Count > 0, OpenIdStrings.MissingElement, "X509Certificate");
 			var certs = certNodes.Cast<XPathNavigator>().Select(n => new X509Certificate2(Convert.FromBase64String(n.Value.Trim()))).ToList();
 
-			// Verify that we trust the signer of the certificates.
-			// Start by trying to validate just the certificate used to sign the XRDS document,
-			// since we can do that with partial trust.
-			Logger.OpenId.Debug("Verifying that we trust the certificate used to sign the discovery document.");
-			if (!certs[0].Verify()) {
-				// We couldn't verify just the signing certificate, so try to verify the whole certificate chain.
-				try {
-					Logger.OpenId.Debug("Verifying the whole certificate chain.");
-					VerifyCertChain(certs);
-					Logger.OpenId.Debug("Certificate chain verified.");
-				} catch (SecurityException) {
-					Logger.Yadis.Warn("Signing certificate verification failed and we have insufficient code access security permissions to perform certificate chain validation.");
-					ErrorUtilities.ThrowProtocol(OpenIdStrings.X509CertificateNotTrusted);
-				}
-			}
+			VerifyCertificateChain(certs);
 
 			// Verify that the certificate is issued to the host on whom we are performing discovery.
 			string hostName = certs[0].GetNameInfo(X509NameType.DnsName, false);
 			ErrorUtilities.VerifyProtocol(string.Equals(hostName, signingHost, StringComparison.OrdinalIgnoreCase), OpenIdStrings.MisdirectedSigningCertificate, hostName, signingHost);
 
 			// Verify the signature itself
-			byte[] signature = Convert.FromBase64String(response.Headers["Signature"]);
+			byte[] signature = Convert.FromBase64String(response.Headers.GetValues("Signature").First());
 			var provider = (RSACryptoServiceProvider)certs.First().PublicKey.Key;
-			byte[] data = new byte[response.ResponseStream.Length];
-			response.ResponseStream.Seek(0, SeekOrigin.Begin);
-			response.ResponseStream.Read(data, 0, data.Length);
+			var responseStream = await response.Content.ReadAsStreamAsync();
+			byte[] data = new byte[responseStream.Length];
+			responseStream.Seek(0, SeekOrigin.Begin);
+			await responseStream.ReadAsync(data, 0, data.Length);
 			ErrorUtilities.VerifyProtocol(provider.VerifyData(data, "SHA1", signature), OpenIdStrings.InvalidDSig);
 		}
 
@@ -272,8 +244,9 @@ namespace DotNetOpenAuth.OpenId {
 		/// an alternative plan.
 		/// </remarks>
 		/// <exception cref="ProtocolException">Thrown if the certificate chain is invalid or unverifiable.</exception>
-		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "DotNetOpenAuth.Messaging.ErrorUtilities.ThrowProtocol(System.String,System.Object[])", Justification = "The localized portion is a string resource already."), SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands", Justification = "By design")]
-		private static void VerifyCertChain(List<X509Certificate2> certs) {
+		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "DotNetOpenAuth.Messaging.ErrorUtilities.ThrowProtocol(System.String,System.Object[])", Justification = "The localized portion is a string resource already.")]
+		[SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands", Justification = "By design")]
+		private static void VerifyCertChain(IEnumerable<X509Certificate2> certs) {
 			var chain = new X509Chain();
 			foreach (var cert in certs) {
 				chain.Build(cert);
@@ -289,81 +262,168 @@ namespace DotNetOpenAuth.OpenId {
 		}
 
 		/// <summary>
-		/// Gets the XRDS HTTP response for a given identifier.
+		/// Verifies that a certificate chain is trusted.
 		/// </summary>
-		/// <param name="identifier">The identifier.</param>
-		/// <param name="requestHandler">The request handler.</param>
-		/// <param name="xrdsLocation">The location of the XRDS document to retrieve.</param>
-		/// <returns>
-		/// A HTTP response carrying an XRDS document.
-		/// </returns>
-		/// <exception cref="ProtocolException">Thrown if the XRDS document could not be obtained.</exception>
-		private static IncomingWebResponse GetXrdsResponse(UriIdentifier identifier, IDirectWebRequestHandler requestHandler, Uri xrdsLocation) {
-			Requires.NotNull(identifier, "identifier");
-			Requires.NotNull(requestHandler, "requestHandler");
-			Requires.NotNull(xrdsLocation, "xrdsLocation");
-			Contract.Ensures(Contract.Result<IncomingWebResponse>() != null);
+		/// <param name="certificates">The chain of certificates to verify.</param>
+		private static void VerifyCertificateChain(IList<X509Certificate2> certificates) {
+			Requires.NotNullEmptyOrNullElements(certificates, "certificates");
 
-			var request = (HttpWebRequest)WebRequest.Create(xrdsLocation);
-			request.CachePolicy = Yadis.IdentifierDiscoveryCachePolicy;
-			request.Accept = ContentTypes.Xrds;
-			var options = identifier.IsDiscoverySecureEndToEnd ? DirectWebRequestOptions.RequireSsl : DirectWebRequestOptions.None;
-			var response = requestHandler.GetResponse(request, options).GetSnapshot(Yadis.MaximumResultToScan);
-			if (!string.Equals(response.ContentType.MediaType, ContentTypes.Xrds, StringComparison.Ordinal)) {
-				Logger.Yadis.WarnFormat("Host-meta pointed to XRDS at {0}, but Content-Type at that URL was unexpected value '{1}'.", xrdsLocation, response.ContentType);
+			// Before calling into the OS to validate the certificate, since that can for some bizzare reason hang for 5 seconds
+			// on some systems, check a cache of previously verified certificates first.
+			if (OpenIdElement.Configuration.RelyingParty.HostMetaDiscovery.EnableCertificateValidationCache) {
+				lock (ApprovedCertificateThumbprintCache) {
+					// HashSet<T> isn't thread-safe.
+					if (ApprovedCertificateThumbprintCache.Contains(certificates[0].Thumbprint)) {
+						return;
+					}
+				}
 			}
 
-			return response;
+			// Verify that we trust the signer of the certificates.
+			// Start by trying to validate just the certificate used to sign the XRDS document,
+			// since we can do that with partial trust.
+			Logger.OpenId.Debug("Verifying that we trust the certificate used to sign the discovery document.");
+			if (!certificates[0].Verify()) {
+				// We couldn't verify just the signing certificate, so try to verify the whole certificate chain.
+				try {
+					Logger.OpenId.Debug("Verifying the whole certificate chain.");
+					VerifyCertChain(certificates);
+					Logger.OpenId.Debug("Certificate chain verified.");
+				} catch (SecurityException) {
+					Logger.Yadis.Warn("Signing certificate verification failed and we have insufficient code access security permissions to perform certificate chain validation.");
+					ErrorUtilities.ThrowProtocol(OpenIdStrings.X509CertificateNotTrusted);
+				}
+			}
+
+			if (OpenIdElement.Configuration.RelyingParty.HostMetaDiscovery.EnableCertificateValidationCache) {
+				lock (ApprovedCertificateThumbprintCache) {
+					ApprovedCertificateThumbprintCache.Add(certificates[0].Thumbprint);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Gets the services for an identifier that are described by an external XRDS document.
+		/// </summary>
+		/// <param name="xrds">The XRD elements to search for described-by services.</param>
+		/// <param name="identifier">The identifier under discovery.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The discovered services.
+		/// </returns>
+		private async Task<IEnumerable<IdentifierDiscoveryResult>> GetExternalServicesAsync(IEnumerable<XrdElement> xrds, UriIdentifier identifier, CancellationToken cancellationToken) {
+			Requires.NotNull(xrds, "xrds");
+			Requires.NotNull(identifier, "identifier");
+
+			var results = new List<IdentifierDiscoveryResult>();
+			foreach (var serviceElement in GetDescribedByServices(xrds)) {
+				var templateNode = serviceElement.Node.SelectSingleNode("google:URITemplate", serviceElement.XmlNamespaceResolver);
+				var nextAuthorityNode = serviceElement.Node.SelectSingleNode("google:NextAuthority", serviceElement.XmlNamespaceResolver);
+				if (templateNode != null) {
+					Uri externalLocation = new Uri(templateNode.Value.Trim().Replace("{%uri}", Uri.EscapeDataString(identifier.Uri.AbsoluteUri)));
+					string nextAuthority = nextAuthorityNode != null ? nextAuthorityNode.Value.Trim() : identifier.Uri.Host;
+					try {
+						using (var externalXrdsResponse = await this.GetXrdsResponseAsync(identifier, externalLocation, cancellationToken)) {
+							var readerSettings = MessagingUtilities.CreateUntrustedXmlReaderSettings();
+							var responseStream = await externalXrdsResponse.Content.ReadAsStreamAsync();
+							XrdsDocument externalXrds = new XrdsDocument(XmlReader.Create(responseStream, readerSettings));
+							await ValidateXmlDSigAsync(externalXrds, identifier, externalXrdsResponse, nextAuthority);
+							results.AddRange(GetXrdElements(externalXrds, identifier).CreateServiceEndpoints(identifier, identifier));
+						}
+					} catch (ProtocolException ex) {
+						Logger.Yadis.WarnFormat("HTTP GET error while retrieving described-by XRDS document {0}: {1}", externalLocation.AbsoluteUri, ex);
+					} catch (XmlException ex) {
+						Logger.Yadis.ErrorFormat("Error while parsing described-by XRDS document {0}: {1}", externalLocation.AbsoluteUri, ex);
+					}
+				}
+			}
+
+			return results;
 		}
 
 		/// <summary>
 		/// Gets the XRDS HTTP response for a given identifier.
 		/// </summary>
 		/// <param name="identifier">The identifier.</param>
-		/// <param name="requestHandler">The request handler.</param>
-		/// <param name="signingHost">The host name on the certificate that should be used to verify the signature in the XRDS.</param>
-		/// <returns>A HTTP response carrying an XRDS document, or <c>null</c> if one could not be obtained.</returns>
+		/// <param name="xrdsLocation">The location of the XRDS document to retrieve.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// A HTTP response carrying an XRDS document.
+		/// </returns>
 		/// <exception cref="ProtocolException">Thrown if the XRDS document could not be obtained.</exception>
-		private IncomingWebResponse GetXrdsResponse(UriIdentifier identifier, IDirectWebRequestHandler requestHandler, out string signingHost) {
+		private async Task<HttpResponseMessage> GetXrdsResponseAsync(UriIdentifier identifier, Uri xrdsLocation, CancellationToken cancellationToken) {
 			Requires.NotNull(identifier, "identifier");
-			Requires.NotNull(requestHandler, "requestHandler");
-			Uri xrdsLocation = this.GetXrdsLocation(identifier, requestHandler, out signingHost);
-			if (xrdsLocation == null) {
-				return null;
+			Requires.NotNull(xrdsLocation, "xrdsLocation");
+
+			using (var httpClient = this.HostFactories.CreateHttpClient(identifier.IsDiscoverySecureEndToEnd, Yadis.IdentifierDiscoveryCachePolicy)) {
+				var request = new HttpRequestMessage(HttpMethod.Get, xrdsLocation);
+				request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(ContentTypes.Xrds));
+				var response = await httpClient.SendAsync(request, cancellationToken);
+				try {
+					if (!string.Equals(response.Content.Headers.ContentType.MediaType, ContentTypes.Xrds, StringComparison.Ordinal)) {
+						Logger.Yadis.WarnFormat(
+							"Host-meta pointed to XRDS at {0}, but Content-Type at that URL was unexpected value '{1}'.",
+							xrdsLocation,
+							response.Content.Headers.ContentType);
+					}
+
+					return response;
+				} catch {
+					response.Dispose();
+					throw;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Gets the XRDS HTTP response for a given identifier.
+		/// </summary>
+		/// <param name="identifier">The identifier.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// A HTTP response carrying an XRDS document, or <c>null</c> if one could not be obtained.
+		/// </returns>
+		/// <exception cref="ProtocolException">Thrown if the XRDS document could not be obtained.</exception>
+		private async Task<ResultWithSigningHost<HttpResponseMessage>> GetXrdsResponseAsync(UriIdentifier identifier, CancellationToken cancellationToken) {
+			Requires.NotNull(identifier, "identifier");
+
+			var result = await this.GetXrdsLocationAsync(identifier, cancellationToken);
+			if (result.Result == null) {
+				return new ResultWithSigningHost<HttpResponseMessage>();
 			}
 
-			var response = GetXrdsResponse(identifier, requestHandler, xrdsLocation);
-
-			return response;
+			var response = await this.GetXrdsResponseAsync(identifier, result.Result, cancellationToken);
+			return new ResultWithSigningHost<HttpResponseMessage>(response, result.SigningHost);
 		}
 
 		/// <summary>
 		/// Gets the location of the XRDS document that describes a given identifier.
 		/// </summary>
 		/// <param name="identifier">The identifier under discovery.</param>
-		/// <param name="requestHandler">The request handler.</param>
-		/// <param name="signingHost">The host name on the certificate that should be used to verify the signature in the XRDS.</param>
-		/// <returns>An absolute URI, or <c>null</c> if one could not be determined.</returns>
-		private Uri GetXrdsLocation(UriIdentifier identifier, IDirectWebRequestHandler requestHandler, out string signingHost) {
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// An absolute URI, or <c>null</c> if one could not be determined.
+		/// </returns>
+		private async Task<ResultWithSigningHost<Uri>> GetXrdsLocationAsync(UriIdentifier identifier, CancellationToken cancellationToken) {
 			Requires.NotNull(identifier, "identifier");
-			Requires.NotNull(requestHandler, "requestHandler");
-			using (var hostMetaResponse = this.GetHostMeta(identifier, requestHandler, out signingHost)) {
-				if (hostMetaResponse == null) {
-					return null;
+
+			using (var hostMetaResponse = await this.GetHostMetaAsync(identifier, cancellationToken)) {
+				if (hostMetaResponse.Result == null) {
+					return new ResultWithSigningHost<Uri>();
 				}
 
-				using (var sr = hostMetaResponse.GetResponseReader()) {
-					string line = sr.ReadLine();
+				using (var sr = new StreamReader(await hostMetaResponse.Result.Content.ReadAsStreamAsync())) {
+					string line = await sr.ReadLineAsync();
 					Match m = HostMetaLink.Match(line);
 					if (m.Success) {
 						Uri location = new Uri(m.Groups["location"].Value);
-						Logger.Yadis.InfoFormat("Found link to XRDS at {0} in host-meta document {1}.", location, hostMetaResponse.FinalUri);
-						return location;
+						Logger.Yadis.InfoFormat("Found link to XRDS at {0} in host-meta document {1}.", location, hostMetaResponse.Result.RequestMessage.RequestUri);
+						return new ResultWithSigningHost<Uri>(location, hostMetaResponse.SigningHost);
 					}
 				}
 
-				Logger.Yadis.WarnFormat("Could not find link to XRDS in host-meta document: {0}", hostMetaResponse.FinalUri);
-				return null;
+				Logger.Yadis.WarnFormat("Could not find link to XRDS in host-meta document: {0}", hostMetaResponse.Result.RequestMessage.RequestUri);
+				return new ResultWithSigningHost<Uri>();
 			}
 		}
 
@@ -371,40 +431,33 @@ namespace DotNetOpenAuth.OpenId {
 		/// Gets the host-meta for a given identifier.
 		/// </summary>
 		/// <param name="identifier">The identifier.</param>
-		/// <param name="requestHandler">The request handler.</param>
-		/// <param name="signingHost">The host name on the certificate that should be used to verify the signature in the XRDS.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The host-meta response, or <c>null</c> if no host-meta document could be obtained.
 		/// </returns>
-		private IncomingWebResponse GetHostMeta(UriIdentifier identifier, IDirectWebRequestHandler requestHandler, out string signingHost) {
+		private async Task<ResultWithSigningHost<HttpResponseMessage>> GetHostMetaAsync(UriIdentifier identifier, CancellationToken cancellationToken) {
 			Requires.NotNull(identifier, "identifier");
-			Requires.NotNull(requestHandler, "requestHandler");
-			foreach (var hostMetaProxy in this.GetHostMetaLocations(identifier)) {
-				var hostMetaLocation = hostMetaProxy.GetProxy(identifier);
-				var request = (HttpWebRequest)WebRequest.Create(hostMetaLocation);
-				request.CachePolicy = Yadis.IdentifierDiscoveryCachePolicy;
-				var options = DirectWebRequestOptions.AcceptAllHttpResponses;
-				if (identifier.IsDiscoverySecureEndToEnd) {
-					options |= DirectWebRequestOptions.RequireSsl;
-				}
-				var response = requestHandler.GetResponse(request, options).GetSnapshot(Yadis.MaximumResultToScan);
-				try {
-					if (response.Status == HttpStatusCode.OK) {
-						Logger.Yadis.InfoFormat("Found host-meta for {0} at: {1}", identifier.Uri.Host, hostMetaLocation);
-						signingHost = hostMetaProxy.GetSigningHost(identifier);
-						return response;
-					} else {
-						Logger.Yadis.InfoFormat("Could not obtain host-meta for {0} from {1}", identifier.Uri.Host, hostMetaLocation);
+
+			using (var httpClient = this.HostFactories.CreateHttpClient(identifier.IsDiscoverySecureEndToEnd, Yadis.IdentifierDiscoveryCachePolicy)) {
+				foreach (var hostMetaProxy in this.GetHostMetaLocations(identifier)) {
+					var hostMetaLocation = hostMetaProxy.GetProxy(identifier);
+					var response = await httpClient.GetAsync(hostMetaLocation, cancellationToken);
+					try {
+						if (response.IsSuccessStatusCode) {
+							Logger.Yadis.InfoFormat("Found host-meta for {0} at: {1}", identifier.Uri.Host, hostMetaLocation);
+							return new ResultWithSigningHost<HttpResponseMessage>(response, hostMetaProxy.GetSigningHost(identifier));
+						} else {
+							Logger.Yadis.InfoFormat("Could not obtain host-meta for {0} from {1}", identifier.Uri.Host, hostMetaLocation);
+							response.Dispose();
+						}
+					} catch {
 						response.Dispose();
+						throw;
 					}
-				} catch {
-					response.Dispose();
-					throw;
 				}
 			}
 
-			signingHost = null;
-			return null;
+			return new ResultWithSigningHost<HttpResponseMessage>();
 		}
 
 		/// <summary>
@@ -427,6 +480,41 @@ namespace DotNetOpenAuth.OpenId {
 			result = result.Concat(new[] { new HostMetaProxy(localHostMetaBuilder.Uri.AbsoluteUri, identifier.Uri.Host) });
 
 			return result;
+		}
+
+		/// <summary>
+		/// A compound result of some value with the signing host.
+		/// </summary>
+		/// <typeparam name="T">The type of the primary result.</typeparam>
+		private struct ResultWithSigningHost<T> : IDisposable {
+			/// <summary>
+			/// Initializes a new instance of the <see cref="ResultWithSigningHost{T}"/> struct.
+			/// </summary>
+			/// <param name="result">The result.</param>
+			/// <param name="signingHost">The signing host.</param>
+			internal ResultWithSigningHost(T result, string signingHost)
+				: this() {
+				this.Result = result;
+				this.SigningHost = signingHost;
+			}
+
+			/// <summary>
+			/// Gets the result.
+			/// </summary>
+			public T Result { get; private set; }
+
+			/// <summary>
+			/// Gets the signing host.
+			/// </summary>
+			public string SigningHost { get; private set; }
+
+			/// <summary>
+			/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+			/// </summary>
+			public void Dispose() {
+				var disposable = this.Result as IDisposable;
+				disposable.DisposeIfNotNull();
+			}
 		}
 
 		/// <summary>

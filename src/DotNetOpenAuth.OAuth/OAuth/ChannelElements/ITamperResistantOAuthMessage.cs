@@ -7,6 +7,8 @@
 namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using System;
 	using System.Collections.Generic;
+	using System.Net.Http;
+
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 
@@ -37,7 +39,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <summary>
 		/// Gets or sets the HTTP method that will be used to transmit the message.
 		/// </summary>
-		string HttpMethod { get; set; }
+		HttpMethod HttpMethod { get; set; }
 
 		/// <summary>
 		/// Gets or sets the URL of the intended receiver of this message.

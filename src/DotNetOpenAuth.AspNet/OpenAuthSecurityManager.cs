@@ -8,10 +8,13 @@ namespace DotNetOpenAuth.AspNet {
 	using System;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
 	using System.Web.Security;
 	using DotNetOpenAuth.AspNet.Clients;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// Manage authenticating with an external OAuth or OpenID provider
@@ -64,15 +67,6 @@ namespace DotNetOpenAuth.AspNet {
 		/// <param name="requestContext">
 		/// The request context. 
 		/// </param>
-		public OpenAuthSecurityManager(HttpContextBase requestContext)
-			: this(requestContext, provider: null, dataProvider: null) { }
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="OpenAuthSecurityManager"/> class.
-		/// </summary>
-		/// <param name="requestContext">
-		/// The request context. 
-		/// </param>
 		/// <param name="provider">
 		/// The provider. 
 		/// </param>
@@ -81,9 +75,9 @@ namespace DotNetOpenAuth.AspNet {
 		/// </param>
 		public OpenAuthSecurityManager(
 			HttpContextBase requestContext, IAuthenticationClient provider, IOpenAuthDataProvider dataProvider) {
-			if (requestContext == null) {
-				throw new ArgumentNullException("requestContext");
-			}
+			Requires.NotNull(requestContext, "requestContext");
+			Requires.NotNull(provider, "provider");
+			Requires.NotNull(dataProvider, "dataProvider");
 
 			this.requestContext = requestContext;
 			this.dataProvider = dataProvider;
@@ -149,10 +143,12 @@ namespace DotNetOpenAuth.AspNet {
 		/// <summary>
 		/// Requests the specified provider to start the authentication by directing users to an external website
 		/// </summary>
-		/// <param name="returnUrl">
-		/// The return url after user is authenticated. 
-		/// </param>
-		public void RequestAuthentication(string returnUrl) {
+		/// <param name="returnUrl">The return url after user is authenticated.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// A task that completes with the asynchronous operation.
+		/// </returns>
+		public async Task RequestAuthenticationAsync(string returnUrl, CancellationToken cancellationToken = default(CancellationToken)) {
 			// convert returnUrl to an absolute path
 			Uri uri;
 			if (!string.IsNullOrEmpty(returnUrl)) {
@@ -184,20 +180,21 @@ namespace DotNetOpenAuth.AspNet {
 			this.requestContext.Response.Cookies.Add(xsrfCookie);
 
 			// issue the redirect to the external auth provider
-			this.authenticationProvider.RequestAuthentication(this.requestContext, uri);
+			await this.authenticationProvider.RequestAuthenticationAsync(this.requestContext, uri, cancellationToken);
 		}
 
 		/// <summary>
 		/// Checks if user is successfully authenticated when user is redirected back to this user.
 		/// </summary>
 		/// <param name="returnUrl">The return Url which must match exactly the Url passed into RequestAuthentication() earlier.</param>
-		/// <remarks>
-		/// This returnUrl parameter only applies to OAuth2 providers. For other providers, it ignores the returnUrl parameter.
-		/// </remarks>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The result of the authentication.
 		/// </returns>
-		public AuthenticationResult VerifyAuthentication(string returnUrl) {
+		/// <remarks>
+		/// This returnUrl parameter only applies to OAuth2 providers. For other providers, it ignores the returnUrl parameter.
+		/// </remarks>
+		public async Task<AuthenticationResult> VerifyAuthenticationAsync(string returnUrl, CancellationToken cancellationToken = default(CancellationToken)) {
 			// check for XSRF attack
 			string sessionId;
 			bool successful = this.ValidateRequestAgainstXsrfAttack(out sessionId);
@@ -231,7 +228,7 @@ namespace DotNetOpenAuth.AspNet {
 				uri = uri.AttachQueryStringParameter(SessionIdQueryStringName, sessionId);
 
 				try {
-					AuthenticationResult result = oauth2Client.VerifyAuthentication(this.requestContext, uri);
+					AuthenticationResult result = await oauth2Client.VerifyAuthenticationAsync(this.requestContext, uri, cancellationToken);
 					if (!result.IsSuccessful) {
 						// if the result is a Failed result, creates a new Failed response which has providerName info.
 						result = new AuthenticationResult(
@@ -249,7 +246,7 @@ namespace DotNetOpenAuth.AspNet {
 				}
 			}
 			else {
-				return this.authenticationProvider.VerifyAuthentication(this.requestContext);
+				return await this.authenticationProvider.VerifyAuthenticationAsync(this.requestContext, cancellationToken);
 			}
 		}
 

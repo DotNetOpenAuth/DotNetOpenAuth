@@ -8,7 +8,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
-	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Text;
 	using System.Web;
@@ -16,6 +15,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.RelyingParty;
+	using Validation;
 
 	/// <summary>
 	/// Wraps a failed authentication response in an <see cref="IAuthenticationResponse"/> instance

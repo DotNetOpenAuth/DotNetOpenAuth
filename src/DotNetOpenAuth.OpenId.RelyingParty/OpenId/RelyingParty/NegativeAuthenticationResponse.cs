@@ -7,11 +7,13 @@
 namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
+	using Validation;
 
 	/// <summary>
 	/// Wraps a negative assertion response in an <see cref="IAuthenticationResponse"/> instance
@@ -126,10 +128,9 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		#region ISetupRequiredAuthenticationResponse Members
 
 		/// <summary>
-		/// Gets the <see cref="Identifier"/> to pass to <see cref="OpenIdRelyingParty.CreateRequest(Identifier)"/>
+		/// Gets the <see cref="Identifier"/> to pass to <see cref="OpenIdRelyingParty.CreateRequestAsync(Identifier, HttpRequestBase, CancellationToken)"/>
 		/// in a subsequent authentication attempt.
 		/// </summary>
-		/// <value></value>
 		public Identifier UserSuppliedIdentifier {
 			get {
 				ErrorUtilities.VerifyOperation(((IAuthenticationResponse)this).Status == AuthenticationStatus.SetupRequired, OpenIdStrings.OperationOnlyValidForSetupRequiredState);

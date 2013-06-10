@@ -1,5 +1,5 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" MasterPageFile="~/Site.Master" CodeBehind="DisplayGoogleContacts.aspx.cs"
-	Inherits="OpenIdRelyingPartyWebForms.MembersOnly.DisplayGoogleContacts" %>
+	Inherits="OpenIdRelyingPartyWebForms.MembersOnly.DisplayGoogleContacts" Async="true" %>
 
 <asp:Content ID="Content1" runat="server" ContentPlaceHolderID="Main">
 	<asp:MultiView ID="MultiView1" runat="server" ActiveViewIndex="0">

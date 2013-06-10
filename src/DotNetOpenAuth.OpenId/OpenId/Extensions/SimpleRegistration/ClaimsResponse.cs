@@ -8,7 +8,6 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Net.Mail;
 	using System.Text;
@@ -16,6 +15,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 	using System.Xml.Serialization;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
+	using Validation;
 
 	/// <summary>
 	/// A struct storing Simple Registration field values describing an
@@ -192,7 +192,7 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 		}
 
 		/// <summary>
-		/// Gets or sets a combination o the language and country of the user.
+		/// Gets or sets a combination of the language and country of the user.
 		/// </summary>
 		[XmlIgnore]
 		public CultureInfo Culture {
@@ -203,7 +203,16 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 					if (!string.IsNullOrEmpty(this.Country)) {
 						cultureString += "-" + this.Country;
 					}
-					this.culture = CultureInfo.GetCultureInfo(cultureString);
+
+					// language-country may not always form a recongized valid culture.
+					// For instance, a Google OpenID Provider can return a random combination
+					// of language and country based on user settings.
+					try {
+						this.culture = CultureInfo.GetCultureInfo(cultureString);
+					} catch (ArgumentException) { // CultureNotFoundException derives from this, and .NET 3.5 throws the base type
+						// Fallback to just reporting a culture based on language.
+						this.culture = CultureInfo.GetCultureInfo(this.Language);
+					}
 				}
 
 				return this.culture;

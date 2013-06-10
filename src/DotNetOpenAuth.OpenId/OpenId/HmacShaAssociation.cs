@@ -15,11 +15,11 @@ namespace DotNetOpenAuth.OpenId {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Messages;
+	using Validation;
 
 	/// <summary>
 	/// An association that uses the HMAC-SHA family of algorithms for message signing.
 	/// </summary>
-	[ContractVerification(true)]
 	internal class HmacShaAssociation : Association {
 		/// <summary>
 		/// A list of HMAC-SHA algorithms in order of decreasing bit lengths.
@@ -43,8 +43,7 @@ namespace DotNetOpenAuth.OpenId {
 			Requires.NotNull(typeIdentity, "typeIdentity");
 			Requires.NotNullOrEmpty(handle, "handle");
 			Requires.NotNull(secret, "secret");
-			Requires.InRange(totalLifeLength > TimeSpan.Zero, "totalLifeLength");
-			Contract.Ensures(this.TotalLifeLength == totalLifeLength);
+			Requires.Range(totalLifeLength > TimeSpan.Zero, "totalLifeLength");
 			ErrorUtilities.VerifyProtocol(secret.Length == typeIdentity.SecretLength, OpenIdStrings.AssociationSecretAndTypeLengthMismatch, secret.Length, typeIdentity.GetAssociationType(Protocol.Default));
 
 			this.typeIdentity = typeIdentity;
@@ -73,7 +72,6 @@ namespace DotNetOpenAuth.OpenId {
 			Requires.NotNull(protocol, "protocol");
 			Requires.NotNullOrEmpty(associationType, "associationType");
 			Requires.NotNull(secret, "secret");
-			Contract.Ensures(Contract.Result<HmacShaAssociation>() != null);
 			HmacSha match = hmacShaAssociationTypes.FirstOrDefault(sha => string.Equals(sha.GetAssociationType(protocol), associationType, StringComparison.Ordinal));
 			ErrorUtilities.VerifyProtocol(match != null, OpenIdStrings.NoAssociationTypeFoundByName, associationType);
 			return new HmacShaAssociation(match, handle, secret, totalLifeLength);
@@ -89,7 +87,6 @@ namespace DotNetOpenAuth.OpenId {
 		public static HmacShaAssociation Create(string handle, byte[] secret, TimeSpan totalLifeLength) {
 			Requires.NotNullOrEmpty(handle, "handle");
 			Requires.NotNull(secret, "secret");
-			Contract.Ensures(Contract.Result<HmacShaAssociation>() != null);
 
 			HmacSha shaType = hmacShaAssociationTypes.FirstOrDefault(sha => sha.SecretLength == secret.Length);
 			ErrorUtilities.VerifyProtocol(shaType != null, OpenIdStrings.NoAssociationTypeFoundByLength, secret.Length);
@@ -211,7 +208,7 @@ namespace DotNetOpenAuth.OpenId {
 		[Pure]
 		protected override HashAlgorithm CreateHasher() {
 			var result = this.typeIdentity.CreateHasher(SecretKey);
-			Contract.Assume(result != null);
+			Assumes.True(result != null);
 			return result;
 		}
 
@@ -226,22 +223,22 @@ namespace DotNetOpenAuth.OpenId {
 		private static HmacSha[] CreateAssociationTypes() {
 			return new[] {
 				new HmacSha {
-					CreateHasher = secretKey => new HMACSHA512(secretKey),
+					HmacAlgorithmName = HmacAlgorithms.HmacSha384,
 					GetAssociationType = protocol => protocol.Args.SignatureAlgorithm.HMAC_SHA512,
 					BaseHashAlgorithm = SHA512.Create(),
 				},
 				new HmacSha {
-					CreateHasher = secretKey => new HMACSHA384(secretKey),
+					HmacAlgorithmName = HmacAlgorithms.HmacSha384,
 					GetAssociationType = protocol => protocol.Args.SignatureAlgorithm.HMAC_SHA384,
 					BaseHashAlgorithm = SHA384.Create(),
 				},
 				new HmacSha {
-					CreateHasher = secretKey => new HMACSHA256(secretKey),
+					HmacAlgorithmName = HmacAlgorithms.HmacSha256,
 					GetAssociationType = protocol => protocol.Args.SignatureAlgorithm.HMAC_SHA256,
 					BaseHashAlgorithm = SHA256.Create(),
 				},
 				new HmacSha {
-					CreateHasher = secretKey => new HMACSHA1(secretKey),
+					HmacAlgorithmName = HmacAlgorithms.HmacSha1,
 					GetAssociationType = protocol => protocol.Args.SignatureAlgorithm.HMAC_SHA1,
 					BaseHashAlgorithm = SHA1.Create(),
 				},
@@ -258,9 +255,9 @@ namespace DotNetOpenAuth.OpenId {
 			internal Func<Protocol, string> GetAssociationType { get; set; }
 
 			/// <summary>
-			/// Gets or sets a function that will create the <see cref="HashAlgorithm"/> using a given shared secret for the mac.
+			/// Gets or sets the name of the HMAC-SHA algorithm. (e.g. "HMAC-SHA256")
 			/// </summary>
-			internal Func<byte[], HashAlgorithm> CreateHasher { get; set; }
+			internal string HmacAlgorithmName { get; set; }
 
 			/// <summary>
 			/// Gets or sets the base hash algorithm.
@@ -271,6 +268,15 @@ namespace DotNetOpenAuth.OpenId {
 			/// Gets the size of the hash (in bytes).
 			/// </summary>
 			internal int SecretLength { get { return this.BaseHashAlgorithm.HashSize / 8; } }
+
+			/// <summary>
+			/// Creates the <see cref="HashAlgorithm"/> using a given shared secret for the mac.
+			/// </summary>
+			/// <param name="secret">The HMAC secret.</param>
+			/// <returns>The algorithm.</returns>
+			internal HashAlgorithm CreateHasher(byte[] secret) {
+				return HmacAlgorithms.Create(this.HmacAlgorithmName, secret);
+			}
 		}
 	}
 }

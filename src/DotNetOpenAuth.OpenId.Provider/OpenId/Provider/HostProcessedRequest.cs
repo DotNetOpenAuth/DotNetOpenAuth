@@ -7,22 +7,26 @@
 namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Net;
+	using System.Runtime.Serialization;
 	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
+	using Validation;
 
 	/// <summary>
 	/// A base class from which identity and non-identity RP requests can derive.
 	/// </summary>
 	[Serializable]
-	internal abstract class HostProcessedRequest : Request, IHostProcessedRequest {
+	internal abstract class HostProcessedRequest : Request, IHostProcessedRequest, IDeserializationCallback {
 		/// <summary>
 		/// The negative assertion to send, if the host site chooses to send it.
 		/// </summary>
-		private readonly NegativeAssertionResponse negativeResponse;
+		[NonSerialized]
+		private Lazy<Task<NegativeAssertionResponse>> negativeResponse;
 
 		/// <summary>
 		/// A cache of the result from discovery of the Realm URL.
@@ -38,7 +42,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			: base(request, provider.SecuritySettings) {
 			Requires.NotNull(provider, "provider");
 
-			this.negativeResponse = new NegativeAssertionResponse(request, provider.Channel);
+			this.SharedInitialization(provider);
 			Reporting.RecordEventOccurrence(this, request.Realm);
 		}
 
@@ -85,13 +89,6 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		}
 
 		/// <summary>
-		/// Gets the negative response.
-		/// </summary>
-		protected NegativeAssertionResponse NegativeResponse {
-			get { return this.negativeResponse; }
-		}
-
-		/// <summary>
 		/// Gets the original request message.
 		/// </summary>
 		/// <value>This may be null in the case of an unrecognizable message.</value>
@@ -105,7 +102,8 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// Gets a value indicating whether verification of the return URL claimed by the Relying Party
 		/// succeeded.
 		/// </summary>
-		/// <param name="requestHandler">The request handler.</param>
+		/// <param name="hostFactories">The host factories.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// Result of realm discovery.
 		/// </returns>
@@ -115,25 +113,45 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// property getter multiple times in one request is not a performance hit.
 		/// See OpenID Authentication 2.0 spec section 9.2.1.
 		/// </remarks>
-		public RelyingPartyDiscoveryResult IsReturnUrlDiscoverable(IDirectWebRequestHandler requestHandler) {
+		public async Task<RelyingPartyDiscoveryResult> IsReturnUrlDiscoverableAsync(IHostFactories hostFactories, CancellationToken cancellationToken = default(CancellationToken)) {
+			Requires.NotNull(hostFactories, "hostFactories");
 			if (!this.realmDiscoveryResult.HasValue) {
-				this.realmDiscoveryResult = this.IsReturnUrlDiscoverableCore(requestHandler);
+				this.realmDiscoveryResult = await this.IsReturnUrlDiscoverableCoreAsync(hostFactories, cancellationToken);
 			}
 
 			return this.realmDiscoveryResult.Value;
+		}
+
+		#endregion
+
+		/// <summary>
+		/// Runs when the entire object graph has been deserialized.
+		/// </summary>
+		/// <param name="sender">The object that initiated the callback. The functionality for this parameter is not currently implemented.</param>
+		void IDeserializationCallback.OnDeserialization(object sender) {
+			// Bug: user_setup_url won't be created for OpenID 1.1 RPs in this path.
+			this.SharedInitialization(null);
+		}
+
+		/// <summary>
+		/// Gets the negative response.
+		/// </summary>
+		/// <returns>The negative assertion message.</returns>
+		protected Task<NegativeAssertionResponse> GetNegativeResponseAsync() {
+			return this.negativeResponse.Value;
 		}
 
 		/// <summary>
 		/// Gets a value indicating whether verification of the return URL claimed by the Relying Party
 		/// succeeded.
 		/// </summary>
-		/// <param name="requestHandler">The request handler.</param>
+		/// <param name="hostFactories">The host factories.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// Result of realm discovery.
 		/// </returns>
-		private RelyingPartyDiscoveryResult IsReturnUrlDiscoverableCore(IDirectWebRequestHandler requestHandler) {
-			Requires.NotNull(requestHandler, "requestHandler");
-
+		private async Task<RelyingPartyDiscoveryResult> IsReturnUrlDiscoverableCoreAsync(IHostFactories hostFactories, CancellationToken cancellationToken) {
+			Requires.NotNull(hostFactories, "hostFactories");
 			ErrorUtilities.VerifyInternal(this.Realm != null, "Realm should have been read or derived by now.");
 
 			try {
@@ -142,7 +160,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 					return RelyingPartyDiscoveryResult.NoServiceDocument;
 				}
 
-				var returnToEndpoints = this.Realm.DiscoverReturnToEndpoints(requestHandler, false);
+				var returnToEndpoints = await this.Realm.DiscoverReturnToEndpointsAsync(hostFactories, false, cancellationToken);
 				if (returnToEndpoints == null) {
 					return RelyingPartyDiscoveryResult.NoServiceDocument;
 				}
@@ -177,6 +195,12 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			return RelyingPartyDiscoveryResult.NoMatchingReturnTo;
 		}
 
-		#endregion
+		/// <summary>
+		/// Performs initialization common to construction and deserialization.
+		/// </summary>
+		/// <param name="provider">The provider.</param>
+		private void SharedInitialization(OpenIdProvider provider) {
+			this.negativeResponse = new Lazy<Task<NegativeAssertionResponse>>(() => NegativeAssertionResponse.CreateAsync(this.RequestMessage, CancellationToken.None, provider.Channel));
+		}
 	}
 }

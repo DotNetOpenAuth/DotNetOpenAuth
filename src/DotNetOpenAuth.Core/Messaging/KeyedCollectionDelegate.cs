@@ -7,7 +7,7 @@
 namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.Collections.ObjectModel;
-	using System.Diagnostics.Contracts;
+	using Validation;
 
 	/// <summary>
 	/// A KeyedCollection whose item -&gt; key transform is provided via a delegate

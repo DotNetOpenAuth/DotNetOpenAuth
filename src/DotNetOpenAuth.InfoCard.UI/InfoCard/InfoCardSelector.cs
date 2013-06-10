@@ -24,6 +24,7 @@ namespace DotNetOpenAuth.InfoCard {
 	using System.Web.UI.WebControls;
 	using System.Xml;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// The style to use for NOT displaying a hidden region.
@@ -47,7 +48,6 @@ namespace DotNetOpenAuth.InfoCard {
 	[PersistChildren(false)]
 	[DefaultEvent("ReceivedToken")]
 	[ToolboxData("<{0}:InfoCardSelector runat=\"server\"><ClaimsRequested><{0}:ClaimType Name=\"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/privatepersonalidentifier\" /></ClaimsRequested><UnsupportedTemplate><p>Your browser does not support Information Cards.</p></UnsupportedTemplate></{0}:InfoCardSelector>")]
-	[ContractVerification(true)]
 	public class InfoCardSelector : CompositeControl, IPostBackEventHandler {
 		/// <summary>
 		/// The resource name for getting at the SupportingScript.js embedded manifest stream.
@@ -229,7 +229,6 @@ namespace DotNetOpenAuth.InfoCard {
 		[PersistenceMode(PersistenceMode.InnerProperty), Category(InfoCardCategory)]
 		public Collection<ClaimType> ClaimsRequested {
 			get {
-				Contract.Ensures(Contract.Result<Collection<ClaimType>>() != null);
 				if (this.ViewState[ClaimsRequestedViewStateKey] == null) {
 					var claims = new Collection<ClaimType>();
 					this.ViewState[ClaimsRequestedViewStateKey] = claims;
@@ -547,7 +546,6 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <param name="value">The parameter value.</param>
 		/// <returns>The control that renders to the Param tag.</returns>
 		private static string CreateParamJs(string name, string value) {
-			Contract.Ensures(Contract.Result<string>() != null);
 			string scriptFormat = @"	objp = document.createElement('param');
 	objp.name = {0};
 	objp.value = {1};
@@ -567,8 +565,6 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <returns>The Panel control</returns>
 		[Pure]
 		private Panel CreateInfoCardSupportedPanel() {
-			Contract.Ensures(Contract.Result<Panel>() != null);
-
 			Panel supportedPanel = new Panel();
 
 			try {
@@ -626,8 +622,6 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <returns>The Panel control.</returns>
 		[Pure]
 		private Panel CreateInfoCardUnsupportedPanel() {
-			Contract.Ensures(Contract.Result<Panel>() != null);
-
 			Panel unsupportedPanel = new Panel();
 			try {
 				if (this.UnsupportedTemplate != null) {
@@ -688,7 +682,7 @@ namespace DotNetOpenAuth.InfoCard {
 				script.AppendLine(CreateParamJs("privacyVersion", this.PrivacyVersion));
 			}
 
-			script.AppendLine(@"if (document.infoCard.isSupported()) { document.write(obj.outerHTML); }
+			script.AppendLine(@"if (document.infoCard.isSupported()) { document.getElementsByTagName('head')[0].appendChild(obj); }
 }");
 
 			this.Page.ClientScript.RegisterClientScriptBlock(typeof(InfoCardSelector), this.ClientID + "tag", script.ToString(), true);
@@ -724,9 +718,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// <param name="optional">A space-delimited list of claim type URIs for claims that may optionally be included in a submitted Information Card.</param>
 		[Pure]
 		private void GetRequestedClaims(out string required, out string optional) {
-			Requires.ValidState(this.ClaimsRequested != null);
-			Contract.Ensures(Contract.ValueAtReturn<string>(out required) != null);
-			Contract.Ensures(Contract.ValueAtReturn<string>(out optional) != null);
+			RequiresEx.ValidState(this.ClaimsRequested != null);
 
 			var nonEmptyClaimTypes = this.ClaimsRequested.Where(c => c.Name != null);
 
@@ -741,8 +733,8 @@ namespace DotNetOpenAuth.InfoCard {
 			string[] optionalClaimsArray = optionalClaims.ToArray();
 			required = string.Join(" ", requiredClaimsArray);
 			optional = string.Join(" ", optionalClaimsArray);
-			Contract.Assume(required != null);
-			Contract.Assume(optional != null);
+			Assumes.True(required != null);
+			Assumes.True(optional != null);
 		}
 
 		/// <summary>
@@ -750,7 +742,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// or to downgrade gracefully if the user agent lacks an Information Card selector.
 		/// </summary>
 		private void RenderSupportingScript() {
-			Requires.ValidState(this.infoCardSupportedPanel != null);
+			RequiresEx.ValidState(this.infoCardSupportedPanel != null);
 
 			this.Page.ClientScript.RegisterClientScriptResource(typeof(InfoCardSelector), ScriptResourceName);
 

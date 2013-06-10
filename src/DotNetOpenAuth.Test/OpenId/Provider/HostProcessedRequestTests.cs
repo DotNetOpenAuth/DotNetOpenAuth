@@ -6,9 +6,13 @@
 
 namespace DotNetOpenAuth.Test.OpenId.Provider {
 	using System;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.Provider;
+	using DotNetOpenAuth.Test.Mocks;
+
 	using NUnit.Framework;
 
 	[TestFixture]
@@ -24,22 +28,23 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 
 			this.protocol = Protocol.Default;
 			this.provider = this.CreateProvider();
-			this.checkIdRequest = new CheckIdRequest(this.protocol.Version, OPUri, DotNetOpenAuth.OpenId.AuthenticationRequestMode.Setup);
+			this.checkIdRequest = new CheckIdRequest(this.protocol.Version, OPUri, AuthenticationRequestMode.Setup);
 			this.checkIdRequest.Realm = RPRealmUri;
 			this.checkIdRequest.ReturnTo = RPUri;
 			this.request = new AuthenticationRequest(this.provider, this.checkIdRequest);
 		}
 
 		[Test]
-		public void IsReturnUrlDiscoverableNoResponse() {
-			Assert.AreEqual(RelyingPartyDiscoveryResult.NoServiceDocument, this.request.IsReturnUrlDiscoverable(this.provider.Channel.WebRequestHandler));
+		public async Task IsReturnUrlDiscoverableNoResponse() {
+			Assert.AreEqual(RelyingPartyDiscoveryResult.NoServiceDocument, await this.request.IsReturnUrlDiscoverableAsync(this.provider.Channel.HostFactories, CancellationToken.None));
 		}
 
 		[Test]
-		public void IsReturnUrlDiscoverableValidResponse() {
-			this.MockResponder.RegisterMockRPDiscovery();
+		public async Task IsReturnUrlDiscoverableValidResponse() {
+			this.RegisterMockRPDiscovery(false);
+
 			this.request = new AuthenticationRequest(this.provider, this.checkIdRequest);
-			Assert.AreEqual(RelyingPartyDiscoveryResult.Success, this.request.IsReturnUrlDiscoverable(this.provider.Channel.WebRequestHandler));
+			Assert.AreEqual(RelyingPartyDiscoveryResult.Success, await this.request.IsReturnUrlDiscoverableAsync(this.provider.Channel.HostFactories, CancellationToken.None));
 		}
 
 		/// <summary>
@@ -47,39 +52,42 @@ namespace DotNetOpenAuth.Test.OpenId.Provider {
 		/// is set, that discovery fails.
 		/// </summary>
 		[Test]
-		public void IsReturnUrlDiscoverableNotSsl() {
+		public async Task IsReturnUrlDiscoverableNotSsl() {
+			this.RegisterMockRPDiscovery(false);
 			this.provider.SecuritySettings.RequireSsl = true;
-			this.MockResponder.RegisterMockRPDiscovery();
-			Assert.AreEqual(RelyingPartyDiscoveryResult.NoServiceDocument, this.request.IsReturnUrlDiscoverable(this.provider.Channel.WebRequestHandler));
+			Assert.AreEqual(RelyingPartyDiscoveryResult.NoServiceDocument, await this.request.IsReturnUrlDiscoverableAsync(this.provider.Channel.HostFactories, CancellationToken.None));
 		}
 
 		/// <summary>
 		/// Verifies that when discovery would be performed over HTTPS that discovery succeeds.
 		/// </summary>
 		[Test]
-		public void IsReturnUrlDiscoverableRequireSsl() {
-			this.MockResponder.RegisterMockRPDiscovery();
+		public async Task IsReturnUrlDiscoverableRequireSsl() {
+			this.RegisterMockRPDiscovery(ssl: false);
+			this.RegisterMockRPDiscovery(ssl: true);
 			this.checkIdRequest.Realm = RPRealmUriSsl;
 			this.checkIdRequest.ReturnTo = RPUriSsl;
 
 			// Try once with RequireSsl
 			this.provider.SecuritySettings.RequireSsl = true;
 			this.request = new AuthenticationRequest(this.provider, this.checkIdRequest);
-			Assert.AreEqual(RelyingPartyDiscoveryResult.Success, this.request.IsReturnUrlDiscoverable(this.provider.Channel.WebRequestHandler));
+			Assert.AreEqual(RelyingPartyDiscoveryResult.Success, await this.request.IsReturnUrlDiscoverableAsync(this.HostFactories, CancellationToken.None));
 
 			// And again without RequireSsl
 			this.provider.SecuritySettings.RequireSsl = false;
 			this.request = new AuthenticationRequest(this.provider, this.checkIdRequest);
-			Assert.AreEqual(RelyingPartyDiscoveryResult.Success, this.request.IsReturnUrlDiscoverable(this.provider.Channel.WebRequestHandler));
+			Assert.AreEqual(RelyingPartyDiscoveryResult.Success, await this.request.IsReturnUrlDiscoverableAsync(this.HostFactories, CancellationToken.None));
 		}
 
 		[Test]
-		public void IsReturnUrlDiscoverableValidButNoMatch() {
-			this.MockResponder.RegisterMockRPDiscovery();
+		public async Task IsReturnUrlDiscoverableValidButNoMatch() {
+			this.RegisterMockRPDiscovery(false);
 			this.provider.SecuritySettings.RequireSsl = false; // reset for another failure test case
 			this.checkIdRequest.ReturnTo = new Uri("http://somerandom/host");
 			this.request = new AuthenticationRequest(this.provider, this.checkIdRequest);
-			Assert.AreEqual(RelyingPartyDiscoveryResult.NoMatchingReturnTo, this.request.IsReturnUrlDiscoverable(this.provider.Channel.WebRequestHandler));
+			Assert.AreEqual(
+				RelyingPartyDiscoveryResult.NoMatchingReturnTo,
+				await this.request.IsReturnUrlDiscoverableAsync(this.provider.Channel.HostFactories, CancellationToken.None));
 		}
 	}
 }

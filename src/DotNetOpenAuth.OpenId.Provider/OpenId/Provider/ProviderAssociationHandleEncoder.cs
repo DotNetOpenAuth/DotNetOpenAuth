@@ -6,11 +6,11 @@
 
 namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
-	using System.Diagnostics.Contracts;
 	using System.Threading;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
+	using Validation;
 
 	/// <summary>
 	/// Provides association storage in the association handle itself, but embedding signed and encrypted association
@@ -70,7 +70,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			var formatter = AssociationDataBag.CreateFormatter(this.cryptoKeyStore, AssociationHandleEncodingSecretBucket);
 			AssociationDataBag bag = new AssociationDataBag();
 			try {
-				formatter.Deserialize(bag, containingMessage, handle, Protocol.Default.openid.assoc_handle);
+				formatter.Deserialize(bag, handle, containingMessage, Protocol.Default.openid.assoc_handle);
 			} catch (ProtocolException ex) {
 				Logger.OpenId.Error("Rejecting an association because deserialization of the encoded handle failed.", ex);
 				return null;

@@ -8,15 +8,18 @@ namespace DotNetOpenAuth.OAuth2 {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
+	using System.Net.Http;
 	using System.Security.Cryptography;
 	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2.ChannelElements;
 	using DotNetOpenAuth.OAuth2.Messages;
+	using Validation;
 
 	/// <summary>
 	/// Authorization Server supporting the web server flow.
@@ -45,7 +48,7 @@ namespace DotNetOpenAuth.OAuth2 {
 			Requires.NotNull(authorizationServer, "authorizationServer");
 			this.aggregatingClientAuthenticationModule = new AggregatingClientCredentialReader(this.clientAuthenticationModules);
 			this.Channel = new OAuth2AuthorizationServerChannel(authorizationServer, this.aggregatingClientAuthenticationModule);
-			this.clientAuthenticationModules.AddRange(OAuth2AuthorizationServerSection.Configuration.ClientAuthenticationModules.CreateInstances(true));
+			this.clientAuthenticationModules.AddRange(OAuth2AuthorizationServerSection.Configuration.ClientAuthenticationModules.CreateInstances(true, null));
 			this.ScopeSatisfiedCheck = DefaultScopeSatisfiedCheck;
 		}
 
@@ -83,16 +86,17 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// the user to authorize the Client's access of some protected resource(s).
 		/// </summary>
 		/// <param name="request">The HTTP request to read from.</param>
-		/// <returns>The incoming request, or null if no OAuth message was attached.</returns>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The incoming request, or null if no OAuth message was attached.
+		/// </returns>
 		/// <exception cref="ProtocolException">Thrown if an unexpected OAuth message is attached to the incoming request.</exception>
 		[SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "unauthorizedclient", Justification = "Protocol required.")]
-		public EndUserAuthorizationRequest ReadAuthorizationRequest(HttpRequestBase request = null) {
-			if (request == null) {
-				request = this.Channel.GetRequestFromContext();
-			}
+		public async Task<EndUserAuthorizationRequest> ReadAuthorizationRequestAsync(HttpRequestMessage request, CancellationToken cancellationToken = default(CancellationToken)) {
+			Requires.NotNull(request, "request");
 
-			EndUserAuthorizationRequest message;
-			if (this.Channel.TryReadFromRequest(request, out message)) {
+			var message = await this.Channel.TryReadFromRequestAsync<EndUserAuthorizationRequest>(request, cancellationToken);
+			if (message != null) {
 				if (message.ResponseType == EndUserAuthorizationResponseType.AuthorizationCode) {
 					// Clients with no secrets can only request implicit grant types.
 					var client = this.AuthorizationServerServices.GetClientOrThrow(message.ClientIdentifier);
@@ -104,45 +108,51 @@ namespace DotNetOpenAuth.OAuth2 {
 		}
 
 		/// <summary>
-		/// Approves an authorization request and sends an HTTP response to the user agent to redirect the user back to the Client.
+		/// Reads in a client's request for the Authorization Server to obtain permission from
+		/// the user to authorize the Client's access of some protected resource(s).
 		/// </summary>
-		/// <param name="authorizationRequest">The authorization request to approve.</param>
-		/// <param name="userName">The username of the account that approved the request (or whose data will be accessed by the client).</param>
-		/// <param name="scopes">The scope of access the client should be granted.  If <c>null</c>, all scopes in the original request will be granted.</param>
-		/// <param name="callback">The Client callback URL to use when formulating the redirect to send the user agent back to the Client.</param>
-		public void ApproveAuthorizationRequest(EndUserAuthorizationRequest authorizationRequest, string userName, IEnumerable<string> scopes = null, Uri callback = null) {
-			Requires.NotNull(authorizationRequest, "authorizationRequest");
-
-			var response = this.PrepareApproveAuthorizationRequest(authorizationRequest, userName, scopes, callback);
-			this.Channel.Respond(response);
+		/// <param name="request">The HTTP request to read from.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The incoming request, or null if no OAuth message was attached.
+		/// </returns>
+		/// <exception cref="ProtocolException">Thrown if an unexpected OAuth message is attached to the incoming request.</exception>
+		public Task<EndUserAuthorizationRequest> ReadAuthorizationRequestAsync(
+			HttpRequestBase request = null, CancellationToken cancellationToken = default(CancellationToken)) {
+			request = request ?? this.Channel.GetRequestFromContext();
+			return this.ReadAuthorizationRequestAsync(request.AsHttpRequestMessage(), cancellationToken);
 		}
 
 		/// <summary>
-		/// Rejects an authorization request and sends an HTTP response to the user agent to redirect the user back to the Client.
+		/// Reads in a client's request for the Authorization Server to obtain permission from
+		/// the user to authorize the Client's access of some protected resource(s).
 		/// </summary>
-		/// <param name="authorizationRequest">The authorization request to disapprove.</param>
-		/// <param name="callback">The Client callback URL to use when formulating the redirect to send the user agent back to the Client.</param>
-		public void RejectAuthorizationRequest(EndUserAuthorizationRequest authorizationRequest, Uri callback = null) {
-			Requires.NotNull(authorizationRequest, "authorizationRequest");
-
-			var response = this.PrepareRejectAuthorizationRequest(authorizationRequest, callback);
-			this.Channel.Respond(response);
+		/// <param name="requestUri">The URL that carries the authorization request.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The incoming request, or null if no OAuth message was attached.
+		/// </returns>
+		/// <exception cref="ProtocolException">Thrown if an unexpected OAuth message is attached to the incoming request.</exception>
+		public Task<EndUserAuthorizationRequest> ReadAuthorizationRequestAsync(Uri requestUri, CancellationToken cancellationToken = default(CancellationToken)) {
+			var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
+			return this.ReadAuthorizationRequestAsync(request, cancellationToken);
 		}
 
 		/// <summary>
 		/// Handles an incoming request to the authorization server's token endpoint.
 		/// </summary>
 		/// <param name="request">The HTTP request.</param>
-		/// <returns>The HTTP response to send to the client.</returns>
-		public OutgoingWebResponse HandleTokenRequest(HttpRequestBase request = null) {
-			if (request == null) {
-				request = this.Channel.GetRequestFromContext();
-			}
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The HTTP response to send to the client.
+		/// </returns>
+		public async Task<HttpResponseMessage> HandleTokenRequestAsync(HttpRequestMessage request, CancellationToken cancellationToken = default(CancellationToken)) {
+			Requires.NotNull(request, "request");
 
-			AccessTokenRequestBase requestMessage;
 			IProtocolMessage responseMessage;
 			try {
-				if (this.Channel.TryReadFromRequest(request, out requestMessage)) {
+				AccessTokenRequestBase requestMessage = await this.Channel.TryReadFromRequestAsync<AccessTokenRequestBase>(request, cancellationToken);
+				if (requestMessage != null) {
 					var accessTokenResult = this.AuthorizationServerServices.CreateAccessToken(requestMessage);
 					ErrorUtilities.VerifyHost(accessTokenResult != null, "IAuthorizationServerHost.CreateAccessToken must not return null.");
 
@@ -169,7 +179,20 @@ namespace DotNetOpenAuth.OAuth2 {
 				responseMessage = new AccessTokenFailedResponse() { Error = Protocol.AccessTokenRequestErrorCodes.InvalidRequest };
 			}
 
-			return this.Channel.PrepareResponse(responseMessage);
+			return await this.Channel.PrepareResponseAsync(responseMessage, cancellationToken);
+		}
+
+		/// <summary>
+		/// Handles an incoming request to the authorization server's token endpoint.
+		/// </summary>
+		/// <param name="request">The HTTP request.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The HTTP response to send to the client.
+		/// </returns>
+		public Task<HttpResponseMessage> HandleTokenRequestAsync(HttpRequestBase request = null, CancellationToken cancellationToken = default(CancellationToken)) {
+			request = request ?? this.Channel.GetRequestFromContext();
+			return this.HandleTokenRequestAsync(request.AsHttpRequestMessage(), cancellationToken);
 		}
 
 		/// <summary>
@@ -180,7 +203,6 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <returns>The authorization response message to send to the Client.</returns>
 		public EndUserAuthorizationFailedResponse PrepareRejectAuthorizationRequest(EndUserAuthorizationRequest authorizationRequest, Uri callback = null) {
 			Requires.NotNull(authorizationRequest, "authorizationRequest");
-			Contract.Ensures(Contract.Result<EndUserAuthorizationFailedResponse>() != null);
 
 			if (callback == null) {
 				callback = this.GetCallback(authorizationRequest);
@@ -201,7 +223,6 @@ namespace DotNetOpenAuth.OAuth2 {
 		public EndUserAuthorizationSuccessResponseBase PrepareApproveAuthorizationRequest(EndUserAuthorizationRequest authorizationRequest, string userName, IEnumerable<string> scopes = null, Uri callback = null) {
 			Requires.NotNull(authorizationRequest, "authorizationRequest");
 			Requires.NotNullOrEmpty(userName, "userName");
-			Contract.Ensures(Contract.Result<EndUserAuthorizationSuccessResponseBase>() != null);
 
 			if (callback == null) {
 				callback = this.GetCallback(authorizationRequest);
@@ -251,6 +272,25 @@ namespace DotNetOpenAuth.OAuth2 {
 		}
 
 		/// <summary>
+		/// Decodes a refresh token into its authorization details.
+		/// </summary>
+		/// <param name="refreshToken">The encoded refresh token as it would appear to the client.</param>
+		/// <returns>A description of the authorization represented by the refresh token.</returns>
+		/// <exception cref="ProtocolException">Thrown if the refresh token is not valid due to expiration, corruption or not being authentic.</exception>
+		/// <remarks>
+		/// This can be useful if the authorization server supports the client revoking its own access (on uninstall, for example).
+		/// Outside the scope of the OAuth 2 spec, the client may contact the authorization server host requesting that its refresh
+		/// token be revoked.  The authorization server would need to decode the refresh token so it knows which authorization in
+		/// the database to delete.
+		/// </remarks>
+		public IAuthorizationDescription DecodeRefreshToken(string refreshToken) {
+			var refreshTokenFormatter = RefreshToken.CreateFormatter(this.AuthorizationServerServices.CryptoKeyStore);
+			var token = new RefreshToken();
+			refreshTokenFormatter.Deserialize(token, refreshToken);
+			return token;
+		}
+
+		/// <summary>
 		/// Gets the redirect URL to use for a particular authorization request.
 		/// </summary>
 		/// <param name="authorizationRequest">The authorization request.</param>
@@ -258,7 +298,6 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <exception cref="ProtocolException">Thrown if no callback URL could be determined.</exception>
 		protected Uri GetCallback(EndUserAuthorizationRequest authorizationRequest) {
 			Requires.NotNull(authorizationRequest, "authorizationRequest");
-			Contract.Ensures(Contract.Result<Uri>() != null);
 
 			var client = this.AuthorizationServerServices.GetClientOrThrow(authorizationRequest.ClientIdentifier);
 

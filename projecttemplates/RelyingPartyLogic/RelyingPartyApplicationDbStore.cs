@@ -16,7 +16,7 @@ namespace RelyingPartyLogic {
 	/// <summary>
 	/// A database-backed state store for OpenID relying parties.
 	/// </summary>
-	public class RelyingPartyApplicationDbStore : NonceDbStore, IOpenIdApplicationStore {
+	public class RelyingPartyApplicationDbStore : NonceDbStore, ICryptoKeyAndNonceStore {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RelyingPartyApplicationDbStore"/> class.
 		/// </summary>

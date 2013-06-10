@@ -22,7 +22,7 @@ namespace DotNetOpenAuth.OAuth2 {
 	/// <summary>
 	/// Protocol constants for OAuth 2.0.
 	/// </summary>
-	internal class Protocol {
+	public class Protocol {
 		/// <summary>
 		/// The HTTP authorization scheme "Bearer";
 		/// </summary>
@@ -135,7 +135,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <summary>
 		/// The "error_uri" string.
 		/// </summary>
-		public const string error_uri = "error_uri";
+		internal const string error_uri = "error_uri";
 
 		/// <summary>
 		/// The "error_description" string.
@@ -169,11 +169,52 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <param name="version">The OAuth version to get.</param>
 		/// <returns>A matching <see cref="Protocol"/> instance.</returns>
-		public static Protocol Lookup(ProtocolVersion version) {
+		internal static Protocol Lookup(ProtocolVersion version) {
 			switch (version) {
 				case ProtocolVersion.V20: return Protocol.V20;
 				default: throw new ArgumentOutOfRangeException("version");
 			}
+		}
+
+		/// <summary>
+		/// Error codes that an authorization server can return to a client in response to a malformed or unsupported end user authorization request.
+		/// </summary>
+		public static class EndUserAuthorizationRequestErrorCodes
+		{
+			/// <summary>
+			/// The request is missing a required parameter, includes an unknown parameter or parameter value, or is otherwise malformed.
+			/// </summary>
+			public const string InvalidRequest = "invalid_request";
+
+			/// <summary>
+			/// The client is not authorized to use the requested response type.
+			/// </summary>
+			public const string UnauthorizedClient = "unauthorized_client";
+
+			/// <summary>
+			/// The end-user or authorization server denied the request.
+			/// </summary>
+			public const string AccessDenied = "access_denied";
+
+			/// <summary>
+			/// The requested response type is not supported by the authorization server.
+			/// </summary>
+			public const string UnsupportedResponseType = "unsupported_response_type";
+
+			/// <summary>
+			/// The requested scope is invalid, unknown, or malformed.
+			/// </summary>
+			public const string InvalidScope = "invalid_scope";
+
+			/// <summary>
+			/// The authorization server encountered an unexpected condition which prevented it from fulfilling the request.
+			/// </summary>
+			public const string ServerError = "server_error";
+
+			/// <summary>
+			/// The authorization server is currently unable to handle the request due to a temporary overloading or maintenance of the server.
+			/// </summary>
+			public const string TemporarilyUnavailable = "temporarily_unavailable";
 		}
 
 		/// <summary>
@@ -245,47 +286,6 @@ namespace DotNetOpenAuth.OAuth2 {
 			/// The requested scope is invalid, unknown, malformed, or exceeds the scope granted by the resource owner.
 			/// </summary>
 			internal const string InvalidScope = "invalid_scope";
-		}
-
-		/// <summary>
-		/// Error codes that an authorization server can return to a client in response to a malformed or unsupported end user authorization request.
-		/// </summary>
-		internal static class EndUserAuthorizationRequestErrorCodes
-		{
-			/// <summary>
-			/// The request is missing a required parameter, includes an unknown parameter or parameter value, or is otherwise malformed.
-			/// </summary>
-			internal const string InvalidRequest = "invalid_request";
-
-			/// <summary>
-			/// The client is not authorized to use the requested response type.
-			/// </summary>
-			internal const string UnauthorizedClient = "unauthorized_client";
-
-			/// <summary>
-			/// The end-user or authorization server denied the request.
-			/// </summary>
-			internal const string AccessDenied = "access_denied";
-
-			/// <summary>
-			/// The requested response type is not supported by the authorization server.
-			/// </summary>
-			internal const string UnsupportedResponseType = "unsupported_response_type";
-
-			/// <summary>
-			/// The requested scope is invalid, unknown, or malformed.
-			/// </summary>
-			internal const string InvalidScope = "invalid_scope";
-
-			/// <summary>
-			/// The authorization server encountered an unexpected condition which prevented it from fulfilling the request.
-			/// </summary>
-			internal const string ServerError = "server_error";
-
-			/// <summary>
-			/// The authorization server is currently unable to handle the request due to a temporary overloading or maintenance of the server.
-			/// </summary>
-			internal const string TemporarilyUnavailable = "temporarily_unavailable";
 		}
 
 		/// <summary>

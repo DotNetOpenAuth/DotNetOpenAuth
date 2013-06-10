@@ -20,6 +20,10 @@
 		/// </summary>
 		public static log4net.ILog Logger = log4net.LogManager.GetLogger("DotNetOpenAuth.OAuthServiceProvider");
 
+		private readonly object syncObject = new object();
+
+		private volatile bool initialized;
+
 		/// <summary>
 		/// Gets the transaction-protected database connection for the current request.
 		/// </summary>
@@ -95,17 +99,6 @@
 		private void Application_Start(object sender, EventArgs e) {
 			log4net.Config.XmlConfigurator.Configure();
 			Logger.Info("Sample starting...");
-			string appPath = HttpContext.Current.Request.ApplicationPath;
-			if (!appPath.EndsWith("/")) {
-				appPath += "/";
-			}
-
-			// This will break in IIS Integrated Pipeline mode, since applications
-			// start before the first incoming request context is available.
-			// TODO: fix this.
-			Constants.WebRootUrl = new Uri(HttpContext.Current.Request.Url, appPath);
-			Global.TokenManager = new DatabaseTokenManager();
-			Global.NonceStore = new DatabaseNonceStore();
 		}
 
 		private void Application_End(object sender, EventArgs e) {
@@ -128,8 +121,30 @@
 			}
 		}
 
+		private void Application_BeginRequest(object sender, EventArgs e) {
+			this.EnsureInitialized();
+		}
+
 		private void Application_EndRequest(object sender, EventArgs e) {
 			CommitAndCloseDatabaseIfNecessary();
+		}
+
+		private void EnsureInitialized() {
+			if (!this.initialized) {
+				lock (this.syncObject) {
+					if (!this.initialized) {
+						string appPath = HttpContext.Current.Request.ApplicationPath;
+						if (!appPath.EndsWith("/")) {
+							appPath += "/";
+						}
+
+						Constants.WebRootUrl = new Uri(HttpContext.Current.Request.Url, appPath);
+						Global.TokenManager = new DatabaseTokenManager();
+						Global.NonceStore = new DatabaseNonceStore();
+						this.initialized = true;
+					}
+				}
+			}
 		}
 	}
 }

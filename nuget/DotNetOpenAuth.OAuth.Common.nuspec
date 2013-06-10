@@ -17,16 +17,8 @@
 		</dependencies>
 	</metadata>
 	<files>
-		<file src="$OutputPath35$signed\$identity$.dll" target="lib\net35-full\" />
-		<file src="$OutputPath40$signed\$identity$.dll" target="lib\net40-full\" />
 		<file src="$OutputPath45$signed\$identity$.dll" target="lib\net45-full\" />
-
-		<file src="$OutputPath35$$identity$.pdb" target="lib\net35-full\" />
-		<file src="$OutputPath40$$identity$.pdb" target="lib\net40-full\" />
 		<file src="$OutputPath45$$identity$.pdb" target="lib\net45-full\" />
-
-		<file src="$OutputPath35$$identity$.xml" target="lib\net35-full\" />
-		<file src="$OutputPath40$$identity$.xml" target="lib\net40-full\" />
 		<file src="$OutputPath45$$identity$.xml" target="lib\net45-full\" />
 
 		<file src="..\src\$Identity$\**\*.cs" target="src" exclude="..\src\$Identity$\obj\**" />

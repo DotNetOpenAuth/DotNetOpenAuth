@@ -7,42 +7,44 @@
 namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId.Extensions;
 	using DotNetOpenAuth.OpenId.RelyingParty;
+	using Validation;
 
 	/// <summary>
 	/// The messaging channel for OpenID relying parties.
 	/// </summary>
 	internal class OpenIdRelyingPartyChannel : OpenIdChannel {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="OpenIdRelyingPartyChannel"/> class.
+		/// Initializes a new instance of the <see cref="OpenIdRelyingPartyChannel" /> class.
 		/// </summary>
 		/// <param name="cryptoKeyStore">The association store to use.</param>
 		/// <param name="nonceStore">The nonce store to use.</param>
 		/// <param name="securitySettings">The security settings to apply.</param>
-		internal OpenIdRelyingPartyChannel(ICryptoKeyStore cryptoKeyStore, INonceStore nonceStore, RelyingPartySecuritySettings securitySettings)
-			: this(cryptoKeyStore, nonceStore, new OpenIdRelyingPartyMessageFactory(), securitySettings, false) {
+		/// <param name="hostFactories">The host factories.</param>
+		internal OpenIdRelyingPartyChannel(ICryptoKeyStore cryptoKeyStore, INonceStore nonceStore, RelyingPartySecuritySettings securitySettings, IHostFactories hostFactories)
+			: this(cryptoKeyStore, nonceStore, new OpenIdRelyingPartyMessageFactory(), securitySettings, false, hostFactories) {
 			Requires.NotNull(securitySettings, "securitySettings");
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="OpenIdRelyingPartyChannel"/> class.
+		/// Initializes a new instance of the <see cref="OpenIdRelyingPartyChannel" /> class.
 		/// </summary>
 		/// <param name="cryptoKeyStore">The association store to use.</param>
 		/// <param name="nonceStore">The nonce store to use.</param>
 		/// <param name="messageTypeProvider">An object that knows how to distinguish the various OpenID message types for deserialization purposes.</param>
 		/// <param name="securitySettings">The security settings to apply.</param>
 		/// <param name="nonVerifying">A value indicating whether the channel is set up with no functional security binding elements.</param>
-		private OpenIdRelyingPartyChannel(ICryptoKeyStore cryptoKeyStore, INonceStore nonceStore, IMessageFactory messageTypeProvider, RelyingPartySecuritySettings securitySettings, bool nonVerifying) :
-			base(messageTypeProvider, InitializeBindingElements(cryptoKeyStore, nonceStore, securitySettings, nonVerifying)) {
+		/// <param name="hostFactories">The host factories.</param>
+		private OpenIdRelyingPartyChannel(ICryptoKeyStore cryptoKeyStore, INonceStore nonceStore, IMessageFactory messageTypeProvider, RelyingPartySecuritySettings securitySettings, bool nonVerifying, IHostFactories hostFactories) :
+			base(messageTypeProvider, InitializeBindingElements(cryptoKeyStore, nonceStore, securitySettings, nonVerifying), hostFactories) {
 			Requires.NotNull(messageTypeProvider, "messageTypeProvider");
 			Requires.NotNull(securitySettings, "securitySettings");
-			Requires.True(!nonVerifying || securitySettings is RelyingPartySecuritySettings);
+			Assumes.True(!nonVerifying || securitySettings is RelyingPartySecuritySettings);
 		}
 
 		/// <summary>
@@ -58,9 +60,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// messages, and will validate them later.</para>
 		/// </remarks>
 		internal static OpenIdChannel CreateNonVerifyingChannel() {
-			Contract.Ensures(Contract.Result<OpenIdChannel>() != null);
-
-			return new OpenIdRelyingPartyChannel(null, null, new OpenIdRelyingPartyMessageFactory(), new RelyingPartySecuritySettings(), true);
+			return new OpenIdRelyingPartyChannel(null, null, new OpenIdRelyingPartyMessageFactory(), new RelyingPartySecuritySettings(), true, new DefaultOpenIdHostFactories());
 		}
 
 		/// <summary>

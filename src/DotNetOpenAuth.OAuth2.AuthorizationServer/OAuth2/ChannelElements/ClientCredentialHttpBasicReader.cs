@@ -7,11 +7,13 @@
 namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	using System;
 	using System.Collections.Generic;
+	using System.Globalization;
 	using System.Linq;
 	using System.Text;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2.Messages;
+	using Validation;
 
 	/// <summary>
 	/// Reads client authentication information from the HTTP Authorization header via Basic authentication.
@@ -21,8 +23,13 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// Gets this module's contribution to an HTTP 401 WWW-Authenticate header so the client knows what kind of authentication this module supports.
 		/// </summary>
 		public override string AuthenticateHeader {
-			get { return "Basic"; }
+			get { return string.Format(CultureInfo.InvariantCulture, "Basic realm=\"{0}\"", this.Realm); }
 		}
+
+		/// <summary>
+		/// Gets or sets the realm that is included in an HTTP WWW-Authenticate header included in a 401 Unauthorized response.
+		/// </summary>
+		public string Realm { get; set; }
 
 		/// <summary>
 		/// Attempts to extract client identification/authentication information from a message.

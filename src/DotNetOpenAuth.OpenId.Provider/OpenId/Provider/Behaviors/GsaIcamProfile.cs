@@ -7,8 +7,9 @@
 namespace DotNetOpenAuth.OpenId.Provider.Behaviors {
 	using System;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Behaviors;
@@ -17,6 +18,7 @@ namespace DotNetOpenAuth.OpenId.Provider.Behaviors {
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.Provider;
 	using DotNetOpenAuth.OpenId.RelyingParty;
+	using Validation;
 
 	/// <summary>
 	/// Implements the Identity, Credential, &amp; Access Management (ICAM) OpenID 2.0 Profile
@@ -69,6 +71,7 @@ namespace DotNetOpenAuth.OpenId.Provider.Behaviors {
 		/// Called when a request is received by the Provider.
 		/// </summary>
 		/// <param name="request">The incoming request.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// 	<c>true</c> if this behavior owns this request and wants to stop other behaviors
 		/// from handling it; <c>false</c> to allow other behaviors to process this request.
@@ -78,7 +81,7 @@ namespace DotNetOpenAuth.OpenId.Provider.Behaviors {
 		/// should not change the properties on the instance of <see cref="ProviderSecuritySettings"/>
 		/// itself as that instance may be shared across many requests.
 		/// </remarks>
-		bool IProviderBehavior.OnIncomingRequest(IRequest request) {
+		Task<bool> IProviderBehavior.OnIncomingRequestAsync(IRequest request, CancellationToken cancellationToken) {
 			var hostProcessedRequest = request as IHostProcessedRequest;
 			if (hostProcessedRequest != null) {
 				// Only apply our special policies if the RP requested it.
@@ -91,23 +94,24 @@ namespace DotNetOpenAuth.OpenId.Provider.Behaviors {
 
 						// Apply GSA-specific security to this individual request.
 						request.SecuritySettings.RequireSsl = !DisableSslRequirement;
-						return true;
+						return Task.FromResult(true);
 					}
 				}
 			}
 
-			return false;
+			return Task.FromResult(false);
 		}
 
 		/// <summary>
 		/// Called when the Provider is preparing to send a response to an authentication request.
 		/// </summary>
 		/// <param name="request">The request that is configured to generate the outgoing response.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// 	<c>true</c> if this behavior owns this request and wants to stop other behaviors
 		/// from handling it; <c>false</c> to allow other behaviors to process this request.
 		/// </returns>
-		bool IProviderBehavior.OnOutgoingResponse(Provider.IAuthenticationRequest request) {
+		async Task<bool> IProviderBehavior.OnOutgoingResponseAsync(Provider.IAuthenticationRequest request, CancellationToken cancellationToken) {
 			bool result = false;
 
 			// Nothing to do for negative assertions.
@@ -116,7 +120,7 @@ namespace DotNetOpenAuth.OpenId.Provider.Behaviors {
 			}
 
 			var requestInternal = (Provider.AuthenticationRequest)request;
-			var responseMessage = (IProtocolMessageWithExtensions)requestInternal.Response;
+			var responseMessage = (IProtocolMessageWithExtensions)await requestInternal.GetResponseAsync(cancellationToken);
 
 			// Only apply our special policies if the RP requested it.
 			var papeRequest = request.GetExtension<PolicyRequest>();
@@ -182,8 +186,8 @@ namespace DotNetOpenAuth.OpenId.Provider.Behaviors {
 		/// <param name="maximumLifetime">The maximum lifetime.</param>
 		/// <param name="securitySettings">The security settings to adjust.</param>
 		private static void SetMaximumAssociationLifetimeToNotExceed(string associationType, TimeSpan maximumLifetime, ProviderSecuritySettings securitySettings) {
-			Contract.Requires(!string.IsNullOrEmpty(associationType));
-			Contract.Requires(maximumLifetime.TotalSeconds > 0);
+			Requires.NotNullOrEmpty(associationType, "associationType");
+			Requires.That(maximumLifetime.TotalSeconds > 0, "maximumLifetime", "requires positive timespan");
 			if (!securitySettings.AssociationLifetimes.ContainsKey(associationType) ||
 				securitySettings.AssociationLifetimes[associationType] > maximumLifetime) {
 				securitySettings.AssociationLifetimes[associationType] = maximumLifetime;

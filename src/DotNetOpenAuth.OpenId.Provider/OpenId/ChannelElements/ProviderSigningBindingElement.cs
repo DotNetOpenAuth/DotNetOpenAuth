@@ -7,15 +7,17 @@
 namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.Provider;
+	using Validation;
 
 	/// <summary>
 	/// The signing binding element for OpenID Providers.
@@ -56,12 +58,13 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// Prepares a message for sending based on the rules of this channel binding element.
 		/// </summary>
 		/// <param name="message">The message to prepare for sending.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The protections (if any) that this binding element applied to the message.
 		/// Null if this binding element did not even apply to this binding element.
 		/// </returns>
-		public override MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
-			var result = base.ProcessOutgoingMessage(message);
+		public override async Task<MessageProtections?> ProcessOutgoingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
+			var result = await base.ProcessOutgoingMessageAsync(message, cancellationToken);
 			if (result != null) {
 				return result;
 			}
@@ -158,13 +161,16 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <param name="message">The message.</param>
 		/// <param name="signedMessage">The signed message.</param>
 		/// <param name="protectionsApplied">The protections applied.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The applied protections.
 		/// </returns>
-		protected override MessageProtections VerifySignatureByUnrecognizedHandle(IProtocolMessage message, ITamperResistantOpenIdMessage signedMessage, MessageProtections protectionsApplied) {
+		protected override Task<MessageProtections> VerifySignatureByUnrecognizedHandleAsync(IProtocolMessage message, ITamperResistantOpenIdMessage signedMessage, MessageProtections protectionsApplied, CancellationToken cancellationToken) {
 			// If we're on the Provider, then the RP sent us a check_auth with a signature
 			// we don't have an association for.  (It may have expired, or it may be a faulty RP).
-			throw new InvalidSignatureException(message);
+			var tcs = new TaskCompletionSource<MessageProtections>();
+			tcs.SetException(new InvalidSignatureException(message));
+			return tcs.Task;
 		}
 
 		/// <summary>
@@ -217,16 +223,17 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// the inclusion and order of message parts that will be signed.
 		/// </returns>
 		private string GetSignedParameterOrder(ITamperResistantOpenIdMessage signedMessage) {
-			Requires.ValidState(this.Channel != null);
+			RequiresEx.ValidState(this.Channel != null);
 			Requires.NotNull(signedMessage, "signedMessage");
 
 			Protocol protocol = Protocol.Lookup(signedMessage.Version);
 
 			MessageDescription description = this.Channel.MessageDescriptions.Get(signedMessage);
-			var signedParts = from part in description.Mapping.Values
-			                  where (part.RequiredProtection & System.Net.Security.ProtectionLevel.Sign) != 0
-			                      && part.GetValue(signedMessage) != null
-			                  select part.Name;
+			var signedParts =
+				from part in description.Mapping.Values
+				where (part.RequiredProtection & System.Net.Security.ProtectionLevel.Sign) != 0
+				&& part.GetValue(signedMessage) != null
+				select part.Name;
 			string prefix = Protocol.V20.openid.Prefix;
 			ErrorUtilities.VerifyInternal(signedParts.All(name => name.StartsWith(prefix, StringComparison.Ordinal)), "All signed message parts must start with 'openid.'.");
 

@@ -13,25 +13,15 @@
 		<summary>OpenID, OAuth, &amp; InfoCard library for web and desktop applications.</summary>
 		<description>
 			A single assembly that adds OpenID 1.1/2.0, OAuth 1.0(a)/2.0, &amp; InfoCard authentication and authorization functionality for client and server applications.
-			This allows your (web) application to issue identities or accept issued identites from other web applications, and even access your users'
-			data on other services.
+			This allows your (web) application to issue identities or accept issued identites from other web applications, and even access your users' data on other services.
 		</description>
 		<language>en-US</language>
 	</metadata>
 	<files>
-		<file src="$OutputPath35$unified\signed\DotNetOpenAuth.dll" target="lib\net35-full\" />
-		<file src="$OutputPath40$unified\signed\DotNetOpenAuth.dll" target="lib\net40-full\" />
 		<file src="$OutputPath45$unified\signed\DotNetOpenAuth.dll" target="lib\net45-full\" />
-
-		<file src="$OutputPath35$unified\DotNetOpenAuth.pdb" target="lib\net35-full\" />
-		<file src="$OutputPath40$unified\DotNetOpenAuth.pdb" target="lib\net40-full\" />
 		<file src="$OutputPath45$unified\DotNetOpenAuth.pdb" target="lib\net45-full\" />
-
-		<file src="$OutputPath35$unified\DotNetOpenAuth.xml" target="lib\net35-full\" />
-		<file src="$OutputPath40$unified\DotNetOpenAuth.xml" target="lib\net40-full\" />
 		<file src="$OutputPath45$unified\DotNetOpenAuth.xml" target="lib\net45-full\" />
-
-		<file src="content\Ultimate\web.config.transform" target="content\web.config.transform" />
+		<file src="content\Ultimate\net45-full\web.config.transform" target="content\net45-full\web.config.transform" />
 
 		<file src="..\src\**\*.cs" target="src" exclude="..\src\*\obj\**" />
 		<file src="$IntermediatePath$*.Version.cs" target="src" />

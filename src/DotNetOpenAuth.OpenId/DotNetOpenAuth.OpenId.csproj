@@ -4,6 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
   </PropertyGroup>
   <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.props" />
   <PropertyGroup>
@@ -22,12 +23,14 @@
   <ItemGroup>
     <Compile Include="Configuration\AssociationTypeCollection.cs" />
     <Compile Include="Configuration\AssociationTypeElement.cs" />
+    <Compile Include="Configuration\HostMetaDiscoveryElement.cs" />
     <Compile Include="Configuration\OpenIdElement.cs" />
     <Compile Include="Configuration\OpenIdProviderElement.cs" />
     <Compile Include="Configuration\OpenIdProviderSecuritySettingsElement.cs" />
     <Compile Include="Configuration\OpenIdRelyingPartyElement.cs" />
     <Compile Include="Configuration\OpenIdRelyingPartySecuritySettingsElement.cs" />
     <Compile Include="Configuration\XriResolverElement.cs" />
+    <Compile Include="DefaultOpenIdHostFactories.cs" />
     <Compile Include="OpenIdXrdsHelperRelyingParty.cs" />
     <Compile Include="OpenId\Association.cs" />
     <Compile Include="OpenId\AuthenticationRequestMode.cs" />
@@ -39,7 +42,6 @@
     </Compile>
     <Compile Include="OpenId\Behaviors\GsaIcamProfileBase.cs" />
     <Compile Include="OpenId\ChannelElements\BackwardCompatibilityBindingElement.cs" />
-    <Compile Include="OpenId\ChannelElements\SigningBindingElementContract.cs" />
     <Compile Include="OpenId\ChannelElements\ExtensionsBindingElement.cs" />
     <Compile Include="OpenId\ChannelElements\IOpenIdExtensionFactory.cs" />
     <Compile Include="OpenId\ChannelElements\ITamperResistantOpenIdMessage.cs" />
@@ -49,7 +51,6 @@
     <Compile Include="OpenId\ChannelElements\OpenIdChannel.cs" />
     <Compile Include="OpenId\ChannelElements\ReturnToSignatureBindingElement.cs" />
     <Compile Include="OpenId\ChannelElements\SkipSecurityBindingElement.cs" />
-    <Compile Include="OpenId\AssociationContract.cs" />
     <Compile Include="OpenId\Extensions\AliasManager.cs" />
     <Compile Include="OpenId\Extensions\AttributeExchange\AttributeRequest.cs" />
     <Compile Include="OpenId\Extensions\AttributeExchange\AttributeValues.cs" />
@@ -88,7 +89,6 @@
     <Compile Include="OpenId\Extensions\UI\UIRequest.cs" />
     <Compile Include="OpenId\Extensions\UI\UIUtilities.cs" />
     <Compile Include="OpenId\Identifier.cs" />
-    <Compile Include="OpenId\IdentifierContract.cs" />
     <Compile Include="OpenId\Extensions\OpenIdExtensionsInteropHelper.cs" />
     <Compile Include="OpenId\IdentifierDiscoveryResult.cs" />
     <Compile Include="OpenId\IIdentifierDiscoveryService.cs" />
@@ -103,13 +103,11 @@
     <Compile Include="OpenId\Provider\RelyingPartyDiscoveryResult.cs" />
     <Compile Include="OpenId\RelyingParty\AuthenticationStatus.cs" />
     <Compile Include="OpenId\RelyingParty\IAuthenticationRequest.cs" />
-    <Compile Include="OpenId\RelyingParty\IAuthenticationRequestContract.cs" />
     <Compile Include="OpenId\RelyingParty\IAuthenticationResponse.cs" />
     <Compile Include="OpenId\RelyingParty\IRelyingPartyBehavior.cs" />
     <Compile Include="OpenId\Messages\CheckAuthenticationRequest.cs" />
     <Compile Include="OpenId\Messages\CheckAuthenticationResponse.cs" />
     <Compile Include="OpenId\Messages\CheckIdRequest.cs" />
-    <Compile Include="OpenId\Messages\AssociateSuccessfulResponseContract.cs" />
     <Compile Include="OpenId\Messages\IErrorMessage.cs" />
     <Compile Include="OpenId\Messages\IndirectResponseBase.cs" />
     <Compile Include="OpenId\Messages\IndirectSignedResponse.cs" />
@@ -142,8 +140,8 @@
       <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="OpenId\Protocol.cs" />
-    <Compile Include="OpenId\IOpenIdApplicationStore.cs" />
     <Compile Include="OpenId\RelyingParty\RelyingPartySecuritySettings.cs" />
+    <Compile Include="OpenId\UntrustedWebRequestHandler.cs" />
     <Compile Include="OpenId\UriDiscoveryService.cs" />
     <Compile Include="OpenId\XriDiscoveryProxyService.cs" />
     <Compile Include="OpenId\SecuritySettings.cs" />
@@ -185,7 +183,19 @@
       <Name>Org.Mentalis.Security.Cryptography</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.WebRequest" />
+    <Reference Include="Validation, Version=2.0.0.0, Culture=neutral, PublicKeyToken=2fc06f0d701809a7, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Validation.2.0.2.13022\lib\portable-windows8+net40+sl5+windowsphone8\Validation.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.targets" />
   <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))\EnlistmentInfo.targets" Condition=" '$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))' != '' " />
+  <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
 </Project>

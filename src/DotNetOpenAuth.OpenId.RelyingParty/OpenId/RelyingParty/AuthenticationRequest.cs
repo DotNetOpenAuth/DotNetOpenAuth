@@ -8,16 +8,18 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.Specialized;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
+	using System.Net.Http;
+	using System.ServiceModel.Channels;
 	using System.Text;
 	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
-
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.Messages;
+	using Validation;
 
 	/// <summary>
 	/// Facilitates customization and creation and an authentication request
@@ -89,21 +91,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <value></value>
 		public AuthenticationRequestMode Mode { get; set; }
-
-		/// <summary>
-		/// Gets the HTTP response the relying party should send to the user agent
-		/// to redirect it to the OpenID Provider to start the OpenID authentication process.
-		/// </summary>
-		/// <value></value>
-		public OutgoingWebResponse RedirectingResponse {
-			get {
-				foreach (var behavior in this.RelyingParty.Behaviors) {
-					behavior.OnOutgoingAuthenticationRequest(this);
-				}
-
-				return this.RelyingParty.Channel.PrepareResponse(this.CreateRequestMessage());
-			}
-		}
 
 		/// <summary>
 		/// Gets the URL that the user agent will return to after authentication
@@ -196,6 +183,23 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		}
 
 		#region IAuthenticationRequest methods
+
+		/// <summary>
+		/// Gets the HTTP response the relying party should send to the user agent
+		/// to redirect it to the OpenID Provider to start the OpenID authentication process.
+		/// </summary>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The response message that will cause the client to redirect to the Provider.
+		/// </returns>
+		public async Task<HttpResponseMessage> GetRedirectingResponseAsync(CancellationToken cancellationToken) {
+			foreach (var behavior in this.RelyingParty.Behaviors) {
+				behavior.OnOutgoingAuthenticationRequest(this);
+			}
+
+			var request = await this.CreateRequestMessageAsync(cancellationToken);
+			return await this.RelyingParty.Channel.PrepareResponseAsync(request, cancellationToken);
+		}
 
 		/// <summary>
 		/// Makes a dictionary of key/value pairs available when the authentication is completed.
@@ -293,16 +297,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			this.extensions.Add(extension);
 		}
 
-		/// <summary>
-		/// Redirects the user agent to the provider for authentication.
-		/// </summary>
-		/// <remarks>
-		/// This method requires an ASP.NET HttpContext.
-		/// </remarks>
-		public void RedirectToProvider() {
-			this.RedirectingResponse.Send();
-		}
-
 		#endregion
 
 		/// <summary>
@@ -314,15 +308,15 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="realm">The realm.</param>
 		/// <param name="returnToUrl">The return_to base URL.</param>
 		/// <param name="createNewAssociationsAsNeeded">if set to <c>true</c>, associations that do not exist between this Relying Party and the asserting Providers are created before the authentication request is created.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// A sequence of authentication requests, any of which constitutes a valid identity assertion on the Claimed Identifier.
 		/// Never null, but may be empty.
 		/// </returns>
-		internal static IEnumerable<AuthenticationRequest> Create(Identifier userSuppliedIdentifier, OpenIdRelyingParty relyingParty, Realm realm, Uri returnToUrl, bool createNewAssociationsAsNeeded) {
+		internal static async Task<IEnumerable<AuthenticationRequest>> CreateAsync(Identifier userSuppliedIdentifier, OpenIdRelyingParty relyingParty, Realm realm, Uri returnToUrl, bool createNewAssociationsAsNeeded, CancellationToken cancellationToken) {
 			Requires.NotNull(userSuppliedIdentifier, "userSuppliedIdentifier");
 			Requires.NotNull(relyingParty, "relyingParty");
 			Requires.NotNull(realm, "realm");
-			Contract.Ensures(Contract.Result<IEnumerable<AuthenticationRequest>>() != null);
 
 			// Normalize the portion of the return_to path that correlates to the realm for capitalization.
 			// (so that if a web app base path is /MyApp/, but the URL of this request happens to be
@@ -361,7 +355,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			// Perform discovery right now (not deferred).
 			IEnumerable<IdentifierDiscoveryResult> serviceEndpoints;
 			try {
-				var results = relyingParty.Discover(userSuppliedIdentifier).CacheGeneratedResults();
+				var identifierDiscoveryResults = await relyingParty.DiscoverAsync(userSuppliedIdentifier, cancellationToken);
+				var results = identifierDiscoveryResults.CacheGeneratedResults();
 
 				// If any OP Identifier service elements were found, we must not proceed
 				// to use any Claimed Identifier services, per OpenID 2.0 sections 7.3.2.2 and 11.2.
@@ -382,7 +377,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			serviceEndpoints = relyingParty.SecuritySettings.FilterEndpoints(serviceEndpoints);
 
 			// Call another method that defers request generation.
-			return CreateInternal(userSuppliedIdentifier, relyingParty, realm, returnToUrl, serviceEndpoints, createNewAssociationsAsNeeded);
+			return await CreateInternalAsync(userSuppliedIdentifier, relyingParty, realm, returnToUrl, serviceEndpoints, createNewAssociationsAsNeeded, cancellationToken);
 		}
 
 		/// <summary>
@@ -401,14 +396,16 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Creates the request message to send to the Provider,
 		/// based on the properties in this instance.
 		/// </summary>
-		/// <returns>The message to send to the Provider.</returns>
-		internal SignedResponseRequest CreateRequestMessageTestHook()
-		{
-			return this.CreateRequestMessage();
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The message to send to the Provider.
+		/// </returns>
+		internal Task<SignedResponseRequest> CreateRequestMessageTestHookAsync(CancellationToken cancellationToken) {
+			return this.CreateRequestMessageAsync(cancellationToken);
 		}
 
 		/// <summary>
-		/// Performs deferred request generation for the <see cref="Create"/> method.
+		/// Performs deferred request generation for the <see cref="CreateAsync" /> method.
 		/// </summary>
 		/// <param name="userSuppliedIdentifier">The user supplied identifier.</param>
 		/// <param name="relyingParty">The relying party.</param>
@@ -416,6 +413,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="returnToUrl">The return_to base URL.</param>
 		/// <param name="serviceEndpoints">The discovered service endpoints on the Claimed Identifier.</param>
 		/// <param name="createNewAssociationsAsNeeded">if set to <c>true</c>, associations that do not exist between this Relying Party and the asserting Providers are created before the authentication request is created.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// A sequence of authentication requests, any of which constitutes a valid identity assertion on the Claimed Identifier.
 		/// Never null, but may be empty.
@@ -424,47 +422,46 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// All data validation and cleansing steps must have ALREADY taken place
 		/// before calling this method.
 		/// </remarks>
-		private static IEnumerable<AuthenticationRequest> CreateInternal(Identifier userSuppliedIdentifier, OpenIdRelyingParty relyingParty, Realm realm, Uri returnToUrl, IEnumerable<IdentifierDiscoveryResult> serviceEndpoints, bool createNewAssociationsAsNeeded) {
-			// DO NOT USE CODE CONTRACTS IN THIS METHOD, since it uses yield return
-			ErrorUtilities.VerifyArgumentNotNull(userSuppliedIdentifier, "userSuppliedIdentifier");
-			ErrorUtilities.VerifyArgumentNotNull(relyingParty, "relyingParty");
-			ErrorUtilities.VerifyArgumentNotNull(realm, "realm");
-			ErrorUtilities.VerifyArgumentNotNull(serviceEndpoints, "serviceEndpoints");
-			////Contract.Ensures(Contract.Result<IEnumerable<AuthenticationRequest>>() != null);
-
+		private static async Task<IEnumerable<AuthenticationRequest>> CreateInternalAsync(Identifier userSuppliedIdentifier, OpenIdRelyingParty relyingParty, Realm realm, Uri returnToUrl, IEnumerable<IdentifierDiscoveryResult> serviceEndpoints, bool createNewAssociationsAsNeeded, CancellationToken cancellationToken) {
+			Requires.NotNull(userSuppliedIdentifier, "userSuppliedIdentifier");
+			Requires.NotNull(relyingParty, "relyingParty");
+			Requires.NotNull(realm, "realm");
+			Requires.NotNull(serviceEndpoints, "serviceEndpoints");
+			////
 			// If shared associations are required, then we had better have an association store.
 			ErrorUtilities.VerifyOperation(!relyingParty.SecuritySettings.RequireAssociation || relyingParty.AssociationManager.HasAssociationStore, OpenIdStrings.AssociationStoreRequired);
 
 			Logger.Yadis.InfoFormat("Performing discovery on user-supplied identifier: {0}", userSuppliedIdentifier);
 			IEnumerable<IdentifierDiscoveryResult> endpoints = FilterAndSortEndpoints(serviceEndpoints, relyingParty);
 
-			// Maintain a list of endpoints that we could not form an association with.
-			// We'll fallback to generating requests to these if the ones we CAN create
-			// an association with run out.
-			var failedAssociationEndpoints = new List<IdentifierDiscoveryResult>(0);
-
-			foreach (var endpoint in endpoints) {
+			var authRequestResults = endpoints.Select(async endpoint => {
 				Logger.OpenId.DebugFormat("Creating authentication request for user supplied Identifier: {0}", userSuppliedIdentifier);
 
 				// The strategy here is to prefer endpoints with whom we can create associations.
-				Association association = null;
 				if (relyingParty.AssociationManager.HasAssociationStore) {
 					// In some scenarios (like the AJAX control wanting ALL auth requests possible),
 					// we don't want to create associations with every Provider.  But we'll use
 					// associations where they are already formed from previous authentications.
-					association = createNewAssociationsAsNeeded ? relyingParty.AssociationManager.GetOrCreateAssociation(endpoint) : relyingParty.AssociationManager.GetExistingAssociation(endpoint);
+					Association association = createNewAssociationsAsNeeded ? await relyingParty.AssociationManager.GetOrCreateAssociationAsync(endpoint, cancellationToken) : relyingParty.AssociationManager.GetExistingAssociation(endpoint);
 					if (association == null && createNewAssociationsAsNeeded) {
 						Logger.OpenId.WarnFormat("Failed to create association with {0}.  Skipping to next endpoint.", endpoint.ProviderEndpoint);
 
 						// No association could be created.  Add it to the list of failed association
 						// endpoints and skip to the next available endpoint.
-						failedAssociationEndpoints.Add(endpoint);
-						continue;
+						return new KeyValuePair<IdentifierDiscoveryResult, AuthenticationRequest>(endpoint, null);
 					}
 				}
 
-				yield return new AuthenticationRequest(endpoint, realm, returnToUrl, relyingParty);
-			}
+				return new KeyValuePair<IdentifierDiscoveryResult, AuthenticationRequest>(endpoint, new AuthenticationRequest(endpoint, realm, returnToUrl, relyingParty));
+			}).ToList();
+
+			await Task.WhenAll(authRequestResults);
+			var results = (from pair in authRequestResults where pair.Result.Value != null select pair.Result.Value).ToList();
+
+			// Maintain a list of endpoints that we could not form an association with.
+			// We'll fallback to generating requests to these if the ones we CAN create
+			// an association with run out.
+			var failedAssociationEndpoints = (from pair in authRequestResults where pair.Result.Value == null select pair.Result.Key).ToList();
 
 			// Now that we've run out of endpoints that respond to association requests,
 			// since we apparently are still running, the caller must want another request.
@@ -483,10 +480,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 						// because we've already tried.  Let's not have it waste time trying again.
 						var authRequest = new AuthenticationRequest(endpoint, realm, returnToUrl, relyingParty);
 						authRequest.associationPreference = AssociationPreference.IfAlreadyEstablished;
-						yield return authRequest;
+						results.Add(authRequest);
 					}
 				}
 			}
+
+			return results;
 		}
 
 		/// <summary>
@@ -536,9 +535,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Creates the request message to send to the Provider,
 		/// based on the properties in this instance.
 		/// </summary>
-		/// <returns>The message to send to the Provider.</returns>
-		private SignedResponseRequest CreateRequestMessage() {
-			Association association = this.GetAssociation();
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The message to send to the Provider.
+		/// </returns>
+		private async Task<SignedResponseRequest> CreateRequestMessageAsync(CancellationToken cancellationToken) {
+			Association association = await this.GetAssociationAsync(cancellationToken);
 
 			SignedResponseRequest request;
 			if (!this.IsExtensionOnly) {
@@ -567,12 +569,15 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <summary>
 		/// Gets the association to use for this authentication request.
 		/// </summary>
-		/// <returns>The association to use; <c>null</c> to use 'dumb mode'.</returns>
-		private Association GetAssociation() {
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The association to use; <c>null</c> to use 'dumb mode'.
+		/// </returns>
+		private async Task<Association> GetAssociationAsync(CancellationToken cancellationToken) {
 			Association association = null;
 			switch (this.associationPreference) {
 				case AssociationPreference.IfPossible:
-					association = this.RelyingParty.AssociationManager.GetOrCreateAssociation(this.DiscoveryResult);
+					association = await this.RelyingParty.AssociationManager.GetOrCreateAssociationAsync(this.DiscoveryResult, cancellationToken);
 					if (association == null) {
 						// Avoid trying to create the association again if the redirecting response
 						// is generated again.

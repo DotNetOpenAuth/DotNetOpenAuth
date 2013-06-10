@@ -7,7 +7,7 @@
 namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.Diagnostics;
-	using System.Diagnostics.Contracts;
+	using Validation;
 
 	/// <summary>
 	/// An immutable description of a URL that receives messages.
@@ -23,8 +23,8 @@ namespace DotNetOpenAuth.Messaging {
 		public MessageReceivingEndpoint(string locationUri, HttpDeliveryMethods method)
 			: this(new Uri(locationUri), method) {
 			Requires.NotNull(locationUri, "locationUri");
-			Requires.InRange(method != HttpDeliveryMethods.None, "method");
-			Requires.InRange((method & HttpDeliveryMethods.HttpVerbMask) != 0, "method", MessagingStrings.GetOrPostFlagsRequired);
+			Requires.Range(method != HttpDeliveryMethods.None, "method");
+			Requires.Range((method & HttpDeliveryMethods.HttpVerbMask) != 0, "method", MessagingStrings.GetOrPostFlagsRequired);
 		}
 
 		/// <summary>
@@ -34,8 +34,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="method">The HTTP method(s) allowed.</param>
 		public MessageReceivingEndpoint(Uri location, HttpDeliveryMethods method) {
 			Requires.NotNull(location, "location");
-			Requires.InRange(method != HttpDeliveryMethods.None, "method");
-			Requires.InRange((method & HttpDeliveryMethods.HttpVerbMask) != 0, "method", MessagingStrings.GetOrPostFlagsRequired);
+			Requires.Range(method != HttpDeliveryMethods.None, "method");
+			Requires.Range((method & HttpDeliveryMethods.HttpVerbMask) != 0, "method", MessagingStrings.GetOrPostFlagsRequired);
 
 			this.Location = location;
 			this.AllowedMethods = method;

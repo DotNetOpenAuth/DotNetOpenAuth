@@ -18,11 +18,11 @@ namespace DotNetOpenAuth.InfoCard {
 	using System.Xml;
 	using System.Xml.XPath;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// The decrypted token that was submitted as an Information Card.
 	/// </summary>
-	[ContractVerification(true)]
 	public class Token {
 		/// <summary>
 		/// Backing field for the <see cref="Claims"/> property.
@@ -44,20 +44,20 @@ namespace DotNetOpenAuth.InfoCard {
 		[SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "Not a problem for this type."), SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "False positive")]
 		private Token(string tokenXml, Uri audience, TokenDecryptor decryptor) {
 			Requires.NotNullOrEmpty(tokenXml, "tokenXml");
-			Requires.True(decryptor != null || !IsEncrypted(tokenXml), null);
-			Contract.Ensures(this.AuthorizationContext != null);
+			Requires.That(decryptor != null || !IsEncrypted(tokenXml), "decryptor", "Required when tokenXml is encrypted.");
 
 			byte[] decryptedBytes;
 			string decryptedString;
 
 			using (StringReader xmlReader = new StringReader(tokenXml)) {
-				using (XmlReader tokenReader = XmlReader.Create(xmlReader)) {
-					Contract.Assume(tokenReader != null); // BCL contract should say XmlReader.Create result != null
+				var readerSettings = MessagingUtilities.CreateUntrustedXmlReaderSettings();
+				using (XmlReader tokenReader = XmlReader.Create(xmlReader, readerSettings)) {
+					Assumes.True(tokenReader != null); // BCL contract should say XmlReader.Create result != null
 					if (IsEncrypted(tokenReader)) {
 						Logger.InfoCard.DebugFormat("Incoming SAML token, before decryption: {0}", tokenXml);
 						decryptedBytes = decryptor.DecryptToken(tokenReader);
 						decryptedString = Encoding.UTF8.GetString(decryptedBytes);
-						Contract.Assume(decryptedString != null); // BCL contracts should be enhanced here
+						Assumes.True(decryptedString != null); // BCL contracts should be enhanced here
 					} else {
 						decryptedBytes = Encoding.UTF8.GetBytes(tokenXml);
 						decryptedString = tokenXml;
@@ -117,7 +117,7 @@ namespace DotNetOpenAuth.InfoCard {
 		/// </summary>
 		public string SiteSpecificId {
 			get {
-				Requires.ValidState(this.Claims.ContainsKey(ClaimTypes.PPID) && !string.IsNullOrEmpty(this.Claims[ClaimTypes.PPID]));
+				RequiresEx.ValidState(this.Claims.ContainsKey(ClaimTypes.PPID) && !string.IsNullOrEmpty(this.Claims[ClaimTypes.PPID]));
 				string ppidValue;
 				ErrorUtilities.VerifyOperation(this.Claims.TryGetValue(ClaimTypes.PPID, out ppidValue) && ppidValue != null, InfoCardStrings.PpidClaimRequired);
 				return TokenUtility.CalculateSiteSpecificID(ppidValue);
@@ -180,7 +180,6 @@ namespace DotNetOpenAuth.InfoCard {
 		public static Token Read(string tokenXml, Uri audience, IEnumerable<SecurityToken> decryptionTokens) {
 			Requires.NotNullOrEmpty(tokenXml, "tokenXml");
 			Requires.NotNull(decryptionTokens, "decryptionTokens");
-			Contract.Ensures(Contract.Result<Token>() != null);
 
 			TokenDecryptor decryptor = null;
 
@@ -206,14 +205,15 @@ namespace DotNetOpenAuth.InfoCard {
 			var stringReader = new StringReader(tokenXml);
 			XmlReader tokenReader;
 			try {
-				tokenReader = XmlReader.Create(stringReader);
+				var readerSettings = MessagingUtilities.CreateUntrustedXmlReaderSettings();
+				tokenReader = XmlReader.Create(stringReader, readerSettings);
 			} catch {
 				stringReader.Dispose();
 				throw;
 			}
 
 			try {
-				Contract.Assume(tokenReader != null); // CC missing for XmlReader.Create
+				Assumes.True(tokenReader != null); // CC missing for XmlReader.Create
 				return IsEncrypted(tokenReader);
 			} catch {
 				IDisposable disposableReader = tokenReader;

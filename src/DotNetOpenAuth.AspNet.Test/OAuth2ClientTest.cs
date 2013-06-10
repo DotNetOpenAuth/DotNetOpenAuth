@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.AspNet.Test {
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.Specialized;
+	using System.Threading.Tasks;
 	using System.Web;
 	using DotNetOpenAuth.AspNet.Clients;
 	using Moq;
@@ -28,14 +29,14 @@ namespace DotNetOpenAuth.AspNet.Test {
 		}
 
 		[TestCase]
-		public void RequestAuthenticationIssueCorrectRedirect() {
+		public async Task RequestAuthenticationIssueCorrectRedirect() {
 			// Arrange
 			var client = new MockOAuth2Client();
 			var context = new Mock<HttpContextBase>(MockBehavior.Strict);
 			context.Setup(c => c.Response.Redirect("http://live.com/?q=http://return.to.me/", true)).Verifiable();
 
 			// Act
-			client.RequestAuthentication(context.Object, new Uri("http://return.to.me"));
+			await client.RequestAuthenticationAsync(context.Object, new Uri("http://return.to.me"));
 
 			// Assert
 			context.Verify();
@@ -47,11 +48,20 @@ namespace DotNetOpenAuth.AspNet.Test {
 			var client = new MockOAuth2Client();
 
 			// Act && Assert
-			Assert.Throws<ArgumentNullException>(() => client.VerifyAuthentication(null));
+			Assert.Throws<ArgumentNullException>(() => client.VerifyAuthenticationAsync(null, new Uri("http://me.com")).GetAwaiter().GetResult());
 		}
 
 		[TestCase]
-		public void VerifyAuthenticationFailsIfCodeIsNotPresent() {
+		public void VerifyAuthenticationWithoutReturnUrlThrows() {
+			// Arrange
+			var client = new MockOAuth2Client();
+
+			// Act && Assert
+			Assert.Throws<InvalidOperationException>(() => client.VerifyAuthenticationAsync(new Mock<HttpContextBase>().Object).GetAwaiter().GetResult());
+		}
+
+		[TestCase]
+		public async Task VerifyAuthenticationFailsIfCodeIsNotPresent() {
 			// Arrange
 			var client = new MockOAuth2Client();
 			var context = new Mock<HttpContextBase>(MockBehavior.Strict);
@@ -59,14 +69,14 @@ namespace DotNetOpenAuth.AspNet.Test {
 			context.Setup(c => c.Request.QueryString).Returns(queryStrings);
 
 			// Act 
-			AuthenticationResult result = client.VerifyAuthentication(context.Object);
+			AuthenticationResult result = await client.VerifyAuthenticationAsync(context.Object, new Uri("http://me.com"));
 
 			// Assert
 			Assert.IsFalse(result.IsSuccessful);
 		}
 
 		[TestCase]
-		public void VerifyAuthenticationFailsIfAccessTokenIsNull() {
+		public async Task VerifyAuthenticationFailsIfAccessTokenIsNull() {
 			// Arrange
 			var client = new MockOAuth2Client();
 			var context = new Mock<HttpContextBase>(MockBehavior.Strict);
@@ -75,14 +85,14 @@ namespace DotNetOpenAuth.AspNet.Test {
 			context.Setup(c => c.Request.QueryString).Returns(queryStrings);
 
 			// Act 
-			AuthenticationResult result = client.VerifyAuthentication(context.Object);
+			AuthenticationResult result = await client.VerifyAuthenticationAsync(context.Object, new Uri("http://me.com"));
 
 			// Assert
 			Assert.IsFalse(result.IsSuccessful);
 		}
 
 		[TestCase]
-		public void VerifyAuthenticationSucceeds() {
+		public async Task VerifyAuthenticationSucceeds() {
 			// Arrange
 			var client = new MockOAuth2Client();
 			var context = new Mock<HttpContextBase>(MockBehavior.Strict);
@@ -91,7 +101,7 @@ namespace DotNetOpenAuth.AspNet.Test {
 			context.Setup(c => c.Request.QueryString).Returns(queryStrings);
 
 			// Act 
-			AuthenticationResult result = client.VerifyAuthentication(context.Object);
+			AuthenticationResult result = await client.VerifyAuthenticationAsync(context.Object, new Uri("http://me.com"));
 
 			// Assert
 			Assert.True(result.IsSuccessful);
@@ -116,9 +126,9 @@ namespace DotNetOpenAuth.AspNet.Test {
 				return (authorizationCode == "secret") ? "abcde" : null;
 			}
 
-			protected override IDictionary<string, string> GetUserData(string accessToken) {
+			protected override NameValueCollection GetUserData(string accessToken) {
 				if (accessToken == "abcde") {
-					return new Dictionary<string, string>
+					return new NameValueCollection
 					{
 						{ "id", "12345" },
 						{ "name", "John Doe" },

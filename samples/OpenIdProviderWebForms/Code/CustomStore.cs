@@ -9,6 +9,7 @@ namespace OpenIdProviderWebForms.Code {
 	using System.Collections.Generic;
 	using System.Data;
 	using System.Globalization;
+	using System.Linq;
 	using DotNetOpenAuth;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging.Bindings;
@@ -24,7 +25,7 @@ namespace OpenIdProviderWebForms.Code {
 	/// But we "persist" all associations and nonces into a DataTable to demonstrate
 	/// that using a database is possible.
 	/// </remarks>
-	public class CustomStore : IOpenIdApplicationStore {
+	public class CustomStore : ICryptoKeyAndNonceStore {
 		private static CustomStoreDataSet dataSet = new CustomStoreDataSet();
 
 		#region INonceStore Members
@@ -100,7 +101,7 @@ namespace OpenIdProviderWebForms.Code {
 				yield break;
 			}
 
-			foreach (CustomStoreDataSet.CryptoKeyRow row in view) {
+			foreach (CustomStoreDataSet.CryptoKeyRow row in view.Cast<DataRowView>().Select(rv => rv.Row)) {
 				yield return new KeyValuePair<string, CryptoKey>(row.Handle, new CryptoKey(row.Secret, row.ExpiresUtc));
 			}
 		}

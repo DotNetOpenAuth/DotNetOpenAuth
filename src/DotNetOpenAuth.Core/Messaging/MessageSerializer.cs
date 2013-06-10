@@ -14,11 +14,11 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Reflection;
 	using System.Xml;
 	using DotNetOpenAuth.Messaging.Reflection;
+	using Validation;
 
 	/// <summary>
 	/// Serializes/deserializes OAuth messages for/from transit.
 	/// </summary>
-	[ContractVerification(true)]
 	internal class MessageSerializer {
 		/// <summary>
 		/// The specific <see cref="IMessage"/>-derived type
@@ -31,10 +31,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="messageType">The specific <see cref="IMessage"/>-derived type
 		/// that will be serialized and deserialized using this class.</param>
-		[ContractVerification(false)] // bugs/limitations in CC static analysis
 		private MessageSerializer(Type messageType) {
-			Requires.NotNullSubtype<IMessage>(messageType, "messageType");
-			Contract.Ensures(this.messageType != null);
+			RequiresEx.NotNullSubtype<IMessage>(messageType, "messageType");
 			this.messageType = messageType;
 		}
 
@@ -43,9 +41,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="messageType">The type of message that will be serialized/deserialized.</param>
 		/// <returns>A message serializer for the given message type.</returns>
-		[ContractVerification(false)] // bugs/limitations in CC static analysis
-		internal static MessageSerializer Get(Type messageType) {
-			Requires.NotNullSubtype<IMessage>(messageType, "messageType");
+			internal static MessageSerializer Get(Type messageType) {
+			RequiresEx.NotNullSubtype<IMessage>(messageType, "messageType");
 
 			return new MessageSerializer(messageType);
 		}
@@ -94,12 +91,13 @@ namespace DotNetOpenAuth.Messaging {
 				string type = "string";
 				MessagePart partDescription;
 				if (messageDictionary.Description.Mapping.TryGetValue(pair.Key, out partDescription)) {
-					Contract.Assume(partDescription != null);
+					Assumes.True(partDescription != null);
 					if (partDescription.IsRequired || partDescription.IsNondefaultValueSet(messageDictionary.Message)) {
 						include = true;
-						if (IsNumeric(partDescription.MemberDeclaredType)) {
+						Type formattingType = partDescription.PreferredFormattingType;
+						if (IsNumeric(formattingType)) {
 							type = "number";
-						} else if (partDescription.MemberDeclaredType.IsAssignableFrom(typeof(bool))) {
+						} else if (formattingType.IsAssignableFrom(typeof(bool))) {
 							type = "boolean";
 						}
 					}
@@ -149,7 +147,6 @@ namespace DotNetOpenAuth.Messaging {
 		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Parallel design with Deserialize method.")]
 		internal IDictionary<string, string> Serialize(MessageDictionary messageDictionary) {
 			Requires.NotNull(messageDictionary, "messageDictionary");
-			Contract.Ensures(Contract.Result<IDictionary<string, string>>() != null);
 
 			// Rather than hand back the whole message dictionary (which 
 			// includes keys with blank values), create a new dictionary
@@ -159,7 +156,7 @@ namespace DotNetOpenAuth.Messaging {
 			foreach (var pair in messageDictionary) {
 				MessagePart partDescription;
 				if (messageDictionary.Description.Mapping.TryGetValue(pair.Key, out partDescription)) {
-					Contract.Assume(partDescription != null);
+					Assumes.True(partDescription != null);
 					if (partDescription.IsRequired || partDescription.IsNondefaultValueSet(messageDictionary.Message)) {
 						result.Add(pair.Key, pair.Value);
 					}

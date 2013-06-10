@@ -21,40 +21,6 @@ http://opensource.org/licenses/ms-pl.html
 		<CodeAnalysisRuleSet>$(ProjectRoot)src\DotNetOpenAuth.ruleset</CodeAnalysisRuleSet>
 		<CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
 		<CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
-
-		<CodeContractsCustomRewriterAssembly />
-		<CodeContractsCustomRewriterClass />
-		<CodeContractsRunCodeAnalysis>False</CodeContractsRunCodeAnalysis>
-		<CodeContractsBuildReferenceAssembly>True</CodeContractsBuildReferenceAssembly>
-		<CodeContractsNonNullObligations>True</CodeContractsNonNullObligations>
-		<CodeContractsBoundsObligations>True</CodeContractsBoundsObligations>
-		<CodeContractsLibPaths />
-		<CodeContractsPlatformPath />
-		<CodeContractsExtraAnalysisOptions />
-		<CodeContractsBaseLineFile />
-		<CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
-		<CodeContractsRunInBackground>True</CodeContractsRunInBackground>
-		<CodeContractsShowSquigglies>True</CodeContractsShowSquigglies>
-		<CodeContractsArithmeticObligations>False</CodeContractsArithmeticObligations>
-		<CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
-		<CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
-		<CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
-		<CodeContractsEmitXMLDocs>True</CodeContractsEmitXMLDocs>
-		<CodeContractsRedundantAssumptions>False</CodeContractsRedundantAssumptions>
-		<CodeContractsExtraRewriteOptions />
-
-		<CodeContractsReferenceAssembly Condition=" '$(BuildCodeContractsReferenceAssemblies)' == 'true' ">Build</CodeContractsReferenceAssembly>
-		<CodeContractsReferenceAssembly Condition=" '$(BuildCodeContractsReferenceAssemblies)' != 'true' ">DoNotBuild</CodeContractsReferenceAssembly>
-	</PropertyGroup>
-
-	<PropertyGroup Condition=" '$(CodeContractsRewritingEnabled)' != 'true' ">
-		<CodeContractsAssemblyMode>0</CodeContractsAssemblyMode>
-		<CodeContractsEnableRuntimeChecking>False</CodeContractsEnableRuntimeChecking>
-	</PropertyGroup>
-
-	<PropertyGroup Condition=" '$(CodeContractsRewritingEnabled)' == 'true' ">
-		<CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
-		<CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
 	</PropertyGroup>
 
 	<PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -64,27 +30,18 @@ http://opensource.org/licenses/ms-pl.html
 		<DefineConstants>DEBUG;TRACE</DefineConstants>
 		<AllowUnsafeBlocks>false</AllowUnsafeBlocks>
 		<RunCodeAnalysis>false</RunCodeAnalysis>
-
-		<CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
 	</PropertyGroup>
 
 	<PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
 		<DebugType>pdbonly</DebugType>
 		<Optimize>true</Optimize>
 		<DefineConstants>TRACE</DefineConstants>
-
-		<CodeContractsRuntimeCheckingLevel>ReleaseRequires</CodeContractsRuntimeCheckingLevel>
 	</PropertyGroup>
 
 	<PropertyGroup Condition=" '$(Configuration)' == 'CodeAnalysis' ">
 		<DebugSymbols>true</DebugSymbols>
 		<RunCodeAnalysis>true</RunCodeAnalysis>
 	</PropertyGroup>
-
-	<ItemGroup>
-		<DelaySignedAssemblies Include="$(OutputPath)CodeContracts\$(AssemblyName).Contracts.dll"
-		                       Condition=" '$(BuildCodeContractsReferenceAssemblies)' == 'true' and '$(AddContractsAssemblyForDelaySigning)' != 'false' "/>
-	</ItemGroup>
 
 	<ItemGroup>
 		<Compile Include="$(ProjectRoot)src\GlobalSuppressions.cs">
@@ -104,7 +61,7 @@ http://opensource.org/licenses/ms-pl.html
 		<Reference Include="System.IdentityModel">
 			<RequiredTargetFramework>3.0</RequiredTargetFramework>
 		</Reference>
-		<Reference Include="System.IdentityModel.Selectors" Condition=" '$(ClrVersion)' == '4' ">
+		<Reference Include="System.IdentityModel.Selectors">
 			<RequiredTargetFramework>4.0</RequiredTargetFramework>
 		</Reference>
 		<Reference Include="System.Runtime.Serialization">
@@ -137,23 +94,9 @@ http://opensource.org/licenses/ms-pl.html
 		<Reference Include="System.ComponentModel.DataAnnotations">
 			<RequiredTargetFramework>3.5</RequiredTargetFramework>
 		</Reference>
-		<!-- Since MVC 2 and higher apps tend to use type forwarding,
-		     it's a more broadly consumable idea to bind against MVC 1 for the library -->
-		<Reference Include="System.Web.Mvc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
 	</ItemGroup>
 
-	<ItemGroup Condition=" '$(ClrVersion)' == '4' ">
+	<ItemGroup>
 		<Reference Include="System.Xaml" />
-	</ItemGroup>
-	<ItemGroup Condition=" '$(ClrVersion)' != '4' ">
-		<Reference Include="System.Web.Mobile" />
-		<Reference Include="PresentationFramework">
-			<!-- For XamlReader, but we use System.Xaml.dll in .NET 4.0 -->
-			<RequiredTargetFramework>3.0</RequiredTargetFramework>
-		</Reference>
-		<Reference Include="WindowsBase">
-			<!-- ObservableCollection<T>, moved to System.dll in .NET 4.0 -->
-			<RequiredTargetFramework>3.0</RequiredTargetFramework>
-		</Reference>
 	</ItemGroup>
 </Project>

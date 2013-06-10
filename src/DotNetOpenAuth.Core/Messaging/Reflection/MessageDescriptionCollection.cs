@@ -10,11 +10,11 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 	using System.Diagnostics.CodeAnalysis;
 	using System.Diagnostics.Contracts;
 	using System.Linq;
+	using Validation;
 
 	/// <summary>
 	/// A cache of <see cref="MessageDescription"/> instances.
 	/// </summary>
-	[ContractVerification(true)]
 	internal class MessageDescriptionCollection : IEnumerable<MessageDescription> {
 		/// <summary>
 		/// A dictionary of reflected message types and the generated reflection information.
@@ -68,9 +68,8 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Diagnostics.Contracts.__ContractsRuntime.Assume(System.Boolean,System.String,System.String)", Justification = "No localization required.")]
 		[Pure]
 		internal MessageDescription Get(Type messageType, Version messageVersion) {
-			Requires.NotNullSubtype<IMessage>(messageType, "messageType");
+			RequiresEx.NotNullSubtype<IMessage>(messageType, "messageType");
 			Requires.NotNull(messageVersion, "messageVersion");
-			Contract.Ensures(Contract.Result<MessageDescription>() != null);
 
 			MessageTypeAndVersion key = new MessageTypeAndVersion(messageType, messageVersion);
 
@@ -106,7 +105,6 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		[Pure]
 		internal MessageDescription Get(IMessage message) {
 			Requires.NotNull(message, "message");
-			Contract.Ensures(Contract.Result<MessageDescription>() != null);
 			return this.Get(message.GetType(), message.Version);
 		}
 
@@ -136,8 +134,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <summary>
 		/// A struct used as the key to bundle message type and version.
 		/// </summary>
-		[ContractVerification(true)]
-		private struct MessageTypeAndVersion {
+			private struct MessageTypeAndVersion {
 			/// <summary>
 			/// Backing store for the <see cref="Type"/> property.
 			/// </summary>

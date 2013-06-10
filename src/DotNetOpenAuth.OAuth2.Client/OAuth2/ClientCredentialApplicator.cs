@@ -9,9 +9,11 @@ namespace DotNetOpenAuth.OAuth2 {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Net;
+	using System.Net.Http;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2.Messages;
+	using Validation;
 
 	/// <summary>
 	/// A base class for extensions that apply client authentication to messages for the authorization server in specific ways.
@@ -74,7 +76,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <param name="clientIdentifier">The identifier by which the authorization server should recognize this client.</param>
 		/// <param name="request">The outbound message to apply authentication information to.</param>
-		public virtual void ApplyClientCredential(string clientIdentifier, HttpWebRequest request) {
+		public virtual void ApplyClientCredential(string clientIdentifier, HttpRequestMessage request) {
 		}
 
 		/// <summary>
@@ -125,13 +127,19 @@ namespace DotNetOpenAuth.OAuth2 {
 			/// </summary>
 			/// <param name="clientIdentifier">The identifier by which the authorization server should recognize this client.</param>
 			/// <param name="request">The outbound message to apply authentication information to.</param>
-			public override void ApplyClientCredential(string clientIdentifier, HttpWebRequest request) {
+			public override void ApplyClientCredential(string clientIdentifier, HttpRequestMessage request) {
 				if (clientIdentifier != null) {
-					if (this.credential != null && this.credential.UserName == clientIdentifier) {
-						ErrorUtilities.VerifyHost(false, "Client identifiers \"{0}\" and \"{1}\" do not match.", this.credential.UserName, clientIdentifier);
+					if (this.credential != null) {
+						ErrorUtilities.VerifyHost(
+							string.Equals(this.credential.UserName, clientIdentifier, StringComparison.Ordinal),
+							"Client identifiers \"{0}\" and \"{1}\" do not match.",
+							this.credential.UserName,
+							clientIdentifier);
 					}
 
-					request.Credentials = this.credential ?? new NetworkCredential(clientIdentifier, this.clientSecret);
+					// HttpWebRequest ignores the Credentials property until the remote server returns a 401 Unauthorized.
+					// So we also set the HTTP Authorization request header directly.
+					OAuthUtilities.ApplyHttpBasicAuth(request.Headers, clientIdentifier, this.clientSecret);
 				}
 			}
 		}

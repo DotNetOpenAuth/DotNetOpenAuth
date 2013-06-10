@@ -18,41 +18,11 @@
 			get {
 				var googleWebConsumer = (WebConsumerOpenIdRelyingParty)HttpContext.Current.Application["GoogleWebConsumer"];
 				if (googleWebConsumer == null) {
-					googleWebConsumer = new WebConsumerOpenIdRelyingParty(GoogleConsumer.ServiceDescription, GoogleTokenManager);
+					googleWebConsumer = new WebConsumerOpenIdRelyingParty { ServiceProvider = GoogleConsumer.ServiceDescription };
 					HttpContext.Current.Application["GoogleWebConsumer"] = googleWebConsumer;
 				}
 
 				return googleWebConsumer;
-			}
-		}
-
-		internal static InMemoryTokenManager GoogleTokenManager {
-			get {
-				var tokenManager = (InMemoryTokenManager)HttpContext.Current.Application["GoogleTokenManager"];
-				if (tokenManager == null) {
-					string consumerKey = ConfigurationManager.AppSettings["googleConsumerKey"];
-					string consumerSecret = ConfigurationManager.AppSettings["googleConsumerSecret"];
-					if (!string.IsNullOrEmpty(consumerKey)) {
-						tokenManager = new InMemoryTokenManager(consumerKey, consumerSecret);
-						HttpContext.Current.Application["GoogleTokenManager"] = tokenManager;
-					}
-				}
-
-				return tokenManager;
-			}
-		}
-
-		internal static InMemoryTokenManager OwnSampleOPHybridTokenManager {
-			get {
-				var tokenManager = (InMemoryTokenManager)HttpContext.Current.Application["OwnSampleOPHybridTokenManager"];
-				if (tokenManager == null) {
-					string consumerKey = new Uri(HttpContext.Current.Request.Url, HttpContext.Current.Request.ApplicationPath).AbsoluteUri;
-					string consumerSecret = "some crazy secret";
-					tokenManager = new InMemoryTokenManager(consumerKey, consumerSecret);
-					HttpContext.Current.Application["OwnSampleOPHybridTokenManager"] = tokenManager;
-				}
-
-				return tokenManager;
 			}
 		}
 

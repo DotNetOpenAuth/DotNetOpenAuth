@@ -7,8 +7,11 @@
 namespace DotNetOpenAuth.AspNet.Clients {
 	using System;
 	using System.Collections.Generic;
+	using System.Collections.Specialized;
 	using System.Diagnostics.CodeAnalysis;
 	using System.IO;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
 	using System.Xml;
 	using System.Xml.Linq;
@@ -16,6 +19,7 @@ namespace DotNetOpenAuth.AspNet.Clients {
 	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.OAuth.Messages;
+	using Validation;
 
 	/// <summary>
 	/// Represents base class for OAuth 1.0 clients
@@ -24,40 +28,15 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		#region Constructors and Destructors
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="OAuthClient"/> class.
+		/// Initializes a new instance of the <see cref="OAuthClient" /> class.
 		/// </summary>
-		/// <param name="providerName">
-		/// Name of the provider. 
-		/// </param>
-		/// <param name="serviceDescription">
-		/// The service description. 
-		/// </param>
-		/// <param name="consumerKey">
-		/// The consumer key. 
-		/// </param>
-		/// <param name="consumerSecret">
-		/// The consumer secret. 
-		/// </param>
+		/// <param name="providerName">Name of the provider.</param>
+		/// <param name="serviceDescription">The service Description.</param>
+		/// <param name="consumerKey">The consumer key.</param>
+		/// <param name="consumerSecret">The consumer secret.</param>
 		protected OAuthClient(
 			string providerName, ServiceProviderDescription serviceDescription, string consumerKey, string consumerSecret)
-			: this(providerName, serviceDescription, new InMemoryOAuthTokenManager(consumerKey, consumerSecret)) { }
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="OAuthClient"/> class.
-		/// </summary>
-		/// <param name="providerName">
-		/// Name of the provider. 
-		/// </param>
-		/// <param name="serviceDescription">
-		/// The service Description.
-		/// </param>
-		/// <param name="tokenManager">
-		/// The token Manager.
-		/// </param>
-		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "I don't know how to ensure this rule is followed given this API")]
-		protected OAuthClient(
-			string providerName, ServiceProviderDescription serviceDescription, IConsumerTokenManager tokenManager)
-			: this(providerName, new DotNetOpenAuthWebConsumer(serviceDescription, tokenManager)) {
+			: this(providerName, new DotNetOpenAuthWebConsumer(serviceDescription, consumerKey, consumerSecret)) {
 		}
 
 		/// <summary>
@@ -102,42 +81,40 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// <summary>
 		/// Attempts to authenticate users by forwarding them to an external website, and upon succcess or failure, redirect users back to the specified url.
 		/// </summary>
-		/// <param name="context">
-		/// The context.
-		/// </param>
-		/// <param name="returnUrl">
-		/// The return url after users have completed authenticating against external website. 
-		/// </param>
-		public virtual void RequestAuthentication(HttpContextBase context, Uri returnUrl) {
+		/// <param name="context">The context.</param>
+		/// <param name="returnUrl">The return url after users have completed authenticating against external website.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// A task that completes with the asynchronous operation.
+		/// </returns>
+		public virtual Task RequestAuthenticationAsync(HttpContextBase context, Uri returnUrl, CancellationToken cancellationToken = default(CancellationToken)) {
 			Requires.NotNull(returnUrl, "returnUrl");
 			Requires.NotNull(context, "context");
 
 			Uri callback = returnUrl.StripQueryArgumentsWithPrefix("oauth_");
-			this.WebWorker.RequestAuthentication(callback);
+			return this.WebWorker.RequestAuthenticationAsync(callback, cancellationToken);
 		}
 
 		/// <summary>
 		/// Check if authentication succeeded after user is redirected back from the service provider.
 		/// </summary>
-		/// <param name="context">
-		/// The context.
-		/// </param>
+		/// <param name="context">The context.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
-		/// An instance of <see cref="AuthenticationResult"/> containing authentication result. 
+		/// An instance of <see cref="AuthenticationResult" /> containing authentication result.
 		/// </returns>
-		public virtual AuthenticationResult VerifyAuthentication(HttpContextBase context) {
-			AuthorizedTokenResponse response = this.WebWorker.ProcessUserAuthorization();
+		public virtual async Task<AuthenticationResult> VerifyAuthenticationAsync(HttpContextBase context, CancellationToken cancellationToken = default(CancellationToken)) {
+			AccessTokenResponse response = await this.WebWorker.ProcessUserAuthorizationAsync(context, cancellationToken);
 			if (response == null) {
 				return AuthenticationResult.Failed;
 			}
 
-			AuthenticationResult result = this.VerifyAuthenticationCore(response);
+			AuthenticationResult result = await this.VerifyAuthenticationCoreAsync(response, cancellationToken);
 			if (result.IsSuccessful && result.ExtraData != null) {
 				// add the access token to the user data dictionary just in case page developers want to use it
-				var wrapExtraData = result.ExtraData.IsReadOnly
-					? new Dictionary<string, string>(result.ExtraData)
-					: result.ExtraData;
-				wrapExtraData["accesstoken"] = response.AccessToken;
+				var wrapExtraData = new NameValueCollection(result.ExtraData);
+				wrapExtraData["accesstoken"] = response.AccessToken.Token;
+				wrapExtraData["accesstokensecret"] = response.AccessToken.Secret;
 
 				AuthenticationResult wrapResult = new AuthenticationResult(
 					result.IsSuccessful,
@@ -164,9 +141,8 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		internal static XDocument LoadXDocumentFromStream(Stream stream) {
 			const int MaxChars = 0x10000; // 64k
 
-			XmlReaderSettings settings = new XmlReaderSettings() {
-				MaxCharactersInDocument = MaxChars
-			};
+			var settings = MessagingUtilities.CreateUntrustedXmlReaderSettings();
+			settings.MaxCharactersInDocument = MaxChars;
 			return XDocument.Load(XmlReader.Create(stream, settings));
 		}
 
@@ -174,12 +150,13 @@ namespace DotNetOpenAuth.AspNet.Clients {
 		/// Check if authentication succeeded after user is redirected back from the service provider.
 		/// </summary>
 		/// <param name="response">
-		/// The response token returned from service provider 
+		/// The access token returned from service provider 
 		/// </param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// Authentication result 
 		/// </returns>
-		protected abstract AuthenticationResult VerifyAuthenticationCore(AuthorizedTokenResponse response);
+		protected abstract Task<AuthenticationResult> VerifyAuthenticationCoreAsync(AccessTokenResponse response, CancellationToken cancellationToken);
 		#endregion
 	}
 }

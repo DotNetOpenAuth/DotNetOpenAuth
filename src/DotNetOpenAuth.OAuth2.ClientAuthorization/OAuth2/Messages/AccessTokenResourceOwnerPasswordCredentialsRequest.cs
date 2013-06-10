@@ -51,7 +51,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// Gets the name on the account whose data on the resource server is accessible using this authorization.
 		/// </summary>
 		string IAuthorizationDescription.User {
-			get { return this.UserName; }
+			get { return this.RequestingUserName; }
 		}
 
 		/// <summary>
@@ -62,6 +62,16 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Gets the username of the authorizing user, when applicable.
+		/// </summary>
+		/// <value>
+		/// A non-empty string; or <c>null</c> when no user has authorized this access token.
+		/// </value>
+		public override string UserName {
+			get { return base.UserName ?? this.RequestingUserName; }
+		}
 
 		/// <summary>
 		/// Gets the type of the grant.
@@ -76,13 +86,13 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// </summary>
 		/// <value>The username on the user's account.</value>
 		[MessagePart(Protocol.username, IsRequired = true)]
-		internal string UserName { get; set; }
+		internal string RequestingUserName { get; set; }
 
 		/// <summary>
 		/// Gets or sets the user's password.
 		/// </summary>
 		/// <value>The password.</value>
-		[MessagePart(Protocol.password, IsRequired = true)]
+		[MessagePart(Protocol.password, IsRequired = true, IsSecuritySensitive = true)]
 		internal string Password { get; set; }
 
 		/// <summary>

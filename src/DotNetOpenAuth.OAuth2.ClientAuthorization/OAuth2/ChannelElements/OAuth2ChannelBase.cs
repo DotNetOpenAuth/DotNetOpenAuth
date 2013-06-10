@@ -13,6 +13,8 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2.Messages;
 
+	using Validation;
+
 	/// <summary>
 	/// The base messaging channel used by OAuth 2.0 parties.
 	/// </summary>
@@ -23,15 +25,14 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		private static readonly Version[] Versions = Protocol.AllVersions.Select(v => v.Version).ToArray();
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="OAuth2ChannelBase"/> class.
+		/// Initializes a new instance of the <see cref="OAuth2ChannelBase" /> class.
 		/// </summary>
 		/// <param name="messageTypes">The message types that are received by this channel.</param>
-		/// <param name="channelBindingElements">
-		/// The binding elements to use in sending and receiving messages.
-		/// The order they are provided is used for outgoing messgaes, and reversed for incoming messages.
-		/// </param>
-		internal OAuth2ChannelBase(Type[] messageTypes, params IChannelBindingElement[] channelBindingElements)
-			: base(Requires.NotNull(messageTypes, "messageTypes"), Versions, channelBindingElements) {
+		/// <param name="channelBindingElements">The binding elements to use in sending and receiving messages.
+		/// The order they are provided is used for outgoing messgaes, and reversed for incoming messages.</param>
+		/// <param name="hostFactories">The host factories.</param>
+		internal OAuth2ChannelBase(Type[] messageTypes, IChannelBindingElement[] channelBindingElements = null, IHostFactories hostFactories = null)
+			: base(Requires.NotNull(messageTypes, "messageTypes"), Versions, hostFactories ?? new OAuth.DefaultOAuthHostFactories(), channelBindingElements ?? new IChannelBindingElement[0]) {
 		}
 
 		/// <summary>

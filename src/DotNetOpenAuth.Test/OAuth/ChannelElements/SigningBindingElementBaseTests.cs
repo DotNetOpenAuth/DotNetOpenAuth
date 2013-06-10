@@ -6,13 +6,15 @@
 
 namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
+	using System.Net.Http;
+
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using DotNetOpenAuth.OAuth.Messages;
 	using NUnit.Framework;
+	using Validation;
 
 	[TestFixture]
 	public class SigningBindingElementBaseTests : MessagingTestBase {
@@ -80,7 +82,7 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 			message.AccessToken = "tokenpublic";
 
 			var signedMessage = (ITamperResistantOAuthMessage)message;
-			signedMessage.HttpMethod = "GET";
+			signedMessage.HttpMethod = HttpMethod.Get;
 			signedMessage.SignatureMethod = "HMAC-SHA1";
 
 			MessageDictionary dictionary = this.MessageDescriptions.GetAccessor(message);
@@ -115,7 +117,7 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 			message.ConsumerKey = "nerdbank.org";
 			((ITamperResistantOAuthMessage)message).ConsumerSecret = "nerdbanksecret";
 			var signedMessage = (ITamperResistantOAuthMessage)message;
-			signedMessage.HttpMethod = "GET";
+			signedMessage.HttpMethod = HttpMethod.Get;
 			signedMessage.SignatureMethod = "HMAC-SHA1";
 			MessageDictionary dictionary = messageDescriptions.GetAccessor(message);
 			dictionary["oauth_timestamp"] = "1222665749";
@@ -125,7 +127,8 @@ namespace DotNetOpenAuth.Test.OAuth.ChannelElements {
 		}
 
 		internal AccessProtectedResourceRequest CreateResourceRequest(MessageReceivingEndpoint endpoint) {
-			Contract.Requires(endpoint != null);
+			Requires.NotNull(endpoint, "endpoint");
+
 			var message = new AccessProtectedResourceRequest(endpoint, Protocol.V10.Version);
 			return message;
 		}

@@ -7,11 +7,13 @@
 namespace DotNetOpenAuth.OpenId.Provider {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
+	using Validation;
 
 	/// <summary>
 	/// Handles messages coming into an OpenID Provider for which the entire
@@ -62,17 +64,25 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		}
 
 		/// <summary>
-		/// Gets the response message, once <see cref="IsResponseReady"/> is <c>true</c>.
+		/// Gets the response message, once <see cref="IsResponseReady" /> is <c>true</c>.
 		/// </summary>
-		internal IProtocolMessage ResponseMessageTestHook {
-			get { return this.ResponseMessage; }
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The response message.
+		/// </returns>
+		internal Task<IProtocolMessage> GetResponseMessageAsyncTestHook(CancellationToken cancellationToken) {
+			return this.GetResponseMessageAsync(cancellationToken);
 		}
 
 		/// <summary>
-		/// Gets the response message, once <see cref="IsResponseReady"/> is <c>true</c>.
+		/// Gets the response message, once <see cref="IsResponseReady" /> is <c>true</c>.
 		/// </summary>
-		protected override IProtocolMessage ResponseMessage {
-			get { return this.response; }
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The response message.
+		/// </returns>
+		protected override Task<IProtocolMessage> GetResponseMessageAsync(CancellationToken cancellationToken) {
+			return Task.FromResult(this.response);
 		}
 	}
 }

@@ -13,6 +13,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2.Messages;
+	using Validation;
 
 	/// <summary>
 	/// Applies OAuth 2 spec policy for supporting multiple methods of client authentication.

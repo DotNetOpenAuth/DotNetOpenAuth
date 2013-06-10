@@ -10,6 +10,9 @@ namespace DotNetOpenAuth.Test {
 	using System.Collections.Specialized;
 	using System.IO;
 	using System.Net;
+	using System.Net.Http;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Xml;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
@@ -52,54 +55,22 @@ namespace DotNetOpenAuth.Test {
 		public override void SetUp() {
 			base.SetUp();
 
-			this.Channel = new TestChannel();
+			this.Channel = new TestChannel(this.HostFactories);
 		}
 
-		internal static HttpRequestInfo CreateHttpRequestInfo(string method, IDictionary<string, string> fields) {
+		internal static HttpRequestMessage CreateHttpRequestInfo(HttpMethod method, IDictionary<string, string> fields) {
+			var result = new HttpRequestMessage() { Method = method };
 			var requestUri = new UriBuilder(DefaultUrlForHttpRequestInfo);
-			var headers = new NameValueCollection();
-			NameValueCollection form = null;
-			if (method == "POST") {
-				form = fields.ToNameValueCollection();
-				headers.Add(HttpRequestHeaders.ContentType, Channel.HttpFormUrlEncoded);
-			} else if (method == "GET") {
-				requestUri.Query = MessagingUtilities.CreateQueryString(fields);
+			if (method == HttpMethod.Post) {
+				result.Content = new FormUrlEncodedContent(fields);
+			} else if (method == HttpMethod.Get) {
+				requestUri.AppendQueryArgs(fields);
 			} else {
 				throw new ArgumentOutOfRangeException("method", method, "Expected POST or GET");
 			}
 
-			return new HttpRequestInfo(method, requestUri.Uri, form: form, headers: headers);
-		}
-
-		internal static Channel CreateChannel(MessageProtections capabilityAndRecognition) {
-			return CreateChannel(capabilityAndRecognition, capabilityAndRecognition);
-		}
-
-		internal static Channel CreateChannel(MessageProtections capability, MessageProtections recognition) {
-			var bindingElements = new List<IChannelBindingElement>();
-			if (capability >= MessageProtections.TamperProtection) {
-				bindingElements.Add(new MockSigningBindingElement());
-			}
-			if (capability >= MessageProtections.Expiration) {
-				bindingElements.Add(new StandardExpirationBindingElement());
-			}
-			if (capability >= MessageProtections.ReplayProtection) {
-				bindingElements.Add(new MockReplayProtectionBindingElement());
-			}
-
-			bool signing = false, expiration = false, replay = false;
-			if (recognition >= MessageProtections.TamperProtection) {
-				signing = true;
-			}
-			if (recognition >= MessageProtections.Expiration) {
-				expiration = true;
-			}
-			if (recognition >= MessageProtections.ReplayProtection) {
-				replay = true;
-			}
-
-			var typeProvider = new TestMessageFactory(signing, expiration, replay);
-			return new TestChannel(typeProvider, bindingElements.ToArray());
+			result.RequestUri = requestUri.Uri;
+			return result;
 		}
 
 		internal static IDictionary<string, string> GetStandardTestFields(FieldFill fill) {
@@ -143,11 +114,42 @@ namespace DotNetOpenAuth.Test {
 			}
 		}
 
-		internal void ParameterizedReceiveTest(string method) {
+		internal Channel CreateChannel(MessageProtections capabilityAndRecognition) {
+			return this.CreateChannel(capabilityAndRecognition, capabilityAndRecognition);
+		}
+
+		internal Channel CreateChannel(MessageProtections capability, MessageProtections recognition) {
+			var bindingElements = new List<IChannelBindingElement>();
+			if (capability >= MessageProtections.TamperProtection) {
+				bindingElements.Add(new MockSigningBindingElement());
+			}
+			if (capability >= MessageProtections.Expiration) {
+				bindingElements.Add(new StandardExpirationBindingElement());
+			}
+			if (capability >= MessageProtections.ReplayProtection) {
+				bindingElements.Add(new MockReplayProtectionBindingElement());
+			}
+
+			bool signing = false, expiration = false, replay = false;
+			if (recognition >= MessageProtections.TamperProtection) {
+				signing = true;
+			}
+			if (recognition >= MessageProtections.Expiration) {
+				expiration = true;
+			}
+			if (recognition >= MessageProtections.ReplayProtection) {
+				replay = true;
+			}
+
+			var typeProvider = new TestMessageFactory(signing, expiration, replay);
+			return new TestChannel(typeProvider, bindingElements.ToArray(), this.HostFactories);
+		}
+
+		internal async Task ParameterizedReceiveTestAsync(HttpMethod method) {
 			var fields = GetStandardTestFields(FieldFill.CompleteBeforeBindings);
 			TestMessage expectedMessage = GetStandardTestMessage(FieldFill.CompleteBeforeBindings);
 
-			IDirectedProtocolMessage requestMessage = this.Channel.ReadFromRequest(CreateHttpRequestInfo(method, fields));
+			IDirectedProtocolMessage requestMessage = await this.Channel.ReadFromRequestAsync(CreateHttpRequestInfo(method, fields), CancellationToken.None);
 			Assert.IsNotNull(requestMessage);
 			Assert.IsInstanceOf<TestMessage>(requestMessage);
 			TestMessage actualMessage = (TestMessage)requestMessage;
@@ -156,7 +158,7 @@ namespace DotNetOpenAuth.Test {
 			Assert.AreEqual(expectedMessage.Location, actualMessage.Location);
 		}
 
-		internal void ParameterizedReceiveProtectedTest(DateTime? utcCreatedDate, bool invalidSignature) {
+		internal async Task ParameterizedReceiveProtectedTestAsync(DateTime? utcCreatedDate, bool invalidSignature) {
 			TestMessage expectedMessage = GetStandardTestMessage(FieldFill.CompleteBeforeBindings);
 			var fields = GetStandardTestFields(FieldFill.CompleteBeforeBindings);
 			fields.Add("Signature", invalidSignature ? "badsig" : MockSigningBindingElement.MessageSignature);
@@ -165,7 +167,7 @@ namespace DotNetOpenAuth.Test {
 				utcCreatedDate = DateTime.Parse(utcCreatedDate.Value.ToUniversalTime().ToString()); // round off the milliseconds so comparisons work later
 				fields.Add("created_on", XmlConvert.ToString(utcCreatedDate.Value, XmlDateTimeSerializationMode.Utc));
 			}
-			IProtocolMessage requestMessage = this.Channel.ReadFromRequest(CreateHttpRequestInfo("GET", fields));
+			IProtocolMessage requestMessage = await this.Channel.ReadFromRequestAsync(CreateHttpRequestInfo(HttpMethod.Get, fields), CancellationToken.None);
 			Assert.IsNotNull(requestMessage);
 			Assert.IsInstanceOf<TestSignedDirectedMessage>(requestMessage);
 			TestSignedDirectedMessage actualMessage = (TestSignedDirectedMessage)requestMessage;

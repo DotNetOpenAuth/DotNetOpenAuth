@@ -8,22 +8,28 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
-	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Linq;
 	using System.Net.Security;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
 	using DotNetOpenAuth.Loggers;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.OpenId.Messages;
+	using Validation;
 
 	/// <summary>
 	/// Signs and verifies authentication assertions.
 	/// </summary>
-	[ContractClass(typeof(SigningBindingElementContract))]
 	internal abstract class SigningBindingElement : IChannelBindingElement {
+		/// <summary>
+		/// A reusable pre-completed task that may be returned multiple times to reduce GC pressure.
+		/// </summary>
+		private static readonly Task<MessageProtections?> NullTask = Task.FromResult<MessageProtections?>(null);
+
 		#region IChannelBindingElement Properties
 
 		/// <summary>
@@ -54,12 +60,13 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// Prepares a message for sending based on the rules of this channel binding element.
 		/// </summary>
 		/// <param name="message">The message to prepare for sending.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The protections (if any) that this binding element applied to the message.
 		/// Null if this binding element did not even apply to this binding element.
 		/// </returns>
-		public virtual MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
-			return null;
+		public virtual Task<MessageProtections?> ProcessOutgoingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
+			return NullTask;
 		}
 
 		/// <summary>
@@ -67,6 +74,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// validates an incoming message based on the rules of this channel binding element.
 		/// </summary>
 		/// <param name="message">The incoming message to process.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The protections (if any) that this binding element applied to the message.
 		/// Null if this binding element did not even apply to this binding element.
@@ -75,7 +83,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// Thrown when the binding element rules indicate that this message is invalid and should
 		/// NOT be processed.
 		/// </exception>
-		public MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
+		public async Task<MessageProtections?> ProcessIncomingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
 			var signedMessage = message as ITamperResistantOpenIdMessage;
 			if (signedMessage != null) {
 				Logger.Bindings.DebugFormat("Verifying incoming {0} message signature of: {1}", message.GetType().Name, signedMessage.Signature);
@@ -93,7 +101,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 				} else {
 					ErrorUtilities.VerifyInternal(this.Channel != null, "Cannot verify private association signature because we don't have a channel.");
 
-					protectionsApplied = this.VerifySignatureByUnrecognizedHandle(message, signedMessage, protectionsApplied);
+					protectionsApplied = await this.VerifySignatureByUnrecognizedHandleAsync(message, signedMessage, protectionsApplied, cancellationToken);
 				}
 
 				return protectionsApplied;
@@ -108,8 +116,9 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <param name="message">The message.</param>
 		/// <param name="signedMessage">The signed message.</param>
 		/// <param name="protectionsApplied">The protections applied.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>The applied protections.</returns>
-		protected abstract MessageProtections VerifySignatureByUnrecognizedHandle(IProtocolMessage message, ITamperResistantOpenIdMessage signedMessage, MessageProtections protectionsApplied);
+		protected abstract Task<MessageProtections> VerifySignatureByUnrecognizedHandleAsync(IProtocolMessage message, ITamperResistantOpenIdMessage signedMessage, MessageProtections protectionsApplied, CancellationToken cancellationToken);
 
 		#endregion
 
@@ -121,7 +130,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// <returns>The calculated signature of the method.</returns>
 		protected string GetSignature(ITamperResistantOpenIdMessage signedMessage, Association association) {
 			Requires.NotNull(signedMessage, "signedMessage");
-			Requires.True(!string.IsNullOrEmpty(signedMessage.SignedParameterOrder), "signedMessage");
+			Requires.That(!string.IsNullOrEmpty(signedMessage.SignedParameterOrder), "signedMessage", "SignedParameterOrder must not be null or empty.");
 			Requires.NotNull(association, "association");
 
 			// Prepare the parts to sign, taking care to replace an openid.mode value

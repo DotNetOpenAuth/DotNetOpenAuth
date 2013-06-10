@@ -6,8 +6,8 @@
 
 namespace DotNetOpenAuth.Xrds {
 	using System;
-	using System.Diagnostics.Contracts;
 	using System.Xml.XPath;
+	using Validation;
 
 	/// <summary>
 	/// The Type element in an XRDS document.

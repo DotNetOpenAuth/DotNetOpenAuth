@@ -8,22 +8,26 @@ namespace DotNetOpenAuth.OpenId {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Linq;
+	using System.Net.Http;
+	using System.Runtime.CompilerServices;
 	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Xml;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using DotNetOpenAuth.Xrds;
 	using DotNetOpenAuth.Yadis;
+	using Validation;
 
 	/// <summary>
 	/// The discovery service for XRI identifiers that uses an XRI proxy resolver for discovery.
 	/// </summary>
 	[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Xri", Justification = "Acronym")]
-	public class XriDiscoveryProxyService : IIdentifierDiscoveryService {
+	public class XriDiscoveryProxyService : IIdentifierDiscoveryService, IRequireHostFactories {
 		/// <summary>
 		/// The magic URL that will provide us an XRDS document for a given XRI identifier.
 		/// </summary>
@@ -42,25 +46,33 @@ namespace DotNetOpenAuth.OpenId {
 		public XriDiscoveryProxyService() {
 		}
 
+		/// <summary>
+		/// Gets or sets the host factories used by this instance.
+		/// </summary>
+		public IHostFactories HostFactories { get; set; }
+
 		#region IDiscoveryService Members
 
 		/// <summary>
 		/// Performs discovery on the specified identifier.
 		/// </summary>
 		/// <param name="identifier">The identifier to perform discovery on.</param>
-		/// <param name="requestHandler">The means to place outgoing HTTP requests.</param>
-		/// <param name="abortDiscoveryChain">if set to <c>true</c>, no further discovery services will be called for this identifier.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// A sequence of service endpoints yielded by discovery.  Must not be null, but may be empty.
 		/// </returns>
-		public IEnumerable<IdentifierDiscoveryResult> Discover(Identifier identifier, IDirectWebRequestHandler requestHandler, out bool abortDiscoveryChain) {
-			abortDiscoveryChain = false;
+		public async Task<IdentifierDiscoveryServiceResult> DiscoverAsync(Identifier identifier, CancellationToken cancellationToken) {
+			Requires.NotNull(identifier, "identifier");
+			Verify.Operation(this.HostFactories != null, Strings.HostFactoriesRequired);
+
 			var xriIdentifier = identifier as XriIdentifier;
 			if (xriIdentifier == null) {
-				return Enumerable.Empty<IdentifierDiscoveryResult>();
+				return new IdentifierDiscoveryServiceResult(Enumerable.Empty<IdentifierDiscoveryResult>());
 			}
 
-			return DownloadXrds(xriIdentifier, requestHandler).XrdElements.CreateServiceEndpoints(xriIdentifier);
+			var xrds = await DownloadXrdsAsync(xriIdentifier, this.HostFactories, cancellationToken);
+			var endpoints = xrds.XrdElements.CreateServiceEndpoints(xriIdentifier);
+			return new IdentifierDiscoveryServiceResult(endpoints);
 		}
 
 		#endregion
@@ -69,16 +81,26 @@ namespace DotNetOpenAuth.OpenId {
 		/// Downloads the XRDS document for this XRI.
 		/// </summary>
 		/// <param name="identifier">The identifier.</param>
-		/// <param name="requestHandler">The request handler.</param>
-		/// <returns>The XRDS document.</returns>
-		private static XrdsDocument DownloadXrds(XriIdentifier identifier, IDirectWebRequestHandler requestHandler) {
+		/// <param name="hostFactories">The host factories.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The XRDS document.
+		/// </returns>
+		private static async Task<XrdsDocument> DownloadXrdsAsync(XriIdentifier identifier, IHostFactories hostFactories, CancellationToken cancellationToken) {
 			Requires.NotNull(identifier, "identifier");
-			Requires.NotNull(requestHandler, "requestHandler");
-			Contract.Ensures(Contract.Result<XrdsDocument>() != null);
+			Requires.NotNull(hostFactories, "hostFactories");
+
 			XrdsDocument doc;
-			using (var xrdsResponse = Yadis.Request(requestHandler, GetXrdsUrl(identifier), identifier.IsDiscoverySecureEndToEnd)) {
-				doc = new XrdsDocument(XmlReader.Create(xrdsResponse.ResponseStream));
+			using (var xrdsResponse = await Yadis.RequestAsync(GetXrdsUrl(identifier), identifier.IsDiscoverySecureEndToEnd, hostFactories, cancellationToken)) {
+				xrdsResponse.EnsureSuccessStatusCode();
+				var readerSettings = MessagingUtilities.CreateUntrustedXmlReaderSettings();
+				ErrorUtilities.VerifyProtocol(xrdsResponse.Content != null, "XRDS request \"{0}\" returned no response.", GetXrdsUrl(identifier));
+				await xrdsResponse.Content.LoadIntoBufferAsync();
+				using (var xrdsStream = await xrdsResponse.Content.ReadAsStreamAsync()) {
+					doc = new XrdsDocument(XmlReader.Create(xrdsStream, readerSettings));
+				}
 			}
+
 			ErrorUtilities.VerifyProtocol(doc.IsXrdResolutionSuccessful, OpenIdStrings.XriResolutionFailed);
 			return doc;
 		}

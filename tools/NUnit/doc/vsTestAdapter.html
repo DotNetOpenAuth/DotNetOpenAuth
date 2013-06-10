@@ -28,11 +28,10 @@
 <h2>NUnit Test Adapter for Visual Studio 11</h2>
 
 <p>The NUnit Test Adapter allows you to run NUnit tests inside
-   Visual Studio. The current release, version 0.90, only works 
-   with the Visual Studio 11 Developer Preview, which is available 
-   for download from Microsoft. Earlier releases of Visual Studio
-   did not have the ability to recognize tests built with Open
-   Source testing frameworks like NUnit.
+   Visual Studio. The current release, version 0.92, is designed to work
+   with the Visual Studio 11 Beta Release. Releases of Visual Studio
+   prior to VS 11 did not have the ability to directly run tests built with 
+   Open Source testing frameworks like NUnit.
 
 <h3>Installation</h3>
 
@@ -51,7 +50,7 @@
 
 <p>In preparation for using the test adapter, make sure that the Unit
    Test Explorer is shown in your window. If you don't see it, use
-   View | Other Windows | Unit Test Explorer to show it and position
+   the menu ( <b>Unit Test | Windows | Unit Test Explorer</b> ) to show it and position
    the window where you would like it within Visual Studio.
 
 <div class="screenshot-left">
@@ -72,19 +71,23 @@
 <h3>Known Problems</h3>
 
 <ol>
-<li>There is no test status corresponding to NUnit's <b>Inconclusive</b>
+<li><p>There is no test status corresponding to NUnit's <b>Inconclusive</b>
     result, so tests with this result are reported as <b>Not Run</b>.
-<li>Test cases appear in a flat list, without any grouping by fixture or
+
+<li><p>Test cases appear in a flat list, without any grouping by fixture or
     namespace. This can make it hard to select a group of related tests 
     to be run. It is, however, relatively easy to rerun all failing tests.
-<li>Theories are reported as individual cases, rather as a single unit.
-<li>Startup performance is rather poor in this release.
+
+<li><p>Theories are reported as individual cases, rather as a single unit.
+
+<li><p>Startup performance is now improved as compared to the developer 
+    preview, but is still intermittently slow.
 </ol>
 
 <h3>Reporting Problems</h3>
 
-<p>Until a separate project is created, bugs should be reported using
-   the <a href="http://bugs.launchpad.net/nunitv2">NUnit bug list</a>.
+<p>Bugs should be reported using the separate test adapter
+<a href="http://bugs.launchpad.net/nunit-vs-adapter">bug tracker</a> on Launchpad.
 
 
 </div>
@@ -92,7 +95,7 @@
 <!-- Submenu -->
 <div id="subnav">
 <ul>
-<li><a href="index.html">NUnit 2.6</a></li>
+<li><a href="index.html">NUnit 2.6.1</a></li>
 <ul>
 <li><a href="getStarted.html">Getting&nbsp;Started</a></li>
 <li><a href="writingTests.html">Writing&nbsp;Tests</a></li>
@@ -102,12 +105,12 @@
 <li><a href="samples.html">Samples</a></li>
 <li><a href="license.html">License</a></li>
 </ul>
-<li id="current"><a href="vsTestAdapter.html">NUnit&nbsp;Test&nbsp;Adapter&nbsp;0.90</a></li>
+<li id="current"><a href="vsTestAdapter.html">NUnit&nbsp;Test&nbsp;Adapter</a></li>
 <ul>
 <li><a href="vsTestAdapterLicense.html">License</a></li>
 </ul>
-<li><a href="&r=2.6.html"></a></li>
-<li><a href="&r=2.6.html"></a></li>
+<li><a href="&r=2.6.1.html"></a></li>
+<li><a href="&r=2.6.1.html"></a></li>
 </ul>
 </div>
 <!-- End of Submenu -->

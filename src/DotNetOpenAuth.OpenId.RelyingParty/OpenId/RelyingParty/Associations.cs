@@ -13,6 +13,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// A dictionary of handle/Association pairs.
@@ -23,7 +24,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	/// can break if the collection is changed by another thread during enumeration.
 	/// </remarks>
 	[DebuggerDisplay("Count = {assocs.Count}")]
-	[ContractVerification(true)]
 	internal class Associations {
 		/// <summary>
 		/// The lookup table where keys are the association handles and values are the associations themselves.
@@ -47,8 +47,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </remarks>
 		public IEnumerable<Association> Best {
 			get {
-				Contract.Ensures(Contract.Result<IEnumerable<Association>>() != null);
-
 				lock (this.associations) {
 					return this.associations.OrderByDescending(assoc => assoc.Issued);
 				}
@@ -61,13 +59,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// <param name="association">The association to add to the collection.</param>
 		public void Set(Association association) {
 			Requires.NotNull(association, "association");
-			Contract.Ensures(this.Get(association.Handle) == association);
 			lock (this.associations) {
 				this.associations.Remove(association.Handle); // just in case one already exists.
 				this.associations.Add(association);
 			}
 
-			Contract.Assume(this.Get(association.Handle) == association);
+			Assumes.True(this.Get(association.Handle) == association);
 		}
 
 		/// <summary>

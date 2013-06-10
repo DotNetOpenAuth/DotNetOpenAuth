@@ -4,6 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
   </PropertyGroup>
   <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.props" />
   <PropertyGroup>
@@ -20,7 +21,6 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="OpenId\Interop\IOpenIdRelyingParty.cs" />
     <Compile Include="OpenId\RelyingParty\Behaviors\AXFetchAsSregTransform.cs" />
     <Compile Include="OpenId\RelyingParty\Behaviors\GsaIcamProfile.cs" />
     <Compile Include="OpenId\ChannelElements\ExtensionsBindingElementRelyingParty.cs" />
@@ -31,12 +31,8 @@
     <Compile Include="OpenId\ChannelElements\ReturnToNonceBindingElement.cs" />
     <Compile Include="OpenId\RelyingParty\Extensions\ExtensionsInteropHelper.cs" />
     <Compile Include="OpenId\HostMetaDiscoveryService.cs" />
-    <Compile Include="OpenId\Interop\AuthenticationResponseShim.cs" />
-    <Compile Include="OpenId\Interop\ClaimsResponseShim.cs" />
-    <Compile Include="OpenId\Interop\OpenIdRelyingPartyShim.cs" />
     <Compile Include="OpenId\Messages\AssociateDiffieHellmanRelyingPartyResponse.cs" />
     <Compile Include="OpenId\Messages\AssociateRequestRelyingParty.cs" />
-    <Compile Include="OpenId\Messages\IAssociateSuccessfulResponseRelyingPartyContract.cs" />
     <Compile Include="OpenId\Messages\IAssociateSuccessfulResponseRelyingParty.cs" />
     <Compile Include="OpenId\Messages\AssociateUnencryptedResponseRelyingParty.cs" />
     <Compile Include="OpenId\RelyingParty\CryptoKeyStoreAsRelyingPartyAssociationStore.cs" />
@@ -55,12 +51,12 @@
     <Compile Include="OpenId\RelyingParty\OpenIdRelyingParty.cs" />
     <Compile Include="OpenId\RelyingParty\PositiveAuthenticationResponseSnapshot.cs" />
     <Compile Include="OpenId\RelyingParty\SimpleXrdsProviderEndpoint.cs" />
-    <Compile Include="OpenId\RelyingParty\StandardRelyingPartyApplicationStore.cs" />
     <Compile Include="OpenId\RelyingParty\WellKnownProviders.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="OpenId\RelyingParty\OpenIdRelyingParty.cd" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DotNetOpenAuth.Core\DotNetOpenAuth.Core.csproj">
@@ -78,6 +74,12 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.WebRequest" />
+    <Reference Include="Validation, Version=2.0.0.0, Culture=neutral, PublicKeyToken=2fc06f0d701809a7, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Validation.2.0.2.13022\lib\portable-windows8+net40+sl5+windowsphone8\Validation.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="ComponentModel\" />
@@ -86,4 +88,5 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.targets" />
   <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))\EnlistmentInfo.targets" Condition=" '$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))' != '' " />
+  <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
 </Project>

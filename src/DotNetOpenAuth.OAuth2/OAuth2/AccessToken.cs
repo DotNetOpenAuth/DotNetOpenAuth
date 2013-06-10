@@ -7,11 +7,11 @@
 namespace DotNetOpenAuth.OAuth2 {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.Security.Cryptography;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OAuth2.ChannelElements;
+	using Validation;
 
 	/// <summary>
 	/// A short-lived token that accompanies HTTP requests to protected data to authorize the request.
@@ -51,11 +51,21 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="encryptingKey">The crypto service provider with the resource server's public key used to encrypt the access token.</param>
 		/// <returns>An access token serializer.</returns>
 		internal static IDataBagFormatter<AccessToken> CreateFormatter(RSACryptoServiceProvider signingKey, RSACryptoServiceProvider encryptingKey) {
-			Contract.Requires(signingKey != null || !signingKey.PublicOnly);
-			Contract.Requires(encryptingKey != null);
-			Contract.Ensures(Contract.Result<IDataBagFormatter<AccessToken>>() != null);
+			Requires.That(signingKey == null || !signingKey.PublicOnly, "signingKey", "requires private key");
 
 			return new UriStyleMessageFormatter<AccessToken>(signingKey, encryptingKey);
+		}
+
+		/// <summary>
+		/// Creates a formatter capable of serializing/deserializing an access token.
+		/// </summary>
+		/// <param name="symmetricKeyStore">The symmetric key store.</param>
+		/// <returns>
+		/// An access token serializer.
+		/// </returns>
+		internal static IDataBagFormatter<AccessToken> CreateFormatter(ICryptoKeyStore symmetricKeyStore) {
+			Requires.NotNull(symmetricKeyStore, "symmetricKeyStore");
+			return new UriStyleMessageFormatter<AccessToken>(symmetricKeyStore, bucket: "AccessTokens", signed: true, encrypted: true);
 		}
 
 		/// <summary>
@@ -94,7 +104,6 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <returns>A non-empty string.</returns>
 		protected internal virtual string Serialize() {
-			Contract.Ensures(!string.IsNullOrEmpty(Contract.Result<string>()));
 			throw new NotSupportedException();
 		}
 

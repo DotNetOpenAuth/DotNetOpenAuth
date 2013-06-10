@@ -4,6 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
   </PropertyGroup>
   <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.props" />
   <PropertyGroup>
@@ -19,19 +20,26 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Assumes.cs" />
+    <Compile Include="IHostFactories.cs" />
+    <Compile Include="IRequireHostFactories.cs" />
+    <Compile Include="MachineKeyUtil.cs" />
     <Compile Include="Messaging\Base64WebEncoder.cs" />
     <Compile Include="Messaging\Bindings\AsymmetricCryptoKeyStoreWrapper.cs" />
     <Compile Include="Messaging\Bindings\CryptoKey.cs" />
     <Compile Include="Messaging\Bindings\CryptoKeyCollisionException.cs" />
+    <Compile Include="Messaging\Bindings\HardCodedKeyCryptoKeyStore.cs" />
     <Compile Include="Messaging\Bindings\ICryptoKeyStore.cs" />
+    <Compile Include="Messaging\Bindings\ICryptoKeyAndNonceStore.cs" />
     <Compile Include="Messaging\Bindings\MemoryCryptoKeyStore.cs" />
     <Compile Include="Messaging\BinaryDataBagFormatter.cs" />
-    <Compile Include="Messaging\CachedDirectWebResponse.cs" />
-    <Compile Include="Messaging\ChannelContract.cs" />
+    <Compile Include="Messaging\Bindings\MemoryCryptoKeyAndNonceStore.cs" />
+    <Compile Include="Messaging\HttpResponseMessageWithOriginal.cs" />
+    <Compile Include="Messaging\MessageProtectionTasks.cs" />
+    <Compile Include="Messaging\MultipartContentMember.cs" />
     <Compile Include="Messaging\DataBagFormatterBase.cs" />
+    <Compile Include="Messaging\HmacAlgorithms.cs" />
     <Compile Include="Messaging\HttpRequestHeaders.cs" />
     <Compile Include="Messaging\IHttpDirectRequest.cs" />
-    <Compile Include="Messaging\IHttpDirectRequestContract.cs" />
     <Compile Include="Messaging\IHttpIndirectResponse.cs" />
     <Compile Include="Messaging\IMessageOriginalPayload.cs" />
     <Compile Include="Messaging\DirectWebRequestOptions.cs" />
@@ -39,25 +47,20 @@
     <Compile Include="Messaging\HostErrorException.cs" />
     <Compile Include="Messaging\IHttpDirectResponse.cs" />
     <Compile Include="Messaging\IExtensionMessage.cs" />
-    <Compile Include="Messaging\IHttpDirectResponseContract.cs" />
     <Compile Include="Messaging\IMessage.cs" />
-    <Compile Include="Messaging\IncomingWebResponse.cs" />
     <Compile Include="Messaging\IDirectResponseProtocolMessage.cs" />
     <Compile Include="Messaging\EmptyDictionary.cs" />
     <Compile Include="Messaging\EmptyEnumerator.cs" />
     <Compile Include="Messaging\EmptyList.cs" />
     <Compile Include="Messaging\ErrorUtilities.cs" />
     <Compile Include="Messaging\IMessageWithEvents.cs" />
-    <Compile Include="Messaging\IncomingWebResponseContract.cs" />
     <Compile Include="Messaging\IProtocolMessageWithExtensions.cs" />
     <Compile Include="Messaging\InternalErrorException.cs" />
     <Compile Include="Messaging\IStreamSerializingDataBag.cs" />
     <Compile Include="Messaging\KeyedCollectionDelegate.cs" />
-    <Compile Include="Messaging\MultipartPostPart.cs" />
-    <Compile Include="Messaging\NetworkDirectWebResponse.cs" />
-    <Compile Include="Messaging\OutgoingWebResponseActionResult.cs" />
     <Compile Include="Messaging\ProtocolFaultResponseException.cs" />
     <Compile Include="Messaging\Reflection\IMessagePartEncoder.cs" />
+    <Compile Include="Messaging\Reflection\IMessagePartFormattingEncoder.cs" />
     <Compile Include="Messaging\Reflection\IMessagePartNullEncoder.cs" />
     <Compile Include="Messaging\Reflection\IMessagePartOriginalEncoder.cs" />
     <Compile Include="Messaging\Reflection\MessageDescriptionCollection.cs" />
@@ -70,8 +73,7 @@
     <Compile Include="Messaging\TimestampEncoder.cs" />
     <Compile Include="Messaging\IMessageWithBinaryData.cs" />
     <Compile Include="Messaging\ChannelEventArgs.cs" />
-    <Compile Include="Messaging\Bindings\NonceMemoryStore.cs" />
-    <Compile Include="Messaging\IDirectWebRequestHandler.cs" />
+    <Compile Include="Messaging\Bindings\MemoryNonceStore.cs" />
     <Compile Include="Messaging\Bindings\INonceStore.cs" />
     <Compile Include="Messaging\Bindings\StandardReplayProtectionBindingElement.cs" />
     <Compile Include="Messaging\MessagePartAttribute.cs" />
@@ -100,20 +102,18 @@
     <Compile Include="Messaging\Reflection\MessageDictionary.cs" />
     <Compile Include="Messaging\Reflection\MessagePart.cs" />
     <Compile Include="Messaging\UnprotectedMessageException.cs" />
-    <Compile Include="Messaging\OutgoingWebResponse.cs" />
     <Compile Include="Messaging\IProtocolMessage.cs" />
     <Compile Include="Messaging\HttpDeliveryMethods.cs" />
     <Compile Include="Messaging\MessageTransport.cs" />
     <Compile Include="Messaging\ProtocolException.cs" />
     <Compile Include="Messaging\TimespanSecondsEncoder.cs" />
-    <Compile Include="Messaging\UntrustedWebRequestHandler.cs" />
-    <Compile Include="Messaging\StandardWebRequestHandler.cs" />
     <Compile Include="Messaging\MessageReceivingEndpoint.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Messaging\Bindings\Bindings.cd" />
     <None Include="Messaging\Exceptions.cd" />
     <None Include="Messaging\Messaging.cd" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\DotNetOpenAuthSection.cs" />
@@ -130,12 +130,13 @@
     <Compile Include="Logger.cs" />
     <Compile Include="Loggers\ILog.cs" />
     <Compile Include="Loggers\Log4NetLogger.cs" />
+    <Compile Include="Loggers\NLogLogger.cs" />
     <Compile Include="Loggers\NoOpLogger.cs" />
     <Compile Include="Loggers\TraceLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Messaging\ReadOnlyDictionary.cs" />
     <Compile Include="Reporting.cs" />
-    <Compile Include="Requires.cs" />
+    <Compile Include="RequiresEx.cs" />
     <Compile Include="Strings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -168,11 +169,50 @@
     <EmbeddedResource Include="Messaging\MessagingStrings.sr.resx" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
+    <Reference Include="log4net, Version=1.2.11.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\log4net.2.0.0\lib\net40-full\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="NLog">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\NLog.2.0.0.2000\lib\net40\NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.WebRequest" />
+    <Reference Include="System.Web.Helpers, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.2.0.20710.0\lib\net40\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.4.0.20710.0\lib\net40\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.Razor.2.0.20715.0\lib\net40\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.2.0.20710.0\lib\net40\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.2.0.20710.0\lib\net40\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="Validation, Version=2.0.0.0, Culture=neutral, PublicKeyToken=2fc06f0d701809a7, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Validation.2.0.2.13022\lib\portable-windows8+net40+sl5+windowsphone8\Validation.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.targets" />
   <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))\EnlistmentInfo.targets" Condition=" '$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))' != '' " />
+  <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
 </Project>

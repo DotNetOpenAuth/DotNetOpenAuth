@@ -6,14 +6,14 @@
 
 namespace DotNetOpenAuth.Configuration {
 	using System.Configuration;
-	using System.Diagnostics.Contracts;
+
+	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Provider;
 
 	/// <summary>
 	/// The section in the .config file that allows customization of OpenID Provider behaviors.
 	/// </summary>
-	[ContractVerification(true)]
 	internal class OpenIdProviderElement : ConfigurationElement {
 		/// <summary>
 		/// The name of the &lt;provider&gt; sub-element.
@@ -64,8 +64,8 @@ namespace DotNetOpenAuth.Configuration {
 		/// Gets or sets the type to use for storing application state.
 		/// </summary>
 		[ConfigurationProperty(StoreConfigName)]
-		public TypeConfigurationElement<IOpenIdApplicationStore> ApplicationStore {
-			get { return (TypeConfigurationElement<IOpenIdApplicationStore>)this[StoreConfigName] ?? new TypeConfigurationElement<IOpenIdApplicationStore>(); }
+		public TypeConfigurationElement<ICryptoKeyAndNonceStore> ApplicationStore {
+			get { return (TypeConfigurationElement<ICryptoKeyAndNonceStore>)this[StoreConfigName] ?? new TypeConfigurationElement<ICryptoKeyAndNonceStore>(); }
 			set { this[StoreConfigName] = value; }
 		}
 	}

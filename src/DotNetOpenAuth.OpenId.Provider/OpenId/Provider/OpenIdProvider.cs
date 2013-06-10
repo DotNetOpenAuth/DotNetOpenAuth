@@ -11,26 +11,27 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	using System.Collections.Specialized;
 	using System.ComponentModel;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
+	using System.Net.Http;
 	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.Messages;
+	using Validation;
 	using RP = DotNetOpenAuth.OpenId.RelyingParty;
 
 	/// <summary>
 	/// Offers services for a web page that is acting as an OpenID identity server.
 	/// </summary>
 	[SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling", Justification = "By design")]
-	[ContractVerification(true)]
 	public sealed class OpenIdProvider : IDisposable, IOpenIdHost {
 		/// <summary>
 		/// The name of the key to use in the HttpApplication cache to store the
-		/// instance of <see cref="StandardProviderApplicationStore"/> to use.
+		/// instance of <see cref="MemoryCryptoKeyAndNonceStore"/> to use.
 		/// </summary>
 		private const string ApplicationStoreKey = "DotNetOpenAuth.OpenId.Provider.OpenIdProvider.ApplicationStore";
 
@@ -54,71 +55,41 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// Initializes a new instance of the <see cref="OpenIdProvider"/> class.
 		/// </summary>
 		public OpenIdProvider()
-			: this(OpenIdElement.Configuration.Provider.ApplicationStore.CreateInstance(HttpApplicationStore)) {
-			Contract.Ensures(this.SecuritySettings != null);
-			Contract.Ensures(this.Channel != null);
+			: this(OpenIdElement.Configuration.Provider.ApplicationStore.CreateInstance(GetHttpApplicationStore(), null)) {
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="OpenIdProvider"/> class.
+		/// Initializes a new instance of the <see cref="OpenIdProvider" /> class.
 		/// </summary>
 		/// <param name="applicationStore">The application store to use.  Cannot be null.</param>
-		public OpenIdProvider(IOpenIdApplicationStore applicationStore)
-			: this((INonceStore)applicationStore, (ICryptoKeyStore)applicationStore) {
+		/// <param name="hostFactories">The host factories.</param>
+		public OpenIdProvider(ICryptoKeyAndNonceStore applicationStore, IHostFactories hostFactories = null)
+			: this((INonceStore)applicationStore, (ICryptoKeyStore)applicationStore, hostFactories) {
 			Requires.NotNull(applicationStore, "applicationStore");
-			Contract.Ensures(this.SecuritySettings != null);
-			Contract.Ensures(this.Channel != null);
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="OpenIdProvider"/> class.
+		/// Initializes a new instance of the <see cref="OpenIdProvider" /> class.
 		/// </summary>
 		/// <param name="nonceStore">The nonce store to use.  Cannot be null.</param>
 		/// <param name="cryptoKeyStore">The crypto key store.  Cannot be null.</param>
-		private OpenIdProvider(INonceStore nonceStore, ICryptoKeyStore cryptoKeyStore) {
+		/// <param name="hostFactories">The host factories.</param>
+		private OpenIdProvider(INonceStore nonceStore, ICryptoKeyStore cryptoKeyStore, IHostFactories hostFactories) {
 			Requires.NotNull(nonceStore, "nonceStore");
 			Requires.NotNull(cryptoKeyStore, "cryptoKeyStore");
-			Contract.Ensures(this.SecuritySettings != null);
-			Contract.Ensures(this.Channel != null);
 
 			this.SecuritySettings = OpenIdElement.Configuration.Provider.SecuritySettings.CreateSecuritySettings();
 			this.behaviors.CollectionChanged += this.OnBehaviorsChanged;
-			foreach (var behavior in OpenIdElement.Configuration.Provider.Behaviors.CreateInstances(false)) {
+			foreach (var behavior in OpenIdElement.Configuration.Provider.Behaviors.CreateInstances(false, null)) {
 				this.behaviors.Add(behavior);
 			}
 
 			this.AssociationStore = new SwitchingAssociationStore(cryptoKeyStore, this.SecuritySettings);
-			this.Channel = new OpenIdProviderChannel(this.AssociationStore, nonceStore, this.SecuritySettings);
+			this.Channel = new OpenIdProviderChannel(this.AssociationStore, nonceStore, this.SecuritySettings, hostFactories);
 			this.CryptoKeyStore = cryptoKeyStore;
 			this.discoveryServices = new IdentifierDiscoveryServices(this);
 
 			Reporting.RecordFeatureAndDependencyUse(this, nonceStore);
-		}
-
-		/// <summary>
-		/// Gets the standard state storage mechanism that uses ASP.NET's
-		/// HttpApplication state dictionary to store associations and nonces.
-		/// </summary>
-		[EditorBrowsable(EditorBrowsableState.Advanced)]
-		public static IOpenIdApplicationStore HttpApplicationStore {
-			get {
-				Requires.ValidState(HttpContext.Current != null && HttpContext.Current.Request != null, MessagingStrings.HttpContextRequired);
-				Contract.Ensures(Contract.Result<IOpenIdApplicationStore>() != null);
-				HttpContext context = HttpContext.Current;
-				var store = (IOpenIdApplicationStore)context.Application[ApplicationStoreKey];
-				if (store == null) {
-					context.Application.Lock();
-					try {
-						if ((store = (IOpenIdApplicationStore)context.Application[ApplicationStoreKey]) == null) {
-							context.Application[ApplicationStoreKey] = store = new StandardProviderApplicationStore();
-						}
-					} finally {
-						context.Application.UnLock();
-					}
-				}
-
-				return store;
-			}
 		}
 
 		/// <summary>
@@ -131,8 +102,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// </summary>
 		public ProviderSecuritySettings SecuritySettings {
 			get {
-				Contract.Ensures(Contract.Result<ProviderSecuritySettings>() != null);
-				Contract.Assume(this.securitySettings != null);
+				Assumes.True(this.securitySettings != null);
 				return this.securitySettings;
 			}
 
@@ -179,11 +149,10 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		public ICryptoKeyStore CryptoKeyStore { get; private set; }
 
 		/// <summary>
-		/// Gets the web request handler to use for discovery and the part of
-		/// authentication where direct messages are sent to an untrusted remote party.
+		/// Gets the factory for various dependencies.
 		/// </summary>
-		IDirectWebRequestHandler IOpenIdHost.WebRequestHandler {
-			get { return this.Channel.WebRequestHandler; }
+		IHostFactories IOpenIdHost.HostFactories {
+			get { return this.Channel.HostFactories; }
 		}
 
 		/// <summary>
@@ -206,55 +175,80 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		}
 
 		/// <summary>
-		/// Gets the web request handler to use for discovery and the part of
-		/// authentication where direct messages are sent to an untrusted remote party.
+		/// Gets the standard state storage mechanism that uses ASP.NET's
+		/// HttpApplication state dictionary to store associations and nonces.
 		/// </summary>
-		internal IDirectWebRequestHandler WebRequestHandler {
-			get { return this.Channel.WebRequestHandler; }
+		/// <param name="context">The context.</param>
+		/// <returns>The application store.</returns>
+		public static ICryptoKeyAndNonceStore GetHttpApplicationStore(HttpContextBase context = null) {
+			if (context == null) {
+				ErrorUtilities.VerifyOperation(HttpContext.Current != null, Strings.StoreRequiredWhenNoHttpContextAvailable, typeof(ICryptoKeyAndNonceStore).Name);
+				context = new HttpContextWrapper(HttpContext.Current);
+			}
+
+			var store = (ICryptoKeyAndNonceStore)context.Application[ApplicationStoreKey];
+			if (store == null) {
+				context.Application.Lock();
+				try {
+					if ((store = (ICryptoKeyAndNonceStore)context.Application[ApplicationStoreKey]) == null) {
+						context.Application[ApplicationStoreKey] = store = new MemoryCryptoKeyAndNonceStore();
+					}
+				} finally {
+					context.Application.UnLock();
+				}
+			}
+
+			return store;
 		}
 
 		/// <summary>
 		/// Gets the incoming OpenID request if there is one, or null if none was detected.
 		/// </summary>
-		/// <returns>The request that the hosting Provider should possibly process and then transmit the response for.</returns>
-		/// <remarks>
-		/// <para>Requests may be infrastructural to OpenID and allow auto-responses, or they may
-		/// be authentication requests where the Provider site has to make decisions based
-		/// on its own user database and policies.</para>
-		/// <para>Requires an <see cref="HttpContext.Current">HttpContext.Current</see> context.</para>
-		/// </remarks>
+		/// <param name="request">The request.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The request that the hosting Provider should possibly process and then transmit the response for.
+		/// </returns>
 		/// <exception cref="InvalidOperationException">Thrown if <see cref="HttpContext.Current">HttpContext.Current</see> == <c>null</c>.</exception>
 		/// <exception cref="ProtocolException">Thrown if the incoming message is recognized but deviates from the protocol specification irrecoverably.</exception>
-		public IRequest GetRequest() {
-			return this.GetRequest(this.Channel.GetRequestFromContext());
+		/// <remarks>
+		///   <para>Requests may be infrastructural to OpenID and allow auto-responses, or they may
+		/// be authentication requests where the Provider site has to make decisions based
+		/// on its own user database and policies.</para>
+		///   <para>Requires an <see cref="HttpContext.Current">HttpContext.Current</see> context.</para>
+		/// </remarks>
+		public Task<IRequest> GetRequestAsync(HttpRequestBase request = null, CancellationToken cancellationToken = default(CancellationToken)) {
+			request = request ?? this.Channel.GetRequestFromContext();
+			return this.GetRequestAsync(request.AsHttpRequestMessage(), cancellationToken);
 		}
 
 		/// <summary>
 		/// Gets the incoming OpenID request if there is one, or null if none was detected.
 		/// </summary>
-		/// <param name="httpRequestInfo">The incoming HTTP request to extract the message from.</param>
+		/// <param name="request">The incoming HTTP request to extract the message from.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The request that the hosting Provider should process and then transmit the response for.
 		/// Null if no valid OpenID request was detected in the given HTTP request.
 		/// </returns>
+		/// <exception cref="ProtocolException">Thrown if the incoming message is recognized
+		/// but deviates from the protocol specification irrecoverably.</exception>
 		/// <remarks>
 		/// Requests may be infrastructural to OpenID and allow auto-responses, or they may
 		/// be authentication requests where the Provider site has to make decisions based
 		/// on its own user database and policies.
 		/// </remarks>
-		/// <exception cref="ProtocolException">Thrown if the incoming message is recognized
-		/// but deviates from the protocol specification irrecoverably.</exception>
-		public IRequest GetRequest(HttpRequestBase httpRequestInfo) {
-			Requires.NotNull(httpRequestInfo, "httpRequestInfo");
+		public async Task<IRequest> GetRequestAsync(HttpRequestMessage request, CancellationToken cancellationToken = default(CancellationToken)) {
+			Requires.NotNull(request, "request");
 			IDirectedProtocolMessage incomingMessage = null;
 
 			try {
-				incomingMessage = this.Channel.ReadFromRequest(httpRequestInfo);
+				incomingMessage = await this.Channel.ReadFromRequestAsync(request, cancellationToken);
 				if (incomingMessage == null) {
 					// If the incoming request does not resemble an OpenID message at all,
 					// it's probably a user who just navigated to this URL, and we should
 					// just return null so the host can display a message to the user.
-					if (httpRequestInfo.HttpMethod == "GET" && !httpRequestInfo.GetPublicFacingUrl().QueryStringContainPrefixedParameters(Protocol.Default.openid.Prefix)) {
+					if (request.Method == HttpMethod.Get && !request.RequestUri.QueryStringContainPrefixedParameters(Protocol.Default.openid.Prefix)) {
 						return null;
 					}
 
@@ -291,7 +285,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 
 				if (result != null) {
 					foreach (var behavior in this.Behaviors) {
-						if (behavior.OnIncomingRequest(result)) {
+						if (await behavior.OnIncomingRequestAsync(result, cancellationToken)) {
 							// This behavior matched this request.
 							break;
 						}
@@ -302,7 +296,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 
 				throw ErrorUtilities.ThrowProtocol(MessagingStrings.UnexpectedMessageReceivedOfMany);
 			} catch (ProtocolException ex) {
-				IRequest errorResponse = this.GetErrorResponse(ex, httpRequestInfo, incomingMessage);
+				IRequest errorResponse = this.GetErrorResponse(ex, request, incomingMessage);
 				if (errorResponse == null) {
 					throw;
 				}
@@ -312,89 +306,23 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		}
 
 		/// <summary>
-		/// Sends the response to a received request.
-		/// </summary>
-		/// <param name="request">The incoming OpenID request whose response is to be sent.</param>
-		/// <exception cref="ThreadAbortException">Thrown by ASP.NET in order to prevent additional data from the page being sent to the client and corrupting the response.</exception>
-		/// <remarks>
-		/// <para>Requires an HttpContext.Current context.  If one is not available, the caller should use
-		/// <see cref="PrepareResponse"/> instead and manually send the <see cref="OutgoingWebResponse"/> 
-		/// to the client.</para>
-		/// </remarks>
-		/// <exception cref="InvalidOperationException">Thrown if <see cref="IRequest.IsResponseReady"/> is <c>false</c>.</exception>
-		[SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily", Justification = "Code Contract requires that we cast early.")]
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public void SendResponse(IRequest request) {
-			Requires.ValidState(HttpContext.Current != null, MessagingStrings.CurrentHttpContextRequired);
-			Requires.NotNull(request, "request");
-			Requires.True(request.IsResponseReady, "request");
-
-			this.ApplyBehaviorsToResponse(request);
-			Request requestInternal = (Request)request;
-			this.Channel.Send(requestInternal.Response);
-		}
-
-		/// <summary>
-		/// Sends the response to a received request.
-		/// </summary>
-		/// <param name="request">The incoming OpenID request whose response is to be sent.</param>
-		/// <remarks>
-		/// <para>Requires an HttpContext.Current context.  If one is not available, the caller should use
-		/// <see cref="PrepareResponse"/> instead and manually send the <see cref="OutgoingWebResponse"/> 
-		/// to the client.</para>
-		/// </remarks>
-		/// <exception cref="InvalidOperationException">Thrown if <see cref="IRequest.IsResponseReady"/> is <c>false</c>.</exception>
-		[SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily", Justification = "Code Contract requires that we cast early.")]
-		public void Respond(IRequest request) {
-			Requires.ValidState(HttpContext.Current != null, MessagingStrings.CurrentHttpContextRequired);
-			Requires.NotNull(request, "request");
-			Requires.True(request.IsResponseReady, "request");
-
-			this.ApplyBehaviorsToResponse(request);
-			Request requestInternal = (Request)request;
-			this.Channel.Respond(requestInternal.Response);
-		}
-
-		/// <summary>
 		/// Gets the response to a received request.
 		/// </summary>
 		/// <param name="request">The request.</param>
-		/// <returns>The response that should be sent to the client.</returns>
-		/// <exception cref="InvalidOperationException">Thrown if <see cref="IRequest.IsResponseReady"/> is <c>false</c>.</exception>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// The response that should be sent to the client.
+		/// </returns>
+		/// <exception cref="InvalidOperationException">Thrown if <see cref="IRequest.IsResponseReady" /> is <c>false</c>.</exception>
 		[SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily", Justification = "Code Contract requires that we cast early.")]
-		public OutgoingWebResponse PrepareResponse(IRequest request) {
+		public async Task<HttpResponseMessage> PrepareResponseAsync(IRequest request, CancellationToken cancellationToken = default(CancellationToken)) {
 			Requires.NotNull(request, "request");
-			Requires.True(request.IsResponseReady, "request");
+			Requires.That(request.IsResponseReady, "request", OpenIdStrings.ResponseNotReady);
 
-			this.ApplyBehaviorsToResponse(request);
+			await this.ApplyBehaviorsToResponseAsync(request, cancellationToken);
 			Request requestInternal = (Request)request;
-			return this.Channel.PrepareResponse(requestInternal.Response);
-		}
-
-		/// <summary>
-		/// Sends an identity assertion on behalf of one of this Provider's
-		/// members in order to redirect the user agent to a relying party
-		/// web site and log him/her in immediately in one uninterrupted step.
-		/// </summary>
-		/// <param name="providerEndpoint">The absolute URL on the Provider site that receives OpenID messages.</param>
-		/// <param name="relyingPartyRealm">The URL of the Relying Party web site.
-		/// This will typically be the home page, but may be a longer URL if
-		/// that Relying Party considers the scope of its realm to be more specific.
-		/// The URL provided here must allow discovery of the Relying Party's
-		/// XRDS document that advertises its OpenID RP endpoint.</param>
-		/// <param name="claimedIdentifier">The Identifier you are asserting your member controls.</param>
-		/// <param name="localIdentifier">The Identifier you know your user by internally.  This will typically
-		/// be the same as <paramref name="claimedIdentifier"/>.</param>
-		/// <param name="extensions">The extensions.</param>
-		public void SendUnsolicitedAssertion(Uri providerEndpoint, Realm relyingPartyRealm, Identifier claimedIdentifier, Identifier localIdentifier, params IExtensionMessage[] extensions) {
-			Requires.ValidState(HttpContext.Current != null, MessagingStrings.HttpContextRequired);
-			Requires.NotNull(providerEndpoint, "providerEndpoint");
-			Requires.True(providerEndpoint.IsAbsoluteUri, "providerEndpoint");
-			Requires.NotNull(relyingPartyRealm, "relyingPartyRealm");
-			Requires.NotNull(claimedIdentifier, "claimedIdentifier");
-			Requires.NotNull(localIdentifier, "localIdentifier");
-
-			this.PrepareUnsolicitedAssertion(providerEndpoint, relyingPartyRealm, claimedIdentifier, localIdentifier, extensions).Send();
+			var response = await requestInternal.GetResponseAsync(cancellationToken);
+			return await this.Channel.PrepareResponseAsync(response, cancellationToken);
 		}
 
 		/// <summary>
@@ -410,19 +338,20 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// XRDS document that advertises its OpenID RP endpoint.</param>
 		/// <param name="claimedIdentifier">The Identifier you are asserting your member controls.</param>
 		/// <param name="localIdentifier">The Identifier you know your user by internally.  This will typically
-		/// be the same as <paramref name="claimedIdentifier"/>.</param>
+		/// be the same as <paramref name="claimedIdentifier" />.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <param name="extensions">The extensions.</param>
 		/// <returns>
-		/// A <see cref="OutgoingWebResponse"/> object describing the HTTP response to send
+		/// A <see cref="HttpResponseMessage" /> object describing the HTTP response to send
 		/// the user agent to allow the redirect with assertion to happen.
 		/// </returns>
-		public OutgoingWebResponse PrepareUnsolicitedAssertion(Uri providerEndpoint, Realm relyingPartyRealm, Identifier claimedIdentifier, Identifier localIdentifier, params IExtensionMessage[] extensions) {
+		public async Task<HttpResponseMessage> PrepareUnsolicitedAssertionAsync(Uri providerEndpoint, Realm relyingPartyRealm, Identifier claimedIdentifier, Identifier localIdentifier, CancellationToken cancellationToken = default(CancellationToken), params IExtensionMessage[] extensions) {
 			Requires.NotNull(providerEndpoint, "providerEndpoint");
-			Requires.True(providerEndpoint.IsAbsoluteUri, "providerEndpoint");
+			Requires.That(providerEndpoint.IsAbsoluteUri, "providerEndpoint", OpenIdStrings.AbsoluteUriRequired);
 			Requires.NotNull(relyingPartyRealm, "relyingPartyRealm");
 			Requires.NotNull(claimedIdentifier, "claimedIdentifier");
 			Requires.NotNull(localIdentifier, "localIdentifier");
-			Requires.ValidState(this.Channel.WebRequestHandler != null);
+			RequiresEx.ValidState(this.Channel.HostFactories != null);
 
 			// Although the RP should do their due diligence to make sure that this OP
 			// is authorized to send an assertion for the given claimed identifier,
@@ -430,7 +359,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			// and make sure that it is tied to this OP and OP local identifier.
 			if (this.SecuritySettings.UnsolicitedAssertionVerification != ProviderSecuritySettings.UnsolicitedAssertionVerificationLevel.NeverVerify) {
 				var serviceEndpoint = IdentifierDiscoveryResult.CreateForClaimedIdentifier(claimedIdentifier, localIdentifier, new ProviderEndpointDescription(providerEndpoint, Protocol.Default.Version), null, null);
-				var discoveredEndpoints = this.discoveryServices.Discover(claimedIdentifier);
+				var discoveredEndpoints = await this.discoveryServices.DiscoverAsync(claimedIdentifier, cancellationToken);
 				if (!discoveredEndpoints.Contains(serviceEndpoint)) {
 					Logger.OpenId.WarnFormat(
 						"Failed to send unsolicited assertion for {0} because its discovered services did not include this endpoint: {1}{2}{1}Discovered endpoints: {1}{3}",
@@ -448,7 +377,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 
 			Logger.OpenId.InfoFormat("Preparing unsolicited assertion for {0}", claimedIdentifier);
 			RelyingPartyEndpointDescription returnToEndpoint = null;
-			var returnToEndpoints = relyingPartyRealm.DiscoverReturnToEndpoints(this.WebRequestHandler, true);
+			var returnToEndpoints = await relyingPartyRealm.DiscoverReturnToEndpointsAsync(this.Channel.HostFactories, true, cancellationToken);
 			if (returnToEndpoints != null) {
 				returnToEndpoint = returnToEndpoints.FirstOrDefault();
 			}
@@ -467,7 +396,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 			}
 
 			Reporting.RecordEventOccurrence(this, "PrepareUnsolicitedAssertion");
-			return this.Channel.PrepareResponse(positiveAssertion);
+			return await this.Channel.PrepareResponseAsync(positiveAssertion, cancellationToken);
 		}
 
 		#region IDisposable Members
@@ -500,11 +429,15 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// Applies all behaviors to the response message.
 		/// </summary>
 		/// <param name="request">The request.</param>
-		private void ApplyBehaviorsToResponse(IRequest request) {
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// A task that completes with the asynchronous operation.
+		/// </returns>
+		private async Task ApplyBehaviorsToResponseAsync(IRequest request, CancellationToken cancellationToken) {
 			var authRequest = request as IAuthenticationRequest;
 			if (authRequest != null) {
 				foreach (var behavior in this.Behaviors) {
-					if (behavior.OnOutgoingResponse(authRequest)) {
+					if (await behavior.OnOutgoingResponseAsync(authRequest, cancellationToken)) {
 						// This behavior matched this request.
 						break;
 					}
@@ -516,21 +449,21 @@ namespace DotNetOpenAuth.OpenId.Provider {
 		/// Prepares the return value for the GetRequest method in the event of an exception.
 		/// </summary>
 		/// <param name="ex">The exception that forms the basis of the error response.  Must not be null.</param>
-		/// <param name="httpRequestInfo">The incoming HTTP request.  Must not be null.</param>
+		/// <param name="request">The incoming HTTP request.  Must not be null.</param>
 		/// <param name="incomingMessage">The incoming message.  May be null in the case that it was malformed.</param>
 		/// <returns>
 		/// Either the <see cref="IRequest"/> to return to the host site or null to indicate no response could be reasonably created and that the caller should rethrow the exception.
 		/// </returns>
-		private IRequest GetErrorResponse(ProtocolException ex, HttpRequestBase httpRequestInfo, IDirectedProtocolMessage incomingMessage) {
+		private IRequest GetErrorResponse(ProtocolException ex, HttpRequestMessage request, IDirectedProtocolMessage incomingMessage) {
 			Requires.NotNull(ex, "ex");
-			Requires.NotNull(httpRequestInfo, "httpRequestInfo");
+			Requires.NotNull(request, "request");
 
 			Logger.OpenId.Error("An exception was generated while processing an incoming OpenID request.", ex);
 			IErrorMessage errorMessage;
 
 			// We must create the appropriate error message type (direct vs. indirect)
 			// based on what we see in the request.
-			string returnTo = httpRequestInfo.QueryString[Protocol.Default.openid.return_to];
+			string returnTo = HttpUtility.ParseQueryString(request.RequestUri.Query)[Protocol.Default.openid.return_to];
 			if (returnTo != null) {
 				// An indirect request message from the RP
 				// We need to return an indirect response error message so the RP can consume it.
@@ -541,7 +474,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 				} else {
 					errorMessage = new IndirectErrorResponse(Protocol.Default.Version, new Uri(returnTo));
 				}
-			} else if (httpRequestInfo.HttpMethod == "POST") {
+			} else if (request.Method == HttpMethod.Post) {
 				// A direct request message from the RP
 				// We need to return a direct response error message so the RP can consume it.
 				// Consistent with OpenID 2.0 section 5.1.2.2.

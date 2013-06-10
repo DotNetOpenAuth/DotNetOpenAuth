@@ -7,12 +7,15 @@
 namespace DotNetOpenAuth.OAuth2 {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Linq;
 	using System.Net;
+	using System.Net.Http.Headers;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
+
+	using HttpRequestHeaders = DotNetOpenAuth.Messaging.HttpRequestHeaders;
 
 	/// <summary>
 	/// Some common utility methods for OAuth 2.0.
@@ -26,7 +29,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <summary>
 		/// The string "Basic ".
 		/// </summary>
-		private const string HttpBasicAuthScheme = "Basic ";
+		private const string HttpBasicAuthScheme = "Basic";
 
 		/// <summary>
 		/// The delimiter between scope elements.
@@ -136,7 +139,20 @@ namespace DotNetOpenAuth.OAuth2 {
 			Requires.NotNullOrEmpty(accessToken, "accessToken");
 			ErrorUtilities.VerifyProtocol(accessToken.All(ch => accessTokenAuthorizationHeaderAllowedCharacters.IndexOf(ch) >= 0), OAuthStrings.AccessTokenInvalidForHttpAuthorizationHeader);
 
-			request.Headers[HttpRequestHeader.Authorization] = string.Format(
+			AuthorizeWithBearerToken(request.Headers, accessToken);
+		}
+
+		/// <summary>
+		/// Authorizes an HTTP request using an OAuth 2.0 access token in an HTTP Authorization header.
+		/// </summary>
+		/// <param name="requestHeaders">The headers on the request for protected resources from the service provider.</param>
+		/// <param name="accessToken">The access token previously obtained from the Authorization Server.</param>
+		internal static void AuthorizeWithBearerToken(WebHeaderCollection requestHeaders, string accessToken) {
+			Requires.NotNull(requestHeaders, "requestHeaders");
+			Requires.NotNullOrEmpty(accessToken, "accessToken");
+			ErrorUtilities.VerifyProtocol(accessToken.All(ch => accessTokenAuthorizationHeaderAllowedCharacters.IndexOf(ch) >= 0), OAuthStrings.AccessTokenInvalidForHttpAuthorizationHeader);
+
+			requestHeaders[HttpRequestHeader.Authorization] = string.Format(
 				CultureInfo.InvariantCulture,
 				Protocol.BearerHttpAuthorizationHeaderFormat,
 				accessToken);
@@ -148,7 +164,7 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="headers">The headers collection to set the authorization header to.</param>
 		/// <param name="userName">The username.  Cannot be empty.</param>
 		/// <param name="password">The password.  Cannot be null.</param>
-		internal static void ApplyHttpBasicAuth(WebHeaderCollection headers, string userName, string password) {
+		internal static void ApplyHttpBasicAuth(System.Net.Http.Headers.HttpRequestHeaders headers, string userName, string password) {
 			Requires.NotNull(headers, "headers");
 			Requires.NotNullOrEmpty(userName, "userName");
 			Requires.NotNull(password, "password");
@@ -156,8 +172,7 @@ namespace DotNetOpenAuth.OAuth2 {
 			string concat = userName + ":" + password;
 			byte[] bits = HttpBasicEncoding.GetBytes(concat);
 			string base64 = Convert.ToBase64String(bits);
-			string header = HttpBasicAuthScheme + base64;
-			headers[HttpRequestHeader.Authorization] = header;
+			headers.Authorization = new AuthenticationHeaderValue(HttpBasicAuthScheme, base64);
 		}
 
 		/// <summary>
@@ -165,12 +180,12 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		/// <param name="headers">The incoming web headers.</param>
 		/// <returns>The network credentials; or <c>null</c> if none could be discovered in the request.</returns>
-		internal static NetworkCredential ParseHttpBasicAuth(WebHeaderCollection headers) {
+		internal static NetworkCredential ParseHttpBasicAuth(System.Net.Http.Headers.HttpRequestHeaders headers) {
 			Requires.NotNull(headers, "headers");
 
-			string authorizationHeader = headers[HttpRequestHeaders.Authorization];
-			if (authorizationHeader != null && authorizationHeader.StartsWith(HttpBasicAuthScheme, StringComparison.Ordinal)) {
-				string base64 = authorizationHeader.Substring(HttpBasicAuthScheme.Length);
+			var authorizationHeader = headers.Authorization;
+			if (authorizationHeader != null && string.Equals(authorizationHeader.Scheme, HttpBasicAuthScheme, StringComparison.Ordinal)) {
+				string base64 = authorizationHeader.Parameter;
 				byte[] bits = Convert.FromBase64String(base64);
 				string usernameColonPassword = HttpBasicEncoding.GetString(bits);
 				string[] usernameAndPassword = usernameColonPassword.Split(ColonSeparator, 2);

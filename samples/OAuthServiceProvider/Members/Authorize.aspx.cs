@@ -7,6 +7,7 @@
 	using System.Web.UI;
 	using System.Web.UI.WebControls;
 	using DotNetOpenAuth;
+	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth;
 	using DotNetOpenAuth.OAuth.Messages;
 	using OAuthServiceProvider.Code;
@@ -46,30 +47,35 @@
 		}
 
 		protected void allowAccessButton_Click(object sender, EventArgs e) {
-			if (this.AuthorizationSecret != this.OAuthAuthorizationSecToken.Value) {
-				throw new ArgumentException(); // probably someone trying to hack in.
-			}
-			this.AuthorizationSecret = null; // clear one time use secret
-			var pending = Global.PendingOAuthAuthorization;
-			Global.AuthorizePendingRequestToken();
-			this.multiView.ActiveViewIndex = 1;
+			this.RegisterAsyncTask(
+				new PageAsyncTask(
+					async ct => {
+						if (this.AuthorizationSecret != this.OAuthAuthorizationSecToken.Value) {
+							throw new ArgumentException(); // probably someone trying to hack in.
+						}
+						this.AuthorizationSecret = null; // clear one time use secret
+						var pending = Global.PendingOAuthAuthorization;
+						Global.AuthorizePendingRequestToken();
+						this.multiView.ActiveViewIndex = 1;
 
-			ServiceProvider sp = new ServiceProvider(Constants.SelfDescription, Global.TokenManager);
-			var response = sp.PrepareAuthorizationResponse(pending);
-			if (response != null) {
-				sp.Channel.Send(response);
-			} else {
-				if (pending.IsUnsafeRequest) {
-					this.verifierMultiView.ActiveViewIndex = 1;
-				} else {
-					string verifier = ServiceProvider.CreateVerificationCode(VerificationCodeFormat.AlphaNumericNoLookAlikes, 10);
-					this.verificationCodeLabel.Text = verifier;
-					ITokenContainingMessage requestTokenMessage = pending;
-					var requestToken = Global.TokenManager.GetRequestToken(requestTokenMessage.Token);
-					requestToken.VerificationCode = verifier;
-					Global.TokenManager.UpdateToken(requestToken);
-				}
-			}
+						ServiceProvider sp = new ServiceProvider(Constants.SelfDescription, Global.TokenManager);
+						var response = sp.PrepareAuthorizationResponse(pending);
+						if (response != null) {
+							var responseMessage = await sp.Channel.PrepareResponseAsync(response, Response.ClientDisconnectedToken);
+							await responseMessage.SendAsync();
+						} else {
+							if (pending.IsUnsafeRequest) {
+								this.verifierMultiView.ActiveViewIndex = 1;
+							} else {
+								string verifier = ServiceProvider.CreateVerificationCode(VerificationCodeFormat.AlphaNumericNoLookAlikes, 10);
+								this.verificationCodeLabel.Text = verifier;
+								ITokenContainingMessage requestTokenMessage = pending;
+								var requestToken = Global.TokenManager.GetRequestToken(requestTokenMessage.Token);
+								requestToken.VerificationCode = verifier;
+								Global.TokenManager.UpdateToken(requestToken);
+							}
+						}
+					}));
 		}
 
 		protected void denyAccessButton_Click(object sender, EventArgs e) {

@@ -7,14 +7,14 @@
 namespace DotNetOpenAuth.Configuration {
 	using System;
 	using System.Configuration;
-	using System.Diagnostics.Contracts;
+
+	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 
 	/// <summary>
 	/// The section in the .config file that allows customization of OpenID Relying Party behaviors.
 	/// </summary>
-	[ContractVerification(true)]
 	internal class OpenIdRelyingPartyElement : ConfigurationElement {
 		/// <summary>
 		/// The name of the custom store sub-element.
@@ -45,6 +45,11 @@ namespace DotNetOpenAuth.Configuration {
 		/// The name of the &lt;discoveryServices&gt; sub-element.
 		/// </summary>
 		private const string DiscoveryServicesElementName = "discoveryServices";
+
+		/// <summary>
+		/// The name of the &lt;hostMetaDiscovery&gt; sub-element.
+		/// </summary>
+		private const string HostMetaDiscoveryElementName = "hostMetaDiscovery";
 
 		/// <summary>
 		/// The built-in set of identifier discovery services.
@@ -93,9 +98,18 @@ namespace DotNetOpenAuth.Configuration {
 		/// Gets or sets the type to use for storing application state.
 		/// </summary>
 		[ConfigurationProperty(StoreConfigName)]
-		public TypeConfigurationElement<IOpenIdApplicationStore> ApplicationStore {
-			get { return (TypeConfigurationElement<IOpenIdApplicationStore>)this[StoreConfigName] ?? new TypeConfigurationElement<IOpenIdApplicationStore>(); }
+		public TypeConfigurationElement<ICryptoKeyAndNonceStore> ApplicationStore {
+			get { return (TypeConfigurationElement<ICryptoKeyAndNonceStore>)this[StoreConfigName] ?? new TypeConfigurationElement<ICryptoKeyAndNonceStore>(); }
 			set { this[StoreConfigName] = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the host meta discovery configuration element.
+		/// </summary>
+		[ConfigurationProperty(HostMetaDiscoveryElementName)]
+		internal HostMetaDiscoveryElement HostMetaDiscovery {
+			get { return (HostMetaDiscoveryElement)this[HostMetaDiscoveryElementName] ?? new HostMetaDiscoveryElement(); }
+			set { this[HostMetaDiscoveryElementName] = value; }
 		}
 
 		/// <summary>

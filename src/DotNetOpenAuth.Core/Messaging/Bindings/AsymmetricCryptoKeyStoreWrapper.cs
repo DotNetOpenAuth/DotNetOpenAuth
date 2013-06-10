@@ -8,11 +8,11 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Security.Cryptography;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// Provides RSA encryption of symmetric keys to protect them from a theft of
@@ -42,7 +42,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		public AsymmetricCryptoKeyStoreWrapper(ICryptoKeyStore dataStore, RSACryptoServiceProvider asymmetricCrypto) {
 			Requires.NotNull(dataStore, "dataStore");
 			Requires.NotNull(asymmetricCrypto, "asymmetricCrypto");
-			Requires.True(!asymmetricCrypto.PublicOnly, "asymmetricCrypto");
+			Requires.That(!asymmetricCrypto.PublicOnly, "asymmetricCrypto", "Private key required.");
 			this.dataStore = dataStore;
 			this.asymmetricCrypto = asymmetricCrypto;
 		}
@@ -138,9 +138,9 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 			/// <param name="decrypted">The decrypted key.</param>
 			internal CachedCryptoKey(CryptoKey encrypted, CryptoKey decrypted)
 				: base(decrypted.Key, decrypted.ExpiresUtc) {
-				Contract.Requires(encrypted != null);
-				Contract.Requires(decrypted != null);
-				Contract.Requires(encrypted.ExpiresUtc == decrypted.ExpiresUtc);
+				Requires.NotNull(encrypted, "encrypted");
+				Requires.NotNull(decrypted, "decrypted");
+				Requires.That(encrypted.ExpiresUtc == decrypted.ExpiresUtc, "encrypted", "encrypted and decrypted expirations must equal.");
 
 				this.EncryptedKey = encrypted.Key;
 			}
@@ -149,16 +149,6 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 			/// Gets the encrypted key.
 			/// </summary>
 			internal byte[] EncryptedKey { get; private set; }
-
-			/// <summary>
-			/// Invariant conditions.
-			/// </summary>
-			[ContractInvariantMethod]
-			[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Code contracts")]
-			[SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Required for code contracts.")]
-			private void ObjectInvariant() {
-				Contract.Invariant(this.EncryptedKey != null);
-			}
 		}
 	}
 }

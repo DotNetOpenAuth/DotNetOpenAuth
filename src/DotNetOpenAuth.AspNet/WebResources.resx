@@ -123,9 +123,6 @@
   <data name="FailedToEncryptTicket" xml:space="preserve">
     <value>Unable to encrypt the authentication ticket.</value>
   </data>
-  <data name="Generic_CryptoFailure" xml:space="preserve">
-    <value>The provided data could not be decrypted. If the current application is deployed in a web farm configuration, ensure that the 'decryptionKey' and 'validationKey' attributes are explicitly specified in the &lt;machineKey&gt; configuration section.</value>
-  </data>
   <data name="OAuthDataProviderRegistered" xml:space="preserve">
     <value>An OAuth data provider has already been registered for this application.</value>
   </data>

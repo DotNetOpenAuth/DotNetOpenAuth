@@ -8,7 +8,6 @@ namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.IO;
 	using System.Linq;
 	using System.Security.Cryptography;
@@ -17,6 +16,7 @@ namespace DotNetOpenAuth.Messaging {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.Messaging.Reflection;
+	using Validation;
 
 	/// <summary>
 	/// A serializer for <see cref="DataBag"/>-derived types
@@ -110,8 +110,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="decodeOnceOnly">The nonce store to use to ensure that this instance is only decoded once.</param>
 		protected DataBagFormatterBase(ICryptoKeyStore cryptoKeyStore = null, string bucket = null, bool signed = false, bool encrypted = false, bool compressed = false, TimeSpan? minimumAge = null, TimeSpan? maximumAge = null, INonceStore decodeOnceOnly = null)
 			: this(signed, encrypted, compressed, maximumAge, decodeOnceOnly) {
-			Requires.True(!string.IsNullOrEmpty(bucket) || cryptoKeyStore == null, null);
-			Requires.True(cryptoKeyStore != null || (!signed && !encrypted), null);
+			Requires.That(!string.IsNullOrEmpty(bucket) || cryptoKeyStore == null, "bucket", "Bucket name required when cryptoKeyStore is non-null.");
+			Requires.That(cryptoKeyStore != null || (!signed && !encrypted), "cryptoKeyStore", "cryptoKeyStore required if signing or encrypting.");
 
 			this.cryptoKeyStore = cryptoKeyStore;
 			this.cryptoKeyBucket = bucket;
@@ -129,8 +129,8 @@ namespace DotNetOpenAuth.Messaging {
 		/// <param name="maximumAge">The maximum age of a token that can be decoded; useful only when <paramref name="decodeOnceOnly"/> is <c>true</c>.</param>
 		/// <param name="decodeOnceOnly">The nonce store to use to ensure that this instance is only decoded once.</param>
 		private DataBagFormatterBase(bool signed = false, bool encrypted = false, bool compressed = false, TimeSpan? maximumAge = null, INonceStore decodeOnceOnly = null) {
-			Requires.True(signed || decodeOnceOnly == null, null);
-			Requires.True(maximumAge.HasValue || decodeOnceOnly == null, null);
+			Requires.That(signed || decodeOnceOnly == null, "decodeOnceOnly", "Nonce only valid with signing.");
+			Requires.That(maximumAge.HasValue || decodeOnceOnly == null, "decodeOnceOnly", "Nonce requires a maximum message age.");
 
 			this.signed = signed;
 			this.maximumAge = maximumAge;
@@ -193,20 +193,18 @@ namespace DotNetOpenAuth.Messaging {
 		/// Deserializes a <see cref="DataBag"/>, including decompression, decryption, signature and nonce validation where applicable.
 		/// </summary>
 		/// <param name="message">The instance to initialize with deserialized data.</param>
-		/// <param name="containingMessage">The message that contains the <see cref="DataBag"/> serialized value.  Must not be null.</param>
 		/// <param name="value">The serialized form of the <see cref="DataBag"/> to deserialize.  Must not be null or empty.</param>
-		/// <param name="messagePartName">The name of the parameter whose value is to be deserialized.  Used for error message generation.</param>
+		/// <param name="containingMessage">The message that contains the <see cref="DataBag"/> serialized value.  May be null if no carrying message is applicable.</param>
+		/// <param name="messagePartName">The name of the parameter whose value is to be deserialized.  Used for error message generation, but may be <c>null</c>.</param>
 		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "No apparent problem.  False positive?")]
-		public void Deserialize(T message, IProtocolMessage containingMessage, string value, string messagePartName) {
+		public void Deserialize(T message, string value, IProtocolMessage containingMessage, string messagePartName) {
 			Requires.NotNull(message, "message");
-			Requires.NotNull(containingMessage, "containingMessage");
 			Requires.NotNullOrEmpty(value, "value");
-			Requires.NotNullOrEmpty(messagePartName, "messagePartName");
 
 			string symmetricSecretHandle = null;
 			if (this.encrypted && this.cryptoKeyStore != null) {
 				string valueWithoutHandle;
-				MessagingUtilities.ExtractKeyHandleAndPayload(containingMessage, messagePartName, value, out symmetricSecretHandle, out valueWithoutHandle);
+				MessagingUtilities.ExtractKeyHandleAndPayload(messagePartName, value, out symmetricSecretHandle, out valueWithoutHandle);
 				value = valueWithoutHandle;
 			}
 
@@ -217,8 +215,8 @@ namespace DotNetOpenAuth.Messaging {
 			if (this.signed) {
 				using (var dataStream = new MemoryStream(data)) {
 					var dataReader = new BinaryReader(dataStream);
-					signature = dataReader.ReadBuffer();
-					data = dataReader.ReadBuffer();
+					signature = dataReader.ReadBuffer(1024);
+					data = dataReader.ReadBuffer(8 * 1024);
 				}
 
 				// Verify that the verification code was issued by message authorization server.
@@ -286,7 +284,7 @@ namespace DotNetOpenAuth.Messaging {
 			Requires.NotNull(signature, "signature");
 
 			if (this.asymmetricSigning != null) {
-				using (var hasher = new SHA1CryptoServiceProvider()) {
+				using (var hasher = SHA1.Create()) {
 					return this.asymmetricSigning.VerifyData(signedData, hasher, signature);
 				}
 			} else {
@@ -305,17 +303,16 @@ namespace DotNetOpenAuth.Messaging {
 		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "No apparent problem.  False positive?")]
 		private byte[] CalculateSignature(byte[] bytesToSign, string symmetricSecretHandle) {
 			Requires.NotNull(bytesToSign, "bytesToSign");
-			Requires.ValidState(this.asymmetricSigning != null || this.cryptoKeyStore != null);
-			Contract.Ensures(Contract.Result<byte[]>() != null);
+			RequiresEx.ValidState(this.asymmetricSigning != null || this.cryptoKeyStore != null);
 
 			if (this.asymmetricSigning != null) {
-				using (var hasher = new SHA1CryptoServiceProvider()) {
+				using (var hasher = SHA1.Create()) {
 					return this.asymmetricSigning.SignData(bytesToSign, hasher);
 				}
 			} else {
 				var key = this.cryptoKeyStore.GetKey(this.cryptoKeyBucket, symmetricSecretHandle);
 				ErrorUtilities.VerifyProtocol(key != null, MessagingStrings.MissingDecryptionKeyForHandle, this.cryptoKeyBucket, symmetricSecretHandle);
-				using (var symmetricHasher = new HMACSHA256(key.Key)) {
+				using (var symmetricHasher = HmacAlgorithms.Create(HmacAlgorithms.HmacSha256, key.Key)) {
 					return symmetricHasher.ComputeHash(bytesToSign);
 				}
 			}
@@ -330,7 +327,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// The encrypted value.
 		/// </returns>
 		private byte[] Encrypt(byte[] value, out string symmetricSecretHandle) {
-			Requires.ValidState(this.asymmetricEncrypting != null || this.cryptoKeyStore != null);
+			Assumes.True(this.asymmetricEncrypting != null || this.cryptoKeyStore != null);
 
 			if (this.asymmetricEncrypting != null) {
 				symmetricSecretHandle = null;
@@ -351,7 +348,7 @@ namespace DotNetOpenAuth.Messaging {
 		/// The decrypted value.
 		/// </returns>
 		private byte[] Decrypt(byte[] value, string symmetricSecretHandle) {
-			Requires.ValidState(this.asymmetricEncrypting != null || symmetricSecretHandle != null);
+			RequiresEx.ValidState(this.asymmetricEncrypting != null || symmetricSecretHandle != null);
 
 			if (this.asymmetricEncrypting != null) {
 				return this.asymmetricEncrypting.DecryptWithRandomSymmetricKey(value);

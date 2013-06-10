@@ -7,10 +7,10 @@
 namespace DotNetOpenAuth.Messaging {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 	using Reflection;
+	using Validation;
 
 	/// <summary>
 	/// A channel that uses the standard message factory.
@@ -27,16 +27,15 @@ namespace DotNetOpenAuth.Messaging {
 		private readonly ICollection<Version> versions;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="StandardMessageFactoryChannel"/> class.
+		/// Initializes a new instance of the <see cref="StandardMessageFactoryChannel" /> class.
 		/// </summary>
 		/// <param name="messageTypes">The message types that might be encountered.</param>
 		/// <param name="versions">All the possible message versions that might be encountered.</param>
-		/// <param name="bindingElements">
-		/// The binding elements to use in sending and receiving messages.
-		/// The order they are provided is used for outgoing messgaes, and reversed for incoming messages.
-		/// </param>
-		protected StandardMessageFactoryChannel(ICollection<Type> messageTypes, ICollection<Version> versions, params IChannelBindingElement[] bindingElements)
-			: base(new StandardMessageFactory(), bindingElements) {
+		/// <param name="hostFactories">The host factories.</param>
+		/// <param name="bindingElements">The binding elements to use in sending and receiving messages.
+		/// The order they are provided is used for outgoing messgaes, and reversed for incoming messages.</param>
+		protected StandardMessageFactoryChannel(ICollection<Type> messageTypes, ICollection<Version> versions, IHostFactories hostFactories, IChannelBindingElement[] bindingElements = null)
+			: base(new StandardMessageFactory(), bindingElements ?? new IChannelBindingElement[0], hostFactories) {
 			Requires.NotNull(messageTypes, "messageTypes");
 			Requires.NotNull(versions, "versions");
 
@@ -98,7 +97,6 @@ namespace DotNetOpenAuth.Messaging {
 		{
 			Requires.NotNull(messageTypes, "messageTypes");
 			Requires.NotNull(descriptionsCache, "descriptionsCache");
-			Contract.Ensures(Contract.Result<IEnumerable<MessageDescription>>() != null);
 
 			// Get all the MessageDescription objects through the standard cache,
 			// so that perhaps it will be a quick lookup, or at least it will be

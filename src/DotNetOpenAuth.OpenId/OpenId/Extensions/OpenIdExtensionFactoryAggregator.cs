@@ -6,7 +6,6 @@
 
 namespace DotNetOpenAuth.OpenId.Extensions {
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.Messages;
@@ -70,11 +69,10 @@ namespace DotNetOpenAuth.OpenId.Extensions {
 		/// </summary>
 		/// <returns>A new instance of <see cref="OpenIdExtensionFactoryAggregator"/>.</returns>
 		internal static OpenIdExtensionFactoryAggregator LoadFromConfiguration() {
-			Contract.Ensures(Contract.Result<OpenIdExtensionFactoryAggregator>() != null);
 			var factoriesElement = DotNetOpenAuth.Configuration.OpenIdElement.Configuration.ExtensionFactories;
 			var aggregator = new OpenIdExtensionFactoryAggregator();
 			aggregator.Factories.Add(new StandardOpenIdExtensionFactory());
-			aggregator.factories.AddRange(factoriesElement.CreateInstances(false));
+			aggregator.factories.AddRange(factoriesElement.CreateInstances(false, null));
 			return aggregator;
 		}
 	}

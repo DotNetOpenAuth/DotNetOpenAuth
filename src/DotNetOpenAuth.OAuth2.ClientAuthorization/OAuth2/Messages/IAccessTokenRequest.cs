@@ -30,6 +30,12 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		string ClientIdentifier { get; }
 
 		/// <summary>
+		/// Gets the username of the authorizing user, when applicable.
+		/// </summary>
+		/// <value>A non-empty string; or <c>null</c> when no user has authorized this access token.</value>
+		string UserName { get; }
+
+		/// <summary>
 		/// Gets the scope of operations the client is allowed to invoke.
 		/// </summary>
 		HashSet<string> Scope { get; }

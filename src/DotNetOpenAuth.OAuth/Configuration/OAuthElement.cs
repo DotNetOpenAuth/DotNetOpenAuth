@@ -6,7 +6,6 @@
 
 namespace DotNetOpenAuth.Configuration {
 	using System.Configuration;
-	using System.Diagnostics.Contracts;
 
 	/// <summary>
 	/// Represents the &lt;oauth&gt; element in the host's .config file.
@@ -38,7 +37,6 @@ namespace DotNetOpenAuth.Configuration {
 		/// </summary>
 		public static OAuthElement Configuration {
 			get {
-				Contract.Ensures(Contract.Result<OAuthElement>() != null);
 				return (OAuthElement)ConfigurationManager.GetSection(SectionName) ?? new OAuthElement();
 			}
 		}

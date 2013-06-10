@@ -8,10 +8,10 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Security.Cryptography;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// Represents the authorization code created when a user approves authorization that
@@ -67,7 +67,6 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// <returns>A DataBag formatter.</returns>
 		internal static IDataBagFormatter<AuthorizationCode> CreateFormatter(IAuthorizationServerHost authorizationServer) {
 			Requires.NotNull(authorizationServer, "authorizationServer");
-			Contract.Ensures(Contract.Result<IDataBagFormatter<AuthorizationCode>>() != null);
 
 			var cryptoStore = authorizationServer.CryptoKeyStore;
 			ErrorUtilities.VerifyHost(cryptoStore != null, OAuthStrings.ResultShouldNotBeNull, authorizationServer.GetType(), "CryptoKeyStore");
@@ -110,7 +109,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 				return null;
 			}
 
-			using (var hasher = new SHA256Managed()) {
+			using (var hasher = SHA256.Create()) {
 				return hasher.ComputeHash(Encoding.UTF8.GetBytes(callback.AbsoluteUri));
 			}
 		}

@@ -10,6 +10,8 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 	using System.Collections.Specialized;
 	using System.Linq;
 	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
@@ -70,54 +72,51 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// Verifies RedirectingResponse.
 		/// </summary>
 		[Test]
-		public void CreateRequestMessage() {
-			OpenIdCoordinator coordinator = new OpenIdCoordinator(
-				rp => {
-					Identifier id = this.GetMockIdentifier(ProtocolVersion.V20);
-					IAuthenticationRequest authRequest = rp.CreateRequest(id, this.realm, this.returnTo);
+		public async Task CreateRequestMessage() {
+			this.RegisterAutoProvider();
+			var rp = this.CreateRelyingParty();
+			Identifier id = this.GetMockIdentifier(ProtocolVersion.V20);
+			IAuthenticationRequest authRequest = await rp.CreateRequestAsync(id, this.realm, this.returnTo);
 
-					// Add some callback arguments
-					authRequest.AddCallbackArguments("a", "b");
-					authRequest.AddCallbackArguments(new Dictionary<string, string> { { "c", "d" }, { "e", "f" } });
+			// Add some callback arguments
+			authRequest.AddCallbackArguments("a", "b");
+			authRequest.AddCallbackArguments(new Dictionary<string, string> { { "c", "d" }, { "e", "f" } });
 
-					// Assembly an extension request.
-					ClaimsRequest sregRequest = new ClaimsRequest();
-					sregRequest.Nickname = DemandLevel.Request;
-					authRequest.AddExtension(sregRequest);
+			// Assembly an extension request.
+			var sregRequest = new ClaimsRequest();
+			sregRequest.Nickname = DemandLevel.Request;
+			authRequest.AddExtension(sregRequest);
 
-					// Construct the actual authentication request message.
-					var authRequestAccessor = (AuthenticationRequest)authRequest;
-					var req = authRequestAccessor.CreateRequestMessageTestHook();
-					Assert.IsNotNull(req);
+			// Construct the actual authentication request message.
+			var authRequestAccessor = (AuthenticationRequest)authRequest;
+			var req = await authRequestAccessor.CreateRequestMessageTestHookAsync(CancellationToken.None);
+			Assert.IsNotNull(req);
 
-					// Verify that callback arguments were included.
-					NameValueCollection callbackArguments = HttpUtility.ParseQueryString(req.ReturnTo.Query);
-					Assert.AreEqual("b", callbackArguments["a"]);
-					Assert.AreEqual("d", callbackArguments["c"]);
-					Assert.AreEqual("f", callbackArguments["e"]);
+			// Verify that callback arguments were included.
+			NameValueCollection callbackArguments = HttpUtility.ParseQueryString(req.ReturnTo.Query);
+			Assert.AreEqual("b", callbackArguments["a"]);
+			Assert.AreEqual("d", callbackArguments["c"]);
+			Assert.AreEqual("f", callbackArguments["e"]);
 
-					// Verify that extensions were included.
-					Assert.AreEqual(1, req.Extensions.Count);
-					Assert.IsTrue(req.Extensions.Contains(sregRequest));
-				},
-				AutoProvider);
-			coordinator.Run();
+			// Verify that extensions were included.
+			Assert.AreEqual(1, req.Extensions.Count);
+			Assert.IsTrue(req.Extensions.Contains(sregRequest));
 		}
 
 		/// <summary>
 		/// Verifies that delegating authentication requests are filtered out when configured to do so.
 		/// </summary>
 		[Test]
-		public void CreateFiltersDelegatingIdentifiers() {
+		public async Task CreateFiltersDelegatingIdentifiers() {
 			Identifier id = GetMockIdentifier(ProtocolVersion.V20, false, true);
 			var rp = CreateRelyingParty();
 
 			// First verify that delegating identifiers work
-			Assert.IsTrue(AuthenticationRequest.Create(id, rp, this.realm, this.returnTo, false).Any(), "The delegating identifier should have not generated any results.");
+			Assert.IsTrue((await AuthenticationRequest.CreateAsync(id, rp, this.realm, this.returnTo, false, CancellationToken.None)).Any(), "The delegating identifier should have not generated any results.");
 
 			// Now disable them and try again.
 			rp.SecuritySettings.RejectDelegatingIdentifiers = true;
-			Assert.IsFalse(AuthenticationRequest.Create(id, rp, this.realm, this.returnTo, false).Any(), "The delegating identifier should have not generated any results.");
+			Assert.IsFalse((await AuthenticationRequest.CreateAsync(id, rp, this.realm, this.returnTo, false, CancellationToken.None)).Any(), "The delegating identifier should have not generated any results.");
 		}
 
 		/// <summary>
@@ -135,11 +134,12 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// Verifies that AddCallbackArguments adds query arguments to the return_to URL of the message.
 		/// </summary>
 		[Test]
-		public void AddCallbackArgument() {
+		public async Task AddCallbackArgument() {
 			var authRequest = this.CreateAuthenticationRequest(this.claimedId, this.claimedId);
 			Assert.AreEqual(this.returnTo, authRequest.ReturnToUrl);
 			authRequest.AddCallbackArguments("p1", "v1");
-			var req = (SignedResponseRequest)authRequest.RedirectingResponse.OriginalMessage;
+			var response = (HttpResponseMessageWithOriginal)await authRequest.GetRedirectingResponseAsync(CancellationToken.None);
+			var req = (SignedResponseRequest)response.OriginalMessage;
 			NameValueCollection query = HttpUtility.ParseQueryString(req.ReturnTo.Query);
 			Assert.AreEqual("v1", query["p1"]);
 		}
@@ -149,13 +149,14 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// rather than appending them.
 		/// </summary>
 		[Test]
-		public void AddCallbackArgumentClearsPreviousArgument() {
+		public async Task AddCallbackArgumentClearsPreviousArgument() {
 			UriBuilder returnToWithArgs = new UriBuilder(this.returnTo);
 			returnToWithArgs.AppendQueryArgs(new Dictionary<string, string> { { "p1", "v1" } });
 			this.returnTo = returnToWithArgs.Uri;
 			var authRequest = this.CreateAuthenticationRequest(this.claimedId, this.claimedId);
 			authRequest.AddCallbackArguments("p1", "v2");
-			var req = (SignedResponseRequest)authRequest.RedirectingResponse.OriginalMessage;
+			var response = (HttpResponseMessageWithOriginal)await authRequest.GetRedirectingResponseAsync(CancellationToken.None);
+			var req = (SignedResponseRequest)response.OriginalMessage;
 			NameValueCollection query = HttpUtility.ParseQueryString(req.ReturnTo.Query);
 			Assert.AreEqual("v2", query["p1"]);
 		}
@@ -164,11 +165,12 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// Verifies identity-less checkid_* request behavior.
 		/// </summary>
 		[Test]
-		public void NonIdentityRequest() {
+		public async Task NonIdentityRequest() {
 			var authRequest = this.CreateAuthenticationRequest(this.claimedId, this.claimedId);
 			authRequest.IsExtensionOnly = true;
 			Assert.IsTrue(authRequest.IsExtensionOnly);
-			var req = (SignedResponseRequest)authRequest.RedirectingResponse.OriginalMessage;
+			var response = (HttpResponseMessageWithOriginal)await authRequest.GetRedirectingResponseAsync(CancellationToken.None);
+			var req = (SignedResponseRequest)response.OriginalMessage;
 			Assert.IsNotInstanceOf<CheckIdRequest>(req, "An unexpected SignedResponseRequest derived type was generated.");
 		}
 
@@ -177,15 +179,15 @@ namespace DotNetOpenAuth.Test.OpenId.RelyingParty {
 		/// only generate OP Identifier auth requests.
 		/// </summary>
 		[Test]
-		public void DualIdentifierUsedOnlyAsOPIdentifierForAuthRequest() {
+		public async Task DualIdentifierUsedOnlyAsOPIdentifierForAuthRequest() {
 			var rp = this.CreateRelyingParty(true);
-			var results = AuthenticationRequest.Create(GetMockDualIdentifier(), rp, this.realm, this.returnTo, false).ToList();
+			var results = (await AuthenticationRequest.CreateAsync(GetMockDualIdentifier(), rp, this.realm, this.returnTo, false, CancellationToken.None)).ToList();
 			Assert.AreEqual(1, results.Count);
 			Assert.IsTrue(results[0].IsDirectedIdentity);
 
 			// Also test when dual identiifer support is turned on.
 			rp.SecuritySettings.AllowDualPurposeIdentifiers = true;
-			results = AuthenticationRequest.Create(GetMockDualIdentifier(), rp, this.realm, this.returnTo, false).ToList();
+			results = (await AuthenticationRequest.CreateAsync(GetMockDualIdentifier(), rp, this.realm, this.returnTo, false, CancellationToken.None)).ToList();
 			Assert.AreEqual(1, results.Count);
 			Assert.IsTrue(results[0].IsDirectedIdentity);
 		}

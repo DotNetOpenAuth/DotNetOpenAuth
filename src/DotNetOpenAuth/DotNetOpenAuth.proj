@@ -4,7 +4,6 @@
 
 	<PropertyGroup>
 		<SuppressBuildTarget>true</SuppressBuildTarget>
-		<AddContractsAssemblyForDelaySigning>false</AddContractsAssemblyForDelaySigning>
 	</PropertyGroup>
 
 	<Import Project="$(ProjectRoot)tools\DotNetOpenAuth.props" />
@@ -21,36 +20,13 @@
 			<PrimaryProductOutput Condition=" '%(MergeIntoUnifiedAssembly)' != 'false' ">true</PrimaryProductOutput>
 		</ProjectReference>
 		<SignDependsOn Include="BuildUnifiedProduct" />
-		<DelaySignedAssemblies Include="$(ILMergeOutputContractAssembly)"
-		                       Condition=" '$(BuildCodeContractsReferenceAssemblies)' == 'true' "/>
 	</ItemGroup>
 
 	<Target Name="BuildILMergeInputs" DependsOnTargets="ResolveReferences">
 		<ItemGroup>
 			<ILMergeProductInputAssemblies Include="@(ReferencePath)"
 			                               Condition=" '%(ReferencePath.PrimaryProductOutput)' == 'true' "/>
-			<ILMergeInputContractAssemblies Include="@(ILMergeProductInputAssemblies->'%(RootDir)%(Directory)CodeContracts\%(FileName).Contracts%(Extension)')"
-			                                Condition=" '%(FileName)' != 'Microsoft.Contracts' "/>
 		</ItemGroup>
-	</Target>
-
-	<Target Name="BuildUnifiedContractAssembly"	 DependsOnTargets="BuildILMergeInputs"
-					Condition=" '$(BuildCodeContractsReferenceAssemblies)' == 'true' "
-					Inputs="@(ILMergeInputContractAssemblies)" Outputs="$(ILMergeOutputContractAssembly)">
-
-		<MakeDir Directories="$(ILMergeOutputContractAssemblyDirectory)" />
-
-		<Message Text="Merging $(ILMergeOutputContractAssembly)" Importance="high" />
-		<ILMerge
-			ExcludeFile="$(ProjectRoot)ILMergeInternalizeExceptions.txt"
-			InputAssemblies="@(ILMergeInputContractAssemblies)"
-			OutputFile="$(ILMergeOutputContractAssembly)"
-			SearchDirectories="$(OutputPath);@(ILMergeSearchDirectories)"
-			KeyFile="$(PublicKeyFile)"
-			DelaySign="true"
-			ToolPath="$(ProjectRoot)tools\ILMerge"
-			TargetPlatformVersion="$(ClrVersion).0"
-			TargetPlatformDirectory="$(ILMergeTargetPlatformDirectory)" />
 	</Target>
 
 	<Target Name="BuildUnifiedProductAssembly" DependsOnTargets="BuildILMergeInputs"
@@ -79,11 +55,11 @@
 			CopyAttributes="true"
 			AllowDuplicateAttributes="true"
 			ToolPath="$(ProjectRoot)tools\ILMerge"
-			TargetPlatformVersion="$(ClrVersion).0"
+			TargetPlatformVersion="4.0"
 			TargetPlatformDirectory="$(ILMergeTargetPlatformDirectory)" />
 	</Target>
 
-	<Target Name="BuildUnifiedProduct" DependsOnTargets="BuildUnifiedProductAssembly;BuildUnifiedContractAssembly" />
+	<Target Name="BuildUnifiedProduct" DependsOnTargets="BuildUnifiedProductAssembly" />
 
 	<Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
 	<Import Project="$(ProjectRoot)tools\DotNetOpenAuth.targets" />

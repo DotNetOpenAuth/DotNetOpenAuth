@@ -6,14 +6,12 @@
 
 namespace DotNetOpenAuth.Configuration {
 	using System.Configuration;
-	using System.Diagnostics.Contracts;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Provider;
 
 	/// <summary>
 	/// Represents the .config file element that allows for setting the security policies of the Provider.
 	/// </summary>
-	[ContractVerification(true)]
 	internal class OpenIdProviderSecuritySettingsElement : ConfigurationElement {
 		/// <summary>
 		/// Gets the name of the @protectDownlevelReplayAttacks attribute.
@@ -111,7 +109,6 @@ namespace DotNetOpenAuth.Configuration {
 		[ConfigurationCollection(typeof(AssociationTypeCollection))]
 		public AssociationTypeCollection AssociationLifetimes {
 			get {
-				Contract.Ensures(Contract.Result<AssociationTypeCollection>() != null);
 				return (AssociationTypeCollection)this[AssociationsConfigName] ?? new AssociationTypeCollection();
 			}
 
@@ -144,7 +141,7 @@ namespace DotNetOpenAuth.Configuration {
 			settings.UnsolicitedAssertionVerification = this.UnsolicitedAssertionVerification;
 			settings.EncodeAssociationSecretsInHandles = this.EncodeAssociationSecretsInHandles;
 			foreach (AssociationTypeElement element in this.AssociationLifetimes) {
-				Contract.Assume(element != null);
+				Assumes.True(element != null);
 				settings.AssociationLifetimes.Add(element.AssociationType, element.MaximumLifetime);
 			}
 

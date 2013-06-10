@@ -7,12 +7,14 @@
 namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Linq;
 	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using DotNetOpenAuth.OAuth2.Messages;
 	using Messaging;
+	using Validation;
 
 	/// <summary>
 	/// A guard for all messages to or from an Authorization Server to ensure that they are well formed,
@@ -52,6 +54,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// Prepares a message for sending based on the rules of this channel binding element.
 		/// </summary>
 		/// <param name="message">The message to prepare for sending.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The protections (if any) that this binding element applied to the message.
 		/// Null if this binding element did not even apply to this binding element.
@@ -60,7 +63,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// Implementations that provide message protection must honor the
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
-		public override MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
+		public override Task<MessageProtections?> ProcessOutgoingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
 			var accessTokenResponse = message as AccessTokenSuccessResponse;
 			if (accessTokenResponse != null) {
 				var directResponseMessage = (IDirectResponseProtocolMessage)accessTokenResponse;
@@ -68,7 +71,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 				ErrorUtilities.VerifyProtocol(accessTokenRequest.GrantType != GrantType.ClientCredentials || accessTokenResponse.RefreshToken == null, OAuthStrings.NoGrantNoRefreshToken);
 			}
 
-			return null;
+			return MessageProtectionTasks.Null;
 		}
 
 		/// <summary>
@@ -76,19 +79,19 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// validates an incoming message based on the rules of this channel binding element.
 		/// </summary>
 		/// <param name="message">The incoming message to process.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The protections (if any) that this binding element applied to the message.
 		/// Null if this binding element did not even apply to this binding element.
 		/// </returns>
-		/// <exception cref="ProtocolException">
-		/// Thrown when the binding element rules indicate that this message is invalid and should
-		/// NOT be processed.
-		/// </exception>
+		/// <exception cref="TokenEndpointProtocolException">Thrown when an authorization or protocol rule is violated.</exception>
+		/// <exception cref="ProtocolException">Thrown when the binding element rules indicate that this message is invalid and should
+		/// NOT be processed.</exception>
 		/// <remarks>
 		/// Implementations that provide message protection must honor the
-		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
+		/// <see cref="MessagePartAttribute.RequiredProtection" /> properties where applicable.
 		/// </remarks>
-		public override MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
+		public override Task<MessageProtections?> ProcessIncomingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
 			bool applied = false;
 
 			// Check that the client secret is correct for client authenticated messages.
@@ -120,15 +123,17 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			// Check that any resource owner password credential is correct.
 			if (resourceOwnerPasswordCarrier != null) {
 				try {
-					string canonicalUserName;
-					if (this.AuthorizationServer.TryAuthorizeResourceOwnerCredentialGrant(resourceOwnerPasswordCarrier.UserName, resourceOwnerPasswordCarrier.Password, resourceOwnerPasswordCarrier, out canonicalUserName)) {
-						ErrorUtilities.VerifyHost(!string.IsNullOrEmpty(canonicalUserName), "IsResourceOwnerCredentialValid did not initialize out parameter.");
+					var authorizeResult =
+						this.AuthorizationServer.CheckAuthorizeResourceOwnerCredentialGrant(
+							resourceOwnerPasswordCarrier.RequestingUserName, resourceOwnerPasswordCarrier.Password, resourceOwnerPasswordCarrier);
+					if (authorizeResult.IsApproved) {
 						resourceOwnerPasswordCarrier.CredentialsValidated = true;
-						resourceOwnerPasswordCarrier.UserName = canonicalUserName;
+						resourceOwnerPasswordCarrier.RequestingUserName = authorizeResult.CanonicalUserName;
+						resourceOwnerPasswordCarrier.Scope.ResetContents(authorizeResult.ApprovedScope);
 					} else {
 						Logger.OAuth.ErrorFormat(
 							"Resource owner password credential for user \"{0}\" rejected by authorization server host.",
-							resourceOwnerPasswordCarrier.UserName);
+							resourceOwnerPasswordCarrier.RequestingUserName);
 						throw new TokenEndpointProtocolException(accessTokenRequest, Protocol.AccessTokenRequestErrorCodes.InvalidGrant, AuthServerStrings.InvalidResourceOwnerPasswordCredential);
 					}
 				} catch (NotSupportedException) {
@@ -140,12 +145,15 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 				applied = true;
 			} else if (clientCredentialOnly != null) {
 				try {
-					if (!this.AuthorizationServer.TryAuthorizeClientCredentialsGrant(clientCredentialOnly)) {
+					var authorizeResult = this.AuthorizationServer.CheckAuthorizeClientCredentialsGrant(clientCredentialOnly);
+					if (!authorizeResult.IsApproved) {
 						Logger.OAuth.ErrorFormat(
 							"Client credentials grant access request for client \"{0}\" rejected by authorization server host.",
 							clientCredentialOnly.ClientIdentifier);
 						throw new TokenEndpointProtocolException(accessTokenRequest, Protocol.AccessTokenRequestErrorCodes.UnauthorizedClient);
 					}
+
+					clientCredentialOnly.Scope.ResetContents(authorizeResult.ApprovedScope);
 				} catch (NotSupportedException) {
 					throw new TokenEndpointProtocolException(accessTokenRequest, Protocol.AccessTokenRequestErrorCodes.UnsupportedGrantType);
 				} catch (NotImplementedException) {
@@ -196,7 +204,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 				}
 			}
 
-			return applied ? (MessageProtections?)MessageProtections.None : null;
+			return applied ? MessageProtectionTasks.None : MessageProtectionTasks.Null;
 		}
 	}
 }

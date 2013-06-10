@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Login" Language="C#" MasterPageFile="~/MasterPage.master" %>
+﻿<%@ Page Title="Login" Language="C#" MasterPageFile="~/MasterPage.master" Async="true" %>
 
 <%@ Register Assembly="DotNetOpenAuth.OpenId.RelyingParty.UI" Namespace="DotNetOpenAuth.OpenId.RelyingParty" TagPrefix="rp" %>
 

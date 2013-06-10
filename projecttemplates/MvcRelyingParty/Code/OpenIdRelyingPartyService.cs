@@ -2,29 +2,30 @@
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
 	using System.Web.Mvc;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.RelyingParty;
+	using Validation;
 
 	public interface IOpenIdRelyingParty {
 		Channel Channel { get; }
 
-		IAuthenticationRequest CreateRequest(Identifier userSuppliedIdentifier, Realm realm, Uri returnTo, Uri privacyPolicy);
+		Task<IAuthenticationRequest> CreateRequestAsync(Identifier userSuppliedIdentifier, Realm realm, Uri returnTo, Uri privacyPolicy, CancellationToken cancellationToken = default(CancellationToken));
 
-		IEnumerable<IAuthenticationRequest> CreateRequests(Identifier userSuppliedIdentifier, Realm realm, Uri returnTo, Uri privacyPolicy);
+		Task<IEnumerable<IAuthenticationRequest>> CreateRequestsAsync(Identifier userSuppliedIdentifier, Realm realm, Uri returnTo, Uri privacyPolicy, CancellationToken cancellationToken = default(CancellationToken));
 
-		ActionResult AjaxDiscovery(Identifier userSuppliedIdentifier, Realm realm, Uri returnTo, Uri privacyPolicy);
+		Task<ActionResult> AjaxDiscoveryAsync(Identifier userSuppliedIdentifier, Realm realm, Uri returnTo, Uri privacyPolicy, CancellationToken cancellationToken = default(CancellationToken));
 
-		string PreloadDiscoveryResults(Realm realm, Uri returnTo, Uri privacyPolicy, params Identifier[] identifiers);
+		Task<string> PreloadDiscoveryResultsAsync(Realm realm, Uri returnTo, Uri privacyPolicy, CancellationToken cancellationToken = default(CancellationToken), params Identifier[] identifiers);
 
-		ActionResult ProcessAjaxOpenIdResponse();
+		Task<ActionResult> ProcessAjaxOpenIdResponseAsync(HttpRequestBase request, CancellationToken cancellationToken = default(CancellationToken));
 
-		IAuthenticationResponse GetResponse();
-
-		IAuthenticationResponse GetResponse(HttpRequestBase request);
+		Task<IAuthenticationResponse> GetResponseAsync(HttpRequestBase request, CancellationToken cancellationToken = default(CancellationToken));
 	}
 
 	/// <summary>
@@ -52,22 +53,16 @@
 			get { return relyingParty.Channel; }
 		}
 
-		public IAuthenticationRequest CreateRequest(Identifier userSuppliedIdentifier, Realm realm, Uri returnTo, Uri privacyPolicy) {
-			return this.CreateRequests(userSuppliedIdentifier, realm, returnTo, privacyPolicy).First();
+		public async Task<IAuthenticationRequest> CreateRequestAsync(Identifier userSuppliedIdentifier, Realm realm, Uri returnTo, Uri privacyPolicy, CancellationToken cancellationToken = default(CancellationToken)) {
+			return (await this.CreateRequestsAsync(userSuppliedIdentifier, realm, returnTo, privacyPolicy, cancellationToken)).First();
 		}
 
-		public IEnumerable<IAuthenticationRequest> CreateRequests(Identifier userSuppliedIdentifier, Realm realm, Uri returnTo, Uri privacyPolicy) {
-			if (userSuppliedIdentifier == null) {
-				throw new ArgumentNullException("userSuppliedIdentifier");
-			}
-			if (realm == null) {
-				throw new ArgumentNullException("realm");
-			}
-			if (returnTo == null) {
-				throw new ArgumentNullException("returnTo");
-			}
+		public async Task<IEnumerable<IAuthenticationRequest>> CreateRequestsAsync(Identifier userSuppliedIdentifier, Realm realm, Uri returnTo, Uri privacyPolicy, CancellationToken cancellationToken = default(CancellationToken)) {
+			Requires.NotNull(userSuppliedIdentifier, "userSuppliedIdentifier");
+			Requires.NotNull(realm, "realm");
+			Requires.NotNull(returnTo, "returnTo");
 
-			var requests = relyingParty.CreateRequests(userSuppliedIdentifier, realm, returnTo);
+			var requests = (await relyingParty.CreateRequestsAsync(userSuppliedIdentifier, realm, returnTo, cancellationToken)).ToList();
 
 			foreach (IAuthenticationRequest request in requests) {
 				// Ask for the user's email, not because we necessarily need it to do our work,
@@ -78,31 +73,33 @@
 					FullName = DemandLevel.Request,
 					PolicyUrl = privacyPolicy,
 				});
-
-				yield return request;
 			}
+
+			return requests;
 		}
 
-		public ActionResult AjaxDiscovery(Identifier userSuppliedIdentifier, Realm realm, Uri returnTo, Uri privacyPolicy) {
-			return relyingParty.AsAjaxDiscoveryResult(
-				this.CreateRequests(userSuppliedIdentifier, realm, returnTo, privacyPolicy)).AsActionResult();
+		public async Task<ActionResult> AjaxDiscoveryAsync(Identifier userSuppliedIdentifier, Realm realm, Uri returnTo, Uri privacyPolicy, CancellationToken cancellationToken = default(CancellationToken)) {
+			return (await relyingParty.AsAjaxDiscoveryResultAsync(
+				await this.CreateRequestsAsync(userSuppliedIdentifier, realm, returnTo, privacyPolicy, cancellationToken),
+				cancellationToken)).AsActionResult();
 		}
 
-		public string PreloadDiscoveryResults(Realm realm, Uri returnTo, Uri privacyPolicy, params Identifier[] identifiers) {
-			return relyingParty.AsAjaxPreloadedDiscoveryResult(
-				identifiers.SelectMany(id => this.CreateRequests(id, realm, returnTo, privacyPolicy)));
+		public async Task<string> PreloadDiscoveryResultsAsync(Realm realm, Uri returnTo, Uri privacyPolicy, CancellationToken cancellationToken = default(CancellationToken), params Identifier[] identifiers) {
+			var results = new List<IAuthenticationRequest>();
+			foreach (var id in identifiers) {
+				var discoveryResult = await this.CreateRequestsAsync(id, realm, returnTo, privacyPolicy, cancellationToken);
+				results.AddRange(discoveryResult);
+			}
+
+			return await relyingParty.AsAjaxPreloadedDiscoveryResultAsync(results, cancellationToken);
 		}
 
-		public ActionResult ProcessAjaxOpenIdResponse() {
-			return relyingParty.ProcessResponseFromPopup().AsActionResult();
+		public async Task<ActionResult> ProcessAjaxOpenIdResponseAsync(HttpRequestBase request, CancellationToken cancellationToken = default(CancellationToken)) {
+			return (await relyingParty.ProcessResponseFromPopupAsync(request, cancellationToken)).AsActionResult();
 		}
 
-		public IAuthenticationResponse GetResponse() {
-			return relyingParty.GetResponse();
-		}
-
-		public IAuthenticationResponse GetResponse(HttpRequestBase request) {
-			return relyingParty.GetResponse(request);
+		public Task<IAuthenticationResponse> GetResponseAsync(HttpRequestBase request, CancellationToken cancellationToken = default(CancellationToken)) {
+			return relyingParty.GetResponseAsync(request, cancellationToken);
 		}
 
 		#endregion

@@ -4,6 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
   </PropertyGroup>
   <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.props" />
   <PropertyGroup>
@@ -24,12 +25,10 @@
     <Compile Include="Configuration\OAuthServiceProviderElement.cs" />
     <Compile Include="Configuration\OAuthServiceProviderSecuritySettingsElement.cs" />
     <Compile Include="Messaging\ITamperProtectionChannelBindingElement.cs" />
-    <Compile Include="OAuthReporting.cs" />
     <Compile Include="OAuth\ChannelElements\ITokenManager.cs" />
     <Compile Include="OAuth\ChannelElements\OAuthHttpMethodBindingElement.cs" />
     <Compile Include="OAuth\ChannelElements\PlaintextSigningBindingElement.cs" />
     <Compile Include="OAuth\ChannelElements\HmacSha1SigningBindingElement.cs" />
-    <Compile Include="OAuth\ChannelElements\SigningBindingElementBaseContract.cs" />
     <Compile Include="OAuth\ChannelElements\SigningBindingElementChain.cs" />
     <Compile Include="OAuth\ChannelElements\TokenType.cs" />
     <Compile Include="OAuth\ChannelElements\UriOrOobEncoding.cs" />
@@ -41,7 +40,6 @@
       <DependentUpon>OAuthStrings.resx</DependentUpon>
     </Compile>
     <Compile Include="OAuth\SecuritySettings.cs" />
-    <Compile Include="OAuth\ServiceProviderDescription.cs" />
     <Compile Include="OAuth\Messages\ITokenContainingMessage.cs" />
     <Compile Include="OAuth\Messages\SignedMessageBase.cs" />
     <Compile Include="OAuth\ChannelElements\SigningBindingElementBase.cs" />
@@ -66,6 +64,7 @@
   <ItemGroup>
     <None Include="OAuth\ClassDiagram.cd" />
     <None Include="OAuth\Messages\OAuth Messages.cd" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="OAuth\OAuthStrings.resx">
@@ -81,8 +80,21 @@
       <Project>{60426312-6AE5-4835-8667-37EDEA670222}</Project>
       <Name>DotNetOpenAuth.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\DotNetOpenAuth.OAuth.Common\DotNetOpenAuth.OAuth.Common.csproj">
+      <Project>{115217c5-22cd-415c-a292-0dd0238cdd89}</Project>
+      <Name>DotNetOpenAuth.OAuth.Common</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.WebRequest" />
+    <Reference Include="Validation, Version=2.0.0.0, Culture=neutral, PublicKeyToken=2fc06f0d701809a7, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Validation.2.0.2.13022\lib\portable-windows8+net40+sl5+windowsphone8\Validation.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.targets" />
   <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))\EnlistmentInfo.targets" Condition=" '$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))' != '' " />
+  <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
 </Project>

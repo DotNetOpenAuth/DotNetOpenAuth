@@ -8,13 +8,15 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.Specialized;
-	using System.Diagnostics.Contracts;
 	using System.Security.Cryptography;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId.Messages;
+	using Validation;
 
 	/// <summary>
 	/// This binding element signs a Relying Party's openid.return_to parameter
@@ -31,6 +33,17 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	/// anything except a particular message part.</para>
 	/// </remarks>
 	internal class ReturnToSignatureBindingElement : IChannelBindingElement {
+		/// <summary>
+		/// A reusable pre-completed task that may be returned multiple times to reduce GC pressure.
+		/// </summary>
+		private static readonly Task<MessageProtections?> NullTask = Task.FromResult<MessageProtections?>(null);
+
+		/// <summary>
+		/// A reusable pre-completed task that may be returned multiple times to reduce GC pressure.
+		/// </summary>
+		private static readonly Task<MessageProtections?> NoneTask =
+			Task.FromResult<MessageProtections?>(MessageProtections.None);
+
 		/// <summary>
 		/// The name of the callback parameter we'll tack onto the return_to value
 		/// to store our signature on the return_to parameter.
@@ -90,6 +103,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// Prepares a message for sending based on the rules of this channel binding element.
 		/// </summary>
 		/// <param name="message">The message to prepare for sending.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The protections (if any) that this binding element applied to the message.
 		/// Null if this binding element did not even apply to this binding element.
@@ -98,7 +112,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// Implementations that provide message protection must honor the
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
-		public MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
+		public Task<MessageProtections?> ProcessOutgoingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
 			SignedResponseRequest request = message as SignedResponseRequest;
 			if (request != null && request.ReturnTo != null && request.SignReturnTo) {
 				var cryptoKeyPair = this.cryptoKeyStore.GetCurrentKey(SecretUri.AbsoluteUri, OpenIdElement.Configuration.MaxAuthenticationTime);
@@ -107,10 +121,10 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 				request.AddReturnToArguments(ReturnToSignatureParameterName, signature);
 
 				// We return none because we are not signing the entire message (only a part).
-				return MessageProtections.None;
+				return NoneTask;
 			}
 
-			return null;
+			return NullTask;
 		}
 
 		/// <summary>
@@ -118,6 +132,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// validates an incoming message based on the rules of this channel binding element.
 		/// </summary>
 		/// <param name="message">The incoming message to process.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The protections (if any) that this binding element applied to the message.
 		/// Null if this binding element did not even apply to this binding element.
@@ -130,7 +145,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// Implementations that provide message protection must honor the
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
-		public MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
+		public Task<MessageProtections?> ProcessIncomingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
 			IndirectSignedResponse response = message as IndirectSignedResponse;
 
 			if (response != null) {
@@ -150,11 +165,11 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 						Logger.Bindings.WarnFormat("The return_to signature failed verification.");
 					}
 
-					return MessageProtections.None;
+					return NoneTask;
 				}
 			}
 
-			return null;
+			return NullTask;
 		}
 
 		#endregion
@@ -195,9 +210,14 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			try {
 				if (cryptoKey == null) {
 					cryptoKey = this.cryptoKeyStore.GetKey(SecretUri.AbsoluteUri, returnToParameters[ReturnToSignatureHandleParameterName]);
+					ErrorUtilities.VerifyProtocol(
+						cryptoKey != null,
+						MessagingStrings.MissingDecryptionKeyForHandle,
+						SecretUri.AbsoluteUri,
+						returnToParameters[ReturnToSignatureHandleParameterName]);
 				}
 
-				using (var signer = new HMACSHA256(cryptoKey.Key)) {
+				using (var signer = HmacAlgorithms.Create(HmacAlgorithms.HmacSha256, cryptoKey.Key)) {
 					signature = signer.ComputeHash(bytesToSign);
 				}
 			} catch (ProtocolException ex) {

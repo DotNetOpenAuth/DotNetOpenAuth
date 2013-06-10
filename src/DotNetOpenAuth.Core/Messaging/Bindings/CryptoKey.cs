@@ -8,10 +8,10 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// A cryptographic key and metadata concerning it.
@@ -34,7 +34,7 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// <param name="expiresUtc">The expires UTC.</param>
 		public CryptoKey(byte[] key, DateTime expiresUtc) {
 			Requires.NotNull(key, "key");
-			Requires.True(expiresUtc.Kind == DateTimeKind.Utc, "expiresUtc");
+			Requires.That(expiresUtc.Kind == DateTimeKind.Utc, "expiresUtc", "Time must be expressed in UTC.");
 			this.key = key;
 			this.expiresUtc = expiresUtc;
 		}
@@ -45,7 +45,6 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		[SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays", Justification = "It's a buffer")]
 		public byte[] Key {
 			get {
-				Contract.Ensures(Contract.Result<byte[]>() != null);
 				return this.key;
 			}
 		}
@@ -55,7 +54,6 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 		/// </summary>
 		public DateTime ExpiresUtc {
 			get {
-				Contract.Ensures(Contract.Result<DateTime>().Kind == DateTimeKind.Utc);
 				return this.expiresUtc;
 			}
 		}

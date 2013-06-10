@@ -8,32 +8,34 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
+	using Validation;
 
 	/// <summary>
 	/// The messaging channel for OAuth 1.0(a) Service Providers.
 	/// </summary>
 	internal class OAuthServiceProviderChannel : OAuthChannel {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="OAuthServiceProviderChannel"/> class.
+		/// Initializes a new instance of the <see cref="OAuthServiceProviderChannel" /> class.
 		/// </summary>
 		/// <param name="signingBindingElement">The binding element to use for signing.</param>
 		/// <param name="store">The web application store to use for nonces.</param>
 		/// <param name="tokenManager">The token manager instance to use.</param>
 		/// <param name="securitySettings">The security settings.</param>
 		/// <param name="messageTypeProvider">The message type provider.</param>
+		/// <param name="hostFactories">The host factories.</param>
 		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Diagnostics.Contracts.__ContractsRuntime.Requires<System.ArgumentNullException>(System.Boolean,System.String,System.String)", Justification = "Code contracts"), SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "securitySettings", Justification = "Code contracts")]
-		internal OAuthServiceProviderChannel(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, IServiceProviderTokenManager tokenManager, ServiceProviderSecuritySettings securitySettings, IMessageFactory messageTypeProvider = null)
+		internal OAuthServiceProviderChannel(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, IServiceProviderTokenManager tokenManager, ServiceProviderSecuritySettings securitySettings, IMessageFactory messageTypeProvider = null, IHostFactories hostFactories = null)
 			: base(
 			signingBindingElement,
 			tokenManager,
 			securitySettings,
 			messageTypeProvider ?? new OAuthServiceProviderMessageFactory(tokenManager),
-			InitializeBindingElements(signingBindingElement, store, tokenManager, securitySettings)) {
+			InitializeBindingElements(signingBindingElement, store, tokenManager, securitySettings),
+			hostFactories) {
 			Requires.NotNull(tokenManager, "tokenManager");
 			Requires.NotNull(securitySettings, "securitySettings");
 			Requires.NotNull(signingBindingElement, "signingBindingElement");
@@ -59,7 +61,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// An array of binding elements used to initialize the channel.
 		/// </returns>
 		private static IChannelBindingElement[] InitializeBindingElements(ITamperProtectionChannelBindingElement signingBindingElement, INonceStore store, ITokenManager tokenManager, SecuritySettings securitySettings) {
-			Contract.Requires(securitySettings != null);
+			Requires.NotNull(securitySettings, "securitySettings");
 
 			var bindingElements = OAuthChannel.InitializeBindingElements(signingBindingElement, store);
 

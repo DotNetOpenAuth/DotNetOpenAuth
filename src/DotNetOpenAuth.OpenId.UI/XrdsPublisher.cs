@@ -9,7 +9,6 @@ namespace DotNetOpenAuth {
 	using System.Collections.Generic;
 	using System.ComponentModel;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Drawing.Design;
 	using System.Text;
 	using System.Web;
@@ -198,6 +197,7 @@ namespace DotNetOpenAuth {
 						// client since it isn't interested anyway.
 						// We do NOT simply send a 301 redirect here because that would
 						// alter the Claimed Identifier.
+						Logger.Yadis.InfoFormat("Transferring request from {0} to {1} to respond to XRDS discovery request.", this.Page.Request.Url.AbsoluteUri, this.XrdsUrl);
 						this.Page.Server.Transfer(this.XrdsUrl);
 					}
 				}
@@ -210,7 +210,7 @@ namespace DotNetOpenAuth {
 		/// <param name="writer">The <see cref="T:System.Web.UI.HtmlTextWriter"/> object that receives the server control content.</param>
 		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Diagnostics.Contracts.__ContractsRuntime.Assume(System.Boolean,System.String,System.String)", Justification = "Code contracts"), SuppressMessage("Microsoft.Usage", "CA2234:PassSystemUriObjectsInsteadOfStrings", Justification = "Uri(Uri, string) accepts second arguments that Uri(Uri, new Uri(string)) does not that we must support.")]
 		protected override void Render(HtmlTextWriter writer) {
-			Contract.Assume(writer != null, "Missing contract.");
+			Assumes.True(writer != null, "Missing contract.");
 			if (this.Enabled && this.Visible && !string.IsNullOrEmpty(this.XrdsUrl)) {
 				Uri xrdsAddress = new Uri(MessagingUtilities.GetRequestUrlFromContext(), Page.Response.ApplyAppPathModifier(this.XrdsUrl));
 				if ((this.XrdsAdvertisement & XrdsUrlLocations.HttpHeader) != 0) {

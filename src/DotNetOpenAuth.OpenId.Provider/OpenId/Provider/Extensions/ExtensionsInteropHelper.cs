@@ -8,13 +8,15 @@ namespace DotNetOpenAuth.OpenId.Provider.Extensions {
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Extensions;
 	using DotNetOpenAuth.OpenId.Extensions.AttributeExchange;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.Messages;
+	using Validation;
 
 	/// <summary>
 	/// A set of methods designed to assist in improving interop across different
@@ -74,13 +76,18 @@ namespace DotNetOpenAuth.OpenId.Provider.Extensions {
 		/// attribute request extension came in.
 		/// </summary>
 		/// <param name="request">The authentication request with the response extensions already added.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
+		/// <returns>
+		/// A task that completes with the asynchronous operation.
+		/// </returns>
 		/// <remarks>
 		/// If the original attribute request came in as AX, the Simple Registration extension is converted
 		/// to an AX response and then the Simple Registration extension is removed from the response.
 		/// </remarks>
-		internal static void ConvertSregToMatchRequest(this Provider.IHostProcessedRequest request) {
+		internal static async Task ConvertSregToMatchRequestAsync(this Provider.IHostProcessedRequest request, CancellationToken cancellationToken) {
 			var req = (Provider.HostProcessedRequest)request;
-			var response = req.Response as IProtocolMessageWithExtensions; // negative responses don't support extensions.
+			var protocolMessage = await req.GetResponseAsync(cancellationToken);
+			var response = protocolMessage as IProtocolMessageWithExtensions; // negative responses don't support extensions.
 			var sregRequest = request.GetExtension<ClaimsRequest>();
 			if (sregRequest != null && response != null) {
 				if (sregRequest.Synthesized) {

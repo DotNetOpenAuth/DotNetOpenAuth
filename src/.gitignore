@@ -1,3 +1,4 @@
+packages
 Backup*
 _UpgradeReport_Files
 UpgradeLog*.XML
@@ -9,3 +10,4 @@ _ReSharper.*
 bin
 obj
 Bin
+packages

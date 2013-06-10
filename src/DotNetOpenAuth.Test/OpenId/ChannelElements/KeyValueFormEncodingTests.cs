@@ -11,6 +11,9 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 	using System.Linq;
 	using System.Net;
 	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
+
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.OpenId.ChannelElements;
@@ -56,9 +59,9 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 			Assert.AreEqual(this.sampleData.Count, count);
 		}
 
-		public void KVDictTest(byte[] kvform, IDictionary<string, string> dict, TestMode mode) {
+		public async Task KVDictTestAsync(byte[] kvform, IDictionary<string, string> dict, TestMode mode) {
 			if ((mode & TestMode.Decoder) == TestMode.Decoder) {
-				var d = this.keyValueForm.GetDictionary(new MemoryStream(kvform));
+				var d = await this.keyValueForm.GetDictionaryAsync(new MemoryStream(kvform), CancellationToken.None);
 				foreach (string key in dict.Keys) {
 					Assert.AreEqual(d[key], dict[key], "Decoder fault: " + d[key] + " and " + dict[key] + " do not match.");
 				}
@@ -70,91 +73,91 @@ namespace DotNetOpenAuth.Test.OpenId.ChannelElements {
 		}
 
 		[Test]
-		public void EncodeDecode() {
-			this.KVDictTest(UTF8Encoding.UTF8.GetBytes(string.Empty), new Dictionary<string, string>(), TestMode.Both);
+		public async Task EncodeDecode() {
+			await this.KVDictTestAsync(UTF8Encoding.UTF8.GetBytes(string.Empty), new Dictionary<string, string>(), TestMode.Both);
 
 			Dictionary<string, string> d1 = new Dictionary<string, string>();
 			d1.Add("college", "harvey mudd");
-			this.KVDictTest(UTF8Encoding.UTF8.GetBytes("college:harvey mudd\n"), d1, TestMode.Both);
+			await this.KVDictTestAsync(UTF8Encoding.UTF8.GetBytes("college:harvey mudd\n"), d1, TestMode.Both);
 
 			Dictionary<string, string> d2 = new Dictionary<string, string>();
 			d2.Add("city", "claremont");
 			d2.Add("state", "CA");
-			this.KVDictTest(UTF8Encoding.UTF8.GetBytes("city:claremont\nstate:CA\n"), d2, TestMode.Both);
+			await this.KVDictTestAsync(UTF8Encoding.UTF8.GetBytes("city:claremont\nstate:CA\n"), d2, TestMode.Both);
 
 			Dictionary<string, string> d3 = new Dictionary<string, string>();
 			d3.Add("is_valid", "true");
 			d3.Add("invalidate_handle", "{HMAC-SHA1:2398410938412093}");
-			this.KVDictTest(UTF8Encoding.UTF8.GetBytes("is_valid:true\ninvalidate_handle:{HMAC-SHA1:2398410938412093}\n"), d3, TestMode.Both);
+			await this.KVDictTestAsync(UTF8Encoding.UTF8.GetBytes("is_valid:true\ninvalidate_handle:{HMAC-SHA1:2398410938412093}\n"), d3, TestMode.Both);
 
 			Dictionary<string, string> d4 = new Dictionary<string, string>();
 			d4.Add(string.Empty, string.Empty);
-			this.KVDictTest(UTF8Encoding.UTF8.GetBytes(":\n"), d4, TestMode.Both);
+			await this.KVDictTestAsync(UTF8Encoding.UTF8.GetBytes(":\n"), d4, TestMode.Both);
 
 			Dictionary<string, string> d5 = new Dictionary<string, string>();
 			d5.Add(string.Empty, "missingkey");
-			this.KVDictTest(UTF8Encoding.UTF8.GetBytes(":missingkey\n"), d5, TestMode.Both);
+			await this.KVDictTestAsync(UTF8Encoding.UTF8.GetBytes(":missingkey\n"), d5, TestMode.Both);
 
 			Dictionary<string, string> d6 = new Dictionary<string, string>();
 			d6.Add("street", "foothill blvd");
-			this.KVDictTest(UTF8Encoding.UTF8.GetBytes("street:foothill blvd\n"), d6, TestMode.Both);
+			await this.KVDictTestAsync(UTF8Encoding.UTF8.GetBytes("street:foothill blvd\n"), d6, TestMode.Both);
 
 			Dictionary<string, string> d7 = new Dictionary<string, string>();
 			d7.Add("major", "computer science");
-			this.KVDictTest(UTF8Encoding.UTF8.GetBytes("major:computer science\n"), d7, TestMode.Both);
+			await this.KVDictTestAsync(UTF8Encoding.UTF8.GetBytes("major:computer science\n"), d7, TestMode.Both);
 
 			Dictionary<string, string> d8 = new Dictionary<string, string>();
 			d8.Add("dorm", "east");
-			this.KVDictTest(UTF8Encoding.UTF8.GetBytes(" dorm : east \n"), d8, TestMode.Decoder);
+			await this.KVDictTestAsync(UTF8Encoding.UTF8.GetBytes(" dorm : east \n"), d8, TestMode.Decoder);
 
 			Dictionary<string, string> d9 = new Dictionary<string, string>();
 			d9.Add("e^(i*pi)+1", "0");
-			this.KVDictTest(UTF8Encoding.UTF8.GetBytes("e^(i*pi)+1:0"), d9, TestMode.Decoder);
+			await this.KVDictTestAsync(UTF8Encoding.UTF8.GetBytes("e^(i*pi)+1:0"), d9, TestMode.Decoder);
 
 			Dictionary<string, string> d10 = new Dictionary<string, string>();
 			d10.Add("east", "west");
 			d10.Add("north", "south");
-			this.KVDictTest(UTF8Encoding.UTF8.GetBytes("east:west\nnorth:south"), d10, TestMode.Decoder);
+			await this.KVDictTestAsync(UTF8Encoding.UTF8.GetBytes("east:west\nnorth:south"), d10, TestMode.Decoder);
 		}
 
 		[Test, ExpectedException(typeof(FormatException))]
-		public void NoValue() {
-			this.Illegal("x\n", KeyValueFormConformanceLevel.OpenId11);
+		public async Task NoValue() {
+			await this.IllegalAsync("x\n", KeyValueFormConformanceLevel.OpenId11);
 		}
 
 		[Test, ExpectedException(typeof(FormatException))]
-		public void NoValueLoose() {
+		public async Task NoValueLoose() {
 			Dictionary<string, string> d = new Dictionary<string, string>();
-			this.KVDictTest(Encoding.UTF8.GetBytes("x\n"), d, TestMode.Decoder);
+			await this.KVDictTestAsync(Encoding.UTF8.GetBytes("x\n"), d, TestMode.Decoder);
 		}
 
 		[Test, ExpectedException(typeof(FormatException))]
-		public void EmptyLine() {
-			this.Illegal("x:b\n\n", KeyValueFormConformanceLevel.OpenId20);
+		public async Task EmptyLine() {
+			await this.IllegalAsync("x:b\n\n", KeyValueFormConformanceLevel.OpenId20);
 		}
 
 		[Test]
-		public void EmptyLineLoose() {
+		public async Task EmptyLineLoose() {
 			Dictionary<string, string> d = new Dictionary<string, string>();
 			d.Add("x", "b");
-			this.KVDictTest(Encoding.UTF8.GetBytes("x:b\n\n"), d, TestMode.Decoder);
+			await this.KVDictTestAsync(Encoding.UTF8.GetBytes("x:b\n\n"), d, TestMode.Decoder);
 		}
 
 		[Test, ExpectedException(typeof(FormatException))]
-		public void LastLineNotTerminated() {
-			this.Illegal("x:y\na:b", KeyValueFormConformanceLevel.OpenId11);
+		public async Task LastLineNotTerminated() {
+			await this.IllegalAsync("x:y\na:b", KeyValueFormConformanceLevel.OpenId11);
 		}
 
 		[Test]
-		public void LastLineNotTerminatedLoose() {
+		public async Task LastLineNotTerminatedLoose() {
 			Dictionary<string, string> d = new Dictionary<string, string>();
 			d.Add("x", "y");
 			d.Add("a", "b");
-			this.KVDictTest(Encoding.UTF8.GetBytes("x:y\na:b"), d, TestMode.Decoder);
+			await this.KVDictTestAsync(Encoding.UTF8.GetBytes("x:y\na:b"), d, TestMode.Decoder);
 		}
 
-		private void Illegal(string s, KeyValueFormConformanceLevel level) {
-			new KeyValueFormEncoding(level).GetDictionary(new MemoryStream(Encoding.UTF8.GetBytes(s)));
+		private async Task IllegalAsync(string s, KeyValueFormConformanceLevel level) {
+			await new KeyValueFormEncoding(level).GetDictionaryAsync(new MemoryStream(Encoding.UTF8.GetBytes(s)), CancellationToken.None);
 		}
 	}
 }

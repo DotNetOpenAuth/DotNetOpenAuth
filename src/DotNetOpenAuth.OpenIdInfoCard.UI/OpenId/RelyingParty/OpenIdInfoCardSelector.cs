@@ -9,7 +9,6 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.ComponentModel;
-	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.IdentityModel.Claims;
 	using System.Linq;
@@ -22,6 +21,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using DotNetOpenAuth.InfoCard;
 	////using DotNetOpenAuth.InfoCard;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// An ASP.NET control that provides a user-friendly way of logging into a web site using OpenID.
@@ -75,8 +75,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="e">The token, if it was decrypted.</param>
 		protected virtual void OnReceivedToken(ReceivedTokenEventArgs e) {
-			Contract.Requires(e != null);
-			ErrorUtilities.VerifyArgumentNotNull(e, "e");
+			Requires.NotNull(e, "paramName");
 
 			var receivedInfoCard = this.ReceivedToken;
 			if (receivedInfoCard != null) {
@@ -89,8 +88,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="e">The <see cref="DotNetOpenAuth.InfoCard.TokenProcessingErrorEventArgs"/> instance containing the event data.</param>
 		protected virtual void OnTokenProcessingError(TokenProcessingErrorEventArgs e) {
-			Contract.Requires(e != null);
-			ErrorUtilities.VerifyArgumentNotNull(e, "e");
+			Requires.NotNull(e, "paramName");
 
 			var tokenProcessingError = this.TokenProcessingError;
 			if (tokenProcessingError != null) {

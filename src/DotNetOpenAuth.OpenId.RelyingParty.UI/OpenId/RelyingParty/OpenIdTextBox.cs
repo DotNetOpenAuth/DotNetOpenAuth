@@ -15,12 +15,13 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.ComponentModel;
 	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Drawing.Design;
 	using System.Globalization;
 	using System.Net;
 	using System.Text;
 	using System.Text.RegularExpressions;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
 	using System.Web.Security;
 	using System.Web.UI;
@@ -29,6 +30,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.Extensions.UI;
+	using Validation;
 
 	/// <summary>
 	/// An ASP.NET control that provides a minimal text box that is OpenID-aware.
@@ -546,16 +548,17 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// Creates the authentication requests for a given user-supplied Identifier.
 		/// </summary>
 		/// <param name="identifier">The identifier to create a request for.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// A sequence of authentication requests, any one of which may be
-		/// used to determine the user's control of the <see cref="IAuthenticationRequest.ClaimedIdentifier"/>.
+		/// used to determine the user's control of the <see cref="IAuthenticationRequest.ClaimedIdentifier" />.
 		/// </returns>
-		protected internal override IEnumerable<IAuthenticationRequest> CreateRequests(Identifier identifier) {
+		protected internal override async Task<IEnumerable<IAuthenticationRequest>> CreateRequestsAsync(Identifier identifier, CancellationToken cancellationToken) {
 			ErrorUtilities.VerifyArgumentNotNull(identifier, "identifier");
 
 			// We delegate all our logic to another method, since invoking base. methods
 			// within an iterator method results in unverifiable code.
-			return this.CreateRequestsCore(base.CreateRequests(identifier));
+			return this.CreateRequestsCore(await base.CreateRequestsAsync(identifier, cancellationToken));
 		}
 
 		/// <summary>
@@ -584,7 +587,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// </summary>
 		/// <param name="writer">The <see cref="T:System.Web.UI.HtmlTextWriter"/> object that receives the server control content.</param>
 		protected override void Render(HtmlTextWriter writer) {
-			Contract.Assume(writer != null, "Missing contract.");
+			Assumes.True(writer != null, "Missing contract.");
 
 			if (this.ShowLogo) {
 				string logoUrl = Page.ClientScript.GetWebResourceUrl(
@@ -627,7 +630,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// true if the server control's state changes as a result of the postback; otherwise, false.
 		/// </returns>
 		protected virtual bool LoadPostData(string postDataKey, NameValueCollection postCollection) {
-			Contract.Assume(postCollection != null, "Missing contract");
+			Assumes.True(postCollection != null, "Missing contract");
 
 			// If the control was temporarily hidden, it won't be in the Form data,
 			// and we'll just implicitly keep the last Text setting.
@@ -666,7 +669,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 		/// used to determine the user's control of the <see cref="IAuthenticationRequest.ClaimedIdentifier"/>.
 		/// </returns>
 		private IEnumerable<IAuthenticationRequest> CreateRequestsCore(IEnumerable<IAuthenticationRequest> requests) {
-			Contract.Requires(requests != null);
+			Requires.NotNull(requests, "requests");
 
 			foreach (var request in requests) {
 				if (this.EnableRequestProfile) {
@@ -696,7 +699,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				Language = this.RequestLanguage,
 				TimeZone = this.RequestTimeZone,
 				PolicyUrl = string.IsNullOrEmpty(this.PolicyUrl) ?
-					null : new Uri(this.RelyingParty.Channel.GetRequestFromContext().GetPublicFacingUrl(), this.Page.ResolveUrl(this.PolicyUrl)),
+					null : new Uri(new HttpRequestWrapper(this.Context.Request).GetPublicFacingUrl(), this.Page.ResolveUrl(this.PolicyUrl)),
 			};
 
 			// Only actually add the extension request if fields are actually being requested.

@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
+	using System.Xml;
 
 	/// <summary>
 	/// An interface that defines the OAuth2 client specific channel additions.
@@ -23,5 +24,10 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		/// Gets or sets the client credentials applicator extension to use.
 		/// </summary>
 		ClientCredentialApplicator ClientCredentialApplicator { get; set; }
+
+		/// <summary>
+		/// Gets quotas used when deserializing JSON.
+		/// </summary>
+		XmlDictionaryReaderQuotas JsonReaderQuotas { get; }
 	}
 }

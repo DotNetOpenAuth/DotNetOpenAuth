@@ -7,13 +7,19 @@
 namespace DotNetOpenAuth.Test {
 	using System;
 	using System.IO;
+	using System.Net;
+	using System.Net.Http;
+	using System.Net.Http.Headers;
 	using System.Reflection;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
 	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.OAuth.Messages;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using DotNetOpenAuth.Test.Performance;
 	using log4net;
+	using log4net.Config;
 	using NUnit.Framework;
 
 	/// <summary>
@@ -48,14 +54,17 @@ namespace DotNetOpenAuth.Test {
 			get { return this.messageDescriptions; }
 		}
 
+		internal MockingHostFactories HostFactories { get; set; }
+
 		/// <summary>
 		/// The TestInitialize method for the test cases.
 		/// </summary>
 		[SetUp]
 		public virtual void SetUp() {
-			log4net.Config.XmlConfigurator.Configure(Assembly.GetExecutingAssembly().GetManifestResourceStream("DotNetOpenAuth.Test.Logging.config"));
+			XmlConfigurator.Configure(Assembly.GetExecutingAssembly().GetManifestResourceStream("DotNetOpenAuth.Test.Logging.config"));
 			MessageBase.LowSecurityMode = true;
 			this.messageDescriptions = new MessageDescriptionCollection();
+			this.HostFactories = new MockingHostFactories();
 			SetMockHttpContext();
 		}
 
@@ -64,10 +73,10 @@ namespace DotNetOpenAuth.Test {
 		/// </summary>
 		[TearDown]
 		public virtual void Cleanup() {
-			log4net.LogManager.Shutdown();
+			LogManager.Shutdown();
 		}
 
-		internal static Stats MeasurePerformance(Action action, float maximumAllowedUnitTime, int samples = 10, int iterations = 100, string name = null) {
+		internal static Stats MeasurePerformance(Func<Task> action, float maximumAllowedUnitTime, int samples = 10, int iterations = 100, string name = null) {
 			if (!PerformanceTestUtilities.IsOptimized(typeof(OpenIdRelyingParty).Assembly)) {
 				Assert.Inconclusive("Unoptimized code.");
 			}
@@ -75,7 +84,7 @@ namespace DotNetOpenAuth.Test {
 			var timer = new MultiSampleCodeTimer(samples, iterations);
 			Stats stats;
 			using (new HighPerformance()) {
-				stats = timer.Measure(name ?? TestContext.CurrentContext.Test.FullName, action);
+				stats = timer.Measure(name ?? TestContext.CurrentContext.Test.FullName, () => action().Wait());
 			}
 
 			stats.AdjustForScale(PerformanceTestUtilities.Baseline.Median);
@@ -102,6 +111,50 @@ namespace DotNetOpenAuth.Test {
 			HttpContext.Current = new HttpContext(
 				new HttpRequest("mock", "http://mock", "mock"),
 				new HttpResponse(new StringWriter()));
+		}
+
+		protected internal Handler Handle(string uri) {
+			return new Handler(this, new Uri(uri));
+		}
+
+		protected internal Handler Handle(Uri uri) {
+			return new Handler(this, uri);
+		}
+
+		protected internal struct Handler {
+			private TestBase test;
+
+			internal Handler(TestBase test, Uri uri)
+				: this() {
+				this.test = test;
+				this.Uri = uri;
+			}
+
+			internal Uri Uri { get; private set; }
+
+			internal Func<HttpRequestMessage, Task<HttpResponseMessage>> MessageHandler { get; private set; }
+
+			internal void By(Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> handler) {
+				this.test.HostFactories.Handlers[this.Uri] = req => handler(req, CancellationToken.None);
+			}
+
+			internal void By(Func<HttpRequestMessage, Task<HttpResponseMessage>> handler) {
+				this.test.HostFactories.Handlers[this.Uri] = handler;
+			}
+
+			internal void By(Func<HttpRequestMessage, HttpResponseMessage> handler) {
+				this.By(req => Task.FromResult(handler(req)));
+			}
+
+			internal void By(string responseContent, string contentType, HttpStatusCode statusCode = HttpStatusCode.OK) {
+				this.By(
+					req => {
+						var response = new HttpResponseMessage(statusCode);
+						response.Content = new StringContent(responseContent);
+						response.Content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
+						return response;
+					});
+			}
 		}
 	}
 }

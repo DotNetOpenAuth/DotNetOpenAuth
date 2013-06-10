@@ -7,13 +7,15 @@
 namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System;
 	using System.Collections.Generic;
-	using System.Diagnostics.Contracts;
 	using System.Linq;
 	using System.Text;
+	using System.Threading;
+	using System.Threading.Tasks;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId.Messages;
 	using DotNetOpenAuth.OpenId.RelyingParty;
+	using Validation;
 
 	/// <summary>
 	/// This binding element adds a nonce to a Relying Party's outgoing 
@@ -46,6 +48,17 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	/// only on the RP side and only on some messages.</para>
 	/// </remarks>
 	internal class ReturnToNonceBindingElement : IChannelBindingElement {
+		/// <summary>
+		/// A reusable, precompleted task that can be returned many times to reduce GC pressure.
+		/// </summary>
+		private static readonly Task<MessageProtections?> NullTask = Task.FromResult<MessageProtections?>(null);
+
+		/// <summary>
+		/// A reusable, precompleted task that can be returned many times to reduce GC pressure.
+		/// </summary>
+		private static readonly Task<MessageProtections?> ReplayProtectionTask =
+			Task.FromResult<MessageProtections?>(MessageProtections.ReplayProtection);
+
 		/// <summary>
 		/// The context within which return_to nonces must be unique -- they all go into the same bucket.
 		/// </summary>
@@ -128,6 +141,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// Prepares a message for sending based on the rules of this channel binding element.
 		/// </summary>
 		/// <param name="message">The message to prepare for sending.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The protections (if any) that this binding element applied to the message.
 		/// Null if this binding element did not even apply to this binding element.
@@ -136,17 +150,17 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// Implementations that provide message protection must honor the
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
-		public MessageProtections? ProcessOutgoingMessage(IProtocolMessage message) {
+		public Task<MessageProtections?> ProcessOutgoingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
 			// We only add a nonce to some auth requests.
 			SignedResponseRequest request = message as SignedResponseRequest;
 			if (this.UseRequestNonce(request)) {
 				request.AddReturnToArguments(Protocol.ReturnToNonceParameter, CustomNonce.NewNonce().Serialize());
 				request.SignReturnTo = true; // a nonce without a signature is completely pointless
 
-				return MessageProtections.ReplayProtection;
+				return ReplayProtectionTask;
 			}
 
-			return null;
+			return NullTask;
 		}
 
 		/// <summary>
@@ -154,6 +168,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// validates an incoming message based on the rules of this channel binding element.
 		/// </summary>
 		/// <param name="message">The incoming message to process.</param>
+		/// <param name="cancellationToken">The cancellation token.</param>
 		/// <returns>
 		/// The protections (if any) that this binding element applied to the message.
 		/// Null if this binding element did not even apply to this binding element.
@@ -166,7 +181,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 		/// Implementations that provide message protection must honor the
 		/// <see cref="MessagePartAttribute.RequiredProtection"/> properties where applicable.
 		/// </remarks>
-		public MessageProtections? ProcessIncomingMessage(IProtocolMessage message) {
+		public Task<MessageProtections?> ProcessIncomingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
 			IndirectSignedResponse response = message as IndirectSignedResponse;
 			if (this.UseRequestNonce(response)) {
 				if (!response.ReturnToParametersSignatureValidated) {
@@ -190,10 +205,10 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 					throw new ReplayedMessageException(message);
 				}
 
-				return MessageProtections.ReplayProtection;
+				return ReplayProtectionTask;
 			}
 
-			return null;
+			return NullTask;
 		}
 
 		#endregion
@@ -261,7 +276,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 				Requires.NotNullOrEmpty(value, "value");
 
 				byte[] nonce = MessagingUtilities.FromBase64WebSafeString(value);
-				Contract.Assume(nonce != null);
+				Assumes.True(nonce != null);
 				DateTime creationDateUtc = new DateTime(BitConverter.ToInt64(nonce, 0), DateTimeKind.Utc);
 				byte[] randomPart = new byte[NonceByteLength];
 				Array.Copy(nonce, sizeof(long), randomPart, 0, NonceByteLength);

@@ -17,6 +17,6 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <summary>
 		/// Gets or sets the result of calling the authorization server host's access token creation method.
 		/// </summary>
-		AccessTokenResult AccessTokenResult { get; set; }
+		IAccessTokenResult AccessTokenResult { get; set; }
 	}
 }

@@ -9,20 +9,23 @@ namespace DotNetOpenAuth {
 	using System.Collections.Generic;
 	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.IO;
 	using System.IO.IsolatedStorage;
 	using System.Linq;
 	using System.Net;
+	using System.Net.Http;
+	using System.Net.Http.Headers;
 	using System.Reflection;
 	using System.Security;
 	using System.Text;
 	using System.Threading;
+	using System.Threading.Tasks;
 	using System.Web;
 	using DotNetOpenAuth.Configuration;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
+	using Validation;
 
 	/// <summary>
 	/// The statistical reporting mechanism used so this library's project authors
@@ -69,11 +72,6 @@ namespace DotNetOpenAuth {
 		/// The recipient of collected reports.
 		/// </summary>
 		private static Uri wellKnownPostLocation = new Uri("https://reports.dotnetopenauth.net/ReportingPost.ashx");
-
-		/// <summary>
-		/// The outgoing HTTP request handler to use for publishing reports.
-		/// </summary>
-		private static IDirectWebRequestHandler webRequestHandler;
 
 		/// <summary>
 		/// A few HTTP request hosts and paths we've seen.
@@ -170,7 +168,7 @@ namespace DotNetOpenAuth {
 		/// <param name="category">The category within the event.  Null and empty strings are allowed, but considered the same.</param>
 		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "PersistentCounter instances are stored in a table for later use.")]
 		internal static void RecordEventOccurrence(string eventName, string category) {
-			Contract.Requires(!string.IsNullOrEmpty(eventName));
+			Requires.NotNullOrEmpty(eventName, "eventName");
 
 			// In release builds, just quietly return.
 			if (string.IsNullOrEmpty(eventName)) {
@@ -196,7 +194,7 @@ namespace DotNetOpenAuth {
 		/// <param name="eventNameByObjectType">The object whose type name is the event name to record.</param>
 		/// <param name="category">The category within the event.  Null and empty strings are allowed, but considered the same.</param>
 		internal static void RecordEventOccurrence(object eventNameByObjectType, string category) {
-			Contract.Requires(eventNameByObjectType != null);
+			Requires.NotNull(eventNameByObjectType, "eventNameByObjectType");
 
 			// In release builds, just quietly return.
 			if (eventNameByObjectType == null) {
@@ -213,7 +211,7 @@ namespace DotNetOpenAuth {
 		/// </summary>
 		/// <param name="feature">The feature.</param>
 		internal static void RecordFeatureUse(string feature) {
-			Contract.Requires(!string.IsNullOrEmpty(feature));
+			Requires.NotNullOrEmpty(feature, "feature");
 
 			// In release builds, just quietly return.
 			if (string.IsNullOrEmpty(feature)) {
@@ -231,7 +229,7 @@ namespace DotNetOpenAuth {
 		/// </summary>
 		/// <param name="value">The object whose type is the feature to set as used.</param>
 		internal static void RecordFeatureUse(object value) {
-			Contract.Requires(value != null);
+			Requires.NotNull(value, "value");
 
 			// In release builds, just quietly return.
 			if (value == null) {
@@ -250,7 +248,7 @@ namespace DotNetOpenAuth {
 		/// <param name="value">The object whose type is the feature to set as used.</param>
 		/// <param name="dependency1">Some dependency used by <paramref name="value"/>.</param>
 		internal static void RecordFeatureAndDependencyUse(object value, object dependency1) {
-			Contract.Requires(value != null);
+			Requires.NotNull(value, "value");
 
 			// In release builds, just quietly return.
 			if (value == null) {
@@ -274,7 +272,7 @@ namespace DotNetOpenAuth {
 		/// <param name="dependency1">Some dependency used by <paramref name="value"/>.</param>
 		/// <param name="dependency2">Some dependency used by <paramref name="value"/>.</param>
 		internal static void RecordFeatureAndDependencyUse(object value, object dependency1, object dependency2) {
-			Contract.Requires(value != null);
+			Requires.NotNull(value, "value");
 
 			// In release builds, just quietly return.
 			if (value == null) {
@@ -298,7 +296,7 @@ namespace DotNetOpenAuth {
 		/// </summary>
 		/// <param name="request">The request.</param>
 		internal static void RecordRequestStatistics(HttpRequestBase request) {
-			Contract.Requires(request != null);
+			Requires.NotNull(request, "request");
 
 			// In release builds, just quietly return.
 			if (request == null) {
@@ -330,7 +328,7 @@ namespace DotNetOpenAuth {
 			lock (publishingConsiderationLock) {
 				if (DateTime.Now - lastPublished > Configuration.MinimumReportingInterval) {
 					lastPublished = DateTime.Now;
-					SendStatsAsync();
+					var fireAndForget = SendStatsAsync();
 				}
 			}
 		}
@@ -346,7 +344,6 @@ namespace DotNetOpenAuth {
 						file = GetIsolatedStorage();
 						reportOriginIdentity = GetOrCreateOriginIdentity();
 
-						webRequestHandler = new StandardWebRequestHandler();
 						observations.Add(observedRequests = new PersistentHashSet(file, "requests.txt", 3));
 						observations.Add(observedCultures = new PersistentHashSet(file, "cultures.txt", 20));
 						observations.Add(observedFeatures = new PersistentHashSet(file, "features.txt", int.MaxValue));
@@ -368,6 +365,18 @@ namespace DotNetOpenAuth {
 					}
 				}
 			}
+		}
+
+		/// <summary>
+		/// Creates an HTTP client that can be used for outbound HTTP requests.
+		/// </summary>
+		/// <returns>The HTTP client to use.</returns>
+		private static HttpClient CreateHttpClient() {
+			var channel = new HttpClientHandler();
+			channel.AllowAutoRedirect = false;
+			var webRequestHandler = new HttpClient(channel);
+			webRequestHandler.DefaultRequestHeaders.UserAgent.Add(Util.LibraryVersionHeader);
+			return webRequestHandler;
 		}
 
 		/// <summary>
@@ -426,30 +435,24 @@ namespace DotNetOpenAuth {
 		/// Sends the usage reports to the library authors.
 		/// </summary>
 		/// <returns>A value indicating whether submitting the report was successful.</returns>
-		private static bool SendStats() {
+		private static async Task<bool> SendStatsAsync() {
 			try {
-				var request = (HttpWebRequest)WebRequest.Create(wellKnownPostLocation);
-				request.UserAgent = Util.LibraryVersion;
-				request.AllowAutoRedirect = false;
-				request.Method = "POST";
-				request.ContentType = "text/dnoa-report1";
 				Stream report = GetReport();
-				request.ContentLength = report.Length;
-				using (var requestStream = webRequestHandler.GetRequestStream(request)) {
-					report.CopyTo(requestStream);
-				}
+				var content = new StreamContent(report);
+				content.Headers.ContentType = new MediaTypeHeaderValue("text/dnoa-report1");
+				using (var webRequestHandler = CreateHttpClient()) {
+					using (var response = await webRequestHandler.PostAsync(wellKnownPostLocation, content)) {
+						Logger.Library.Info("Statistical report submitted successfully.");
 
-				using (var response = webRequestHandler.GetResponse(request)) {
-					Logger.Library.Info("Statistical report submitted successfully.");
-
-					// The response stream may contain a message for the webmaster.
-					// Since as part of the report we submit the library version number,
-					// the report receiving service may have alerts such as:
-					// "You're using an obsolete version with exploitable security vulnerabilities."
-					using (var responseReader = response.GetResponseReader()) {
-						string line = responseReader.ReadLine();
-						if (line != null) {
-							DemuxLogMessage(line);
+						// The response stream may contain a message for the webmaster.
+						// Since as part of the report we submit the library version number,
+						// the report receiving service may have alerts such as:
+						// "You're using an obsolete version with exploitable security vulnerabilities."
+						using (var responseReader = new StreamReader(await response.Content.ReadAsStreamAsync())) {
+							string line = await responseReader.ReadLineAsync();
+							if (line != null) {
+								DemuxLogMessage(line);
+							}
 						}
 					}
 				}
@@ -508,30 +511,10 @@ namespace DotNetOpenAuth {
 		}
 
 		/// <summary>
-		/// Sends the stats report asynchronously, and careful to not throw any unhandled exceptions.
-		/// </summary>
-		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Unhandled exceptions MUST NOT be thrown from here.")]
-		private static void SendStatsAsync() {
-			// Do it on a background thread since it could take a while and we
-			// don't want to slow down this request we're borrowing.
-			ThreadPool.QueueUserWorkItem(state => {
-				try {
-					SendStats();
-				} catch (Exception ex) {
-					// Something bad and unexpected happened.  Just deactivate to avoid more trouble.
-					Logger.Library.Error("Error while trying to submit statistical report.", ex);
-					broken = true;
-				}
-			});
-		}
-
-		/// <summary>
 		/// Gets the isolated storage to use for reporting.
 		/// </summary>
 		/// <returns>An isolated storage location appropriate for our host.</returns>
 		private static IsolatedStorageFile GetIsolatedStorage() {
-			Contract.Ensures(Contract.Result<IsolatedStorageFile>() != null);
-
 			IsolatedStorageFile result = null;
 
 			// We'll try for whatever storage location we can get,
@@ -563,8 +546,7 @@ namespace DotNetOpenAuth {
 		/// </remarks>
 		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "No apparent problem.  False positive?")]
 		private static Guid GetOrCreateOriginIdentity() {
-			Requires.ValidState(file != null);
-			Contract.Ensures(Contract.Result<Guid>() != Guid.Empty);
+			RequiresEx.ValidState(file != null, "file not set.");
 
 			Guid identityGuid = Guid.Empty;
 			const int GuidLength = 16;

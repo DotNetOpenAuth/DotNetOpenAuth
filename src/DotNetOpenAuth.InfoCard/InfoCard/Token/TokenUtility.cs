@@ -13,7 +13,6 @@ namespace DotNetOpenAuth.InfoCard {
 	using System.Collections.Generic;
 	using System.Configuration;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Diagnostics.Contracts;
 	using System.IdentityModel.Claims;
 	using System.IdentityModel.Policy;
 	using System.IdentityModel.Selectors;
@@ -27,6 +26,7 @@ namespace DotNetOpenAuth.InfoCard {
 	using System.Text;
 	using System.Xml;
 	using DotNetOpenAuth.Messaging;
+	using Validation;
 
 	/// <summary>
 	/// Tools for reading InfoCard tokens.
@@ -49,8 +49,6 @@ namespace DotNetOpenAuth.InfoCard {
 		/// The authorization context carried by the token.
 		/// </returns>
 		internal static AuthorizationContext AuthenticateToken(XmlReader reader, Uri audience) {
-			Contract.Ensures(Contract.Result<AuthorizationContext>() != null);
-
 			// Extensibility Point:
 			// in order to accept different token types, you would need to add additional 
 			// code to create an authenticationcontext from the security token. 
@@ -123,7 +121,7 @@ namespace DotNetOpenAuth.InfoCard {
 
 			ICspAsymmetricAlgorithm rsa = claim.Resource as ICspAsymmetricAlgorithm;
 			if (null != rsa) {
-				using (SHA256 sha = new SHA256Managed()) {
+				using (SHA256 sha = SHA256.Create()) {
 					return Convert.ToBase64String(sha.ComputeHash(rsa.ExportCspBlob(false)));
 				}
 			}
@@ -227,7 +225,6 @@ namespace DotNetOpenAuth.InfoCard {
 		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "False positive.")]
 		internal static string CalculateSiteSpecificID(string ppid) {
 			Requires.NotNull(ppid, "ppid");
-			Contract.Ensures(!string.IsNullOrEmpty(Contract.Result<string>()));
 
 			int callSignChars = 10;
 			char[] charMap = "QL23456789ABCDEFGHJKMNPRSTUVWXYZ".ToCharArray();
@@ -281,7 +278,6 @@ namespace DotNetOpenAuth.InfoCard {
 		private static string ComputeCombinedId(RSA issuerKey, string claimValue) {
 			Requires.NotNull(issuerKey, "issuerKey");
 			Requires.NotNull(claimValue, "claimValue");
-			Contract.Ensures(Contract.Result<string>() != null);
 
 			int nameLength = Encoding.UTF8.GetByteCount(claimValue);
 			RSAParameters rsaParams = issuerKey.ExportParameters(false);

@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 	using System.Text;
 	using System.Web;
 	using DotNetOpenAuth.OAuth2.Messages;
+	using Validation;
 
 	/// <summary>
 	/// Reads client authentication information from the message payload itself (POST entity as a URI-encoded parameter).

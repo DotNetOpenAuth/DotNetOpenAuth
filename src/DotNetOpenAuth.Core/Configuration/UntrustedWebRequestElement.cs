@@ -7,7 +7,6 @@
 namespace DotNetOpenAuth.Configuration {
 	using System;
 	using System.Configuration;
-	using System.Diagnostics.Contracts;
 
 	/// <summary>
 	/// Represents the section of a .config file where security policies regarding web requests

@@ -27,7 +27,7 @@ namespace DotNetOpenAuth.Test.OpenId.Extensions {
 
 			var rp = CreateRelyingParty(true);
 			Identifier identifier = this.GetMockIdentifier(ProtocolVersion.V20);
-			this.authReq = (AuthenticationRequest)rp.CreateRequest(identifier, RPRealmUri, RPUri);
+			this.authReq = (AuthenticationRequest)rp.CreateRequestAsync(identifier, RPRealmUri, RPUri).Result;
 			this.sreg = new ClaimsRequest {
 				Nickname = DemandLevel.Request,
 				FullName = DemandLevel.Request,
