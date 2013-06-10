@@ -63,7 +63,6 @@
 						if (response != null) {
 							var responseMessage = await sp.Channel.PrepareResponseAsync(response, Response.ClientDisconnectedToken);
 							await responseMessage.SendAsync();
-							this.Context.Response.End();
 						} else {
 							if (pending.IsUnsafeRequest) {
 								this.verifierMultiView.ActiveViewIndex = 1;
