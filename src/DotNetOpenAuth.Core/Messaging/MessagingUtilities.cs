@@ -1536,6 +1536,24 @@ namespace DotNetOpenAuth.Messaging {
 		}
 
 		/// <summary>
+		/// Reassembles multiple values in an HTTP request header as a comma-delimited list.
+		/// </summary>
+		/// <param name="headers">The headers from which to read a header.</param>
+		/// <param name="headerName">Name of the header to read.</param>
+		/// <returns>A comma-delimited list of values for the named header, or <c>null</c> if no header was included in the collection by the specified name.</returns>
+		internal static string GetJointValues(this System.Net.Http.Headers.HttpRequestHeaders headers, string headerName) {
+			Requires.NotNull(headers, "headers");
+			Requires.NotNullOrEmpty(headerName, "headerName");
+
+			IEnumerable<string> values;
+			if (headers.TryGetValues(headerName, out values)) {
+				return string.Join(",", values);
+			}
+
+			return null;
+		}
+
+		/// <summary>
 		/// Gets the URI that contains the entire payload that would be sent by the browser for the specified redirect-based request message.
 		/// </summary>
 		/// <param name="response">The redirecting response message.</param>

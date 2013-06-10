@@ -120,7 +120,8 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 		/// <returns>The deserialized message, if one is found.  Null otherwise.</returns>
 		protected override async Task<IDirectedProtocolMessage> ReadFromRequestCoreAsync(HttpRequestMessage request, CancellationToken cancellationToken) {
 			// First search the Authorization header.
-			var authorization = request.Headers.Authorization;
+			AuthenticationHeaderValue authorization;
+			AuthenticationHeaderValue.TryParse(request.Headers.GetJointValues("Authorization"), out authorization); 
 			var fields = MessagingUtilities.ParseAuthorizationHeader(Protocol.AuthorizationHeaderScheme, authorization).ToDictionary();
 			fields.Remove("realm"); // ignore the realm parameter, since we don't use it, and it must be omitted from signature base string.
 
