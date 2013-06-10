@@ -1205,8 +1205,13 @@ namespace DotNetOpenAuth.Messaging {
 
 			foreach (string headerName in request.Headers) {
 				string[] headerValues = request.Headers.GetValues(headerName);
-				if (!message.Headers.TryAddWithoutValidation(headerName, headerValues)) {
-					message.Content.Headers.TryAddWithoutValidation(headerName, headerValues);
+				if (headerName == "Authorization" && headerValues.Length > 1) {
+					// The TryAddWithoutValidation doesn't do this quite right, so do it by hand.
+					message.Headers.Authorization = AuthenticationHeaderValue.Parse(string.Join(",", headerValues));
+				} else {
+					if (!message.Headers.TryAddWithoutValidation(headerName, headerValues)) {
+						message.Content.Headers.TryAddWithoutValidation(headerName, headerValues);
+					}
 				}
 			}
 		}
