@@ -64,7 +64,8 @@ namespace DotNetOpenAuth.OAuth {
 			}
 
 			var encryptedToken = ProtectAndEncodeToken(identifier, secret);
-			cookie.Values[identifier] = encryptedToken;
+			var escapedIdentifier = Uri.EscapeDataString(identifier);
+			cookie.Values[escapedIdentifier] = encryptedToken;
 
 			this.httpContext.Response.Cookies.Set(cookie);
 		}
@@ -81,8 +82,9 @@ namespace DotNetOpenAuth.OAuth {
 				return new KeyValuePair<string, string>();
 			}
 
-			string identifier = cookie.Values.GetKey(0);
-			string secret = DecodeAndUnprotectToken(identifier, cookie.Values[identifier]);
+			string escapedIdentifier = cookie.Values.GetKey(0);
+			string identifier = Uri.UnescapeDataString(escapedIdentifier);
+			string secret = DecodeAndUnprotectToken(identifier, cookie.Values[escapedIdentifier]);
 			return new KeyValuePair<string, string>(identifier, secret);
 		}
 
