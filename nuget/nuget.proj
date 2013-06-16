@@ -49,6 +49,7 @@
 			<NuGetProperties Include="oauth2version=$(NuGetPackageVersion)" />
 			<NuGetProperties Include="OutputPath45=$(OutputPath45)" />
 			<NuGetProperties Include="IntermediatePath=$(IntermediatePath45)" />
+			<NuGetProperties Include="signedSubPath=$(SignedSubPath)" />
 
 			<NuGetSpecifications Include="*.nuspec" Exclude="DotNetOpenAuth.nuspec">
 				<Symbols>true</Symbols>

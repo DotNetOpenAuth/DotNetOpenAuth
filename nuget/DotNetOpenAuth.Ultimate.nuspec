@@ -18,7 +18,7 @@
 		<language>en-US</language>
 	</metadata>
 	<files>
-		<file src="$OutputPath45$unified\signed\DotNetOpenAuth.dll" target="lib\net45-full\" />
+		<file src="$OutputPath45$unified\$signedSubPath$DotNetOpenAuth.dll" target="lib\net45-full\" />
 		<file src="$OutputPath45$unified\DotNetOpenAuth.pdb" target="lib\net45-full\" />
 		<file src="$OutputPath45$unified\DotNetOpenAuth.xml" target="lib\net45-full\" />
 		<file src="content\Ultimate\net45-full\web.config.transform" target="content\net45-full\web.config.transform" />

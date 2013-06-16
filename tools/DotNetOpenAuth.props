@@ -25,7 +25,7 @@
 		<KeyPairContainer Condition="'$(KeyPairContainer)' == ''">DotNetOpenAuth</KeyPairContainer>
 		<PublicKeyToken>d0acff3d13b42a9d</PublicKeyToken>
 		<DelaySign>false</DelaySign>
-		<SignedSubPath>signed\</SignedSubPath>
+		<SignedSubPath Condition=" '$(DelaySign)' == 'true' ">signed\</SignedSubPath>
 
 		<ILMergeOutputAssemblyDirectory>$(OutputPath)unified\</ILMergeOutputAssemblyDirectory>
 		<ILMergeOutputAssembly45Directory>$(OutputPath45)unified\</ILMergeOutputAssembly45Directory>

@@ -16,7 +16,7 @@
 		</dependencies>
 	</metadata>
 	<files>
-		<file src="$OutputPath45$signed\DotNetOpenAuth.OAuth2.ClientAuthorization.dll" target="lib\net45-full" />
+		<file src="$OutputPath45$$signedSubPath$DotNetOpenAuth.OAuth2.ClientAuthorization.dll" target="lib\net45-full" />
 		<file src="$OutputPath45$DotNetOpenAuth.OAuth2.ClientAuthorization.pdb" target="lib\net45-full" />
 		<file src="$OutputPath45$DotNetOpenAuth.OAuth2.ClientAuthorization.xml" target="lib\net45-full" />
 
