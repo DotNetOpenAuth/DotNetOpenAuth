@@ -7,8 +7,6 @@
 		<ItemGroup>
 			<ProductTargets Include="BuildUnifiedProduct;ResignShippingDelaySignedAssemblies" Condition=" '$(SkipNugetDependenciesBuild)' != 'true' " />
 			<ProductTargets Include="GetOutputPath" />
-			<AspNetTargets Include="Build;Sign" Condition=" '$(SkipNugetDependenciesBuild)' != 'true' " />
-			<AspNetTargets Include="GetOutputPath" />
 		</ItemGroup>
 
 		<!-- We build the entire unified, signed product targeting both CLRs, since NuGet supports packages that contain both,
@@ -19,18 +17,6 @@
 			Properties="TargetFrameworkVersion=v4.5"
 			BuildInParallel="$(BuildInParallel)">
 			<Output TaskParameter="TargetOutputs" ItemName="TargetOutputs45"/>
-		</MSBuild>
-		<MSBuild
-			Projects="$(ProjectRoot)src\DotNetOpenAuth.AspNet\DotNetOpenAuth.AspNet.csproj"
-			Targets="@(AspNetTargets)"
-			Properties="TargetFrameworkVersion=v4.5"
-			BuildInParallel="$(BuildInParallel)">
-		</MSBuild>
-		<MSBuild
-			Projects="$(ProjectRoot)src\DotNetOpenAuth.AspNet\DotNetOpenAuth.AspNet.csproj"
-			Targets="@(AspNetTargets)"
-			Properties="TargetFrameworkVersion=v4.5"
-			BuildInParallel="$(BuildInParallel)">
 		</MSBuild>
 
 		<ItemGroup>
