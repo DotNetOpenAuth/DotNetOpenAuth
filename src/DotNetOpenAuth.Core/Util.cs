@@ -35,7 +35,7 @@ namespace DotNetOpenAuth {
 		private static readonly Lazy<string> libraryVersionLazy = new Lazy<string>(delegate {
 			var assembly = Assembly.GetExecutingAssembly();
 			string assemblyFullName = assembly.FullName;
-			bool official = assemblyFullName.Contains("PublicKeyToken=2780ccd10d57b246");
+			bool official = assemblyFullName.Contains("PublicKeyToken=d0acff3d13b42a9d");
 			assemblyFullName = assemblyFullName.Replace(assembly.GetName().Version.ToString(), AssemblyFileVersion);
 
 			// We use InvariantCulture since this is used for logging.

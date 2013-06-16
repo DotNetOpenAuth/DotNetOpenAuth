@@ -21,10 +21,10 @@
 
 		<SignAssembly>true</SignAssembly>
 		<PublicKeyFile Condition="'$(PublicKeyFile)' == ''">$(ProjectRoot)src\official-build-key.pub</PublicKeyFile>
-		<AssemblyOriginatorKeyFile Condition="'$(AssemblyOriginatorKeyFile)' == ''">$(PublicKeyFile)</AssemblyOriginatorKeyFile>
+		<AssemblyOriginatorKeyFile Condition="'$(AssemblyOriginatorKeyFile)' == ''">$(ProjectRoot)src\official-build-key.snk</AssemblyOriginatorKeyFile>
 		<KeyPairContainer Condition="'$(KeyPairContainer)' == ''">DotNetOpenAuth</KeyPairContainer>
-		<PublicKeyToken>2780CCD10D57B246</PublicKeyToken>
-		<DelaySign>true</DelaySign>
+		<PublicKeyToken>d0acff3d13b42a9d</PublicKeyToken>
+		<DelaySign>false</DelaySign>
 		<SignedSubPath>signed\</SignedSubPath>
 
 		<ILMergeOutputAssemblyDirectory>$(OutputPath)unified\</ILMergeOutputAssemblyDirectory>

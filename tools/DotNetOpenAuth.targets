@@ -48,7 +48,7 @@
 		</Publicize>
 	</Target>
 
-	<Target Name="Sign" DependsOnTargets="@(SignDependsOn)" Outputs="@(SignedDependencies);@(SignedAssemblyTargets)" Condition=" '@(DelaySignedAssemblies)' != '' ">
+	<Target Name="Sign" DependsOnTargets="@(SignDependsOn)" Outputs="@(SignedDependencies);@(SignedAssemblyTargets)" Condition=" '@(DelaySignedAssemblies)' != '' and '$(DelaySign)' == 'true' ">
 		<!-- Make sure that all dependencies are also signed. -->
 		<MSBuild Projects="@(ProjectReference)" Targets="Sign" BuildInParallel="$(BuildInParallel)">
 			<Output TaskParameter="TargetOutputs" ItemName="SignedDependencies"/>
