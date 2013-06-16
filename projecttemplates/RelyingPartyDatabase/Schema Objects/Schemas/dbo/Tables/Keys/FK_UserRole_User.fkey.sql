@@ -1,3 +1,0 @@
-﻿ALTER TABLE [dbo].[UserRole]
-    ADD CONSTRAINT [FK_UserRole_User] FOREIGN KEY ([UserId]) REFERENCES [dbo].[User] ([UserId]) ON DELETE CASCADE ON UPDATE CASCADE;
-

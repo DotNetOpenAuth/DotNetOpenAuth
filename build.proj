@@ -22,9 +22,6 @@
 
 		<ProjectsToClean Include="
 		                          $(SolutionPath);
-		                          projecttemplates\projecttemplates.proj;
-		                          vsi\vsi.proj;
-		                          vsix\vsix.proj;
 		                          samples\samples.proj;
 		                          ">
 			<Properties>TargetFrameworkVersion=v4.5</Properties>

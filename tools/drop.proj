@@ -3,10 +3,6 @@
 	<Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.props))\EnlistmentInfo.props" Condition=" '$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.props))' != '' " />
 	<Import Project="$(MSBuildProjectDirectory)\DotNetOpenAuth.automated.props"/>
 
-	<PropertyGroup>
-		<BuildProjectTemplates>false</BuildProjectTemplates>
-	</PropertyGroup>
-
 	<Target Name="LayoutDependencies">
 		<MSBuild Projects="$(ProjectRoot)src\$(ProductName)\$(ProductName).proj"
 		         Properties="TargetFrameworkVersion=v4.5"
@@ -23,9 +19,6 @@
 		<!-- Note that we use an MSBuild task for these dependencies rather than individual DependsOnTargets entries
 		     so that these builds can be executed in parallel. -->
 		<ItemGroup>
-			<ProjectsToBuild Include="$(ProjectRoot)vsix\vsix.proj" Condition=" '$(BuildProjectTemplates)' == 'true' ">
-				<Properties>TargetFrameworkVersion=v4.5</Properties>
-			</ProjectsToBuild>
 			<ProjectsToBuild Include="$(ProjectRoot)samples\samples.proj">
 				<Properties>TargetFrameworkVersion=v4.5</Properties>
 			</ProjectsToBuild>
@@ -43,7 +36,6 @@
 		<PropertyGroup>
 			<DropBin45Directory>$(DropDirectory)Bin-net4.5\</DropBin45Directory>
 			<DropLibDirectory>$(DropDirectory)Lib\</DropLibDirectory>
-			<DropProjectTemplatesDirectory>$(DropDirectory)Project Templates\</DropProjectTemplatesDirectory>
 			<DropSamplesDirectory>$(DropDirectory)Samples\</DropSamplesDirectory>
 			<DropSpecsDirectory>$(DropDirectory)Specs\</DropSpecsDirectory>
 		</PropertyGroup>
@@ -51,13 +43,10 @@
 			<RedistributableFiles Include="@(DropLayoutDependencies)">
 				<Package>DotNetOpenAuth project templates</Package>
 			</RedistributableFiles>
-			<ExtensionVsix Include="@(DropLayoutDependencies)" Condition=" '%(DropLayoutDependencies.MSBuildSourceProjectFile)' == '$(ProjectRoot)vsix\vsix.proj' " />
-			<ProjectTemplatesVsi Include="@(DropLayoutDependencies)" Condition=" '%(DropLayoutDependencies.MSBuildSourceProjectFile)' == '$(ProjectRoot)vsi\vsi.proj' " />
 			<DropDirectories Include="
 						 $(DropDirectory);
 						 $(DropBin45Directory);
 						 $(DropLibDirectory);
-						 $(DropProjectTemplatesDirectory);
 						 $(DropSamplesDirectory);
 						 $(DropSpecsDirectory);
 										 " />
@@ -80,8 +69,6 @@
 			<DropSatelliteSourceFiles>
 				<CultureDir>$([System.IO.Path]::GetDirectoryName('$([System.IO.Path]::GetDirectoryName('%(RecursiveDir)'))'))\</CultureDir>
 			</DropSatelliteSourceFiles>
-			<DropProjectTemplatesSourceFiles Include="@(ProjectTemplatesVsi)" />
-			<DropVsixSourceFiles Include="@(ExtensionVsix)" Condition=" '%(ExtensionVsix.IncludeInDrop)' == 'true' " />
 
 			<ExcludedDropSamplesSourceFiles Include="
 															$(ProjectRoot)**\obj\**;
@@ -115,8 +102,6 @@
 			<DropFiles Include="@(DropSourceFiles->'$(DropDirectory)%(RecursiveDir)%(FileName)%(Extension)')"/>
 			<DropBin45Files Include="@(DropBin45SourceFiles->'$(DropBin45Directory)%(RecursiveDir)%(FileName)%(Extension)')"/>
 			<DropSatelliteFiles Include="@(DropSatelliteSourceFiles->'$(DropBinDirectory)%(CultureDir)%(FileName)%(Extension)')" />
-			<DropProjectTemplatesFiles Include="@(DropProjectTemplatesSourceFiles->'$(DropProjectTemplatesDirectory)%(FileName)%(Extension)')" />
-			<DropVsixFiles Include="@(DropVsixSourceFiles->'$(DropProjectTemplatesDirectory)%(FileName)%(Extension)')" />
 			<DropSamplesFiles Include="@(DropSamplesSourceFiles->'$(DropSamplesDirectory)%(RecursiveDir)%(FileName)%(Extension)')"/>
 			<DropSamplesRefreshFiles Include="@(DropSamplesRefreshSourceFiles->'$(DropSamplesDirectory)%(RecursiveDir)%(FileName).refresh')"/>
 			<DropSamplesToolsProjects Include="$(DropSamplesDirectory)OpenIdOfflineProvider\OpenIdOfflineProvider.csproj" />
@@ -126,8 +111,6 @@
 										@(DropSourceFiles);
 										@(DropBin45SourceFiles);
 										@(DropSatelliteSourceFiles);
-										@(DropProjectTemplatesSourceFiles);
-										@(DropVsixSourceFiles);
 										@(DropSamplesSourceFiles);
 										@(DropSamplesRefreshSourceFiles);
 										@(DropDocSourceFiles);
@@ -138,8 +121,6 @@
 										@(DropFiles);
 										@(DropBin45Files);
 										@(DropSatelliteFiles);
-										@(DropProjectTemplatesFiles);
-										@(DropVsixFiles);
 										@(DropSamplesFiles);
 										@(DropSamplesRefreshFiles);
 										@(DropDocFiles);
