@@ -135,10 +135,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\DotNetOpenAuth.InfoCard\DotNetOpenAuth.InfoCard.csproj">
-      <Project>{408D10B8-34BA-4CBD-B7AA-FEB1907ABA4C}</Project>
-      <Name>DotNetOpenAuth.InfoCard</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\src\DotNetOpenAuth.Core\DotNetOpenAuth.Core.csproj">
       <Project>{60426312-6AE5-4835-8667-37EDEA670222}</Project>
       <Name>DotNetOpenAuth.Core</Name>

@@ -306,14 +306,6 @@
     <EmbeddedResource Include="OpenId\Discovery\htmldiscovery\html20provWithBadXrds.html" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DotNetOpenAuth.InfoCard.UI\DotNetOpenAuth.InfoCard.UI.csproj">
-      <Project>{E040EB58-B4D2-457B-A023-AE6EF3BD34DE}</Project>
-      <Name>DotNetOpenAuth.InfoCard.UI</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\DotNetOpenAuth.InfoCard\DotNetOpenAuth.InfoCard.csproj">
-      <Project>{408D10B8-34BA-4CBD-B7AA-FEB1907ABA4C}</Project>
-      <Name>DotNetOpenAuth.InfoCard</Name>
-    </ProjectReference>
     <ProjectReference Include="..\DotNetOpenAuth.Core.UI\DotNetOpenAuth.Core.UI.csproj">
       <Project>{173E7B8D-E751-46E2-A133-F72297C0D2F4}</Project>
       <Name>DotNetOpenAuth.Core.UI</Name>
@@ -381,10 +373,6 @@
     <ProjectReference Include="..\DotNetOpenAuth.OpenId.UI\DotNetOpenAuth.OpenId.UI.csproj">
       <Project>{75E13AAE-7D51-4421-ABFD-3F3DC91F576E}</Project>
       <Name>DotNetOpenAuth.OpenId.UI</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\DotNetOpenAuth.OpenIdInfoCard.UI\DotNetOpenAuth.OpenIdInfoCard.UI.csproj">
-      <Project>{3a8347e8-59a5-4092-8842-95c75d7d2f36}</Project>
-      <Name>DotNetOpenAuth.OpenIdInfoCard.UI</Name>
     </ProjectReference>
     <ProjectReference Include="..\DotNetOpenAuth.OpenIdOAuth\DotNetOpenAuth.OpenIdOAuth.csproj">
       <Project>{4bfaa336-5df3-4f27-82d3-06d13240e8ab}</Project>

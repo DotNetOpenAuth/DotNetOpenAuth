@@ -59,9 +59,6 @@
 										 DotNetOpenAuth.OAuth;
 										 DotNetOpenAuth.OAuth.Consumer;
 										 DotNetOpenAuth.OAuth.ServiceProvider;
-										 DotNetOpenAuth.InfoCard;
-										 DotNetOpenAuth.InfoCard.UI;
-										 DotNetOpenAuth.OpenIdInfoCard.UI;
 										 DotNetOpenAuth.OpenIdOAuth;
 										 " />
 		<ProductProjectNames Include="
