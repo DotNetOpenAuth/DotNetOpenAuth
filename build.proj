@@ -42,9 +42,6 @@
 		                     $(ProjectRoot)doc\$(ProductName).chm;
 		                     " />
 
-		<TestProjects Include="DotNetOpenAuth_AspNet_Test" />
-		<TestAssemblies Include="$(OutputPath)$(ProductName).AspNet.Test.dll" />
-
 		<ProjectsToPublish Include="doc\doc.proj">
 			<Targets>Publish</Targets>
 			<Properties>TargetFrameworkVersion=v4.5</Properties>
