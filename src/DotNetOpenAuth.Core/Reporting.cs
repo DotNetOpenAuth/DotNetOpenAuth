@@ -475,6 +475,8 @@ namespace DotNetOpenAuth {
 				return true;
 			} catch (ProtocolException ex) {
 				Logger.Library.Error("Unable to submit statistical report due to an HTTP error.", ex);
+			} catch (HttpRequestException ex) {
+				Logger.Library.Error("Unable to submit statistical report due to an HTTP error.", ex);
 			} catch (FileNotFoundException ex) {
 				Logger.Library.Error("Unable to submit statistical report because the report file is missing.", ex);
 			}
