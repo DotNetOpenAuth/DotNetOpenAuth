@@ -49,10 +49,6 @@
       <Project>{60426312-6AE5-4835-8667-37EDEA670222}</Project>
       <Name>DotNetOpenAuth.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\DotNetOpenAuth.Mvc\DotNetOpenAuth.Mvc.csproj">
-      <Project>{502c05e6-dbdf-4115-89b9-16ebaeea3cde}</Project>
-      <Name>DotNetOpenAuth.Mvc</Name>
-    </ProjectReference>
     <ProjectReference Include="..\DotNetOpenAuth.OpenId.RelyingParty\DotNetOpenAuth.OpenId.RelyingParty.csproj">
       <Project>{F458AB60-BA1C-43D9-8CEF-EC01B50BE87B}</Project>
       <Name>DotNetOpenAuth.OpenId.RelyingParty</Name>

@@ -17,9 +17,9 @@ namespace DotNetOpenAuth.Messaging {
 		/// </summary>
 		/// <param name="response">The response to send to the user agent.</param>
 		/// <returns>The <see cref="ActionResult"/> instance to be returned by the Controller's action method.</returns>
-		public static ActionResult AsActionResult(this OutgoingWebResponse response) {
+		public static ActionResult AsActionResultMvc5(this OutgoingWebResponse response) {
 			Requires.NotNull(response, "response");
-			return new OutgoingWebResponseActionResult(response);
+			return new OutgoingWebResponseActionResult5(response);
 		}
 	}
 }

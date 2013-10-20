@@ -224,7 +224,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetOpenAuth.OAuth.Common
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetOpenAuth.OAuth2.ClientAuthorization", "DotNetOpenAuth.OAuth2.ClientAuthorization\DotNetOpenAuth.OAuth2.ClientAuthorization.csproj", "{CCF3728A-B3D7-404A-9BC6-75197135F2D7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetOpenAuth.Mvc", "DotNetOpenAuth.Mvc\DotNetOpenAuth.Mvc.csproj", "{502C05E6-DBDF-4115-89B9-16EBAEEA3CDE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetOpenAuth.Mvc5", "DotNetOpenAuth.Mvc5\DotNetOpenAuth.Mvc5.csproj", "{502C05E6-DBDF-4115-89B9-16EBAEEA3CDE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
