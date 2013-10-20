@@ -47,6 +47,7 @@
 		<ProductProjectNames Include="
 									   DotNetOpenAuth.Core;
 										 DotNetOpenAuth.Core.UI;
+										 DotNetOpenAuth.Mvc;
 										 Mono.Math;
 										 Org.Mentalis.Security.Cryptography;
 										 DotNetOpenAuth.OpenId;
