@@ -73,6 +73,7 @@
 			<NuGetProperties Include="OutputPath40=$(OutputPath40)" />
 			<NuGetProperties Include="OutputPath45=$(OutputPath45)" />
 			<NuGetProperties Include="IntermediatePath=$(IntermediatePath40)" />
+			<NuGetProperties Include="IntermediatePath45=$(IntermediatePath45)" />
 
 			<NuGetSpecifications Include="*.nuspec" Exclude="DotNetOpenAuth.nuspec">
 				<Symbols>true</Symbols>

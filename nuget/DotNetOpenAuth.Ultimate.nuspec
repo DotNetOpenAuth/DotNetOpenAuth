@@ -35,6 +35,6 @@
 		<file src="content\Ultimate\net45-full\web.config.transform" target="content\net45-full\web.config.transform" />
 
 		<file src="..\src\**\*.cs" target="src" exclude="..\src\*\obj\**" />
-		<file src="$IntermediatePath$*.Version.cs" target="src" />
+		<file src="$IntermediatePath45$*.Version.cs" target="src" />
 	</files>
 </package>
