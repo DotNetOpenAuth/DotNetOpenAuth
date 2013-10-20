@@ -56,7 +56,6 @@
     <Compile Include="Messaging\KeyedCollectionDelegate.cs" />
     <Compile Include="Messaging\MultipartPostPart.cs" />
     <Compile Include="Messaging\NetworkDirectWebResponse.cs" />
-    <Compile Include="Messaging\OutgoingWebResponseActionResult.cs" />
     <Compile Include="Messaging\ProtocolFaultResponseException.cs" />
     <Compile Include="Messaging\Reflection\IMessagePartEncoder.cs" />
     <Compile Include="Messaging\Reflection\IMessagePartFormattingEncoder.cs" />

@@ -6,7 +6,7 @@
 	</ItemGroup>
 
 	<UsingTask AssemblyFile="DotNetOpenAuth.BuildTasks.dll" TaskName="GetBuildVersion" />
-	<UsingTask AssemblyFile="DotNetOpenAuth.BuildTasks.dll" TaskName="SetEnvironmentVariable" />
+	<UsingTask AssemblyFile="DotNetOpenAuth.BuildTasks.dll" TaskName="SetEnvironmentVariable" Condition=" '$(DNOASetEnvVar)' != 'false' " />
 	<UsingTask AssemblyFile="DotNetOpenAuth.BuildTasks.dll" TaskName="ChangeProjectReferenceToAssemblyReference" />
 	<UsingTask AssemblyFile="DotNetOpenAuth.BuildTasks.dll" TaskName="CompareFiles" />
 	<UsingTask AssemblyFile="DotNetOpenAuth.BuildTasks.dll" TaskName="ReSignDelaySignedAssemblies" />

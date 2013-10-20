@@ -137,9 +137,6 @@ http://opensource.org/licenses/ms-pl.html
 		<Reference Include="System.ComponentModel.DataAnnotations">
 			<RequiredTargetFramework>3.5</RequiredTargetFramework>
 		</Reference>
-		<!-- Since MVC 2 and higher apps tend to use type forwarding,
-		     it's a more broadly consumable idea to bind against MVC 1 for the library -->
-		<Reference Include="System.Web.Mvc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
 	</ItemGroup>
 
 	<ItemGroup Condition=" '$(ClrVersion)' == '4' ">
