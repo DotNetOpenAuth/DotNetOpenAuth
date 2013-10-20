@@ -122,8 +122,11 @@
 
 	<Target Name="ReflectionBase" Inputs="$(OutputAssemblyFile)" Outputs="$(ReflectionBaseFile)"
 					DependsOnTargets="CollectMRefDependencies;SetEnvironmentVars;CreateIntermediatePath;ProductionTools">
+		<RemoveDuplicates Inputs="@(MRefDependencies)">
+			<Output TaskParameter="Filtered" ItemName="UniqueMRefDependencies"/>
+		</RemoveDuplicates>
 		<ItemGroup>
-			<MRefDependenciesSwitch Include="@(MRefDependencies->'/dep:&quot;%(Identity)&quot;')" />
+			<MRefDependenciesSwitch Include="@(UniqueMRefDependencies->'/dep:&quot;%(Identity)&quot;')" />
 		</ItemGroup>
 		<PropertyGroup>
 			<MRefDependenciesSwitch>@(MRefDependenciesSwitch,' ')</MRefDependenciesSwitch>
