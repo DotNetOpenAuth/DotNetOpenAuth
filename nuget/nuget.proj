@@ -89,7 +89,7 @@
 		</PropertyGroup>
 		<ItemGroup>
 			<NuGetSpecifications>
-				<Properties>$(_NuGetProperties);Identity=%(FileName);GeneratedAssemblyInfoSourceFile=$(IntermediatePath40)%(FileName).Version.cs</Properties>
+				<Properties>$(_NuGetProperties);Identity=%(FileName);GeneratedAssemblyInfoSourceFile=$(IntermediatePath40)%(FileName).Version.cs;GeneratedAssemblyInfoSourceFile45=$(IntermediatePath45)%(FileName).Version.cs</Properties>
 			</NuGetSpecifications>
 		</ItemGroup>
 

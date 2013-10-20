@@ -28,6 +28,6 @@
 		<file src="$OutputPath45$$identity$.xml" target="lib\net45-full\" />
 
 		<file src="..\src\$Identity$\**\*.cs" target="src" exclude="..\src\$Identity$\obj\**" />
-		<file src="$GeneratedAssemblyInfoSourceFile$" target="src" />
+		<file src="$GeneratedAssemblyInfoSourceFile45$" target="src" />
 	</files>
 </package>
