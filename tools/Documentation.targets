@@ -12,6 +12,7 @@
 	<ItemGroup>
 		<MRefDependencies Include="$(ProjectRoot)lib\log4net.dll" />
 		<MRefDependencies Include="$(ProjectRoot)lib\System.Web.Mvc.dll" />
+		<MRefDependencies Include="$(ProjectRoot)lib\net-v4.0\System.Net.Http.dll" />
 	</ItemGroup>
 
 	<Import Project="$(ProjectRoot)Tools\sandcastle.targets" />
