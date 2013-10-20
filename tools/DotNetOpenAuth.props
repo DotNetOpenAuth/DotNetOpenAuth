@@ -98,6 +98,8 @@
 										">
 			<MergeIntoUnifiedAssembly Condition=" '$(IncludeOAuth2)' == 'false' ">false</MergeIntoUnifiedAssembly>
 		</ProductProjectNames>
+		<ProductProjectNames Include="DotNetOpenAuth.Mvc5" Condition=" '$(TargetFrameworkVersion)' == 'v4.5' " />
+
 		<ProductProjects Include="@(ProductProjectNames->'$(ProjectRoot)src\%(Identity)\%(Identity).csproj')"/>
 		<DelaySignedProjects Include="
 													 @(ProductProjects);

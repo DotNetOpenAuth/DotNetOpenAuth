@@ -28,7 +28,7 @@
     <Compile Include="OpenId\RelyingParty\OpenIdButton.cs" />
     <Compile Include="OpenId\RelyingParty\OpenIdEventArgs.cs" />
     <Compile Include="OpenId\RelyingParty\OpenIdLogin.cs" />
-    <Compile Include="OpenId\RelyingParty\OpenIdMobileTextBox.cs" Condition=" '$(ClrVersion)' != '4' "/>
+    <Compile Include="OpenId\RelyingParty\OpenIdMobileTextBox.cs" Condition=" '$(ClrVersion)' != '4' " />
     <Compile Include="OpenId\RelyingParty\OpenIdRelyingPartyAjaxControlBase.cs" />
     <Compile Include="OpenId\RelyingParty\OpenIdRelyingPartyControlBase.cs" />
     <Compile Include="OpenId\RelyingParty\OpenIdSelector.cs" />
@@ -61,6 +61,9 @@
       <Project>{26DC877F-5987-48DD-9DDB-E62F2DE0E150}</Project>
       <Name>Org.Mentalis.Security.Cryptography</Name>
     </ProjectReference>
+    <!-- Since MVC 2 and higher apps tend to use type forwarding,
+         it's a more broadly consumable idea to bind against MVC 1 for the library -->
+    <Reference Include="System.Web.Mvc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

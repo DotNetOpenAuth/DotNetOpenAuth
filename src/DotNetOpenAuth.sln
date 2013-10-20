@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.20827.3
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{20B5E173-C3C4-49F8-BD25-E69044075B4D}"
 	ProjectSection(SolutionItems) = preProject
 		..\build.proj = ..\build.proj
@@ -77,6 +79,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "DotNetOpenAuth.TestWeb", "D
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
 		VWDPort = "5073"
+		SlnRelativePath = "DotNetOpenAuth.TestWeb\"
 		DefaultWebSiteLanguage = "Visual C#"
 		StartServerOnDebug = "false"
 	EndProjectSection
@@ -104,6 +107,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "InfoCardRelyingParty", "..\
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
 		VWDPort = "59719"
+		SlnRelativePath = "..\samples\InfoCardRelyingParty\"
 		DefaultWebSiteLanguage = "Visual Basic"
 		StartServerOnDebug = "false"
 	EndProjectSection
@@ -130,6 +134,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "OpenIdRelyingPartyClassicAs
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
 		VWDPort = "10318"
+		SlnRelativePath = "..\samples\OpenIdRelyingPartyClassicAsp\"
 		StartServerOnDebug = "false"
 	EndProjectSection
 EndProject
@@ -218,6 +223,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetOpenAuth.OAuth.Common", "DotNetOpenAuth.OAuth.Common\DotNetOpenAuth.OAuth.Common.csproj", "{115217C5-22CD-415C-A292-0DD0238CDD89}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetOpenAuth.OAuth2.ClientAuthorization", "DotNetOpenAuth.OAuth2.ClientAuthorization\DotNetOpenAuth.OAuth2.ClientAuthorization.csproj", "{CCF3728A-B3D7-404A-9BC6-75197135F2D7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetOpenAuth.Mvc5", "DotNetOpenAuth.Mvc5\DotNetOpenAuth.Mvc5.csproj", "{502C05E6-DBDF-4115-89B9-16EBAEEA3CDE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -503,6 +510,12 @@ Global
 		{CCF3728A-B3D7-404A-9BC6-75197135F2D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CCF3728A-B3D7-404A-9BC6-75197135F2D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CCF3728A-B3D7-404A-9BC6-75197135F2D7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{502C05E6-DBDF-4115-89B9-16EBAEEA3CDE}.CodeAnalysis|Any CPU.ActiveCfg = Release|Any CPU
+		{502C05E6-DBDF-4115-89B9-16EBAEEA3CDE}.CodeAnalysis|Any CPU.Build.0 = Release|Any CPU
+		{502C05E6-DBDF-4115-89B9-16EBAEEA3CDE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{502C05E6-DBDF-4115-89B9-16EBAEEA3CDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{502C05E6-DBDF-4115-89B9-16EBAEEA3CDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{502C05E6-DBDF-4115-89B9-16EBAEEA3CDE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -541,6 +554,7 @@ Global
 		{173E7B8D-E751-46E2-A133-F72297C0D2F4} = {8D4236F7-C49B-49D3-BA71-6B86C9514BDE}
 		{51835086-9611-4C53-819B-F2D5C9320873} = {8D4236F7-C49B-49D3-BA71-6B86C9514BDE}
 		{115217C5-22CD-415C-A292-0DD0238CDD89} = {8D4236F7-C49B-49D3-BA71-6B86C9514BDE}
+		{502C05E6-DBDF-4115-89B9-16EBAEEA3CDE} = {8D4236F7-C49B-49D3-BA71-6B86C9514BDE}
 		{3896A32A-E876-4C23-B9B8-78E17D134CD3} = {C7EF1823-3AA7-477E-8476-28929F5C05D2}
 		{F8284738-3B5D-4733-A511-38C23F4A763F} = {C7EF1823-3AA7-477E-8476-28929F5C05D2}
 		{F458AB60-BA1C-43D9-8CEF-EC01B50BE87B} = {C7EF1823-3AA7-477E-8476-28929F5C05D2}
