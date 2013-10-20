@@ -198,6 +198,10 @@
       <Project>{60426312-6AE5-4835-8667-37EDEA670222}</Project>
       <Name>DotNetOpenAuth.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\src\DotNetOpenAuth.Mvc\DotNetOpenAuth.Mvc.csproj">
+      <Project>{9d308ef2-2712-4f83-a14c-18bf08d45526}</Project>
+      <Name>DotNetOpenAuth.Mvc</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\src\DotNetOpenAuth.OAuth2.AuthorizationServer\DotNetOpenAuth.OAuth2.AuthorizationServer.csproj">
       <Project>{99BB7543-EA16-43EE-A7BC-D7A25A3B22F6}</Project>
       <Name>DotNetOpenAuth.OAuth2.AuthorizationServer</Name>
