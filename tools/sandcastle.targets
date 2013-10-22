@@ -12,8 +12,6 @@
 		<Presentation>$(DxRoot)Presentation\$(PresentationStyle)\</Presentation>
 		<HHC>$(PROGRAMFILES)\Html Help Workshop\hhc.exe</HHC>
 
-		<OutputAssemblyFile Condition=" '$(OutputAssemblyFile)' == '' ">$(OutputPath)$(OutputAssembly).dll</OutputAssemblyFile>
-
 		<DocOutputApiPath>$(DocOutputPath)api\</DocOutputApiPath>
 		<DocIntermediatePath>$(ProjectRoot)obj\Doc\$(Configuration)\</DocIntermediatePath>
 		<FxReflectionIntermediatePath>$(ProjectRoot)obj\Doc\Tmp\</FxReflectionIntermediatePath>
@@ -120,18 +118,19 @@
 
 	<Target Name="CollectMRefDependencies" />
 
-	<Target Name="ReflectionBase" Inputs="$(OutputAssemblyFile)" Outputs="$(ReflectionBaseFile)"
+	<Target Name="ReflectionBase" Inputs="@(OutputAssemblyFiles)" Outputs="$(ReflectionBaseFile)"
 					DependsOnTargets="CollectMRefDependencies;SetEnvironmentVars;CreateIntermediatePath;ProductionTools">
 		<RemoveDuplicates Inputs="@(MRefDependencies)">
 			<Output TaskParameter="Filtered" ItemName="UniqueMRefDependencies"/>
 		</RemoveDuplicates>
 		<ItemGroup>
 			<MRefDependenciesSwitch Include="@(UniqueMRefDependencies->'/dep:&quot;%(Identity)&quot;')" />
+			<_OutputAssemblyFilesWithQuotes Include='"%(OutputAssemblyFiles.Identity)"' />
 		</ItemGroup>
 		<PropertyGroup>
 			<MRefDependenciesSwitch>@(MRefDependenciesSwitch,' ')</MRefDependenciesSwitch>
 		</PropertyGroup>
-		<Exec Command='"$(ProductionTools)MRefBuilder.exe" "$(OutputAssemblyFile)" /out:"$(ReflectionBaseFile)" $(MRefDependenciesSwitch)' />
+		<Exec Command='"$(ProductionTools)MRefBuilder.exe" @(_OutputAssemblyFilesWithQuotes, &apos; &apos;) /out:"$(ReflectionBaseFile)" $(MRefDependenciesSwitch)' />
 	</Target>
 
 	<Target Name="ReflectionData" DependsOnTargets="FxReflection;ReflectionBase" Inputs="$(ReflectionBaseFile)" Outputs="$(ReflectionFile)">

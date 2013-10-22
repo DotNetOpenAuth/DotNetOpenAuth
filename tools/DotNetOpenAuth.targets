@@ -2,7 +2,6 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
 	<Import Project="DotNetOpenAuth.Versioning.targets" />
 	<Import Project="JavascriptPacker.targets" />
-	<UsingTask AssemblyFile="$(ProjectRoot)lib\MSBuild.Community.Tasks.dll" TaskName="ILMerge"/>
 
 	<!-- Prevent our own item types from appearing in Solution Explorer. -->
 	<ItemDefinitionGroup>

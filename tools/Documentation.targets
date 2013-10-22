@@ -5,25 +5,25 @@
 		<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
 		<ProjectRoot Condition="'$(ProjectRoot)' == ''">$(MSBuildProjectDirectory)\..\..\</ProjectRoot>
 		<OutputAssembly>DotNetOpenAuth</OutputAssembly>
-		<OutputAssemblyFile>$(ILMergeOutputAssembly)</OutputAssemblyFile>
 		<DocOutputPath>$(ProjectRoot)doc\</DocOutputPath>
-		<DocumentationFile>$(ILMergeOutputXmlDocs)</DocumentationFile>
+		<DocumentationFile>$(OutputPath)$(ProductName).xml</DocumentationFile>
 	</PropertyGroup>
 
 	<Import Project="$(ProjectRoot)Tools\sandcastle.targets" />
 
-	<ItemGroup>
-		<MRefDependencyProjects Include="$(ProjectRoot)src\DotNetOpenAuth.Core\DotNetOpenAuth.Core.csproj" />
-		<MRefDependencyProjects Include="$(ProjectRoot)src\DotNetOpenAuth.Mvc\DotNetOpenAuth.Mvc.csproj" />
-		<MRefDependencyProjects Include="$(ProjectRoot)src\DotNetOpenAuth.OAuth2.Client\DotNetOpenAuth.OAuth2.Client.csproj" />
-	</ItemGroup>
-	
 	<Target Name="CollectMRefDependencies">
 		<MSBuild
-			Projects="@(MRefDependencyProjects)"
+			Projects="@(ProductProjects)"
 			Targets="ResolveAssemblyReferences"
 			BuildInParallel="$(BuildInParallel)">
 			<Output TaskParameter="TargetOutputs" ItemName="MRefDependencies" />
+		</MSBuild>
+
+		<MSBuild
+			Projects="@(ProductProjects)"
+			Targets="GetTargetPath"
+			BuildInParallel="$(BuildInParallel)">
+			<Output TaskParameter="TargetOutputs" ItemName="OutputAssemblyFiles"/>
 		</MSBuild>
 	</Target>
 

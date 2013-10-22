@@ -34,12 +34,6 @@
 
 	<Target Name="BuildProduct" DependsOnTargets="SkipVerification">
 		<MSBuild BuildInParallel="$(BuildInParallel)" 
-						 Projects="$(ProjectRoot)src\$(ProductName)\$(ProductName).proj" />
-	</Target>
-
-	<Target Name="BuildUnifiedProduct" DependsOnTargets="BuildProduct">
-		<MSBuild BuildInParallel="$(BuildInParallel)"
-						 Projects="$(ProjectRoot)src\$(ProductName)\$(ProductName).proj" 
-						 Targets="BuildUnifiedProduct" />
+						 Projects="@(ProductProjects)" />
 	</Target>
 </Project>

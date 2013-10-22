@@ -5,14 +5,12 @@
 
 	<Target Name="BuildIntermediates">
 		<ItemGroup>
-			<ProductTargets Include="BuildUnifiedProduct;ResignShippingDelaySignedAssemblies" Condition=" '$(SkipNugetDependenciesBuild)' != 'true' " />
-			<ProductTargets Include="GetOutputPath" />
+			<ProductTargets Include="ResignShippingDelaySignedAssemblies" Condition=" '$(SkipNugetDependenciesBuild)' != 'true' " />
+			<ProductTargets Include="Build;GetOutputPath" />
 		</ItemGroup>
 
-		<!-- We build the entire unified, signed product targeting both CLRs, since NuGet supports packages that contain both,
-		     and by building against CLR 4, several assembly references fall away from dotnetopenauth.dll, which makes some folks happy. -->
 		<MSBuild
-			Projects="$(ProjectRoot)src\DotNetOpenAuth\DotNetOpenAuth.proj"
+			Projects="@(ProductProjects)"
 			Targets="@(ProductTargets)"
 			Properties="TargetFrameworkVersion=v4.5"
 			BuildInParallel="$(BuildInParallel)">

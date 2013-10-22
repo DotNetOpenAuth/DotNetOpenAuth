@@ -17,7 +17,6 @@
 		<Zip7ToolPath>$(ToolsDir)7-Zip.x86\</Zip7ToolPath>
 		<NuGetToolPath>$(ToolsDir)NuGet\</NuGetToolPath>
 		<ZipFormat Condition=" '$(ZipFormat)' == '' ">.7z</ZipFormat>
-		<ILMergeTargetPlatformVersion>4.5</ILMergeTargetPlatformVersion>
 
 		<SignAssembly>true</SignAssembly>
 		<PublicKeyFile Condition="'$(PublicKeyFile)' == ''">$(ProjectRoot)src\official-build-key.pub</PublicKeyFile>
@@ -26,22 +25,7 @@
 		<PublicKeyToken>d0acff3d13b42a9d</PublicKeyToken>
 		<DelaySign>false</DelaySign>
 		<SignedSubPath Condition=" '$(DelaySign)' == 'true' ">signed\</SignedSubPath>
-
-		<ILMergeOutputAssemblyDirectory>$(OutputPath)unified\</ILMergeOutputAssemblyDirectory>
-		<ILMergeOutputAssembly45Directory>$(OutputPath45)unified\</ILMergeOutputAssembly45Directory>
-		<ILMergeOutputAssembly>$(ILMergeOutputAssemblyDirectory)$(ProductName).dll</ILMergeOutputAssembly>
-		<ILMergeOutputXmlDocs>$(ILMergeOutputAssemblyDirectory)$(ProductName).xml</ILMergeOutputXmlDocs>
 	</PropertyGroup>
-
-	<PropertyGroup>
-		<ILMergeTargetPlatformDirectory>$(MSBuildProgramFiles32)\Reference Assemblies\Microsoft\Framework\.NETFramework\$(TargetFrameworkVersion)</ILMergeTargetPlatformDirectory>
-	</PropertyGroup>
-	<ItemGroup>
-		<ILMergeSearchDirectories Include="$(ProjectRoot)lib" />
-	</ItemGroup>
-	<ItemGroup>
-		<ILMergeSearchDirectories Include="$(ILMergeTargetPlatformDirectory)" />
-	</ItemGroup>
 
 	<ItemGroup>
 		<ProductProjectNames Include="
@@ -70,12 +54,10 @@
 										 DotNetOpenAuth.OAuth2.Client.UI;
 										 DotNetOpenAuth.OAuth2.ResourceServer;
 										">
-			<MergeIntoUnifiedAssembly Condition=" '$(IncludeOAuth2)' == 'false' ">false</MergeIntoUnifiedAssembly>
 		</ProductProjectNames>
 		<ProductProjects Include="@(ProductProjectNames->'$(ProjectRoot)src\%(Identity)\%(Identity).csproj')"/>
 		<DelaySignedProjects Include="
 													 @(ProductProjects);
-													 $(ProjectRoot)src\dotnetopenauth\dotnetopenauth.proj;
 													 " />
 		<DelaySignedProjects Include="$(ProjectRoot)src\dotnetopenauth.test\dotnetopenauth.test.csproj">
 			<Nonshipping>true</Nonshipping>

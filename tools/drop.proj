@@ -4,10 +4,6 @@
 	<Import Project="$(MSBuildProjectDirectory)\DotNetOpenAuth.automated.props"/>
 
 	<Target Name="LayoutDependencies">
-		<MSBuild Projects="$(ProjectRoot)src\$(ProductName)\$(ProductName).proj"
-		         Properties="TargetFrameworkVersion=v4.5"
-		         Targets="BuildUnifiedProduct"
-		         BuildInParallel="$(BuildInParallel)" />
 		<MSBuild Projects="@(DelaySignedProjects)"
 		         Properties="TargetFrameworkVersion=v4.5"
 		         Targets="Sign"
@@ -59,9 +55,6 @@
 																"
 											 Exclude="$(ProjectRoot)Doc\README.*.html;" />
 			<DropBin45SourceFiles Include="
-																$(ILMergeOutputAssembly45Directory)$(SignedSubPath)$(ProductName).dll;
-																$(ILMergeOutputAssembly45Directory)$(ProductName).pdb;
-																$(ILMergeOutputAssembly45Directory)$(ProductName).xml;
 																$(ProjectRoot)Doc\README.Bin.html;
 																$(ProjectRoot)src\$(ProductName).Core\Configuration\$(ProductName).xsd;
 													" />
