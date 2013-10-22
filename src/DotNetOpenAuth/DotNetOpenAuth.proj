@@ -44,13 +44,18 @@
 			<OrderedMergeInputAssemblies Include="@(ILMergeProductInputAssemblies)" Condition=" '%(ILMergeProductInputAssemblies.FileName)' == 'DotNetOpenAuth.Core' " />
 		</ItemGroup>
 
+		<PropertyGroup>
+			<ILMergeKeyFile Condition=" '$(DelaySign)' == 'true' ">$(PublicKeyFile)</ILMergeKeyFile>
+			<ILMergeKeyFile Condition=" '$(DelaySign)' != 'true' ">$(AssemblyOriginatorKeyFile)</ILMergeKeyFile>
+		</PropertyGroup>
+
 		<ILMerge
 			ExcludeFile="$(ProjectRoot)ILMergeInternalizeExceptions.txt"
 			InputAssemblies="@(OrderedMergeInputAssemblies)"
 			OutputFile="$(ILMergeOutputAssembly)"
 			SearchDirectories="@(ILMergeSearchDirectories)"
-			KeyFile="$(PublicKeyFile)"
-			DelaySign="true"
+			KeyFile="$(ILMergeKeyFile)"
+			DelaySign="$(DelaySign)"
 			XmlDocumentation="true"
 			CopyAttributes="true"
 			AllowDuplicateAttributes="true"
