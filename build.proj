@@ -52,15 +52,15 @@
 		</ProjectsToPublish>
 	</ItemGroup>
 
-	<Target Name="BuildTests" DependsOnTargets="SkipVerification">
+	<Target Name="BuildTests">
 		<MSBuild Projects="$(SolutionPath)" Targets="@(TestProjects)" BuildInParallel="$(BuildInParallel)" />
 	</Target>
 
-	<Target Name="Build" DependsOnTargets="SkipVerification">
+	<Target Name="Build">
 		<MSBuild Projects="$(SolutionPath)" BuildInParallel="$(BuildInParallel)" />
 	</Target>
 
-	<Target Name="Rebuild" DependsOnTargets="SkipVerification">
+	<Target Name="Rebuild">
 		<MSBuild Projects="$(SolutionPath)" Targets="Rebuild" BuildInParallel="$(BuildInParallel)" />
 	</Target>
 

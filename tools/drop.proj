@@ -4,11 +4,10 @@
 	<Import Project="$(MSBuildProjectDirectory)\DotNetOpenAuth.automated.props"/>
 
 	<Target Name="LayoutDependencies">
-		<MSBuild Projects="@(DelaySignedProjects)"
+		<MSBuild Projects="@(ProductProjects)"
 		         Properties="TargetFrameworkVersion=v4.5"
-		         Targets="Sign"
-		         BuildInParallel="$(BuildInParallel)"
-		         Condition=" '%(DelaySignedProjects.Nonshipping)' != 'true' " />
+		         Targets="Build"
+		         BuildInParallel="$(BuildInParallel)" />
 	</Target>
 
 	<Target Name="Layout" DependsOnTargets="LayoutDependencies">
@@ -58,7 +57,7 @@
 																$(ProjectRoot)Doc\README.Bin.html;
 																$(ProjectRoot)src\$(ProductName).Core\Configuration\$(ProductName).xsd;
 													" />
-			<DropSatelliteSourceFiles Include="$(OutputPath)**\$(SignedSubPath)$(ProductName).resources.dll" />
+			<DropSatelliteSourceFiles Include="$(OutputPath)**\$(ProductName).resources.dll" />
 			<DropSatelliteSourceFiles>
 				<CultureDir>$([System.IO.Path]::GetDirectoryName('$([System.IO.Path]::GetDirectoryName('%(RecursiveDir)'))'))\</CultureDir>
 			</DropSatelliteSourceFiles>

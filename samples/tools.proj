@@ -11,7 +11,7 @@
 
 		<ItemGroup>
 			<ToolProjects Include="$(ProjectRoot)Samples\OpenIdOfflineProvider\OpenIdOfflineProvider.csproj">
-				<Targets>Sign</Targets>
+				<Targets>Build</Targets>
 			</ToolProjects>
 		</ItemGroup>
 
@@ -25,7 +25,6 @@
 											 Condition=" '%(ToolProjectsOutputs.CopyLocal)' != 'false' "
 											 Exclude="
 											 $(OutputPath)$(ProductName).dll;
-											 $(OutputPath)$(SignedSubPath)$(ProductName).dll;
 											 $(OutputPath)System.Web.Mvc.dll;
 											 " />
 			

@@ -28,11 +28,7 @@
 		</PropertyGroup>
 	</Target>
 
-	<Target Name="SkipVerification" Condition="'$(IsElevated)' == 'true'">
-		<SignatureVerification SkipVerification="true" AssemblyName="*" PublicKeyToken="$(PublicKeyToken)" />
-	</Target>
-
-	<Target Name="BuildProduct" DependsOnTargets="SkipVerification">
+	<Target Name="BuildProduct">
 		<MSBuild BuildInParallel="$(BuildInParallel)" 
 						 Projects="@(ProductProjects)" />
 	</Target>

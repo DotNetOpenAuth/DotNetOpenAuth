@@ -24,7 +24,6 @@
 		<KeyPairContainer Condition="'$(KeyPairContainer)' == ''">DotNetOpenAuth</KeyPairContainer>
 		<PublicKeyToken>d0acff3d13b42a9d</PublicKeyToken>
 		<DelaySign>false</DelaySign>
-		<SignedSubPath Condition=" '$(DelaySign)' == 'true' ">signed\</SignedSubPath>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -56,20 +55,9 @@
 										">
 		</ProductProjectNames>
 		<ProductProjects Include="@(ProductProjectNames->'$(ProjectRoot)src\%(Identity)\%(Identity).csproj')"/>
-		<DelaySignedProjects Include="
-													 @(ProductProjects);
-													 " />
-		<DelaySignedProjects Include="$(ProjectRoot)src\dotnetopenauth.test\dotnetopenauth.test.csproj">
-			<Nonshipping>true</Nonshipping>
-		</DelaySignedProjects>
-		<DelaySignedProjects Include="$(ProjectRoot)samples\openidofflineprovider\openidofflineprovider.csproj">
-			<TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-		</DelaySignedProjects>
 
 		<ProjectReferencesToRemove Include="@(ProductProjectNames->'..\..\src\%(Identity)\%(Identity).csproj')" />
 		<AssemblyReferencesToReplaceWith Include="@(ProjectReferencesToRemove->'..\..\Bin-net4.0\$(ProductName).dll')" />
-
-		<SignDependsOn Include="Build" Condition=" '$(SuppressBuildTarget)' != 'true' " />
 	</ItemGroup>
 
 	<Import Project="$(ProjectRoot)lib\DotNetOpenAuth.BuildTasks.targets" />

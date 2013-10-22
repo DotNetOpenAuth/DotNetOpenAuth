@@ -3,24 +3,10 @@
 	<Import Project="DotNetOpenAuth.Versioning.targets" />
 	<Import Project="JavascriptPacker.targets" />
 
-	<!-- Prevent our own item types from appearing in Solution Explorer. -->
-	<ItemDefinitionGroup>
-		<SignDependsOn>
-			<Visible>false</Visible>
-		</SignDependsOn>
-		<DelaySignedAssemblies>
-			<Visible>false</Visible>
-		</DelaySignedAssemblies>
-	</ItemDefinitionGroup>
-
 	<PropertyGroup>
 		<DefineConstants Condition=" '$(SignAssembly)' == 'true' ">$(DefineConstants);StrongNameSigned</DefineConstants>
 		<AssemblySearchPaths>$(ProjectRoot)lib;$(AssemblySearchPaths)</AssemblySearchPaths>
 	</PropertyGroup>
-
-	<ItemGroup>
-		<DelaySignedAssemblies Include="$(TargetPath)" Condition=" '$(SuppressTargetPathDelaySignedAssembly)' != 'true' "/>
-	</ItemGroup>
 
 	<!-- This is our multi-targeting aware shadow assembly generator. -->
 	<UsingTask AssemblyFile="$(ProjectRoot)\lib\DotNetOpenAuth.BuildTasks.dll" TaskName="Publicize" />
@@ -45,62 +31,6 @@
 			KeyFile="$(PublicKeyFile)">
 			<Output TaskParameter="AccessorAssembly" ItemName="ReferencePath" />
 		</Publicize>
-	</Target>
-
-	<Target Name="Sign" DependsOnTargets="@(SignDependsOn)" Outputs="@(SignedDependencies);@(SignedAssemblyTargets)" Condition=" '@(DelaySignedAssemblies)' != '' and '$(DelaySign)' == 'true' ">
-		<!-- Make sure that all dependencies are also signed. -->
-		<MSBuild Projects="@(ProjectReference)" Targets="Sign" BuildInParallel="$(BuildInParallel)">
-			<Output TaskParameter="TargetOutputs" ItemName="SignedDependencies"/>
-		</MSBuild>
-
-		<!-- Add the resource assemblies. -->
-		<ItemGroup>
-			<!-- Make sure that we consider the TargetPath's satellites even if TargetPath itself was suppressed. -->
-			<DelaySignedAssembliesForSatellites Include="@(DelaySignedAssemblies)" />
-			<DelaySignedAssembliesForSatellites Include="$(TargetPath)" Condition=" '$(SuppressTargetPathDelaySignedAssembly)' == 'true' "/>
-		</ItemGroup>
-		<PropertyGroup>
-			<DelaySignedSatelliteAssembliesPattern>@(DelaySignedAssembliesForSatellites->'%(RootDir)%(Directory)*\%(FileName).resources.*')</DelaySignedSatelliteAssembliesPattern>
-		</PropertyGroup>
-		<ItemGroup>
-			<DelaySignedSatelliteAssemblies Include="$(DelaySignedSatelliteAssembliesPattern)" />
-			<DelaySignedSatelliteAssemblies>
-				<CultureDir>$([System.IO.Path]::GetFileName($([System.IO.Path]::GetDirectoryName('%(Directory)'))))\</CultureDir>
-			</DelaySignedSatelliteAssemblies>
-		</ItemGroup>
-
-		<!-- Don't sign assemblies in place.  Lots of reasons for this, not the least of which is that
-		     subsequent builds of web site projects will cause the satellite assemblies to be regenerated (bizarre)
-				 and erase the signature. -->
-		<ItemGroup>
-			<AssembliesToSign Include="@(DelaySignedAssemblies);@(DelaySignedSatelliteAssemblies)" />
-			<SignedAssemblyTargets Include="@(AssembliesToSign->'%(RootDir)%(Directory)$(SignedSubPath)%(FileName)%(Extension)')">
-				<UnsignedAssemblyPath>%(AssembliesToSign.Identity)</UnsignedAssemblyPath>
-				<SymbolPath Condition="Exists('%(RootDir)%(Directory)%(FileName).pdb')">%(RootDir)%(Directory)%(FileName).pdb</SymbolPath>
-				<XmlDocumentationFile Condition="Exists('%(RootDir)%(Directory)%(FileName).xml')">%(RootDir)%(Directory)%(FileName).xml</XmlDocumentationFile>
-			</SignedAssemblyTargets>
-		</ItemGroup>
-
-		<Message Text="Signing delay-signed assemblies using key pair container $(KeyPairContainer)." />
-		<Copy SourceFiles="@(AssembliesToSign)" DestinationFiles="@(SignedAssemblyTargets)" />
-		<ReSignDelaySignedAssemblies
-			KeyContainer="$(KeyPairContainer)"
-			Assemblies="@(SignedAssemblyTargets)"
-			Condition="Exists(%(Identity))" />
-	</Target>
-
-	<Target Name="ResignDelaySignedAssemblies" Outputs="@(ResignedAssembliesOutputs)">
-		<MSBuild Projects="@(DelaySignedProjects)" Targets="Sign" BuildInParallel="$(BuildInParallel)"
-						 Condition=" '%(DelaySignedProjects.TargetFrameworkVersion)' == '' or '%(DelaySignedProjects.TargetFrameworkVersion)' == '$(TargetFrameworkVersion)' ">
-			<Output TaskParameter="TargetOutputs" ItemName="ResignedAssembliesOutputs"/>
-		</MSBuild>
-	</Target>
-
-	<Target Name="ResignShippingDelaySignedAssemblies" Outputs="@(ResignedAssembliesOutputs)">
-		<MSBuild Projects="@(DelaySignedProjects)" Targets="Sign" BuildInParallel="$(BuildInParallel)"
-						 Condition=" '%(DelaySignedProjects.Nonshipping)' != 'true' and ('%(DelaySignedProjects.TargetFrameworkVersion)' == '' or '%(DelaySignedProjects.TargetFrameworkVersion)' == '$(TargetFrameworkVersion)') ">
-			<Output TaskParameter="TargetOutputs" ItemName="ResignedAssembliesOutputs"/>
-		</MSBuild>
 	</Target>
 
 	<Target Name="GetOutputPath" Outputs="$(OutputPath)" />

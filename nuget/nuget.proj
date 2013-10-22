@@ -5,7 +5,6 @@
 
 	<Target Name="BuildIntermediates">
 		<ItemGroup>
-			<ProductTargets Include="ResignShippingDelaySignedAssemblies" Condition=" '$(SkipNugetDependenciesBuild)' != 'true' " />
 			<ProductTargets Include="Build;GetOutputPath" />
 		</ItemGroup>
 
@@ -17,11 +16,6 @@
 			<Output TaskParameter="TargetOutputs" ItemName="TargetOutputs45"/>
 		</MSBuild>
 
-		<ItemGroup>
-			<ResignedAssembliesOutputs Include="@(TargetOutputs45)" Condition=" '%(MSBuildSourceTargetName)' == 'Sign' ">
-				<TargetFramework>v4.5</TargetFramework>
-			</ResignedAssembliesOutputs>
-		</ItemGroup>
 		<PropertyGroup>
 			<OutputPath45 Condition=" '%(MSBuildSourceTargetName)' == 'GetOutputPath' ">@(TargetOutputs45)</OutputPath45>
 		</PropertyGroup>
@@ -33,7 +27,6 @@
 			<NuGetProperties Include="oauth2version=$(NuGetPackageVersion)" />
 			<NuGetProperties Include="OutputPath45=$(OutputPath45)" />
 			<NuGetProperties Include="IntermediatePath=$(IntermediatePath45)" />
-			<NuGetProperties Include="signedSubPath=$(SignedSubPath)" />
 
 			<NuGetSpecifications Include="*.nuspec" Exclude="DotNetOpenAuth.nuspec">
 				<Symbols>true</Symbols>

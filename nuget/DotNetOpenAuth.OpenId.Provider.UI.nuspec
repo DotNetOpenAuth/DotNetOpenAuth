@@ -23,7 +23,7 @@
 		</dependencies>
 	</metadata>
 	<files>
-		<file src="$OutputPath45$$signedSubPath$$identity$.dll" target="lib\net45-full\" />
+		<file src="$OutputPath45$$identity$.dll" target="lib\net45-full\" />
 		<file src="$OutputPath45$$identity$.pdb" target="lib\net45-full\" />
 		<file src="$OutputPath45$$identity$.xml" target="lib\net45-full\" />
 

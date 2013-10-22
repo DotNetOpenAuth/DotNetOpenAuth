@@ -21,15 +21,15 @@
 		</references>
 	</metadata>
 	<files>
-		<file src="$OutputPath45$$signedSubPath$$identity$.dll" target="lib\net45-full\" />
+		<file src="$OutputPath45$$identity$.dll" target="lib\net45-full\" />
 		<file src="$OutputPath45$$identity$.pdb" target="lib\net45-full\" />
 		<file src="$OutputPath45$$identity$.xml" target="lib\net45-full\" />
 
-		<file src="$OutputPath45$$signedSubPath$Org.Mentalis.Security.Cryptography.dll" target="lib\net45-full\" />
+		<file src="$OutputPath45$Org.Mentalis.Security.Cryptography.dll" target="lib\net45-full\" />
 		<file src="$OutputPath45$Org.Mentalis.Security.Cryptography.pdb" target="lib\net45-full\" />
 		<file src="$OutputPath45$Org.Mentalis.Security.Cryptography.xml" target="lib\net45-full\" />
 
-		<file src="$OutputPath45$$signedSubPath$Mono.Math.dll" target="lib\net45-full\" />
+		<file src="$OutputPath45$Mono.Math.dll" target="lib\net45-full\" />
 		<file src="$OutputPath45$Mono.Math.pdb" target="lib\net45-full\" />
 		<file src="$OutputPath45$Mono.Math.xml" target="lib\net45-full\" />
 

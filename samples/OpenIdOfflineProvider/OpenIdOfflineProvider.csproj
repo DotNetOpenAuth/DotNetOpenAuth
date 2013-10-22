@@ -200,18 +200,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <ILMergeProjectOutputAssembly>$(ILMergeOutputAssemblyDirectory)$(TargetName)$(TargetExt)</ILMergeProjectOutputAssembly>
-    <!-- Don't sign the non-unified version of the assembly. -->
-    <SuppressTargetPathDelaySignedAssembly>true</SuppressTargetPathDelaySignedAssembly>
-  </PropertyGroup>
-  <!-- These items should never be visible.  In the project source tree, they're invisible because of an ItemDefinitionGroup
-       in DotNetOpenAuth.props.  But in the shipping samples that file is not included, so we must still set Visible=false explicitly.. -->
-  <ItemGroup>
-    <DelaySignedAssemblies Include="$(TargetPath)">
-      <Visible>false</Visible>
-    </DelaySignedAssemblies>
-  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\DotNetOpenAuth.Core\DotNetOpenAuth.Core.csproj">
       <Project>{60426312-6AE5-4835-8667-37EDEA670222}</Project>

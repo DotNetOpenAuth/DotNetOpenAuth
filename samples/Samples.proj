@@ -21,7 +21,7 @@
 		<PublishableWebSamples Include="@(_SampleWebConfigs->'%(RootDir)%(Directory)')" />
 	</ItemGroup>
 
-	<Target Name="Build" DependsOnTargets="SkipVerification">
+	<Target Name="Build">
 		<ItemGroup>
 			<SampleProjectsToBuild Include="@(SampleProjects)" />
 		</ItemGroup>
