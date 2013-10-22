@@ -11,6 +11,7 @@
 		<licenseUrl>http://www.opensource.org/licenses/ms-pl.html</licenseUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<summary>Provides the HttpResponseMessage.AsActionResult() extension method.</summary>
+		<description>Provides the HttpResponseMessage.AsActionResult() extension method.</description>
 		<dependencies>
 			<dependency id="DotNetOpenAuth.Core" version="[$version$]" />
 			<dependency id="Microsoft.AspNet.Mvc" version="[5.0.0,6.0)" />
