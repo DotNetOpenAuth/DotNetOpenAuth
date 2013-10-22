@@ -17,6 +17,7 @@
 		</description>
 		<language>en-US</language>
 		<dependencies>
+			<dependency id="DotNetOpenAuth.Mvc" version="[$version$]" />
 			<dependency id="DotNetOpenAuth.OpenId.RelyingParty.UI" version="[$version$]" />
 			<dependency id="DotNetOpenAuth.OpenId.Provider.UI" version="[$version$]" />
 			<dependency id="DotNetOpenAuth.OAuth.Consumer" version="[$version$]" />
