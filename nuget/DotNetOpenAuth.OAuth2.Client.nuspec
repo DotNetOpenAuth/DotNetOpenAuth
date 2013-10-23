@@ -17,7 +17,7 @@
 		</description>
 		<dependencies>
 			<dependency id="DotNetOpenAuth.OAuth2.ClientAuthorization" version="[$oauth2version$]" />
-			<dependency id="Microsoft.AspNet.WebApi.Client" version="[4.0.20710.0,5.0)" />
+			<dependency id="Microsoft.AspNet.WebApi.Client" version="[5.0,6.0)" />
 		</dependencies>
 	</metadata>
 	<files>
