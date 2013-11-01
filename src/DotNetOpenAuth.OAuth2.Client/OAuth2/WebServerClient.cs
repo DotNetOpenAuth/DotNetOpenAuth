@@ -134,8 +134,9 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// Processes the authorization response from an authorization server, if available.
 		/// </summary>
 		/// <param name="request">The incoming HTTP request that may carry an authorization response.</param>
+		/// <param name="returnTo">The URL the authorization server should redirect the browser (typically on this site) to when the authorization is completed.  If null, the current request's URL will be used.</param>
 		/// <returns>The authorization state that contains the details of the authorization.</returns>
-		public IAuthorizationState ProcessUserAuthorization(HttpRequestBase request = null) {
+		public IAuthorizationState ProcessUserAuthorization(HttpRequestBase request = null, Uri returnTo = null) {
 			Requires.ValidState(!string.IsNullOrEmpty(this.ClientIdentifier), Strings.RequiredPropertyNotYetPreset, "ClientIdentifier");
 			Requires.ValidState(this.ClientCredentialApplicator != null, Strings.RequiredPropertyNotYetPreset, "ClientCredentialApplicator");
 
@@ -145,7 +146,7 @@ namespace DotNetOpenAuth.OAuth2 {
 
 			IMessageWithClientState response;
 			if (this.Channel.TryReadFromRequest<IMessageWithClientState>(request, out response)) {
-				Uri callback = MessagingUtilities.StripMessagePartsFromQueryString(request.GetPublicFacingUrl(), this.Channel.MessageDescriptions.Get(response));
+				Uri callback = returnTo ?? MessagingUtilities.StripMessagePartsFromQueryString(request.GetPublicFacingUrl(), this.Channel.MessageDescriptions.Get(response));
 				IAuthorizationState authorizationState;
 				if (this.AuthorizationTracker != null) {
 					authorizationState = this.AuthorizationTracker.GetAuthorizationState(callback, response.ClientState);
