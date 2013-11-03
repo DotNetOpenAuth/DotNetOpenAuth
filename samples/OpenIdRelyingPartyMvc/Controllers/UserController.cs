@@ -43,34 +43,35 @@
 						var redirectingResponse = await request.GetRedirectingResponseAsync(this.Response.ClientDisconnectedToken);
 						return redirectingResponse.AsActionResult();
 					} catch (ProtocolException ex) {
-						ViewData["Message"] = ex.Message;
-						return View("Login");
+						this.ViewData["Message"] = ex.Message;
+						return this.View("Login");
 					}
-				} else {
-					ViewData["Message"] = "Invalid identifier";
-					return View("Login");
 				}
-			} else {
-				// Stage 3: OpenID Provider sending assertion response
-				switch (response.Status) {
-					case AuthenticationStatus.Authenticated:
-						Session["FriendlyIdentifier"] = response.FriendlyIdentifierForDisplay;
-						var cookie = FormsAuthentication.GetAuthCookie(response.ClaimedIdentifier, false);
-						Response.SetCookie(cookie);
-						if (!string.IsNullOrEmpty(returnUrl)) {
-							return Redirect(returnUrl);
-						} else {
-							return RedirectToAction("Index", "Home");
-						}
-					case AuthenticationStatus.Canceled:
-						ViewData["Message"] = "Canceled at provider";
-						return View("Login");
-					case AuthenticationStatus.Failed:
-						ViewData["Message"] = response.Exception.Message;
-						return View("Login");
-				}
+			    this.ViewData["Message"] = "Invalid identifier";
+			    return this.View("Login");
 			}
-			return new EmptyResult();
+
+		    // Stage 3: OpenID Provider sending assertion response
+		    switch (response.Status) {
+		        case AuthenticationStatus.Authenticated:
+		            this.Session["FriendlyIdentifier"] = response.FriendlyIdentifierForDisplay;
+		            var cookie = FormsAuthentication.GetAuthCookie(response.ClaimedIdentifier, false);
+		            this.Response.SetCookie(cookie);
+		            if (!string.IsNullOrEmpty(returnUrl))
+		            {
+		                return this.Redirect(returnUrl);
+		            }
+		            
+                    return this.RedirectToAction("Index", "Home");
+
+		        case AuthenticationStatus.Canceled:
+		            this.ViewData["Message"] = "Canceled at provider";
+		            return this.View("Login");
+		        case AuthenticationStatus.Failed:
+		            this.ViewData["Message"] = response.Exception.Message;
+		            return this.View("Login");
+		    }
+		    return new EmptyResult();
 		}
 	}
 }
