@@ -404,8 +404,8 @@ namespace DotNetOpenAuth.OpenId.Messages {
 				IsQuerySubsetOf(this.Recipient.Query, this.ReturnTo.Query),
 				OpenIdStrings.ReturnToParamDoesNotMatchRequestUrl,
 				Protocol.openid.return_to,
-				this.ReturnTo,
-				this.Recipient);
+				this.ReturnTo.AbsoluteUri,
+				this.Recipient.AbsoluteUri);
 		}
 	}
 }
