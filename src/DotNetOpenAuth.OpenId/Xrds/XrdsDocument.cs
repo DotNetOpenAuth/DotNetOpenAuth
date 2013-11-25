@@ -54,7 +54,7 @@ namespace DotNetOpenAuth.Xrds {
 		/// <param name="xml">The text that is the XRDS document.</param>
 		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "Fixing would decrease readability, and not likely avoid any finalizer on a StringReader anyway.")]
 		public XrdsDocument(string xml)
-			: this(new XPathDocument(new StringReader(xml)).CreateNavigator()) { }
+			: this(new XPathDocument(XmlReader.Create(new StringReader(xml), MessagingUtilities.CreateUntrustedXmlReaderSettings())).CreateNavigator()) { }
 
 		/// <summary>
 		/// Gets the XRD child elements of the document.
