@@ -51,8 +51,6 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// <param name="encryptingKey">The crypto service provider with the resource server's public key used to encrypt the access token.</param>
 		/// <returns>An access token serializer.</returns>
 		internal static IDataBagFormatter<AccessToken> CreateFormatter(RSACryptoServiceProvider signingKey, RSACryptoServiceProvider encryptingKey) {
-			Requires.That(signingKey == null || !signingKey.PublicOnly, "signingKey", "requires private key");
-
 			return new UriStyleMessageFormatter<AccessToken>(signingKey, encryptingKey);
 		}
 
