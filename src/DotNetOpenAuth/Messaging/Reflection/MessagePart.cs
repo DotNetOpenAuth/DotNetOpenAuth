@@ -23,7 +23,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 	/// </summary>
 	[ContractVerification(true)]
 	[DebuggerDisplay("MessagePart {Name}")]
-	internal class MessagePart {
+	public class MessagePart {
 		/// <summary>
 		/// A map of converters that help serialize custom objects to string values and back again.
 		/// </summary>
@@ -296,7 +296,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 		/// <param name="toOriginalString">The mapping function that converts some custom value to its original (non-normalized) string.  May be null if the same as the <paramref name="toString"/> function.</param>
 		/// <param name="toValue">The function to convert a string to the custom type.</param>
 		[SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Diagnostics.Contracts.__ContractsRuntime.Requires<System.ArgumentNullException>(System.Boolean,System.String,System.String)", Justification = "Code contracts"), SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "toString", Justification = "Code contracts"), SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "toValue", Justification = "Code contracts")]
-		private static void Map<T>(Func<T, string> toString, Func<T, string> toOriginalString, Func<string, T> toValue) {
+		public static void Map<T>(Func<T, string> toString, Func<T, string> toOriginalString, Func<string, T> toValue) {
 			Contract.Requires<ArgumentNullException>(toString != null, "toString");
 			Contract.Requires<ArgumentNullException>(toValue != null, "toValue");
 
@@ -307,7 +307,7 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 			Func<object, string> safeToString = obj => obj != null ? toString((T)obj) : null;
 			Func<object, string> safeToOriginalString = obj => obj != null ? toOriginalString((T)obj) : null;
 			Func<string, object> safeToT = str => str != null ? toValue(str) : default(T);
-			converters.Add(typeof(T), new ValueMapping(safeToString, safeToOriginalString, safeToT));
+			converters[typeof(T)] = new ValueMapping(safeToString, safeToOriginalString, safeToT);
 		}
 
 		/// <summary>
