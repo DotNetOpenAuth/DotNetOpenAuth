@@ -98,7 +98,7 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		/// <remarks>
 		/// Implementations of this interface should ensure that this property never returns null.
 		/// </remarks>
-		public IDictionary<string, string> ExtraData {
+		public virtual IDictionary<string, string> ExtraData {
 			get { return this.extraData; }
 		}
 

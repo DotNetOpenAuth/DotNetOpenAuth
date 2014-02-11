@@ -27,6 +27,14 @@ namespace DotNetOpenAuth.OAuth2.AuthServer.Messages {
 			: base(tokenEndpoint, version) {
 		}
 
+        public override IDictionary<string, string> ExtraData
+        {
+            get
+            {
+                return ((IRefreshTokenCarryingRequest)this).AuthorizationDescription.ExtraData;
+            }
+        }
+
 	#region IRefreshTokenCarryingRequest members
 
 		/// <summary>
