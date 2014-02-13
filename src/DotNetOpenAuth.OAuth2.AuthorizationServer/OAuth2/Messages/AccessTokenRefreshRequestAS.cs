@@ -31,7 +31,11 @@ namespace DotNetOpenAuth.OAuth2.AuthServer.Messages {
         {
             get
             {
-                return ((IRefreshTokenCarryingRequest)this).AuthorizationDescription.ExtraData;
+                // avoid returning null here.
+                var refreshToken = ((IRefreshTokenCarryingRequest) this).AuthorizationDescription;
+                return refreshToken == null
+                    ? base.ExtraData
+                    : refreshToken.ExtraData;
             }
         }
 
