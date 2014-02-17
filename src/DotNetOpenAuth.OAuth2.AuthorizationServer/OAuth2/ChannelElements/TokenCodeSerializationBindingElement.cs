@@ -63,7 +63,13 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 			if (refreshTokenResponse != null && refreshTokenResponse.HasRefreshToken) {
 				var refreshTokenCarrier = (IAuthorizationCarryingRequest)message;
 				var refreshToken = new RefreshToken(refreshTokenCarrier.AuthorizationDescription);
-				var refreshTokenFormatter = RefreshToken.CreateFormatter(this.AuthorizationServer.CryptoKeyStore);
+                // Copy the extra data on the access token to the refresh token,
+                // so that it can be used during issuing of a replacement access token.
+			    var at = refreshTokenCarrier.AuthorizationDescription as AccessToken;
+			    if (at != null) {
+			        refreshToken.ExtraData.AddRange(at.ExtraData);
+			    }
+			    var refreshTokenFormatter = RefreshToken.CreateFormatter(this.AuthorizationServer.CryptoKeyStore);
 				refreshTokenResponse.RefreshToken = refreshTokenFormatter.Serialize(refreshToken);
 			}
 
