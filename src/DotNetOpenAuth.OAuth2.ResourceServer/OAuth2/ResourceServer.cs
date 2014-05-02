@@ -118,7 +118,7 @@ namespace DotNetOpenAuth.OAuth2 {
 				request = await this.Channel.TryReadFromRequestAsync<AccessProtectedResourceRequest>(requestMessage, cancellationToken);
 				if (request != null) {
 					accessToken = this.AccessTokenAnalyzer.DeserializeAccessToken(request, request.AccessToken);
-					ErrorUtilities.VerifyHost(accessToken != null, "IAccessTokenAnalyzer.DeserializeAccessToken returned a null reslut.");
+					ErrorUtilities.VerifyHost(accessToken != null, "IAccessTokenAnalyzer.DeserializeAccessToken returned a null result.");
 					if (string.IsNullOrEmpty(accessToken.User) && string.IsNullOrEmpty(accessToken.ClientIdentifier)) {
 						Logger.OAuth.Error("Access token rejected because both the username and client id properties were null or empty.");
 						ErrorUtilities.ThrowProtocol(ResourceServerStrings.InvalidAccessToken);
