@@ -13,7 +13,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	using Validation;
 
 	/// <summary>
-	/// Provides association storage in the association handle itself, but embedding signed and encrypted association
+	/// Provides association storage in the association handle itself, by embedding signed and encrypted association
 	/// details in the handle.
 	/// </summary>
 	public class ProviderAssociationHandleEncoder : IProviderAssociationStore {
