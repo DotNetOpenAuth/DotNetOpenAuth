@@ -1,16 +1,11 @@
 namespace OpenIdProviderMvc.Controllers {
 	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using System.Net;
+    using System.Configuration;
+    using System.Net;
 	using System.Threading.Tasks;
-	using System.Web;
-	using System.Web.Mvc;
-	using System.Web.Mvc.Ajax;
-	using DotNetOpenAuth.Messaging;
-	using DotNetOpenAuth.OpenId;
-	using DotNetOpenAuth.OpenId.Behaviors;
-	using DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy;
+    using System.Web.Mvc;
+    using DotNetOpenAuth.Messaging;
+    using DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy;
 	using DotNetOpenAuth.OpenId.Extensions.SimpleRegistration;
 	using DotNetOpenAuth.OpenId.Provider;
 	using DotNetOpenAuth.OpenId.Provider.Behaviors;
@@ -44,20 +39,25 @@ namespace OpenIdProviderMvc.Controllers {
 
 				// If PAPE requires that the user has logged in recently, we may be required to challenge the user to log in.
 				var papeRequest = ProviderEndpoint.PendingRequest.GetExtension<PolicyRequest>();
-				if (papeRequest != null && papeRequest.MaximumAuthenticationAge.HasValue) {
-					TimeSpan timeSinceLogin = DateTime.UtcNow - this.FormsAuth.SignedInTimestampUtc.Value;
-					if (timeSinceLogin > papeRequest.MaximumAuthenticationAge.Value) {
-						// The RP wants the user to have logged in more recently than he has.  
-						// We'll have to redirect the user to a login screen.
-						return this.RedirectToAction("LogOn", "Account", new { returnUrl = this.Url.Action("ProcessAuthRequest") });
-					}
+				if (papeRequest != null && papeRequest.MaximumAuthenticationAge.HasValue)
+				{
+				    var signedInTimestampUtc = this.FormsAuth.SignedInTimestampUtc;
+				    if (signedInTimestampUtc != null)
+				    {
+				        TimeSpan timeSinceLogin = DateTime.UtcNow - signedInTimestampUtc.Value;
+				        if (timeSinceLogin > papeRequest.MaximumAuthenticationAge.Value) {
+				            // The RP wants the user to have logged in more recently than he has.  
+				            // We'll have to redirect the user to a login screen.
+				            return this.RedirectToAction("LogOn", "Account", new { returnUrl = this.Url.Action("ProcessAuthRequest") });
+				        }
+				    }
 				}
 
-				return await this.ProcessAuthRequest();
-			} else {
-				// No OpenID request was recognized.  This may be a user that stumbled on the OP Endpoint.  
-				return this.View();
+			    return await this.ProcessAuthRequest();
 			}
+
+		    // No OpenID request was recognized.  This may be a user that stumbled on the OP Endpoint.  
+		    return this.View();
 		}
 
 		public async Task<ActionResult> ProcessAuthRequest() {
@@ -144,56 +144,77 @@ namespace OpenIdProviderMvc.Controllers {
 				anonReq.IsApproved = false;
 			}
 
-			if (authReq != null && !authReq.IsAuthenticated.HasValue) {
-				authReq.IsAuthenticated = false;
-			}
+		    if (authReq != null) {
+		        // Verify that the RP is on the whitelist.  Realms are case sensitive.
+		        string whiteListConfig = ConfigurationManager.AppSettings["whitelistedRealms"];
+		        if (!string.IsNullOrEmpty(whiteListConfig)) {
+		            string[] whitelist = whiteListConfig.Split(';');
+		            if (Array.IndexOf(whitelist, authReq.Realm.ToString()) < 0) {
+		                authReq.IsAuthenticated = false;
+		            }
+		        }
 
-			if (authReq != null && authReq.IsAuthenticated.Value) {
-				if (authReq.IsDirectedIdentity) {
-					authReq.LocalIdentifier = Models.User.GetClaimedIdentifierForUser(User.Identity.Name);
-				}
+		        if (!authReq.IsAuthenticated.HasValue) {
+		            authReq.IsAuthenticated = false;
+		        }
 
-				if (!authReq.IsDelegatedIdentifier) {
-					authReq.ClaimedIdentifier = authReq.LocalIdentifier;
-				}
-			}
+		        if (authReq.IsAuthenticated.Value) {
+		            if (authReq.IsDirectedIdentity) {
+		                authReq.LocalIdentifier = Models.User.GetClaimedIdentifierForUser(User.Identity.Name);
+		            }
 
-			// Respond to AX/sreg extension requests only on a positive result.
-			if ((authReq != null && authReq.IsAuthenticated.Value) ||
-				(anonReq != null && anonReq.IsApproved.Value)) {
-				// Look for a Simple Registration request.  When the AXFetchAsSregTransform behavior is turned on
-				// in the web.config file as it is in this sample, AX requests will come in as SReg requests.
-				var claimsRequest = pendingRequest.GetExtension<ClaimsRequest>();
-				if (claimsRequest != null) {
-					var claimsResponse = claimsRequest.CreateResponse();
+		            if (!authReq.IsDelegatedIdentifier) {
+		                authReq.ClaimedIdentifier = authReq.LocalIdentifier;
+		            }
+		        }
+		    }
 
-					// This simple respond to a request check may be enhanced to only respond to an individual attribute
-					// request if the user consents to it explicitly, in which case this response extension creation can take
-					// place in the confirmation page action rather than here.
-					if (claimsRequest.Email != DemandLevel.NoRequest) {
-						claimsResponse.Email = User.Identity.Name + "@dotnetopenauth.net";
-					}
-
-					pendingRequest.AddResponseExtension(claimsResponse);
-				}
-
-				// Look for PAPE requests.
-				var papeRequest = pendingRequest.GetExtension<PolicyRequest>();
-				if (papeRequest != null) {
-					var papeResponse = new PolicyResponse();
-					if (papeRequest.MaximumAuthenticationAge.HasValue) {
-						papeResponse.AuthenticationTimeUtc = this.FormsAuth.SignedInTimestampUtc;
-					}
-
-					pendingRequest.AddResponseExtension(papeResponse);
-				}
+		    // Respond to AX/sreg extension requests only on a positive result.
+			if (IsAuthApproved(authReq, anonReq)) {
+				this.BuildResponse(pendingRequest);
 			}
 
 			var response = await OpenIdProvider.PrepareResponseAsync(pendingRequest, this.Response.ClientDisconnectedToken);
 			return response.AsActionResult();
 		}
 
-		/// <summary>
+        private static bool IsAuthApproved(IAuthenticationRequest authReq, IAnonymousRequest anonReq) {
+            return (authReq != null && (authReq.IsAuthenticated ?? false))
+                || (anonReq != null && (anonReq.IsApproved ?? false));
+        }
+
+	    private void BuildResponse(IHostProcessedRequest pendingRequest) {
+	        // Look for a Simple Registration request.  When the AXFetchAsSregTransform behavior is turned on
+	        // in the web.config file as it is in this sample, AX requests will come in as SReg requests.
+	        var claimsRequest = pendingRequest.GetExtension<ClaimsRequest>();
+	        if (claimsRequest != null) {
+	            var claimsResponse = claimsRequest.CreateResponse();
+
+	            // This simple respond to a request check may be enhanced to only respond to an individual attribute
+	            // request if the user consents to it explicitly, in which case this response extension creation can take
+	            // place in the confirmation page action rather than here.
+	            if (claimsRequest.Email != DemandLevel.NoRequest) {
+	                claimsResponse.Email = this.User.Identity.Name + "@dotnetopenauth.net";
+	            }
+
+	            pendingRequest.AddResponseExtension(claimsResponse);
+	        }
+
+	        // Look for PAPE requests.
+	        var papeRequest = pendingRequest.GetExtension<PolicyRequest>();
+	        if (papeRequest == null) {
+	            return;
+	        }
+
+	        var papeResponse = new PolicyResponse();
+	        if (papeRequest.MaximumAuthenticationAge.HasValue) {
+	            papeResponse.AuthenticationTimeUtc = this.FormsAuth.SignedInTimestampUtc;
+	        }
+
+	        pendingRequest.AddResponseExtension(papeResponse);
+	    }
+
+	    /// <summary>
 		/// Attempts to formulate an automatic response to the RP if the user's profile allows it.
 		/// </summary>
 		/// <returns>The ActionResult for the caller to return, or <c>null</c> if no automatic response can be made.</returns>
@@ -260,7 +281,7 @@ namespace OpenIdProviderMvc.Controllers {
 				throw new ArgumentNullException("authReq");
 			}
 
-			if (User == null || User.Identity == null) {
+			if (this.User == null) {
 				return false;
 			}
 

@@ -51,7 +51,7 @@
 		[SuppressMessage("Microsoft.Design", "CA1054:UriParametersShouldNotBeStrings", Justification = "Needs to take same parameter type as Controller.Redirect()")]
 		public ActionResult LogOn(string userName, string password, bool rememberMe, string returnUrl) {
 			if (!this.ValidateLogOn(userName, password)) {
-				return View();
+				return this.View();
 			}
 
 			this.FormsAuth.SignIn(userName, rememberMe);
