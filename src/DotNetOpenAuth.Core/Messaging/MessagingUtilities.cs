@@ -450,11 +450,7 @@ namespace DotNetOpenAuth.Messaging {
 			var responseContext = context.Response;
 			responseContext.StatusCode = (int)response.StatusCode;
 			responseContext.StatusDescription = response.ReasonPhrase;
-			foreach (var header in response.Headers) {
-				foreach (var value in header.Value) {
-					responseContext.AddHeader(header.Key, value);
-				}
-			}
+			responseContext.CopyHeadersFrom(response);
 
 			if (response.Content != null) {
 				await response.Content.CopyToAsync(responseContext.OutputStream).ConfigureAwait(false);
@@ -1200,6 +1196,30 @@ namespace DotNetOpenAuth.Messaging {
 				} else {
 					if (!message.Headers.TryAddWithoutValidation(headerName, headerValues)) {
 						message.Content.Headers.TryAddWithoutValidation(headerName, headerValues);
+					}
+				}
+			}
+		}
+
+		/// <summary>
+		/// Copies HTTP headers over to the <see cref="HttpResponse" /> from a <see cref="HttpResponseMessage"/>.
+		/// </summary>
+		/// <param name="response">The response to set headers on.</param>
+		/// <param name="message">The message with headers to clone.</param>
+		internal static void CopyHeadersFrom(this HttpResponseBase response, HttpResponseMessage message) {
+			Requires.NotNull(response, "response");
+			Requires.NotNull(message, "message");
+
+			foreach (var header in message.Headers) {
+				foreach (var value in header.Value) {
+					response.AddHeader(header.Key, value);
+				}
+			}
+
+			if (message.Content != null) {
+				foreach (var header in message.Content.Headers) {
+					foreach (var value in header.Value) {
+						response.AddHeader(header.Key, value);
 					}
 				}
 			}
