@@ -17,6 +17,7 @@ namespace DotNetOpenAuth.OAuth {
 	using System.Threading.Tasks;
 	using System.Web;
 	using DotNetOpenAuth.Messaging;
+	using DotNetOpenAuth.Messaging.Reflection;
 	using Validation;
 
 	/// <summary>
@@ -55,19 +56,28 @@ namespace DotNetOpenAuth.OAuth {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OAuth1HttpMessageHandlerBase"/> class.
 		/// </summary>
-		protected OAuth1HttpMessageHandlerBase() {
-			this.NonceLength = DefaultNonceLength;
-			this.Location = DefaultParametersLocation;
+		protected OAuth1HttpMessageHandlerBase()
+		{
+			this.SetupHandler(new TimestampEncoder());
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="OAuth1HttpMessageHandlerBase"/> class.
 		/// </summary>
 		/// <param name="innerHandler">The inner handler which is responsible for processing the HTTP response messages.</param>
-		protected OAuth1HttpMessageHandlerBase(HttpMessageHandler innerHandler)
+		/// <param name="timeStampEncoder">The timestamp encoder to be used.</param>
+		protected OAuth1HttpMessageHandlerBase(HttpMessageHandler innerHandler, IMessagePartEncoder timeStampEncoder = null)
 			: base(innerHandler) {
-			this.NonceLength = DefaultNonceLength;
-			this.Location = DefaultParametersLocation;
+				this.SetupHandler(timeStampEncoder == null ? new TimestampEncoder() : timeStampEncoder);
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="OAuth1HttpMessageHandlerBase"/> class.
+		/// </summary>
+ 		/// <param name="timeStampEncoder">The timestamp encoder to be used.</param>
+		protected OAuth1HttpMessageHandlerBase(IMessagePartEncoder timeStampEncoder)
+		{
+			this.SetupHandler(timeStampEncoder);
 		}
 
 		/// <summary>
@@ -129,6 +139,11 @@ namespace DotNetOpenAuth.OAuth {
 		/// The length of the nonce.
 		/// </value>
 		public int NonceLength { get; set; }
+
+		/// <summary>
+		/// Gets or sets the timestamp encoder to be used to generate timestamps
+		/// </summary>
+		public IMessagePartEncoder TimestampEncoder { get; set; }
 
 		/// <summary>
 		/// Gets the signature method to include in the oauth_signature_method parameter.
@@ -234,18 +249,6 @@ namespace DotNetOpenAuth.OAuth {
 		}
 
 		/// <summary>
-		/// Returns the OAuth 1.0 timestamp for the current time.
-		/// </summary>
-		/// <param name="dateTime">The date time.</param>
-		/// <returns>A string representation of the number of seconds since "the epoch".</returns>
-		private static string ToTimeStamp(DateTime dateTime) {
-			Requires.Argument(dateTime.Kind == DateTimeKind.Utc, "dateTime", "UTC time required");
-			TimeSpan ts = dateTime - epoch;
-			long secondsSinceEpoch = (long)ts.TotalSeconds;
-			return secondsSinceEpoch.ToString(CultureInfo.InvariantCulture);
-		}
-
-		/// <summary>
 		/// Constructs the "Base String URI" as described in http://tools.ietf.org/html/rfc5849#section-3.4.1.2
 		/// </summary>
 		/// <param name="requestUri">The request URI.</param>
@@ -294,6 +297,33 @@ namespace DotNetOpenAuth.OAuth {
 		}
 
 		/// <summary>
+		/// Sets up the handler
+		/// </summary>
+		/// <param name="timestampEncoder">the timestampEncoder</param>
+		private void SetupHandler(IMessagePartEncoder timestampEncoder)
+		{
+			if (timestampEncoder == null)
+			{
+				this.TimestampEncoder = new TimestampEncoder();
+			}
+			else
+			{
+				this.TimestampEncoder = timestampEncoder;
+			}
+			this.NonceLength = DefaultNonceLength;
+			this.Location = DefaultParametersLocation;
+		}
+
+		/// <summary>
+		/// Generates a string of random characters for use as a nonce.
+		/// </summary>
+		/// <returns>The nonce string.</returns>
+		private string GenerateUniqueFragment()
+		{
+			return MessagingUtilities.GetRandomString(this.NonceLength, AllowedCharacters);
+		}
+
+		/// <summary>
 		/// Constructs the "Signature Base String" as described in http://tools.ietf.org/html/rfc5849#section-3.4.1
 		/// </summary>
 		/// <param name="request">The HTTP request message.</param>
@@ -316,14 +346,6 @@ namespace DotNetOpenAuth.OAuth {
 		}
 
 		/// <summary>
-		/// Generates a string of random characters for use as a nonce.
-		/// </summary>
-		/// <returns>The nonce string.</returns>
-		private string GenerateUniqueFragment() {
-			return MessagingUtilities.GetRandomString(this.NonceLength, AllowedCharacters);
-		}
-
-		/// <summary>
 		/// Gets the "oauth_" prefixed parameters that should be added to an outbound request.
 		/// </summary>
 		/// <returns>A collection of name=value pairs.</returns>
@@ -331,7 +353,7 @@ namespace DotNetOpenAuth.OAuth {
 			var nvc = new NameValueCollection(8);
 			nvc.Add("oauth_version", "1.0");
 			nvc.Add("oauth_nonce", this.GenerateUniqueFragment());
-			nvc.Add("oauth_timestamp", ToTimeStamp(DateTime.UtcNow));
+			nvc.Add("oauth_timestamp", this.TimestampEncoder.Encode(DateTime.UtcNow));
 			nvc.Add("oauth_signature_method", this.SignatureMethod);
 			nvc.Add("oauth_consumer_key", this.ConsumerKey);
 			if (!string.IsNullOrEmpty(this.AccessToken)) {

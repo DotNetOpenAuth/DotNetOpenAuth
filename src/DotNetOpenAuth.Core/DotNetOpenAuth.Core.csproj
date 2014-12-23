@@ -67,6 +67,7 @@
     <Compile Include="Messaging\Reflection\DefaultEncoderAttribute.cs" />
     <Compile Include="Messaging\StandardMessageFactory.cs" />
     <Compile Include="Messaging\IDataBagFormatter.cs" />
+    <Compile Include="Messaging\TimestampMillisecondsEncoder.cs" />
     <Compile Include="Messaging\UriStyleMessageFormatter.cs" />
     <Compile Include="Messaging\StandardMessageFactoryChannel.cs" />
     <Compile Include="Messaging\DataBag.cs" />
