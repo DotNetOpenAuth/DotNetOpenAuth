@@ -30,6 +30,7 @@
 					}
 
 					var response = await request.GetRedirectingResponseAsync();
+					Response.ContentType = response.Content.Headers.ContentType.ToString();
 					return response.AsActionResult();
 				} else {
 					ModelState.AddModelError(string.Empty, "The identifier you supplied is not recognized as a valid OpenID Identifier.");

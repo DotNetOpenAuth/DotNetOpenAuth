@@ -41,6 +41,7 @@
 					try {
 						var request = await openid.CreateRequestAsync(Request.Form["openid_identifier"]);
 						var redirectingResponse = await request.GetRedirectingResponseAsync(this.Response.ClientDisconnectedToken);
+						Response.ContentType = redirectingResponse.Content.Headers.ContentType.ToString();
 						return redirectingResponse.AsActionResult();
 					} catch (ProtocolException ex) {
 						ViewData["Message"] = ex.Message;
