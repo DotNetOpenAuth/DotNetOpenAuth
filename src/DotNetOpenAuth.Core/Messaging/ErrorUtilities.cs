@@ -11,6 +11,9 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Diagnostics.Contracts;
 	using System.Globalization;
 	using System.Web;
+
+	using DotNetOpenAuth.Logging;
+
 	using Validation;
 
 	/// <summary>
@@ -186,7 +189,7 @@ namespace DotNetOpenAuth.Messaging {
 			Assumes.True(unformattedMessage != null);
 			if (!condition) {
 				var exception = new ProtocolException(string.Format(CultureInfo.CurrentCulture, unformattedMessage, args));
-				if (Logger.Messaging.IsErrorEnabled) {
+				if (Logger.Messaging.IsErrorEnabled()) {
 					Logger.Messaging.Error(
 						string.Format(
 						CultureInfo.CurrentCulture,

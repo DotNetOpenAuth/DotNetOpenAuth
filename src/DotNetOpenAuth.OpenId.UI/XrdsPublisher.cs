@@ -14,6 +14,8 @@ namespace DotNetOpenAuth {
 	using System.Web;
 	using System.Web.UI;
 	using System.Web.UI.WebControls;
+
+	using DotNetOpenAuth.Logging;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Yadis;
 

@@ -9,6 +9,9 @@ namespace DotNetOpenAuth.Messaging.Bindings {
 	using System.Diagnostics;
 	using System.Threading;
 	using System.Threading.Tasks;
+
+	using DotNetOpenAuth.Logging;
+
 	using Validation;
 
 	/// <summary>

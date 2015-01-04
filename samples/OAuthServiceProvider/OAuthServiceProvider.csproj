@@ -46,10 +46,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="log4net, Version=1.2.12.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\src\packages\log4net.2.0.2\lib\net40-full\log4net.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -115,7 +111,6 @@
     <Compile Include="Code\OAuthToken.cs" />
     <Compile Include="Code\RequestScopedTokenMessage.cs" />
     <Compile Include="Code\TokenAuthorizationState.cs" />
-    <Compile Include="Code\TracePageAppender.cs" />
     <Compile Include="Code\Utilities.cs" />
     <Compile Include="Code\DataClasses.designer.cs">
       <AutoGen>True</AutoGen>

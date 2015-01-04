@@ -14,7 +14,8 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 	using System.Threading;
 	using System.Threading.Tasks;
 	using System.Web;
-	using DotNetOpenAuth.Loggers;
+
+	using DotNetOpenAuth.Logging;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.Messaging.Reflection;
@@ -143,7 +144,7 @@ namespace DotNetOpenAuth.OpenId.ChannelElements {
 			byte[] dataToSign = KeyValueFormEncoding.GetBytes(parametersToSign);
 			string signature = Convert.ToBase64String(association.Sign(dataToSign));
 
-			if (Logger.Signatures.IsDebugEnabled) {
+			if (Logger.Signatures.IsDebugEnabled()) {
 				Logger.Signatures.DebugFormat(
 					"Signing these message parts: {0}{1}{0}Base64 representation of signed data: {2}{0}Signature: {3}",
 					Environment.NewLine,

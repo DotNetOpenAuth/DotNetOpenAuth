@@ -13,6 +13,7 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using System.Threading;
 	using System.Threading.Tasks;
 	using DotNetOpenAuth.Configuration;
+	using DotNetOpenAuth.Logging;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth.Messages;
 	using Validation;

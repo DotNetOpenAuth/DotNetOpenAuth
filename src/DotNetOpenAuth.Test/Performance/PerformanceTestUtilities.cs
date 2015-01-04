@@ -9,6 +9,8 @@ namespace DotNetOpenAuth.Test.Performance {
 	using System.Diagnostics;
 	using System.Reflection;
 	using System.Threading;
+
+	using DotNetOpenAuth.Logging;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using NUnit.Framework;
 

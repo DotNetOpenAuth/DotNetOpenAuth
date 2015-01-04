@@ -10,6 +10,8 @@ namespace DotNetOpenAuth.OAuth.ChannelElements {
 	using System.Security.Cryptography;
 	using System.Security.Cryptography.X509Certificates;
 	using System.Text;
+
+	using DotNetOpenAuth.Logging;
 	using DotNetOpenAuth.Messaging;
 	using Validation;
 

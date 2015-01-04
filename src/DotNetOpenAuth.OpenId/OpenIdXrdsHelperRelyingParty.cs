@@ -8,6 +8,8 @@ namespace DotNetOpenAuth.OpenId {
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+
+	using DotNetOpenAuth.Logging;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using DotNetOpenAuth.Xrds;
@@ -37,7 +39,7 @@ namespace DotNetOpenAuth.OpenId {
 			endpoints.AddRange(xrds.GenerateClaimedIdentifierServiceEndpoints(claimedIdentifier, userSuppliedIdentifier));
 
 			Logger.Yadis.DebugFormat("Total services discovered in XRDS: {0}", endpoints.Count);
-			Logger.Yadis.Debug(endpoints.ToStringDeferred(true));
+			Logger.Yadis.Debug(endpoints.ToStringDeferred(true).ToString());
 			return endpoints;
 		}
 
@@ -56,7 +58,7 @@ namespace DotNetOpenAuth.OpenId {
 			endpoints.AddRange(xrds.GenerateOPIdentifierServiceEndpoints(userSuppliedIdentifier));
 			endpoints.AddRange(xrds.GenerateClaimedIdentifierServiceEndpoints(userSuppliedIdentifier));
 			Logger.Yadis.DebugFormat("Total services discovered in XRDS: {0}", endpoints.Count);
-			Logger.Yadis.Debug(endpoints.ToStringDeferred(true));
+			Logger.Yadis.Debug(endpoints.ToStringDeferred(true).ToString());
 			return endpoints;
 		}
 

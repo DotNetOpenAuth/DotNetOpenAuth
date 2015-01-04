@@ -23,6 +23,7 @@ namespace DotNetOpenAuth {
 	using System.Threading.Tasks;
 	using System.Web;
 	using DotNetOpenAuth.Configuration;
+	using DotNetOpenAuth.Logging;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using Validation;
@@ -361,7 +362,7 @@ namespace DotNetOpenAuth {
 						// This is supposed to be as low-risk as possible, so if it fails, just disable reporting
 						// and avoid rethrowing.
 						broken = true;
-						Logger.Library.Error("Error while trying to initialize reporting.", e);
+						Logger.Library.ErrorException("Error while trying to initialize reporting.", e);
 					}
 				}
 			}
@@ -474,9 +475,9 @@ namespace DotNetOpenAuth {
 
 				return true;
 			} catch (ProtocolException ex) {
-				Logger.Library.Error("Unable to submit statistical report due to an HTTP error.", ex);
+				Logger.Library.ErrorException("Unable to submit statistical report due to an HTTP error.", ex);
 			} catch (FileNotFoundException ex) {
-				Logger.Library.Error("Unable to submit statistical report because the report file is missing.", ex);
+                Logger.Library.ErrorException("Unable to submit statistical report because the report file is missing.", ex);
 			}
 
 			return false;

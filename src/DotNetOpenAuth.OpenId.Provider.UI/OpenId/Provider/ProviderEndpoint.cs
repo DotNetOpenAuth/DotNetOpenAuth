@@ -16,6 +16,7 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	using System.Web.UI;
 	using System.Web.UI.WebControls;
 	using DotNetOpenAuth.Configuration;
+	using DotNetOpenAuth.Logging;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
 	using Validation;

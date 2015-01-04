@@ -61,10 +61,6 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="log4net, Version=1.2.12.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\src\packages\log4net.2.0.2\lib\net40-full\log4net.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -123,7 +119,6 @@
     <Compile Include="Code\InMemoryTokenManager.cs" />
     <Compile Include="Code\OAuthHybrid.cs" />
     <Compile Include="Code\ReadOnlyXmlMembershipProvider.cs" />
-    <Compile Include="Code\TracePageAppender.cs" />
     <Compile Include="Code\Util.cs" />
     <Compile Include="decide.aspx.cs">
       <DependentUpon>decide.aspx</DependentUpon>

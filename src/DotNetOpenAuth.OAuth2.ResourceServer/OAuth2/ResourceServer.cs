@@ -20,6 +20,8 @@ namespace DotNetOpenAuth.OAuth2 {
 	using System.Threading.Tasks;
 	using System.Web;
 	using ChannelElements;
+
+	using DotNetOpenAuth.Logging;
 	using DotNetOpenAuth.OAuth.ChannelElements;
 	using Messages;
 	using Messaging;

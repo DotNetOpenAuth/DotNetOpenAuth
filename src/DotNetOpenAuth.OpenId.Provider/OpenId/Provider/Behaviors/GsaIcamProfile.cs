@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.OpenId.Provider.Behaviors {
 	using System.Threading;
 	using System.Threading.Tasks;
 	using DotNetOpenAuth.Configuration;
+	using DotNetOpenAuth.Logging;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Behaviors;
 	using DotNetOpenAuth.OpenId.Extensions.AttributeExchange;

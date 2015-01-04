@@ -9,6 +9,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty.Behaviors {
 	using System.Diagnostics.CodeAnalysis;
 	using System.Linq;
 	using DotNetOpenAuth.Configuration;
+	using DotNetOpenAuth.Logging;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Behaviors;
 	using DotNetOpenAuth.OpenId.Extensions.AttributeExchange;

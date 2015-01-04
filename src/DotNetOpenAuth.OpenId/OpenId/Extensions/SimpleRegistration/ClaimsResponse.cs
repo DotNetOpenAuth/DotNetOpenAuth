@@ -13,6 +13,8 @@ namespace DotNetOpenAuth.OpenId.Extensions.SimpleRegistration {
 	using System.Text;
 	using System.Text.RegularExpressions;
 	using System.Xml.Serialization;
+
+	using DotNetOpenAuth.Logging;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
 	using Validation;

@@ -10,6 +10,8 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Linq;
 	using System.Reflection;
 	using System.Text;
+
+	using DotNetOpenAuth.Logging;
 	using DotNetOpenAuth.Messaging.Reflection;
 	using Validation;
 
@@ -149,7 +151,7 @@ namespace DotNetOpenAuth.Messaging {
 				.CacheGeneratedResults();
 			var match = matches.FirstOrDefault();
 			if (match != null) {
-				if (Logger.Messaging.IsWarnEnabled && matches.Count() > 1) {
+				if (Logger.Messaging.IsWarnEnabled() && matches.Count() > 1) {
 					Logger.Messaging.WarnFormat(
 						"Multiple message types seemed to fit the incoming data: {0}",
 						matches.ToStringDeferred());
@@ -186,7 +188,7 @@ namespace DotNetOpenAuth.Messaging {
 			               select message).CacheGeneratedResults();
 			var match = matches.FirstOrDefault();
 			if (match != null) {
-				if (Logger.Messaging.IsWarnEnabled && matches.Count() > 1) {
+				if (Logger.Messaging.IsWarnEnabled() && matches.Count() > 1) {
 					Logger.Messaging.WarnFormat(
 						"Multiple message types seemed to fit the incoming data: {0}",
 						matches.ToStringDeferred());

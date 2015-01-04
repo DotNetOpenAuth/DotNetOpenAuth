@@ -18,6 +18,7 @@ namespace DotNetOpenAuth.Yadis {
 	using System.Web.UI.HtmlControls;
 	using System.Xml;
 	using DotNetOpenAuth.Configuration;
+	using DotNetOpenAuth.Logging;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.Xrds;

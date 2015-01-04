@@ -10,6 +10,8 @@ namespace DotNetOpenAuth.OpenId.Provider.Behaviors {
 	using System.Linq;
 	using System.Threading;
 	using System.Threading.Tasks;
+
+	using DotNetOpenAuth.Logging;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Behaviors;
 	using DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy;

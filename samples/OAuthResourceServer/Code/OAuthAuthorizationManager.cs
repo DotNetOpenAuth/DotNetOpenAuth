@@ -11,6 +11,8 @@
 	using System.ServiceModel.Web;
 	using System.Threading;
 	using System.Threading.Tasks;
+
+	using DotNetOpenAuth.Logging;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth2;
 	using ProtocolException = System.ServiceModel.ProtocolException;
@@ -57,10 +59,10 @@
 						return false;
 					}
 				} catch (ProtocolFaultResponseException ex) {
-					Global.Logger.Error("Error processing OAuth messages.", ex);
+					Global.Logger.ErrorException("Error processing OAuth messages.", ex);
 					exception = ex;
 				} catch (ProtocolException ex) {
-					Global.Logger.Error("Error processing OAuth messages.", ex);
+					Global.Logger.ErrorException("Error processing OAuth messages.", ex);
 				}
 
 				if (exception != null) {
