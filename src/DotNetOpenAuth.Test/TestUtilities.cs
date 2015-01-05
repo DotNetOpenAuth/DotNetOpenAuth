@@ -5,13 +5,13 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.Test {
-    using System.Collections.Specialized;
+	using System.Collections.Specialized;
 
-    using DotNetOpenAuth.Logging;
+	using DotNetOpenAuth.Logging;
 
-    using Validation;
+	using Validation;
 
-    /// <summary>
+	/// <summary>
 	/// An assortment of methods useful for testing.
 	/// </summary>
 	internal static class TestUtilities {
