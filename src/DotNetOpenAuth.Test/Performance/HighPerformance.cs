@@ -10,14 +10,15 @@ namespace DotNetOpenAuth.Test.Performance {
 	using System.Diagnostics;
 	using System.Runtime.InteropServices;
 	using System.Threading;
-	using log4net;
+
+	using DotNetOpenAuth.Logging;
+
 	using NUnit.Framework;
 
 	/// <summary>
 	/// Suppresses logging and forces the CPU into a high performance mode.
 	/// </summary>
 	internal class HighPerformance : IDisposable {
-		private readonly log4net.Core.Level originalLoggerThreshold;
 		private readonly PowerManagment.PowerSetting powerSetting;
 		private readonly ProcessPriorityClass originalProcessPriority;
 
@@ -30,8 +31,6 @@ namespace DotNetOpenAuth.Test.Performance {
 			////    Assert.Inconclusive("Timed out waiting for a quiet CPU in which to perform perf tests.");
 			////}
 
-			this.originalLoggerThreshold = LogManager.GetLoggerRepository().Threshold;
-			LogManager.GetLoggerRepository().Threshold = LogManager.GetLoggerRepository().LevelMap["OFF"];
 			this.powerSetting = new PowerManagment.PowerSetting(PowerManagment.PowerProfiles.HighPerformance);
 			this.originalProcessPriority = Process.GetCurrentProcess().PriorityClass;
 			Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.High;
@@ -46,7 +45,6 @@ namespace DotNetOpenAuth.Test.Performance {
 			Thread.CurrentThread.Priority = ThreadPriority.Normal;
 			Process.GetCurrentProcess().PriorityClass = this.originalProcessPriority;
 			this.powerSetting.Dispose(); // restores original power setting.
-			LogManager.GetLoggerRepository().Threshold = this.originalLoggerThreshold;
 		}
 #pragma warning restore 0618
 

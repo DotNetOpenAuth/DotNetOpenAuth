@@ -11,6 +11,7 @@ namespace DotNetOpenAuth.Test.OpenId {
 	using System.Threading;
 	using System.Threading.Tasks;
 
+	using DotNetOpenAuth.Logging;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.OpenId;

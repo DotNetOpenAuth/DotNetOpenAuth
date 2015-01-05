@@ -8,6 +8,7 @@ namespace DotNetOpenAuth.Test {
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.Specialized;
+	using System.Globalization;
 	using System.IO;
 	using System.Net;
 	using System.Net.Http;
@@ -106,7 +107,7 @@ namespace DotNetOpenAuth.Test {
 				message.Age = 15;
 			}
 			if (fill >= FieldFill.AllRequired) {
-				message.Timestamp = DateTime.SpecifyKind(DateTime.Parse("9/19/2008 8 AM"), DateTimeKind.Utc);
+			    message.Timestamp = DateTime.ParseExact("09/09/2008 08:00", "dd/MM/yyyy hh:mm", CultureInfo.InvariantCulture);
 			}
 			if (fill >= FieldFill.CompleteBeforeBindings) {
 				message.Name = "Andrew";

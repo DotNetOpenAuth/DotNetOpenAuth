@@ -14,12 +14,12 @@ namespace DotNetOpenAuth.Test {
 	using System.Threading;
 	using System.Threading.Tasks;
 	using System.Web;
+
+	using DotNetOpenAuth.Logging;
 	using DotNetOpenAuth.Messaging.Reflection;
 	using DotNetOpenAuth.OAuth.Messages;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using DotNetOpenAuth.Test.Performance;
-	using log4net;
-	using log4net.Config;
 	using NUnit.Framework;
 
 	/// <summary>
@@ -61,7 +61,6 @@ namespace DotNetOpenAuth.Test {
 		/// </summary>
 		[SetUp]
 		public virtual void SetUp() {
-			XmlConfigurator.Configure(Assembly.GetExecutingAssembly().GetManifestResourceStream("DotNetOpenAuth.Test.Logging.config"));
 			MessageBase.LowSecurityMode = true;
 			this.messageDescriptions = new MessageDescriptionCollection();
 			this.HostFactories = new MockingHostFactories();
@@ -73,7 +72,6 @@ namespace DotNetOpenAuth.Test {
 		/// </summary>
 		[TearDown]
 		public virtual void Cleanup() {
-			LogManager.Shutdown();
 		}
 
 		internal static Stats MeasurePerformance(Func<Task> action, float maximumAllowedUnitTime, int samples = 10, int iterations = 100, string name = null) {

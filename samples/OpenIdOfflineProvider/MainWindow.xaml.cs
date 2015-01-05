@@ -5,42 +5,26 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OpenIdOfflineProvider {
-	using System;
-	using System.Collections.Generic;
-	using System.Diagnostics;
-	using System.Globalization;
-	using System.IO;
-	using System.Linq;
-	using System.Net;
-	using System.Net.Http;
-	using System.Net.Http.Headers;
-	using System.Runtime.InteropServices;
-	using System.ServiceModel;
-	using System.Text;
-	using System.Threading;
-	using System.Threading.Tasks;
-	using System.Web;
-	using System.Web.Http;
-	using System.Web.Http.Routing;
-	using System.Web.Http.SelfHost;
-	using System.Windows;
-	using System.Windows.Controls;
-	using System.Windows.Data;
-	using System.Windows.Documents;
-	using System.Windows.Input;
-	using System.Windows.Media;
-	using System.Windows.Media.Imaging;
-	using System.Windows.Navigation;
-	using System.Windows.Shapes;
-	using DotNetOpenAuth.Messaging;
-	using DotNetOpenAuth.OpenId;
-	using DotNetOpenAuth.OpenId.Provider;
-	using log4net;
-	using log4net.Appender;
-	using log4net.Core;
-	using Validation;
+    using System;
+    using System.ComponentModel;
+    using System.Globalization;
+    using System.Linq;
+    using System.Net;
+    using System.Net.Http.Headers;
+    using System.Runtime.InteropServices;
+    using System.ServiceModel;
+    using System.Threading.Tasks;
+    using System.Web;
+    using System.Web.Http;
+    using System.Web.Http.SelfHost;
+    using System.Windows;
+    using System.Windows.Input;
 
-	/// <summary>
+    using DotNetOpenAuth.Logging;
+
+    using Validation;
+
+    /// <summary>
 	/// Interaction logic for MainWindow.xaml
 	/// </summary>
 	public partial class MainWindow : Window, IDisposable {
@@ -52,7 +36,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// <summary>
 		/// The logger the application may use.
 		/// </summary>
-		private ILog logger = log4net.LogManager.GetLogger(typeof(MainWindow));
+		private ILog logger = LogProvider.GetLogger(typeof(MainWindow));
 
 		/// <summary>
 		/// The HTTP listener that acts as the OpenID Provider socket.
@@ -64,10 +48,10 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// </summary>
 		public MainWindow() {
 			this.InitializeComponent();
-			TextWriterAppender boxLogger = log4net.LogManager.GetRepository().GetAppenders().OfType<TextWriterAppender>().FirstOrDefault(a => a.Name == "TextBoxAppender");
-			if (boxLogger != null) {
-				boxLogger.Writer = new TextBoxTextWriter(this.logBox);
-			}
+            //TextWriterLogProvider.TextWriterLogger boxLogger = LogProvider.GetRepository().GetAppenders().OfType<TextWriterAppender>().FirstOrDefault(a => a.Name == "TextBoxAppender");
+            //if (boxLogger != null) {
+            //    boxLogger.Writer = new TextBoxTextWriter(this.logBox);
+            //}
 
 			Instance = this;
 			this.StartProviderAsync();
@@ -102,7 +86,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// Raises the <see cref="E:Closing"/> event.
 		/// </summary>
 		/// <param name="e">The <see cref="System.ComponentModel.CancelEventArgs"/> instance containing the event data.</param>
-		protected override void OnClosing(System.ComponentModel.CancelEventArgs e) {
+		protected override void OnClosing(CancelEventArgs e) {
 			this.StopProviderAsync();
 			base.OnClosing(e);
 		}

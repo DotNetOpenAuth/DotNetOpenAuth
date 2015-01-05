@@ -9,6 +9,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Web;
+
+	using DotNetOpenAuth.Logging;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
 	using Validation;
@@ -41,7 +43,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			}
 
 			// Derived types of this are responsible to log an appropriate message for themselves.
-			if (Logger.OpenId.IsInfoEnabled && this.GetType() == typeof(PositiveAnonymousResponse)) {
+			if (Logger.OpenId.IsInfoEnabled() && this.GetType() == typeof(PositiveAnonymousResponse)) {
 				Logger.OpenId.Info("Received anonymous (identity-less) positive assertion.");
 			}
 

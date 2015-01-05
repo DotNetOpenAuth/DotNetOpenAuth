@@ -19,6 +19,8 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Threading.Tasks;
 	using System.Web;
 	using System.Web.UI;
+
+	using DotNetOpenAuth.Logging;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.Extensions;

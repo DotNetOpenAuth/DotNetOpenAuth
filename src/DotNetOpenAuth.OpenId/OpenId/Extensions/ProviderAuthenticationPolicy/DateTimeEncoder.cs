@@ -7,6 +7,8 @@
 namespace DotNetOpenAuth.OpenId.Extensions.ProviderAuthenticationPolicy {
 	using System;
 	using System.Globalization;
+
+	using DotNetOpenAuth.Logging;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Reflection;
 

@@ -12,6 +12,9 @@ namespace DotNetOpenAuth.Messaging.Reflection {
 	using System.Globalization;
 	using System.Linq;
 	using System.Reflection;
+
+	using DotNetOpenAuth.Logging;
+
 	using Validation;
 
 	/// <summary>

@@ -69,7 +69,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			writer.Flush();
 
 			string actual = Encoding.UTF8.GetString(ms.ToArray());
-			string expected = @"{""age"":15,""Name"":""Andrew"",""Location"":""http:\/\/localtest\/path"",""Timestamp"":""2008-09-19T08:00:00Z""}";
+			string expected = @"{""age"":15,""Name"":""Andrew"",""Location"":""http:\/\/localtest\/path"",""Timestamp"":""2008-09-09T08:00:00Z""}";
 			Assert.AreEqual(expected, actual);
 
 			ms.Position = 0;

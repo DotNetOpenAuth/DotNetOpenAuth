@@ -5,6 +5,8 @@
 	using System.ServiceModel;
 	using System.Text;
 	using System.Web;
+
+	using DotNetOpenAuth.Logging;
 	using DotNetOpenAuth.OAuth2;
 	using DotNetOpenAuth.OAuth2.Messages;
 
@@ -39,7 +41,7 @@
 		/// <summary>
 		/// The logger for this sample to use.
 		/// </summary>
-		public static log4net.ILog Logger = log4net.LogManager.GetLogger("DotNetOpenAuth.OAuthResourceServer");
+		public static ILog Logger = LogProvider.GetLogger("DotNetOpenAuth.OAuthResourceServer");
 
 #if SAMPLESONLY
 		/// <summary>
@@ -85,19 +87,15 @@
 		}
 
 		private void Application_Start(object sender, EventArgs e) {
-			log4net.Config.XmlConfigurator.Configure();
 			Logger.Info("Sample starting...");
 		}
 
 		private void Application_End(object sender, EventArgs e) {
 			Logger.Info("Sample shutting down...");
-
-			// this would be automatic, but in partial trust scenarios it is not.
-			log4net.LogManager.Shutdown();
 		}
 
 		private void Application_Error(object sender, EventArgs e) {
-			Logger.Error("An unhandled exception occurred in ASP.NET processing: " + Server.GetLastError(), Server.GetLastError());
+			Logger.ErrorException("An unhandled exception occurred in ASP.NET processing: " + Server.GetLastError(), Server.GetLastError());
 		}
 
 		private void Application_EndRequest(object sender, EventArgs e) {

@@ -25,6 +25,8 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Threading.Tasks;
 	using System.Web;
 	using System.Xml;
+
+	using DotNetOpenAuth.Logging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.Messaging.Reflection;
 	using Validation;

@@ -10,10 +10,13 @@ namespace OpenIdProviderWebForms {
 	using System.IO;
 	using System.Text;
 	using System.Web;
+
+	using DotNetOpenAuth.Logging;
+
 	using OpenIdProviderWebForms.Code;
 
 	public class Global : System.Web.HttpApplication {
-		public static log4net.ILog Logger = log4net.LogManager.GetLogger(typeof(Global));
+		public static ILog Logger = LogProvider.GetLogger(typeof(Global));
 
 		internal static StringBuilder LogMessages = new StringBuilder();
 
@@ -27,15 +30,11 @@ namespace OpenIdProviderWebForms {
 		}
 
 		protected void Application_Start(object sender, EventArgs e) {
-			log4net.Config.XmlConfigurator.Configure();
 			Logger.Info("Sample starting...");
 		}
 
 		protected void Application_End(object sender, EventArgs e) {
 			Logger.Info("Sample shutting down...");
-
-			// this would be automatic, but in partial trust scenarios it is not.
-			log4net.LogManager.Shutdown();
 		}
 
 		protected void Application_BeginRequest(object sender, EventArgs e) {

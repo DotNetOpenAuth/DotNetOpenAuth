@@ -9,6 +9,8 @@ namespace DotNetOpenAuth.Test.OAuth {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
+
+	using DotNetOpenAuth.Logging;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OAuth;
 	using NUnit.Framework;

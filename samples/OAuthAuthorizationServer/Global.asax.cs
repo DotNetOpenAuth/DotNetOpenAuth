@@ -8,7 +8,9 @@
 
 	using Code;
 
-	/// <summary>
+	using DotNetOpenAuth.Logging;
+
+    /// <summary>
 	/// The global MVC Application.
 	/// </summary>
 	/// <remarks>
@@ -24,7 +26,7 @@
 		/// <summary>
 		/// The logger for this sample to use.
 		/// </summary>
-		public static log4net.ILog Logger = log4net.LogManager.GetLogger("DotNetOpenAuth.OAuthAuthorizationServer");
+		public static ILog Logger = LogProvider.GetLogger("DotNetOpenAuth.OAuthAuthorizationServer");
 
 		public static DatabaseKeyNonceStore KeyNonceStore { get; set; }
 
@@ -83,19 +85,16 @@
 
 			KeyNonceStore = new DatabaseKeyNonceStore();
 
-			log4net.Config.XmlConfigurator.Configure();
+///			LogProvider.SetCurrentLogProvider(new ....)
 			Logger.Info("Sample starting...");
 		}
 
 		protected void Application_End(object sender, EventArgs e) {
 			Logger.Info("Sample shutting down...");
-
-			// this would be automatic, but in partial trust scenarios it is not.
-			log4net.LogManager.Shutdown();
 		}
 
 		protected void Application_Error(object sender, EventArgs e) {
-			Logger.Error("An unhandled exception occurred in ASP.NET processing: " + Server.GetLastError(), Server.GetLastError());
+			Logger.ErrorException("An unhandled exception occurred in ASP.NET processing: " + Server.GetLastError(), Server.GetLastError());
 
 			// In the event of an unhandled exception, reverse any changes that were made to the database to avoid any partial database updates.
 			var dataContext = DataContextSimple;

@@ -4,17 +4,16 @@
 	using System.Linq;
 	using System.Web;
 
-	public partial class Global : HttpApplication {
+	using DotNetOpenAuth.Logging;
+
+    public partial class Global : HttpApplication {
 		protected void Application_Start(object sender, EventArgs e) {
-			log4net.Config.XmlConfigurator.Configure();
+
 			Logging.Logger.Info("Sample starting...");
 		}
 
 		protected void Application_End(object sender, EventArgs e) {
 			Logging.Logger.Info("Sample shutting down...");
-
-			// this would be automatic, but in partial trust scenarios it is not.
-			log4net.LogManager.Shutdown();
 		}
 
 		protected void Application_Error(object sender, EventArgs e) {

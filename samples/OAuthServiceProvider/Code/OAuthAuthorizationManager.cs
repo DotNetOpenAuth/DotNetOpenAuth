@@ -9,6 +9,7 @@
 	using System.ServiceModel.Security;
 	using System.Threading.Tasks;
 	using DotNetOpenAuth;
+	using DotNetOpenAuth.Logging;
 	using DotNetOpenAuth.OAuth;
 
 	/// <summary>
@@ -56,7 +57,7 @@
 							}
 						}
 					} catch (ProtocolException ex) {
-						Global.Logger.Error("Error processing OAuth messages.", ex);
+						Global.Logger.ErrorException("Error processing OAuth messages.", ex);
 					}
 
 					return false;

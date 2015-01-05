@@ -7,6 +7,8 @@
 namespace DotNetOpenAuth.Test.OpenId {
 	using System;
 	using System.IO;
+
+	using DotNetOpenAuth.Logging;
 	using DotNetOpenAuth.OpenId;
 	using DotNetOpenAuth.OpenId.Messages;
 	using NUnit.Framework;

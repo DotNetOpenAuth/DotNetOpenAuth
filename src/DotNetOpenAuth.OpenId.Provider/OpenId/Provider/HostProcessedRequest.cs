@@ -13,6 +13,8 @@ namespace DotNetOpenAuth.OpenId.Provider {
 	using System.Text;
 	using System.Threading;
 	using System.Threading.Tasks;
+
+	using DotNetOpenAuth.Logging;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.Messages;
 	using Validation;

@@ -27,6 +27,8 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Threading.Tasks;
 	using System.Web;
 	using System.Xml;
+
+	using DotNetOpenAuth.Logging;
 	using DotNetOpenAuth.Messaging.Reflection;
 	using Validation;
 
@@ -395,7 +397,7 @@ namespace DotNetOpenAuth.Messaging {
 		public async Task<IDirectedProtocolMessage> ReadFromRequestAsync(HttpRequestMessage httpRequest, CancellationToken cancellationToken) {
 			Requires.NotNull(httpRequest, "httpRequest");
 
-			if (Logger.Channel.IsInfoEnabled && httpRequest.RequestUri != null) {
+			if (Logger.Channel.IsInfoEnabled() && httpRequest.RequestUri != null) {
 				Logger.Channel.InfoFormat("Scanning incoming request for messages: {0}", httpRequest.RequestUri.AbsoluteUri);
 			}
 			IDirectedProtocolMessage requestMessage = await this.ReadFromRequestCoreAsync(httpRequest, cancellationToken);
@@ -1034,7 +1036,7 @@ namespace DotNetOpenAuth.Messaging {
 				this.OutgoingMessageFilter(message);
 			}
 
-			if (Logger.Channel.IsInfoEnabled) {
+			if (Logger.Channel.IsInfoEnabled()) {
 				var directedMessage = message as IDirectedProtocolMessage;
 				string recipient = (directedMessage != null && directedMessage.Recipient != null) ? directedMessage.Recipient.AbsoluteUri : "<response>";
 				var messageAccessor = this.MessageDescriptions.GetAccessor(message);
@@ -1173,7 +1175,7 @@ namespace DotNetOpenAuth.Messaging {
 		protected virtual async Task ProcessIncomingMessageAsync(IProtocolMessage message, CancellationToken cancellationToken) {
 			Requires.NotNull(message, "message");
 
-			if (Logger.Channel.IsInfoEnabled) {
+			if (Logger.Channel.IsInfoEnabled()) {
 				var messageAccessor = this.MessageDescriptions.GetAccessor(message, true);
 				Logger.Channel.InfoFormat(
 					"Processing incoming {0} ({1}) message:{2}{3}",
@@ -1223,7 +1225,7 @@ namespace DotNetOpenAuth.Messaging {
 				eventedMessage.OnReceiving();
 			}
 
-			if (Logger.Channel.IsDebugEnabled) {
+			if (Logger.Channel.IsDebugEnabled()) {
 				var messageAccessor = this.MessageDescriptions.GetAccessor(message);
 				Logger.Channel.DebugFormat(
 					"After binding element processing, the received {0} ({1}) message is: {2}{3}",

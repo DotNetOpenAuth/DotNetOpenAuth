@@ -13,6 +13,8 @@ namespace DotNetOpenAuth.Messaging {
 	using System.Security.Cryptography;
 	using System.Text;
 	using System.Web;
+
+	using DotNetOpenAuth.Logging;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.Messaging.Bindings;
 	using DotNetOpenAuth.Messaging.Reflection;

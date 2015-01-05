@@ -26,6 +26,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Threading.Tasks;
 	using System.Web.UI;
 	using System.Web.UI.HtmlControls;
+
+	using DotNetOpenAuth.Logging;
 	using DotNetOpenAuth.Messaging;
 	using Validation;
 

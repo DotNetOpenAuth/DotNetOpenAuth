@@ -19,6 +19,7 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Threading;
 	using System.Threading.Tasks;
 	using DotNetOpenAuth.Configuration;
+	using DotNetOpenAuth.Logging;
 	using DotNetOpenAuth.Messaging;
 	using Validation;
 

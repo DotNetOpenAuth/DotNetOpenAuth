@@ -16,6 +16,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 	using System.Threading.Tasks;
 	using System.Web;
 	using DotNetOpenAuth.Configuration;
+	using DotNetOpenAuth.Logging;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.ChannelElements;
 	using DotNetOpenAuth.OpenId.Messages;
@@ -338,7 +339,7 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				}
 			}
 
-			if (Logger.OpenId.IsWarnEnabled && returnToUrl.Query != null) {
+			if (Logger.OpenId.IsWarnEnabled() && returnToUrl.Query != null) {
 				NameValueCollection returnToArgs = HttpUtility.ParseQueryString(returnToUrl.Query);
 				foreach (string key in returnToArgs) {
 					if (OpenIdRelyingParty.IsOpenIdSupportingParameter(key)) {
@@ -519,12 +520,12 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 			if (anyFilteredOut) {
 				Logger.Yadis.DebugFormat("Some endpoints were filtered out.  Total endpoints remaining: {0}", filteredEndpoints.Count);
 			}
-			if (Logger.Yadis.IsDebugEnabled) {
+			if (Logger.Yadis.IsDebugEnabled()) {
 				if (MessagingUtilities.AreEquivalent(endpoints, endpointList)) {
 					Logger.Yadis.Debug("Filtering and sorting of endpoints did not affect the list.");
 				} else {
 					Logger.Yadis.Debug("After filtering and sorting service endpoints, this is the new prioritized list:");
-					Logger.Yadis.Debug(Util.ToStringDeferred(filteredEndpoints, true));
+					Logger.Yadis.Debug(Util.ToStringDeferred(filteredEndpoints, true).ToString());
 				}
 			}
 

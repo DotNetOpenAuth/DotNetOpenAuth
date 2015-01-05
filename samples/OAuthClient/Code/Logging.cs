@@ -5,7 +5,9 @@
 	using System.Text;
 	using System.Web;
 
-	/// <summary>
+	using DotNetOpenAuth.Logging;
+
+    /// <summary>
 	/// Logging tools for this sample.
 	/// </summary>
 	public static class Logging {
@@ -17,6 +19,6 @@
 		/// <summary>
 		/// The logger for this sample to use.
 		/// </summary>
-		public static log4net.ILog Logger = log4net.LogManager.GetLogger("DotNetOpenAuth.OAuthClient");
+		public static ILog Logger = LogProvider.GetLogger("DotNetOpenAuth.OAuthClient");
 	}
 }

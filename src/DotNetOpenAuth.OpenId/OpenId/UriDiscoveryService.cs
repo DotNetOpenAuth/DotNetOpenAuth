@@ -16,6 +16,8 @@ namespace DotNetOpenAuth.OpenId {
 	using System.Threading.Tasks;
 	using System.Web.UI.HtmlControls;
 	using System.Xml;
+
+	using DotNetOpenAuth.Logging;
 	using DotNetOpenAuth.Messaging;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using DotNetOpenAuth.Xrds;
@@ -77,7 +79,7 @@ namespace DotNetOpenAuth.OpenId {
 						}
 						endpoints.AddRange(xrdsEndpoints);
 					} catch (XmlException ex) {
-						Logger.Yadis.Error("Error while parsing the XRDS document.  Falling back to HTML discovery.", ex);
+						Logger.Yadis.ErrorException("Error while parsing the XRDS document.  Falling back to HTML discovery.", ex);
 					}
 				}
 
@@ -87,7 +89,7 @@ namespace DotNetOpenAuth.OpenId {
 					var htmlEndpoints = new List<IdentifierDiscoveryResult>(DiscoverFromHtml(yadisResult.NormalizedUri, uriIdentifier, yadisResult.ResponseText));
 					if (htmlEndpoints.Any()) {
 						Logger.Yadis.DebugFormat("Total services discovered in HTML: {0}", htmlEndpoints.Count);
-						Logger.Yadis.Debug(htmlEndpoints.ToStringDeferred(true));
+						Logger.Yadis.Debug(htmlEndpoints.ToStringDeferred(true).ToString());
 						endpoints.AddRange(htmlEndpoints.Where(ep => !uriIdentifier.IsDiscoverySecureEndToEnd || ep.ProviderEndpoint.IsTransportSecure()));
 						if (endpoints.Count == 0) {
 							Logger.Yadis.Info("No HTML discovered endpoints met the security requirements.");

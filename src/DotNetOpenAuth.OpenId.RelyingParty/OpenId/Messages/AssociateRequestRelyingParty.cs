@@ -9,6 +9,8 @@ namespace DotNetOpenAuth.OpenId.Messages {
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Text;
+
+	using DotNetOpenAuth.Logging;
 	using DotNetOpenAuth.OpenId.RelyingParty;
 	using Validation;
 
