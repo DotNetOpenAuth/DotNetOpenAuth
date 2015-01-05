@@ -1,0 +1,339 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ArgumentPropertyMissing" xml:space="preserve">
+    <value>Argument's {0}.{1} property is required but is empty or null.</value>
+  </data>
+  <data name="CurrentHttpContextRequired" xml:space="preserve">
+    <value>HttpContext.Current is null.  There must be an ASP.NET request in process for this operation to succeed.</value>
+  </data>
+  <data name="DataContractMissingFromMessageType" xml:space="preserve">
+    <value>DataContractSerializer could not be initialized on message type {0}.  Is it missing a [DataContract] attribute?</value>
+  </data>
+  <data name="DataContractMissingNamespace" xml:space="preserve">
+    <value>DataContractSerializer could not be initialized on message type {0} because the DataContractAttribute.Namespace property is not set.</value>
+  </data>
+  <data name="DerivedTypeNotExpected" xml:space="preserve">
+    <value>An instance of type {0} was expected, but received unexpected derived type {1}.</value>
+  </data>
+  <data name="DirectedMessageMissingRecipient" xml:space="preserve">
+    <value>The directed message's Recipient property must not be null.</value>
+  </data>
+  <data name="DirectWebRequestOptionsNotSupported" xml:space="preserve">
+    <value>The given set of options is not supported by this web request handler.</value>
+  </data>
+  <data name="ErrorDeserializingMessage" xml:space="preserve">
+    <value>Error while deserializing message {0}.</value>
+  </data>
+  <data name="ErrorInRequestReplyMessage" xml:space="preserve">
+    <value>Error occurred while sending a direct message or getting the response.</value>
+  </data>
+  <data name="ExceptionNotConstructedForTransit" xml:space="preserve">
+    <value>This exception was not constructed with a root request message that caused it.</value>
+  </data>
+  <data name="ExpectedMessageNotReceived" xml:space="preserve">
+    <value>Expected {0} message but received no recognizable message.</value>
+  </data>
+  <data name="ExpiredMessage" xml:space="preserve">
+    <value>The message expired at {0} and it is now {1}.</value>
+  </data>
+  <data name="GetOrPostFlagsRequired" xml:space="preserve">
+    <value>At least one of GET or POST flags must be present.</value>
+  </data>
+  <data name="HttpContextRequired" xml:space="preserve">
+    <value>This method requires a current HttpContext.  Alternatively, use an overload of this method that allows you to pass in information without an HttpContext.</value>
+  </data>
+  <data name="IndirectMessagesMustImplementIDirectedProtocolMessage" xml:space="preserve">
+    <value>Messages that indicate indirect transport must implement the {0} interface.</value>
+  </data>
+  <data name="InsecureWebRequestWithSslRequired" xml:space="preserve">
+    <value>Insecure web request for '{0}' aborted due to security requirements demanding HTTPS.</value>
+  </data>
+  <data name="InsufficientMessageProtection" xml:space="preserve">
+    <value>The {0} message required protections {{{1}}} but the channel could only apply {{{2}}}.</value>
+  </data>
+  <data name="InvalidCustomBindingElementOrder" xml:space="preserve">
+    <value>The customized binding element ordering is invalid.</value>
+  </data>
+  <data name="InvalidMessageParts" xml:space="preserve">
+    <value>Some part(s) of the message have invalid values: {0}</value>
+  </data>
+  <data name="InvalidNonceReceived" xml:space="preserve">
+    <value>The incoming message had an invalid or missing nonce.</value>
+  </data>
+  <data name="KeyAlreadyExists" xml:space="preserve">
+    <value>An item with the same key has already been added.</value>
+  </data>
+  <data name="MessageNotExtensible" xml:space="preserve">
+    <value>The {0} message does not support extensions.</value>
+  </data>
+  <data name="MessagePartEncoderWrongType" xml:space="preserve">
+    <value>The value for {0}.{1} on member {1} was expected to derive from {2} but was {3}.</value>
+  </data>
+  <data name="MessagePartReadFailure" xml:space="preserve">
+    <value>Error while reading message '{0}' parameter '{1}' with value '{2}'.</value>
+  </data>
+  <data name="MessagePartValueBase64DecodingFault" xml:space="preserve">
+    <value>Message parameter '{0}' with value '{1}' failed to base64 decode.</value>
+  </data>
+  <data name="MessagePartWriteFailure" xml:space="preserve">
+    <value>Error while preparing message '{0}' parameter '{1}' for sending.</value>
+  </data>
+  <data name="QueuedMessageResponseAlreadyExists" xml:space="preserve">
+    <value>A message response is already queued for sending in the response stream.</value>
+  </data>
+  <data name="ReplayAttackDetected" xml:space="preserve">
+    <value>This message has already been processed.  This could indicate a replay attack in progress.</value>
+  </data>
+  <data name="ReplayProtectionNotSupported" xml:space="preserve">
+    <value>This channel does not support replay protection.</value>
+  </data>
+  <data name="RequiredNonEmptyParameterWasEmpty" xml:space="preserve">
+    <value>The following required non-empty parameters were empty in the {0} message: {1}</value>
+  </data>
+  <data name="RequiredParametersMissing" xml:space="preserve">
+    <value>The following required parameters were missing from the {0} message: {1}</value>
+  </data>
+  <data name="RequiredProtectionMissing" xml:space="preserve">
+    <value>The binding element offering the {0} protection requires other protection that is not provided.</value>
+  </data>
+  <data name="SequenceContainsNoElements" xml:space="preserve">
+    <value>The list is empty.</value>
+  </data>
+  <data name="SequenceContainsNullElement" xml:space="preserve">
+    <value>The list contains a null element.</value>
+  </data>
+  <data name="SignatureInvalid" xml:space="preserve">
+    <value>Message signature was incorrect.</value>
+  </data>
+  <data name="SigningNotSupported" xml:space="preserve">
+    <value>This channel does not support signing messages.  To support signing messages, a derived Channel type must override the Sign and IsSignatureValid methods.</value>
+  </data>
+  <data name="StreamUnreadable" xml:space="preserve">
+    <value>The stream's CanRead property returned false.</value>
+  </data>
+  <data name="StreamUnwritable" xml:space="preserve">
+    <value>The stream's CanWrite property returned false.</value>
+  </data>
+  <data name="TooManyBindingsOfferingSameProtection" xml:space="preserve">
+    <value>Expected at most 1 binding element to apply the {0} protection, but more than one applied.</value>
+  </data>
+  <data name="TooManyRedirects" xml:space="preserve">
+    <value>The maximum allowable number of redirects were exceeded while requesting '{0}'.</value>
+  </data>
+  <data name="UnexpectedEmptyArray" xml:space="preserve">
+    <value>The array must not be empty.</value>
+  </data>
+  <data name="UnexpectedEmptyString" xml:space="preserve">
+    <value>The empty string is not allowed.</value>
+  </data>
+  <data name="UnexpectedMessagePartValue" xml:space="preserve">
+    <value>Message parameter '{0}' had unexpected value '{1}'.</value>
+  </data>
+  <data name="UnexpectedMessagePartValueForConstant" xml:space="preserve">
+    <value>Expected message {0} parameter '{1}' to have value '{2}' but had '{3}' instead.</value>
+  </data>
+  <data name="UnexpectedMessageReceived" xml:space="preserve">
+    <value>Expected message {0} but received {1} instead.</value>
+  </data>
+  <data name="UnexpectedMessageReceivedOfMany" xml:space="preserve">
+    <value>Unexpected message type received.</value>
+  </data>
+  <data name="UnexpectedNullKey" xml:space="preserve">
+    <value>A null key was included and is not allowed.</value>
+  </data>
+  <data name="UnexpectedNullOrEmptyKey" xml:space="preserve">
+    <value>A null or empty key was included and is not allowed.</value>
+  </data>
+  <data name="UnexpectedNullValue" xml:space="preserve">
+    <value>A null value was included for key '{0}' and is not allowed.</value>
+  </data>
+  <data name="UnexpectedType" xml:space="preserve">
+    <value>The type {0} or a derived type was expected, but {1} was given.</value>
+  </data>
+  <data name="UnrecognizedEnumValue" xml:space="preserve">
+    <value>{0} property has unrecognized value {1}.</value>
+  </data>
+  <data name="UnsafeWebRequestDetected" xml:space="preserve">
+    <value>The URL '{0}' is rated unsafe and cannot be requested this way.</value>
+  </data>
+  <data name="UntrustedRedirectsOnPOSTNotSupported" xml:space="preserve">
+    <value>Redirects on POST requests that are to untrusted servers is not supported.</value>
+  </data>
+  <data name="WebRequestFailed" xml:space="preserve">
+    <value>Web request to '{0}' failed.</value>
+  </data>
+  <data name="ExceptionUndeliverable" xml:space="preserve">
+    <value>This exception must be instantiated with a recipient that will receive the error message, or a direct request message instance that this exception will respond to.</value>
+  </data>
+  <data name="UnsupportedHttpVerbForMessageType" xml:space="preserve">
+    <value>'{0}' messages cannot be received with HTTP verb '{1}'.</value>
+  </data>
+  <data name="UnexpectedHttpStatusCode" xml:space="preserve">
+    <value>Expected direct response to use HTTP status code {0} but was {1} instead.</value>
+  </data>
+  <data name="UnsupportedHttpVerb" xml:space="preserve">
+    <value>The HTTP verb '{0}' is unrecognized and unsupported.</value>
+  </data>
+  <data name="NonEmptyStringExpected" xml:space="preserve">
+    <value>A non-empty string was expected.</value>
+  </data>
+  <data name="StreamMustHaveKnownLength" xml:space="preserve">
+    <value>The stream must have a known length.</value>
+  </data>
+  <data name="BinaryDataRequiresMultipart" xml:space="preserve">
+    <value>Unable to send all message data because some of it requires multi-part POST, but IMessageWithBinaryData.SendAsMultipart was false.</value>
+  </data>
+  <data name="SessionRequired" xml:space="preserve">
+    <value>An HttpContext.Current.Session object is required.</value>
+  </data>
+  <data name="StandardMessageFactoryUnsupportedMessageType" xml:space="preserve">
+    <value>This message factory does not support message type(s): {0}</value>
+  </data>
+  <data name="RequiredMessagePartConstantIncorrect" xml:space="preserve">
+    <value>The following message parts had constant value requirements that were unsatisfied: {0}</value>
+  </data>
+  <data name="EncoderInstantiationFailed" xml:space="preserve">
+    <value>Unable to instantiate the message part encoder/decoder type {0}.</value>
+  </data>
+  <data name="MessageTimestampInFuture" xml:space="preserve">
+    <value>This message has a timestamp of {0}, which is beyond the allowable clock skew for in the future.</value>
+  </data>
+  <data name="UnsupportedEncryptionAlgorithm" xml:space="preserve">
+    <value>This blob is not a recognized encryption format.</value>
+  </data>
+  <data name="ExtraParameterAddFailure" xml:space="preserve">
+    <value>Failed to add extra parameter '{0}' with value '{1}'.</value>
+  </data>
+  <data name="ExpectedParameterWasMissing" xml:space="preserve">
+    <value>The message part {0} was expected in the {1} message but was not found.</value>
+  </data>
+  <data name="MessageExceedsGetSizePostNotAllowed" xml:space="preserve">
+    <value>Message too large for a HTTP GET, and HTTP POST is not allowed for this message type.</value>
+  </data>
+  <data name="MissingDecryptionKeyForHandle" xml:space="preserve">
+    <value>Missing decryption key for bucket "{0}" handle "{1}"</value>
+  </data>
+  <data name="UnexpectedBufferLength" xml:space="preserve">
+    <value>Unexpected buffer length.</value>
+  </data>
+  <data name="DataCorruptionDetected" xml:space="preserve">
+    <value>Decoding failed due to data corruption.</value>
+  </data>
+</root>

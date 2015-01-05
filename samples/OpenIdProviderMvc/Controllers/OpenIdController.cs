@@ -36,6 +36,7 @@ namespace OpenIdProviderMvc.Controllers {
 				// Some requests are automatically handled by DotNetOpenAuth.  If this is one, go ahead and let it go.
 				if (request.IsResponseReady) {
 					var response = await OpenIdProvider.PrepareResponseAsync(request, this.Response.ClientDisconnectedToken);
+					Response.ContentType = response.Content.Headers.ContentType.ToString();
 					return response.AsActionResult();
 				}
 
@@ -190,6 +191,7 @@ namespace OpenIdProviderMvc.Controllers {
 			}
 
 			var response = await OpenIdProvider.PrepareResponseAsync(pendingRequest, this.Response.ClientDisconnectedToken);
+			Response.ContentType = response.Content.Headers.ContentType.ToString();
 			return response.AsActionResult();
 		}
 

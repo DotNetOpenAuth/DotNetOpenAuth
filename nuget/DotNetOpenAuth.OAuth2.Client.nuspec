@@ -4,10 +4,10 @@
 		<id>$identity$</id>
 		<version>$oauth2version$</version>
 		<title>DotNetOpenAuth OAuth 2.0 Client</title>
-		<authors>Andrew Arnott</authors>
-		<owners>Outercurve Foundation</owners>
+		<authors>Andrew Arnott, David Christiansen</authors>
+		<owners>David Christiansen, Andrew Arnott</owners>
 		<projectUrl>http://www.dotnetopenauth.net/</projectUrl>
-		<iconUrl>https://github.com/AArnott/dotnetopenid/raw/v3.4/doc/logo/dnoa-logo_32x32.png</iconUrl>
+		<iconUrl>https://raw.githubusercontent.com/DotNetOpenAuth/DotNetOpenAuth/master/doc/logo/dnoa-logo_32x32.png</iconUrl>
 		<licenseUrl>http://www.opensource.org/licenses/ms-pl.html</licenseUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<summary>Add an OAuth 2.0 Client role to an ASP.NET web application, allowing it to make authorized calls to its visitors' protected data on other resource servers.</summary>

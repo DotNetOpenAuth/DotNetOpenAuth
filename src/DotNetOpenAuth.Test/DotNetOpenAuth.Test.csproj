@@ -6,6 +6,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <NuGetPackageImportStamp>21a885ee</NuGetPackageImportStamp>
   </PropertyGroup>
   <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.props" />
   <PropertyGroup>
@@ -66,34 +67,20 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Moq, Version=4.1.1309.1617, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
+    <Reference Include="Moq, Version=4.2.1409.1722, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Moq.4.1.1309.1617\lib\net40\Moq.dll</HintPath>
+      <HintPath>..\packages\Moq.4.2.1409.1722\lib\net40\Moq.dll</HintPath>
     </Reference>
-    <Reference Include="nunit.framework, Version=2.6.3.13283, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+    <Reference Include="nunit.framework, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
+      <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
-    <Reference Include="System.Data" />
-    <Reference Include="System.Data.DataSetExtensions">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
     <Reference Include="System.Net.Http" />
-    <Reference Include="System.Net.Http.Extensions">
-      <HintPath>..\packages\Microsoft.Net.Http.2.2.15\lib\net45\System.Net.Http.Extensions.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Net.Http.Formatting, Version=5.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\bin\v4.5\Debug\System.Net.Http.Formatting.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Net.Http.Primitives">
-      <HintPath>..\packages\Microsoft.Net.Http.2.2.15\lib\net45\System.Net.Http.Primitives.dll</HintPath>
-    </Reference>
     <Reference Include="System.Net.Http.WebRequest" />
     <Reference Include="System.Runtime.Serialization">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
@@ -104,12 +91,9 @@
     <Reference Include="System.ServiceModel.Web" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
     <Reference Include="Validation, Version=2.0.0.0, Culture=neutral, PublicKeyToken=2fc06f0d701809a7, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Validation.2.0.2.13022\lib\portable-windows8+net40+sl5+windowsphone8\Validation.dll</HintPath>
+      <HintPath>..\packages\Validation.2.0.6.15003\lib\portable-net40+sl50+win+wpa81+wp80+Xamarin.iOS10+MonoAndroid10+MonoTouch10\Validation.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -315,17 +299,9 @@
     <EmbeddedResource Include="OpenId\Discovery\htmldiscovery\html20provWithBadXrds.html" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DotNetOpenAuth.Core.UI\DotNetOpenAuth.Core.UI.csproj">
-      <Project>{173E7B8D-E751-46E2-A133-F72297C0D2F4}</Project>
-      <Name>DotNetOpenAuth.Core.UI</Name>
-    </ProjectReference>
     <ProjectReference Include="..\DotNetOpenAuth.Core\DotNetOpenAuth.Core.csproj">
       <Project>{60426312-6AE5-4835-8667-37EDEA670222}</Project>
       <Name>DotNetOpenAuth.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\DotNetOpenAuth.OAuth.Common\DotNetOpenAuth.OAuth.Common.csproj">
-      <Project>{115217c5-22cd-415c-a292-0dd0238cdd89}</Project>
-      <Name>DotNetOpenAuth.OAuth.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\DotNetOpenAuth.OAuth.Consumer\DotNetOpenAuth.OAuth.Consumer.csproj">
       <Project>{B202E40D-4663-4A2B-ACDA-865F88FF7CAA}</Project>
@@ -338,10 +314,6 @@
     <ProjectReference Include="..\DotNetOpenAuth.OAuth2.AuthorizationServer\DotNetOpenAuth.OAuth2.AuthorizationServer.csproj">
       <Project>{99BB7543-EA16-43EE-A7BC-D7A25A3B22F6}</Project>
       <Name>DotNetOpenAuth.OAuth2.AuthorizationServer</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\DotNetOpenAuth.OAuth2.Client.UI\DotNetOpenAuth.OAuth2.Client.UI.csproj">
-      <Project>{ADC2CC8C-541E-4F86-ACB1-DD504A36FA4B}</Project>
-      <Name>DotNetOpenAuth.OAuth2.Client.UI</Name>
     </ProjectReference>
     <ProjectReference Include="..\DotNetOpenAuth.OAuth2.ClientAuthorization\DotNetOpenAuth.OAuth2.ClientAuthorization.csproj">
       <Project>{CCF3728A-B3D7-404A-9BC6-75197135F2D7}</Project>
@@ -363,10 +335,6 @@
       <Project>{A288FCC8-6FCF-46DA-A45E-5F9281556361}</Project>
       <Name>DotNetOpenAuth.OAuth</Name>
     </ProjectReference>
-    <ProjectReference Include="..\DotNetOpenAuth.OpenId.Provider.UI\DotNetOpenAuth.OpenId.Provider.UI.csproj">
-      <Project>{9D0F8866-2131-4C2A-BC0E-16FEA5B50828}</Project>
-      <Name>DotNetOpenAuth.OpenId.Provider.UI</Name>
-    </ProjectReference>
     <ProjectReference Include="..\DotNetOpenAuth.OpenId.Provider\DotNetOpenAuth.OpenId.Provider.csproj">
       <Project>{F8284738-3B5D-4733-A511-38C23F4A763F}</Project>
       <Name>DotNetOpenAuth.OpenId.Provider</Name>
@@ -379,21 +347,9 @@
       <Project>{F458AB60-BA1C-43D9-8CEF-EC01B50BE87B}</Project>
       <Name>DotNetOpenAuth.OpenId.RelyingParty</Name>
     </ProjectReference>
-    <ProjectReference Include="..\DotNetOpenAuth.OpenId.UI\DotNetOpenAuth.OpenId.UI.csproj">
-      <Project>{75E13AAE-7D51-4421-ABFD-3F3DC91F576E}</Project>
-      <Name>DotNetOpenAuth.OpenId.UI</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\DotNetOpenAuth.OpenIdOAuth\DotNetOpenAuth.OpenIdOAuth.csproj">
-      <Project>{4bfaa336-5df3-4f27-82d3-06d13240e8ab}</Project>
-      <Name>DotNetOpenAuth.OpenIdOAuth</Name>
-    </ProjectReference>
     <ProjectReference Include="..\DotNetOpenAuth.OpenId\DotNetOpenAuth.OpenId.csproj">
       <Project>{3896A32A-E876-4C23-B9B8-78E17D134CD3}</Project>
       <Name>DotNetOpenAuth.OpenId</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Mono.Math\Mono.Math.csproj">
-      <Project>{F4CD3C04-6037-4946-B7A5-34BFC96A75D2}</Project>
-      <Name>Mono.Math</Name>
     </ProjectReference>
     <ProjectReference Include="..\Org.Mentalis.Security.Cryptography\Org.Mentalis.Security.Cryptography.csproj">
       <Project>{26DC877F-5987-48DD-9DDB-E62F2DE0E150}</Project>
@@ -404,9 +360,4 @@
   <Import Project="$(ProjectRoot)tools\DotNetOpenAuth.targets" />
   <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))\EnlistmentInfo.targets" Condition=" '$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), EnlistmentInfo.targets))' != '' " />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
-  <Import Project="..\packages\Microsoft.Bcl.Build.1.0.10\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.10\tools\Microsoft.Bcl.Build.targets')" />
-  <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">
-    <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.10\tools\Microsoft.Bcl.Build.targets')" Text="This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=317567." HelpKeyword="BCLBUILD2001" />
-    <Error Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.10\tools\Microsoft.Bcl.Build.targets')" Text="The build restored NuGet packages. Build the project again to include these packages in the build. For more information, see http://go.microsoft.com/fwlink/?LinkID=317568." HelpKeyword="BCLBUILD2002" />
-  </Target>
 </Project>

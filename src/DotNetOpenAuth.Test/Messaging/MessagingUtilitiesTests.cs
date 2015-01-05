@@ -220,10 +220,10 @@ namespace DotNetOpenAuth.Test.Messaging {
 		[Test]
 		public void DeserializeFromJson() {
 			var message = new TestMessageWithDate();
-            string json = "{\"ts\":\"2012-04-28T08:00:00Z\",\"age\":18,\"Name\":\"Andrew\"}";
+			string json = "{\"ts\":\"2012-04-28T08:00:00Z\",\"age\":18,\"Name\":\"Andrew\"}";
 			MessagingUtilities.DeserializeFromJson(Encoding.UTF8.GetBytes(json), message, this.MessageDescriptions);
 			Assert.That(message.Age, Is.EqualTo(18));
-            Assert.That(message.Timestamp, Is.EqualTo(DateTime.ParseExact("28/04/2012 08:00", "dd/MM/yyyy hh:mm", CultureInfo.InvariantCulture)));
+			Assert.That(message.Timestamp, Is.EqualTo(DateTime.ParseExact("28/04/2012 08:00", "dd/MM/yyyy hh:mm", CultureInfo.InvariantCulture)));
 			Assert.That(message.Name, Is.EqualTo("Andrew"));
 		}
 

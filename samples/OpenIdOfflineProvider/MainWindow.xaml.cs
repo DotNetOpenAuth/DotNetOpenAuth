@@ -16,14 +16,26 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
     using System.Threading.Tasks;
     using System.Web;
     using System.Web.Http;
-    using System.Web.Http.SelfHost;
     using System.Windows;
     using System.Windows.Input;
 
     using DotNetOpenAuth.Logging;
 
-    using Validation;
+    using Microsoft.Owin.Hosting;
 
+    using Owin;
+
+    using Validation;
+	public class Startup {
+		// This code configures Web API. The Startup class is specified as a type
+		// parameter in the WebApp.Start method.
+		public void Configuration(IAppBuilder appBuilder) {
+			// Configure Web API for self-host. 
+			HttpConfiguration config = new HttpConfiguration();
+			config.Routes.MapHttpRoute("default", "{controller}/{id}", new { controller = "Home", id = RouteParameter.Optional });
+			appBuilder.UseWebApi(config);
+		}
+	} 
     /// <summary>
 	/// Interaction logic for MainWindow.xaml
 	/// </summary>
@@ -36,23 +48,17 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// <summary>
 		/// The logger the application may use.
 		/// </summary>
-		private ILog logger = LogProvider.GetLogger(typeof(MainWindow));
+		private ILog _logger;
 
-		/// <summary>
-		/// The HTTP listener that acts as the OpenID Provider socket.
-		/// </summary>
-		private HttpSelfHostServer hostServer;
+	    private IDisposable hostServer;
 
-		/// <summary>
+	    /// <summary>
 		/// Initializes a new instance of the <see cref="MainWindow"/> class.
 		/// </summary>
 		public MainWindow() {
 			this.InitializeComponent();
-            //TextWriterLogProvider.TextWriterLogger boxLogger = LogProvider.GetRepository().GetAppenders().OfType<TextWriterAppender>().FirstOrDefault(a => a.Name == "TextBoxAppender");
-            //if (boxLogger != null) {
-            //    boxLogger.Writer = new TextBoxTextWriter(this.logBox);
-            //}
-
+			LogProvider.SetCurrentLogProvider(new TextWriterLogProvider(new TextBoxTextWriter(this.logBox)));
+			_logger = LogProvider.GetLogger(typeof(MainWindow));
 			Instance = this;
 			this.StartProviderAsync();
 		}
@@ -146,15 +152,10 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 			Exception exception = null;
 			try {
 				Verify.Operation(this.hostServer == null, "Server already started.");
-
 				int port = 45235;
-				var baseUri = new UriBuilder("http", "localhost", port);
-				var configuration = new HttpSelfHostConfiguration(baseUri.Uri);
-				configuration.Routes.MapHttpRoute("default", "{controller}/{id}", new { controller = "Home", id = RouteParameter.Optional });
 				try {
-					var hostServer = new HttpSelfHostServer(configuration);
-					await hostServer.OpenAsync();
-					this.hostServer = hostServer;
+					this.hostServer = WebApp.Start<Startup>(url: string.Format("http://localhost:{0}", port));
+					this._logger.Info("Server Started");
 				} catch (AddressAccessDeniedException ex) {
 					// If this throws an exception, use an elevated command prompt and execute:
 					// netsh http add urlacl url=http://+:45235/ user=YOUR_USERNAME_HERE
@@ -167,7 +168,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 					throw new InvalidOperationException(message, ex);
 				}
 
-				this.opIdentifierLabel.Content = baseUri.Uri.AbsoluteUri;
+				this.opIdentifierLabel.Content = string.Format("http://localhost:{0}", port);
 			} catch (InvalidOperationException ex) {
 				exception = ex;
 			}
@@ -189,7 +190,6 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// <returns>A task that completes when the asynchronous operation is finished.</returns>
 		private async Task StopProviderAsync() {
 			if (this.hostServer != null) {
-				await this.hostServer.CloseAsync();
 				this.hostServer.Dispose();
 				this.hostServer = null;
 			}

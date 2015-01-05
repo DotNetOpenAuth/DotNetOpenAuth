@@ -21,6 +21,7 @@
 		/// <returns>The response to the Client.</returns>
 		public async Task<ActionResult> Token() {
 			var request = await this.authorizationServer.HandleTokenRequestAsync(this.Request, this.Response.ClientDisconnectedToken);
+			Response.ContentType = request.Content.Headers.ContentType.ToString();
 			return request.AsActionResult();
 		}
 
@@ -42,6 +43,7 @@
 			if (((OAuth2AuthorizationServer)this.authorizationServer.AuthorizationServerServices).CanBeAutoApproved(pendingRequest)) {
 				var approval = this.authorizationServer.PrepareApproveAuthorizationRequest(pendingRequest, HttpContext.User.Identity.Name);
 				var response = await this.authorizationServer.Channel.PrepareResponseAsync(approval, Response.ClientDisconnectedToken);
+				Response.ContentType = response.Content.Headers.ContentType.ToString();
 				return response.AsActionResult();
 			}
 
@@ -88,6 +90,7 @@
 			}
 
 			var preparedResponse = await this.authorizationServer.Channel.PrepareResponseAsync(response, Response.ClientDisconnectedToken);
+			Response.ContentType = preparedResponse.Content.Headers.ContentType.ToString();
 			return preparedResponse.AsActionResult();
 		}
 	}

@@ -18,7 +18,6 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// Initializes a new instance of the <see cref="App"/> class.
 		/// </summary>
 		public App() {
-            LogProvider.SetCurrentLogProvider(new TextWriterLogProvider());
 		}
 	}
 }
