@@ -50,6 +50,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="OAuth2\OAuthStrings.en-GB.resx" />
     <EmbeddedResource Include="OAuth2\OAuthStrings.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>OAuthStrings.Designer.cs</LastGenOutput>

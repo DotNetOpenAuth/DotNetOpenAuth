@@ -67,6 +67,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="OAuth2\AuthServerStrings.en-GB.resx" />
     <EmbeddedResource Include="OAuth2\AuthServerStrings.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>AuthServerStrings.Designer.cs</LastGenOutput>

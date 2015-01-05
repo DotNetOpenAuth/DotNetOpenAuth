@@ -148,6 +148,7 @@
     <None Include="Configuration\DotNetOpenAuth.xsd" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Strings.en-GB.resx" />
     <EmbeddedResource Include="Strings.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Strings.Designer.cs</LastGenOutput>

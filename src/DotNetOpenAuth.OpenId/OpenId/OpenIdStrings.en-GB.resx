@@ -1,0 +1,376 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AssociationSecretAndTypeLengthMismatch" xml:space="preserve">
+    <value>The length of the shared secret ({0}) does not match the length required by the association type ('{1}').</value>
+  </data>
+  <data name="AssociationSecretHashLengthMismatch" xml:space="preserve">
+    <value>The length of the encrypted shared secret ({0}) does not match the length of the hashing algorithm ({1}).</value>
+  </data>
+  <data name="AssociationStoreRequiresNonceStore" xml:space="preserve">
+    <value>If an association store is given, a nonce store must also be provided.</value>
+  </data>
+  <data name="BadAssociationPrivateData" xml:space="preserve">
+    <value>The private data supplied does not meet the requirements of any known Association type.  Its length may be too short, or it may have been corrupted.</value>
+  </data>
+  <data name="CallbackArgumentsRequireSecretStore" xml:space="preserve">
+    <value>Callback arguments are only supported when a {0} is provided to the {1}.</value>
+  </data>
+  <data name="CallDeserializeBeforeCreateResponse" xml:space="preserve">
+    <value>A Simple Registration request can only generate a response on the receiving end.</value>
+  </data>
+  <data name="ClaimedIdAndLocalIdMustBothPresentOrAbsent" xml:space="preserve">
+    <value>The openid.claimed_id and openid.identity parameters must both be present or both be absent.</value>
+  </data>
+  <data name="ClaimedIdentifierCannotBeSetOnDelegatedAuthentication" xml:space="preserve">
+    <value>The ClaimedIdentifier property cannot be set when IsDelegatedIdentifier is true to avoid breaking OpenID URL delegation.</value>
+  </data>
+  <data name="ClaimedIdentifierMustBeSetFirst" xml:space="preserve">
+    <value>The ClaimedIdentifier property must be set first.</value>
+  </data>
+  <data name="DiffieHellmanRequiredPropertiesNotSet" xml:space="preserve">
+    <value>The following properties must be set before the Diffie-Hellman algorithm can generate a public key: {0}</value>
+  </data>
+  <data name="ExplicitHttpUriSuppliedWithSslRequirement" xml:space="preserve">
+    <value>URI is not SSL yet requireSslDiscovery is set to true.</value>
+  </data>
+  <data name="ExtensionAlreadyAddedWithSameTypeURI" xml:space="preserve">
+    <value>An extension sharing namespace '{0}' has already been added.  Only one extension per namespace is allowed in a given request.</value>
+  </data>
+  <data name="ExtensionLookupSupportUnavailable" xml:space="preserve">
+    <value>Cannot lookup extension support on a rehydrated ServiceEndpoint.</value>
+  </data>
+  <data name="FragmentNotAllowedOnXRIs" xml:space="preserve">
+    <value>Fragment segments do not apply to XRI identifiers.</value>
+  </data>
+  <data name="IdentifierSelectRequiresMatchingIdentifiers" xml:space="preserve">
+    <value>ClaimedIdentifier and LocalIdentifier must be the same when IsIdentifierSelect is true.</value>
+  </data>
+  <data name="IndirectErrorFormattedMessage" xml:space="preserve">
+    <value>{0} (Contact: {1}, Reference: {2})</value>
+  </data>
+  <data name="InvalidCharacterInKeyValueFormInput" xml:space="preserve">
+    <value>Cannot encode '{0}' because it contains an illegal character for Key-Value Form encoding.  (line {1}: '{2}')</value>
+  </data>
+  <data name="InvalidKeyValueFormCharacterMissing" xml:space="preserve">
+    <value>Cannot decode Key-Value Form because a line was found without a '{0}' character.  (line {1}: '{2}')</value>
+  </data>
+  <data name="InvalidScheme" xml:space="preserve">
+    <value>The scheme must be http or https but was '{0}'.</value>
+  </data>
+  <data name="InvalidUri" xml:space="preserve">
+    <value>The value '{0}' is not a valid URI.</value>
+  </data>
+  <data name="InvalidXri" xml:space="preserve">
+    <value>Not a recognized XRI format.</value>
+  </data>
+  <data name="IssuedAssertionFailsIdentifierDiscovery" xml:space="preserve">
+    <value>The OpenID Provider issued an assertion for an Identifier whose discovery information did not match.  
+Assertion endpoint info: 
+{0}
+Discovered endpoint info:
+{1}</value>
+  </data>
+  <data name="KeysListAndDictionaryDoNotMatch" xml:space="preserve">
+    <value>The list of keys do not match the provided dictionary.</value>
+  </data>
+  <data name="MatchingArgumentsExpected" xml:space="preserve">
+    <value>The '{0}' and '{1}' parameters must both be or not be '{2}'.</value>
+  </data>
+  <data name="NoAssociationTypeFoundByLength" xml:space="preserve">
+    <value>No recognized association type matches the requested length of {0}.</value>
+  </data>
+  <data name="NoAssociationTypeFoundByName" xml:space="preserve">
+    <value>No recognized association type matches the requested name of '{0}'.</value>
+  </data>
+  <data name="NoEncryptionSessionRequiresHttps" xml:space="preserve">
+    <value>Unless using transport layer encryption, "no-encryption" MUST NOT be used.</value>
+  </data>
+  <data name="NoSessionTypeFound" xml:space="preserve">
+    <value>Diffie-Hellman session type '{0}' not found for OpenID {1}.</value>
+  </data>
+  <data name="OpenIdEndpointNotFound" xml:space="preserve">
+    <value>No OpenID endpoint found.</value>
+  </data>
+  <data name="OperationOnlyValidForSetupRequiredState" xml:space="preserve">
+    <value>This operation is only allowed when IAuthenticationResponse.State == AuthenticationStatus.SetupRequired.</value>
+  </data>
+  <data name="ProviderVersionUnrecognized" xml:space="preserve">
+    <value>Unable to determine the version of the OpenID protocol implemented by the Provider at endpoint '{0}'.</value>
+  </data>
+  <data name="RealmCausedRedirectUponDiscovery" xml:space="preserve">
+    <value>An HTTP request to the realm URL ({0}) resulted in a redirect, which is not allowed during relying party discovery.</value>
+  </data>
+  <data name="ReturnToNotUnderRealm" xml:space="preserve">
+    <value>return_to '{0}' not under realm '{1}'.</value>
+  </data>
+  <data name="ReturnToParamDoesNotMatchRequestUrl" xml:space="preserve">
+    <value>The {0} parameter ({1}) does not match the actual URL ({2}) the request was made with.</value>
+  </data>
+  <data name="ReturnToRequiredForResponse" xml:space="preserve">
+    <value>The openid.return_to parameter is required in the request message in order to construct a response, but that parameter was missing.</value>
+  </data>
+  <data name="SignatureDoesNotIncludeMandatoryParts" xml:space="preserve">
+    <value>The following parameter(s) are not included in the signature but must be: {0}</value>
+  </data>
+  <data name="SregInvalidBirthdate" xml:space="preserve">
+    <value>Invalid birthdate value.  Must be in the form yyyy-MM-dd.</value>
+  </data>
+  <data name="TypeMustImplementX" xml:space="preserve">
+    <value>The type must implement {0}.</value>
+  </data>
+  <data name="UnsolicitedAssertionsNotAllowedFrom1xOPs" xml:space="preserve">
+    <value>Unsolicited assertions are not allowed from 1.0 OpenID Providers.</value>
+  </data>
+  <data name="UserSetupUrlRequiredInImmediateNegativeResponse" xml:space="preserve">
+    <value>The openid.user_setup_url parameter is required when sending negative assertion messages in response to immediate mode requests.</value>
+  </data>
+  <data name="XriResolutionFailed" xml:space="preserve">
+    <value>XRI resolution failed.</value>
+  </data>
+  <data name="AttributeAlreadyAdded" xml:space="preserve">
+    <value>An attribute with type URI '{0}' has already been added.</value>
+  </data>
+  <data name="AttributeTooManyValues" xml:space="preserve">
+    <value>Only {0} values for attribute '{1}' were requested, but {2} were supplied.</value>
+  </data>
+  <data name="UnspecifiedDateTimeKindNotAllowed" xml:space="preserve">
+    <value>Providing a DateTime whose Kind is Unspecified is not allowed.</value>
+  </data>
+  <data name="AssociationOrSessionTypeUnrecognizedOrNotSupported" xml:space="preserve">
+    <value>The requested association type '{0}' with session type '{1}' is unrecognized or not supported by this Provider due to security requirements.</value>
+  </data>
+  <data name="IncompatibleAssociationAndSessionTypes" xml:space="preserve">
+    <value>The Provider requested association type '{0}' and session type '{1}', which are not compatible with each other.</value>
+  </data>
+  <data name="CreateRequestAlreadyCalled" xml:space="preserve">
+    <value>An authentication request has already been created using CreateRequest().</value>
+  </data>
+  <data name="OpenIdTextBoxEmpty" xml:space="preserve">
+    <value>No OpenID url is provided.</value>
+  </data>
+  <data name="ClientScriptExtensionPropertyNameCollision" xml:space="preserve">
+    <value>An extension with this property name ('{0}') has already been registered.</value>
+  </data>
+  <data name="ClientScriptExtensionTypeCollision" xml:space="preserve">
+    <value>The extension '{0}' has already been registered.</value>
+  </data>
+  <data name="UnexpectedHttpStatusCode" xml:space="preserve">
+    <value>Unexpected HTTP status code {0} {1} received in direct response.</value>
+  </data>
+  <data name="NotSupportedByAuthenticationSnapshot" xml:space="preserve">
+    <value>This operation is not supported by serialized authentication responses.  Try this operation from the LoggedIn event handler.</value>
+  </data>
+  <data name="NoRelyingPartyEndpointDiscovered" xml:space="preserve">
+    <value>No XRDS document containing OpenID relying party endpoint information could be found at {0}.</value>
+  </data>
+  <data name="AbsoluteUriRequired" xml:space="preserve">
+    <value>An absolute URI is required for this value.</value>
+  </data>
+  <data name="UnsolicitedAssertionForUnrelatedClaimedIdentifier" xml:space="preserve">
+    <value>An unsolicited assertion cannot be sent for the claimed identifier {0} because this is not an authorized Provider for that identifier.</value>
+  </data>
+  <data name="MaximumAuthenticationTimeExpired" xml:space="preserve">
+    <value>The maximum time allowed to complete authentication has been exceeded.  Please try again.</value>
+  </data>
+  <data name="PrivateRPSecretNotFound" xml:space="preserve">
+    <value>Unable to find the signing secret by the handle '{0}'.</value>
+  </data>
+  <data name="ResponseNotReady" xml:space="preserve">
+    <value>The response is not ready.  Use IsResponseReady to check whether a response is ready first.</value>
+  </data>
+  <data name="UnsupportedChannelConfiguration" xml:space="preserve">
+    <value>This feature is unavailable due to an unrecognized channel configuration.</value>
+  </data>
+  <data name="IdentityAndClaimedIdentifierMustBeBothPresentOrAbsent" xml:space="preserve">
+    <value>The openid.identity and openid.claimed_id parameters must either be both present or both absent from the message.</value>
+  </data>
+  <data name="ReturnToRequiredForOperation" xml:space="preserve">
+    <value>The ReturnTo property must not be null to support this operation.</value>
+  </data>
+  <data name="UnsolicitedAssertionRejectionRequiresNonceStore" xml:space="preserve">
+    <value>Rejecting unsolicited assertions requires a nonce store and an association store.</value>
+  </data>
+  <data name="UnsolicitedAssertionsNotAllowed" xml:space="preserve">
+    <value>Unsolicited assertions are not allowed at this relying party.</value>
+  </data>
+  <data name="DelegatingIdentifiersNotAllowed" xml:space="preserve">
+    <value>Only OpenIDs issued directly by their OpenID Provider are allowed here.</value>
+  </data>
+  <data name="XriResolutionDisabled" xml:space="preserve">
+    <value>XRI support has been disabled at this site.</value>
+  </data>
+  <data name="AssociationStoreRequired" xml:space="preserve">
+    <value>No association store has been given but is required for the current configuration.</value>
+  </data>
+  <data name="UnexpectedEnumPropertyValue" xml:space="preserve">
+    <value>The property {0} had unexpected value {1}.</value>
+  </data>
+  <data name="NoIdentifierSet" xml:space="preserve">
+    <value>No identifier has been set.</value>
+  </data>
+  <data name="PropertyValueNotSupported" xml:space="preserve">
+    <value>This property value is not supported by this control.</value>
+  </data>
+  <data name="ArgumentIsPpidIdentifier" xml:space="preserve">
+    <value>This is already a PPID Identifier.</value>
+  </data>
+  <data name="RequireSslNotSatisfiedByAssertedClaimedId" xml:space="preserve">
+    <value>Sorry.  This site only accepts OpenIDs that are HTTPS-secured, but {0} is not a secure Identifier.</value>
+  </data>
+  <data name="BadExtension" xml:space="preserve">
+    <value>The {0} extension failed to deserialize and will be skipped.  {1}</value>
+  </data>
+  <data name="PositiveAssertionFromNonQualifiedProvider" xml:space="preserve">
+    <value>An positive OpenID assertion was received from OP endpoint {0} and was rejected based on this site's security settings.</value>
+  </data>
+  <data name="HeadTagMustIncludeRunatServer" xml:space="preserve">
+    <value>The HTML head tag must include runat="server".</value>
+  </data>
+  <data name="PropertyNotSet" xml:space="preserve">
+    <value>The {0} property must be set first.</value>
+  </data>
+  <data name="X509CertificateNotTrusted" xml:space="preserve">
+    <value>The X.509 certificate used to sign this document is not trusted.</value>
+  </data>
+  <data name="ClaimedIdentifierDefiesDotNetNormalization" xml:space="preserve">
+    <value>This OpenID exploits features that this relying party cannot reliably verify.  Please try logging in with a human-readable OpenID or from a different OpenID Provider.</value>
+  </data>
+  <data name="MissingElement" xml:space="preserve">
+    <value>Missing {0} element.</value>
+  </data>
+  <data name="DiffieHellmanAssociationRequired" xml:space="preserve">
+    <value>The associate request instance must be a Diffie-Hellman instance.</value>
+  </data>
+  <data name="InvalidDSig" xml:space="preserve">
+    <value>Invalid XmlDSig signature on XRDS document.</value>
+  </data>
+  <data name="MisdirectedSigningCertificate" xml:space="preserve">
+    <value>X.509 signing certificate issued to {0}, but a certificate for {1} was expected.</value>
+  </data>
+  <data name="PopupRedirectMissingResponse" xml:space="preserve">
+    <value>OpenID popup window or iframe did not recognize an OpenID response in the request.</value>
+  </data>
+  <data name="UnsupportedCanonicalizationMethod" xml:space="preserve">
+    <value>Unrecognized or missing canonicalization method.</value>
+  </data>
+  <data name="UnsupportedSignatureMethod" xml:space="preserve">
+    <value>Unrecognized or missing signature method.</value>
+  </data>
+</root>

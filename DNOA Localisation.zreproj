@@ -1,0 +1,216 @@
+<?xml version='1.0' encoding='utf-8'?>
+<project>
+  <configuration createBackupFiles="False" hideEmptyRows="False" hideTranslatedRows="False" useSpellChecker="True" neutralLanguageCode="en-us" languagesToDisplay="">
+    <globalSetting name="Filter-ResourceEditorGrid">&lt;XtraSerializer version="1.0" application="View"&gt;
+  &lt;property name="#LayoutVersion" /&gt;
+  &lt;property name="ActiveFilterString" /&gt;
+&lt;/XtraSerializer&gt;</globalSetting>
+    <globalSetting name="Sort-ResourceEditorGrid">&lt;XtraSerializer version="1.0" application="View"&gt;
+  &lt;property name="#LayoutVersion" /&gt;
+&lt;/XtraSerializer&gt;</globalSetting>
+    <globalSetting name="CreateNewFileForm.prefixTextBox.Text">####</globalSetting>
+    <globalSetting name="CreateNewFileForm.prefixCheckBox.Checked">False</globalSetting>
+    <globalSetting name="CreateNewFileForm.referenceLanguageComboBox.SelectedIndex">0</globalSetting>
+    <globalSetting name="CreateNewFileForm.newLanguageComboBox.SelectedIndex">107</globalSetting>
+    <globalSetting name="CreateNewFileForm.copyTextsCheckBox.Checked">True</globalSetting>
+    <globalSetting name="CreateNewFileForm.automaticallyTranslateCheckBox.Checked">False</globalSetting>
+    <globalSetting name="CreateNewFilesForm.prefixTextBox.Text">####</globalSetting>
+    <globalSetting name="CreateNewFilesForm.prefixCheckBox.Checked">False</globalSetting>
+    <globalSetting name="CreateNewFilesForm.referenceLanguageComboBox.SelectedIndex">0</globalSetting>
+    <globalSetting name="CreateNewFilesForm.destinationLanguagesListBox">0</globalSetting>
+    <globalSetting name="CreateNewFilesForm.copyTextsCheckBox.Checked">True</globalSetting>
+    <globalSetting name="CreateNewFilesForm.automaticallyTranslateCheckBox.Checked">False</globalSetting>
+    <globalSetting name="ReadOnlyFileOverwriteBehaviour">0</globalSetting>
+    <globalSetting name="OmitEmptyItems">True</globalSetting>
+    <globalSetting name="ShowCommentsColumnInGrid">False</globalSetting>
+    <globalSetting name="IgnoreWindowsFormsResourcesWithDesignerFiles">True</globalSetting>
+    <globalSetting name="HideInternalDesignerRows">True</globalSetting>
+    <globalSetting name="UseShallowGridDataCumulation">True</globalSetting>
+    <globalSetting name="HideFileGroupFilesInTree">True</globalSetting>
+    <globalSetting name="NeutralLanguageFileNamePattern">[basename][optionaldefaulttypes].[extension]</globalSetting>
+    <globalSetting name="NonNeutralLanguageFileNamePattern">[basename][optionaldefaulttypes].[languagecode].[extension]</globalSetting>
+    <globalSetting name="BaseNameDotCount">0</globalSetting>
+    <globalSetting name="DefaultFileTypesToIgnore">.aspx;.ascx;.asmx;.master;.sitemap</globalSetting>
+    <globalSetting name="Project-PersistGridSettings">True</globalSetting>
+    <globalSetting name="ColorifyNullCells">True</globalSetting>
+    <globalSetting name="EnableExcelExportSnapshots">True</globalSetting>
+    <globalSetting name="projectMruItems">&lt;?xml version='1.0' encoding='utf-8'?&gt;&lt;items&gt;&lt;item type="2" checksum="3675165411" /&gt;&lt;item type="2" checksum="1942673564" /&gt;&lt;item type="1" checksum="1310260024" /&gt;&lt;item type="2" checksum="1468123991" /&gt;&lt;item type="2" checksum="22749722029" /&gt;&lt;/items&gt;</globalSetting>
+    <userSetting name="David@DCDEVPC.filesInitialDir">C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OAuth2\OAuth2</userSetting>
+    <userSetting name="David@DCDEVPC.FindText">
+    </userSetting>
+    <userSetting name="David@DCDEVPC.RecentFiles">C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.Core\Messaging\MessagingStrings.resx;C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.Core\Messaging\MessagingStrings.en-GB.resx;C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.Core\Messaging\MessagingStrings.sr.resx###***###C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.Core\Strings.resx;C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.Core\Strings.en-GB.resx;C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.Core\Strings.sr.resx###***###C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OpenId\OpenId\Behaviors\BehaviorStrings.resx;C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OpenId\OpenId\Behaviors\BehaviorStrings.en-GB.resx;C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OpenId\OpenId\Behaviors\BehaviorStrings.sr.resx;C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OpenId\OpenId\OpenIdStrings.resx;C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OpenId\OpenId\OpenIdStrings.en-GB.resx;C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OpenId\OpenId\OpenIdStrings.sr.resx;C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OpenId\Xrds\XrdsStrings.resx;C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OpenId\Xrds\XrdsStrings.en-GB.resx;C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OpenId\Xrds\XrdsStrings.sr.resx###***###C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.BuildTasks\TaskStrings.resx;C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.BuildTasks\TaskStrings.en-GB.resx###***###C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.Core\Strings.resx;C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.Core\Strings.en-GB.resx;C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.Core\Strings.sr.resx###***###C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OAuth2.AuthorizationServer\OAuth2\AuthServerStrings.resx;C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OAuth2.AuthorizationServer\OAuth2\AuthServerStrings.en-GB.resx;C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OpenId\OpenId\Behaviors\BehaviorStrings.resx;C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OpenId\OpenId\Behaviors\BehaviorStrings.sr.resx;C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OAuth2.ClientAuthorization\OAuth2\ClientAuthorizationStrings.resx;C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OAuth2.Client.UI\OAuth2\ClientAuthorizationView.resx;C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OAuth2.Client\OAuth2\ClientStrings.resx;C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.Core\Messaging\MessagingStrings.resx;C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.Core\Messaging\MessagingStrings.sr.resx;C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OAuth\OAuth\OAuthStrings.resx;C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OAuth2\OAuth2\OAuthStrings.resx;C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OAuth\OAuth\OAuthStrings.sr.resx;C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OpenId\OpenId\OpenIdStrings.resx;C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OpenId\OpenId\OpenIdStrings.sr.resx;C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OAuth2.ResourceServer\OAuth2\ResourceServerStrings.resx;C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.Core\Strings.resx;C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.Core\Strings.sr.resx;C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.BuildTasks\TaskStrings.resx;C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OpenId\Xrds\XrdsStrings.resx;C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OpenId\Xrds\XrdsStrings.sr.resx</userSetting>
+    <description>
+    </description>
+  </configuration>
+  <fileGroups>
+    <fileGroup name="" projectFolderUniqueID="00000000-0000-0000-0000-000000000000" orderPosition="0" ignoreDuringExportAndImport="False" uniqueID="3d2cb1ac-4720-4a88-aa69-0f7908397ac9">
+      <file filePath="src\DotNetOpenAuth.OAuth2.AuthorizationServer\OAuth2\AuthServerStrings.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OAuth2.AuthorizationServer\OAuth2\AuthServerStrings.resx" uniqueID="a49e89f7-f8b4-4aac-9408-b100df6663ba" />
+      <file filePath="src\DotNetOpenAuth.OAuth2.AuthorizationServer\OAuth2\AuthServerStrings.en-GB.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OAuth2.AuthorizationServer\OAuth2\AuthServerStrings.en-GB.resx" uniqueID="327456ff-dab1-4d41-8579-5930cb573e4a" />
+      <file filePath="src\DotNetOpenAuth.OpenId\OpenId\Behaviors\BehaviorStrings.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OpenId\OpenId\Behaviors\BehaviorStrings.resx" uniqueID="797cf210-171a-4d16-a61b-505646614648" />
+      <file filePath="src\DotNetOpenAuth.OpenId\OpenId\Behaviors\BehaviorStrings.sr.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OpenId\OpenId\Behaviors\BehaviorStrings.sr.resx" uniqueID="b1416982-aa59-4974-b15b-51251ff70735" />
+      <file filePath="src\DotNetOpenAuth.OAuth2.ClientAuthorization\OAuth2\ClientAuthorizationStrings.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OAuth2.ClientAuthorization\OAuth2\ClientAuthorizationStrings.resx" uniqueID="9bb21d4d-47fa-4fb0-8b5c-ab6a8a73ac2f" />
+      <file filePath="src\DotNetOpenAuth.OAuth2.Client.UI\OAuth2\ClientAuthorizationView.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OAuth2.Client.UI\OAuth2\ClientAuthorizationView.resx" uniqueID="147d04db-912b-407c-bff2-c74209659dc0" />
+      <file filePath="src\DotNetOpenAuth.OAuth2.Client\OAuth2\ClientStrings.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OAuth2.Client\OAuth2\ClientStrings.resx" uniqueID="c5052b16-3584-42bd-bd42-729bc7ac68ff" />
+      <file filePath="src\DotNetOpenAuth.Core\Messaging\MessagingStrings.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.Core\Messaging\MessagingStrings.resx" uniqueID="d51db2a6-e3b9-4456-aeee-654db9087afe" />
+      <file filePath="src\DotNetOpenAuth.Core\Messaging\MessagingStrings.sr.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.Core\Messaging\MessagingStrings.sr.resx" uniqueID="4979b4e9-7733-4ded-a8ef-15a6c3f0631d" />
+      <file filePath="src\DotNetOpenAuth.OAuth\OAuth\OAuthStrings.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OAuth\OAuth\OAuthStrings.resx" uniqueID="08a404d2-0e5c-46e9-9ea4-1371b2680e77" />
+      <file filePath="src\DotNetOpenAuth.OAuth2\OAuth2\OAuthStrings.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OAuth2\OAuth2\OAuthStrings.resx" uniqueID="8d858b23-c562-409e-b7dc-86cc29fda9f3" />
+      <file filePath="src\DotNetOpenAuth.OAuth\OAuth\OAuthStrings.sr.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OAuth\OAuth\OAuthStrings.sr.resx" uniqueID="2d42dd24-b31d-41da-9b8a-695f87b09b09" />
+      <file filePath="src\DotNetOpenAuth.OpenId\OpenId\OpenIdStrings.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OpenId\OpenId\OpenIdStrings.resx" uniqueID="070fdc47-a939-4336-b466-24571c19683b" />
+      <file filePath="src\DotNetOpenAuth.OpenId\OpenId\OpenIdStrings.sr.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OpenId\OpenId\OpenIdStrings.sr.resx" uniqueID="42497930-9549-4af7-b45d-8e867afcc20d" />
+      <file filePath="src\DotNetOpenAuth.OAuth2.ResourceServer\OAuth2\ResourceServerStrings.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OAuth2.ResourceServer\OAuth2\ResourceServerStrings.resx" uniqueID="f2f7a58b-5bf1-4dfa-9f91-4c44a3027a23" />
+      <file filePath="src\DotNetOpenAuth.Core\Strings.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.Core\Strings.resx" uniqueID="766ee388-f34f-40e6-bb54-7b5366ec88e2" />
+      <file filePath="src\DotNetOpenAuth.Core\Strings.sr.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.Core\Strings.sr.resx" uniqueID="fb3f4b65-d72d-4ed8-b371-42cce1f747f9" />
+      <file filePath="src\DotNetOpenAuth.BuildTasks\TaskStrings.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.BuildTasks\TaskStrings.resx" uniqueID="246c4bb7-cc5f-4657-9801-dff5308f9773" />
+      <file filePath="src\DotNetOpenAuth.OpenId\Xrds\XrdsStrings.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OpenId\Xrds\XrdsStrings.resx" uniqueID="1d2172ed-2ce8-45a8-bc53-694138c06533" />
+      <file filePath="src\DotNetOpenAuth.OpenId\Xrds\XrdsStrings.sr.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OpenId\Xrds\XrdsStrings.sr.resx" uniqueID="0193d563-8f5e-4750-9256-0345fe7c157c" />
+      <remarks>
+      </remarks>
+    </fileGroup>
+    <fileGroup name="" projectFolderUniqueID="a48a839e-bc54-4018-b481-dc95e3f63ad8" orderPosition="0" ignoreDuringExportAndImport="False" uniqueID="bdfd1ced-8903-46d3-bbe6-46db0602f3a2">
+      <file filePath="src\DotNetOpenAuth.OAuth2.AuthorizationServer\OAuth2\AuthServerStrings.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OAuth2.AuthorizationServer\OAuth2\AuthServerStrings.resx" uniqueID="363ffee5-a944-4956-9b4c-03c27969ff3e" />
+      <file filePath="src\DotNetOpenAuth.OAuth2.AuthorizationServer\OAuth2\AuthServerStrings.en-GB.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OAuth2.AuthorizationServer\OAuth2\AuthServerStrings.en-GB.resx" uniqueID="d66f96ba-6ae7-4a48-a36f-ab0321db5a94" />
+      <file filePath="src\DotNetOpenAuth.OAuth2.ClientAuthorization\OAuth2\ClientAuthorizationStrings.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OAuth2.ClientAuthorization\OAuth2\ClientAuthorizationStrings.resx" uniqueID="2b1d39dd-d5a3-4391-a75a-2faa9d7008a1" />
+      <file filePath="src\DotNetOpenAuth.OAuth2.Client.UI\OAuth2\ClientAuthorizationView.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OAuth2.Client.UI\OAuth2\ClientAuthorizationView.resx" uniqueID="61d00320-1ba1-45a9-82e6-c69e47450786" />
+      <file filePath="src\DotNetOpenAuth.OAuth2.Client\OAuth2\ClientStrings.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OAuth2.Client\OAuth2\ClientStrings.resx" uniqueID="ffcad41c-800c-4e04-84a2-261b15bb3fef" />
+      <file filePath="src\DotNetOpenAuth.OAuth2\OAuth2\OAuthStrings.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OAuth2\OAuth2\OAuthStrings.resx" uniqueID="9f472045-03e5-4f9f-ba18-cbf909f777e4" />
+      <file filePath="src\DotNetOpenAuth.OAuth2.ResourceServer\OAuth2\ResourceServerStrings.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OAuth2.ResourceServer\OAuth2\ResourceServerStrings.resx" uniqueID="a51a1de5-44dd-4592-bef0-8ab4cd7be07d" />
+      <remarks>
+      </remarks>
+    </fileGroup>
+    <fileGroup name="" projectFolderUniqueID="95b4bb67-2aac-40d8-a8ee-f1a2943b2387" orderPosition="0" ignoreDuringExportAndImport="False" uniqueID="6590b144-0695-42df-9559-cfd70278f8f8">
+      <file filePath="src\DotNetOpenAuth.OpenId\OpenId\Behaviors\BehaviorStrings.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OpenId\OpenId\Behaviors\BehaviorStrings.resx" uniqueID="a737080c-3094-4ca2-9953-a937308b0468" />
+      <file filePath="src\DotNetOpenAuth.OpenId\OpenId\Behaviors\BehaviorStrings.en-GB.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OpenId\OpenId\Behaviors\BehaviorStrings.en-GB.resx" uniqueID="bdc9da35-8119-43a7-85f0-a3619876e5dd" />
+      <file filePath="src\DotNetOpenAuth.OpenId\OpenId\Behaviors\BehaviorStrings.sr.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OpenId\OpenId\Behaviors\BehaviorStrings.sr.resx" uniqueID="c225b93b-7622-41d4-a42f-a3fff1ee73a5" />
+      <remarks>
+      </remarks>
+    </fileGroup>
+    <fileGroup name="" projectFolderUniqueID="00000000-0000-0000-0000-000000000000" orderPosition="0" ignoreDuringExportAndImport="False" uniqueID="84034312-1edb-4d9e-97bb-024cf6e064c9">
+      <file filePath="src\DotNetOpenAuth.Core\Messaging\MessagingStrings.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.Core\Messaging\MessagingStrings.resx" uniqueID="2ca6faed-7f9b-4b2c-b5e0-4b0b033a6ca7" />
+      <file filePath="src\DotNetOpenAuth.Core\Messaging\MessagingStrings.en-GB.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.Core\Messaging\MessagingStrings.en-GB.resx" uniqueID="1df9e3b6-3db9-49e9-903a-a69a865c45a0" />
+      <file filePath="src\DotNetOpenAuth.Core\Messaging\MessagingStrings.sr.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.Core\Messaging\MessagingStrings.sr.resx" uniqueID="09f42f99-4668-4db9-830b-2a93fa5c2825" />
+      <remarks>
+      </remarks>
+    </fileGroup>
+    <fileGroup name="" projectFolderUniqueID="00000000-0000-0000-0000-000000000000" orderPosition="0" ignoreDuringExportAndImport="False" uniqueID="ea3e7558-2e50-4152-9d9c-27c9cf4e8ecc">
+      <file filePath="src\DotNetOpenAuth.Core\Strings.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.Core\Strings.resx" uniqueID="96b4b0fd-e326-4e8d-8a5a-bb24ef536123" />
+      <file filePath="src\DotNetOpenAuth.Core\Strings.en-GB.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.Core\Strings.en-GB.resx" uniqueID="952c5f76-3d3d-42c1-9fba-59f0bfc9f248" />
+      <file filePath="src\DotNetOpenAuth.Core\Strings.sr.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.Core\Strings.sr.resx" uniqueID="79696a98-94ce-40a9-a631-29fa63f2d171" />
+      <remarks>
+      </remarks>
+    </fileGroup>
+    <fileGroup name="" projectFolderUniqueID="00000000-0000-0000-0000-000000000000" orderPosition="0" ignoreDuringExportAndImport="False" uniqueID="7268bc37-1030-4a3f-8bf8-d9a0a96c3166">
+      <file filePath="src\DotNetOpenAuth.BuildTasks\TaskStrings.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.BuildTasks\TaskStrings.resx" uniqueID="5ce78f8f-f3c6-4a2c-88a8-be1c5e9bb614" />
+      <file filePath="src\DotNetOpenAuth.BuildTasks\TaskStrings.en-GB.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.BuildTasks\TaskStrings.en-GB.resx" uniqueID="d1977d50-8de8-4b19-a2eb-fc03bbd96e39" />
+      <remarks>
+      </remarks>
+    </fileGroup>
+    <fileGroup name="" projectFolderUniqueID="95b4bb67-2aac-40d8-a8ee-f1a2943b2387" orderPosition="1" ignoreDuringExportAndImport="False" uniqueID="cb98059f-20c4-461e-b37c-3780a5c28000">
+      <file filePath="src\DotNetOpenAuth.OpenId\OpenId\OpenIdStrings.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OpenId\OpenId\OpenIdStrings.resx" uniqueID="a0b7fd7c-0e4d-4faa-bfc1-7b8edd5cf777" />
+      <file filePath="src\DotNetOpenAuth.OpenId\OpenId\OpenIdStrings.en-GB.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OpenId\OpenId\OpenIdStrings.en-GB.resx" uniqueID="1ceeb916-37db-4a12-970a-11334820e807" />
+      <file filePath="src\DotNetOpenAuth.OpenId\OpenId\OpenIdStrings.sr.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OpenId\OpenId\OpenIdStrings.sr.resx" uniqueID="c1f1b0d6-64d2-4ac8-bb93-cb3bdc8193e0" />
+      <remarks>
+      </remarks>
+    </fileGroup>
+    <fileGroup name="" projectFolderUniqueID="a48a839e-bc54-4018-b481-dc95e3f63ad8" orderPosition="1" ignoreDuringExportAndImport="False" uniqueID="2aacbad5-7ce4-4a5a-9fd2-f23a6eb42f30">
+      <file filePath="src\DotNetOpenAuth.OAuth2.ResourceServer\OAuth2\ResourceServerStrings.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OAuth2.ResourceServer\OAuth2\ResourceServerStrings.resx" uniqueID="e163efa4-4c8f-4af6-909d-fc73c553cf69" />
+      <file filePath="src\DotNetOpenAuth.OAuth2.ResourceServer\OAuth2\ResourceServerStrings.en-GB.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OAuth2.ResourceServer\OAuth2\ResourceServerStrings.en-GB.resx" uniqueID="ce627593-5378-4dfb-b31d-f2a27907ebc9" />
+      <remarks>
+      </remarks>
+    </fileGroup>
+    <fileGroup name="" projectFolderUniqueID="a48a839e-bc54-4018-b481-dc95e3f63ad8" orderPosition="2" ignoreDuringExportAndImport="False" uniqueID="d30ec44c-4c6c-4dc0-af62-7e17b9abdeed">
+      <file filePath="src\DotNetOpenAuth.OAuth2.ClientAuthorization\OAuth2\ClientAuthorizationStrings.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OAuth2.ClientAuthorization\OAuth2\ClientAuthorizationStrings.resx" uniqueID="69cd8b1e-a565-49ca-a79b-66790dc64856" />
+      <file filePath="src\DotNetOpenAuth.OAuth2.ClientAuthorization\OAuth2\ClientAuthorizationStrings.en-GB.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OAuth2.ClientAuthorization\OAuth2\ClientAuthorizationStrings.en-GB.resx" uniqueID="a736ddee-5f39-4aa7-9078-946ad563ba71" />
+      <remarks>
+      </remarks>
+    </fileGroup>
+    <fileGroup name="" projectFolderUniqueID="95b4bb67-2aac-40d8-a8ee-f1a2943b2387" orderPosition="2" ignoreDuringExportAndImport="False" uniqueID="fb83f40d-9b7b-4a0b-9f21-53345698ab76">
+      <file filePath="src\DotNetOpenAuth.OpenId\Xrds\XrdsStrings.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OpenId\Xrds\XrdsStrings.resx" uniqueID="06ecd396-8f4d-4b0b-bcea-411092dfc779" />
+      <file filePath="src\DotNetOpenAuth.OpenId\Xrds\XrdsStrings.en-GB.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OpenId\Xrds\XrdsStrings.en-GB.resx" uniqueID="7706bff9-e7c6-4411-a545-f99c640c053d" />
+      <file filePath="src\DotNetOpenAuth.OpenId\Xrds\XrdsStrings.sr.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OpenId\Xrds\XrdsStrings.sr.resx" uniqueID="86035037-b642-44bc-b96a-462e0310fd25" />
+      <remarks>
+      </remarks>
+    </fileGroup>
+    <fileGroup name="" projectFolderUniqueID="a48a839e-bc54-4018-b481-dc95e3f63ad8" orderPosition="3" ignoreDuringExportAndImport="False" uniqueID="dc390282-68b8-45b0-99f4-b164e1bdcf48">
+      <file filePath="src\DotNetOpenAuth.OAuth2.Client\OAuth2\ClientStrings.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OAuth2.Client\OAuth2\ClientStrings.resx" uniqueID="47423132-ee1e-4fd0-b0a9-00e4d4793115" />
+      <file filePath="src\DotNetOpenAuth.OAuth2.Client\OAuth2\ClientStrings.en-GB.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OAuth2.Client\OAuth2\ClientStrings.en-GB.resx" uniqueID="18a4978d-ad85-4666-a9c7-054c561b5a4f" />
+      <remarks>
+      </remarks>
+    </fileGroup>
+    <fileGroup name="" projectFolderUniqueID="a48a839e-bc54-4018-b481-dc95e3f63ad8" orderPosition="4" ignoreDuringExportAndImport="False" uniqueID="e0f2d232-12f8-49a3-9f36-69363f687f31">
+      <file filePath="src\DotNetOpenAuth.OAuth2.Client.UI\OAuth2\ClientAuthorizationView.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OAuth2.Client.UI\OAuth2\ClientAuthorizationView.resx" uniqueID="55ebd4eb-b945-482c-890f-59c0970dbb3f" />
+      <file filePath="src\DotNetOpenAuth.OAuth2.Client.UI\OAuth2\ClientAuthorizationView.en-GB.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OAuth2.Client.UI\OAuth2\ClientAuthorizationView.en-GB.resx" uniqueID="7745698a-51a2-4fa0-a6c2-aeaf08528514" />
+      <remarks>
+      </remarks>
+    </fileGroup>
+    <fileGroup name="" projectFolderUniqueID="a48a839e-bc54-4018-b481-dc95e3f63ad8" orderPosition="5" ignoreDuringExportAndImport="False" uniqueID="99f29a51-0dcc-4d4f-a1b1-a45214af24b5">
+      <file filePath="src\DotNetOpenAuth.OAuth2.AuthorizationServer\OAuth2\AuthServerStrings.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OAuth2.AuthorizationServer\OAuth2\AuthServerStrings.resx" uniqueID="ff4d42c3-8607-425e-9e09-ffe8bb808867" />
+      <file filePath="src\DotNetOpenAuth.OAuth2.AuthorizationServer\OAuth2\AuthServerStrings.en-GB.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OAuth2.AuthorizationServer\OAuth2\AuthServerStrings.en-GB.resx" uniqueID="d10da2a7-64e2-4cd0-ab46-10b865f76ca2" />
+      <remarks>
+      </remarks>
+    </fileGroup>
+    <fileGroup name="" projectFolderUniqueID="a48a839e-bc54-4018-b481-dc95e3f63ad8" orderPosition="6" ignoreDuringExportAndImport="False" uniqueID="405cfbdd-e37b-4253-8a78-fafcef385a0c">
+      <file filePath="src\DotNetOpenAuth.OAuth\OAuth\OAuthStrings.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OAuth\OAuth\OAuthStrings.resx" uniqueID="8af81aad-9187-48a8-a0cd-906dc7803bda" />
+      <file filePath="src\DotNetOpenAuth.OAuth\OAuth\OAuthStrings.en-GB.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OAuth\OAuth\OAuthStrings.en-GB.resx" uniqueID="8b19359e-8e00-4232-a1bb-af7192e0e1b2" />
+      <file filePath="src\DotNetOpenAuth.OAuth\OAuth\OAuthStrings.sr.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OAuth\OAuth\OAuthStrings.sr.resx" uniqueID="60d54e86-022d-4bba-a197-71b45aa679a8" />
+      <remarks>
+      </remarks>
+    </fileGroup>
+    <fileGroup name="" projectFolderUniqueID="a48a839e-bc54-4018-b481-dc95e3f63ad8" orderPosition="0" ignoreDuringExportAndImport="False" uniqueID="00000000-0000-0000-0000-000000000000">
+      <file filePath="src\DotNetOpenAuth.OAuth2\OAuth2\OAuthStrings.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OAuth2\OAuth2\OAuthStrings.resx" uniqueID="00000000-0000-0000-0000-000000000000" />
+      <file filePath="src\DotNetOpenAuth.OAuth2\OAuth2\OAuthStrings.en-GB.resx" absoluteFilePath="C:\Projects\DotNetOpenAuth\src\DotNetOpenAuth.OAuth2\OAuth2\OAuthStrings.en-GB.resx" uniqueID="00000000-0000-0000-0000-000000000000" />
+      <remarks>
+      </remarks>
+    </fileGroup>
+  </fileGroups>
+  <projectFolders>
+    <projectFolder uniqueID="a48a839e-bc54-4018-b481-dc95e3f63ad8" parentUniqueID="00000000-0000-0000-0000-000000000000" name="OAUTH" orderPosition="0">
+      <remarks>
+      </remarks>
+      <dynSettings>
+        <setting name="UseParentFilePatternSettings">
+          <value>True</value>
+        </setting>
+        <setting name="NeutralLanguageFileNamePattern">
+          <value>[basename][optionaldefaulttypes].[extension]</value>
+        </setting>
+        <setting name="NonNeutralLanguageFileNamePattern">
+          <value>[basename][optionaldefaulttypes].[languagecode].[extension]</value>
+        </setting>
+        <setting name="BaseNameDotCount">
+          <value>0</value>
+        </setting>
+        <setting name="DefaultFileTypesToIgnore">
+          <value>.aspx;.ascx;.asmx;.master;.sitemap</value>
+        </setting>
+        <setting name="IgnoreDuringExportAndImport">
+          <value>False</value>
+        </setting>
+      </dynSettings>
+    </projectFolder>
+    <projectFolder uniqueID="95b4bb67-2aac-40d8-a8ee-f1a2943b2387" parentUniqueID="00000000-0000-0000-0000-000000000000" name="OpenID" orderPosition="0">
+      <remarks>
+      </remarks>
+      <dynSettings>
+        <setting name="UseParentFilePatternSettings">
+          <value>True</value>
+        </setting>
+        <setting name="NeutralLanguageFileNamePattern">
+          <value>[basename][optionaldefaulttypes].[extension]</value>
+        </setting>
+        <setting name="NonNeutralLanguageFileNamePattern">
+          <value>[basename][optionaldefaulttypes].[languagecode].[extension]</value>
+        </setting>
+        <setting name="BaseNameDotCount">
+          <value>0</value>
+        </setting>
+        <setting name="DefaultFileTypesToIgnore">
+          <value>.aspx;.ascx;.asmx;.master;.sitemap</value>
+        </setting>
+        <setting name="IgnoreDuringExportAndImport">
+          <value>False</value>
+        </setting>
+      </dynSettings>
+    </projectFolder>
+  </projectFolders>
+</project>

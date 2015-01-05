@@ -70,6 +70,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="OAuth2\ClientAuthorizationStrings.en-GB.resx" />
     <EmbeddedResource Include="OAuth2\ClientAuthorizationStrings.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ClientAuthorizationStrings.Designer.cs</LastGenOutput>

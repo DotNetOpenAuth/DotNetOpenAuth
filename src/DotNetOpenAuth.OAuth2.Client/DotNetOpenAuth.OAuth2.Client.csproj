@@ -58,6 +58,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="OAuth2\ClientStrings.en-GB.resx" />
     <EmbeddedResource Include="OAuth2\ClientStrings.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ClientStrings.Designer.cs</LastGenOutput>

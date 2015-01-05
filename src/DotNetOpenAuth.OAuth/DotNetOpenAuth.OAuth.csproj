@@ -68,6 +68,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="OAuth\OAuthStrings.en-GB.resx" />
     <EmbeddedResource Include="OAuth\OAuthStrings.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>OAuthStrings.Designer.cs</LastGenOutput>
