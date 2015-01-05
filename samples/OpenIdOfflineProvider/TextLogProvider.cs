@@ -1,19 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Diagnostics;
-using System.IO;
-using System.Reflection;
-using System.Runtime.Remoting.Messaging;
-using System.ServiceModel.Dispatcher;
+﻿namespace DotNetOpenAuth.OpenIdOfflineProvider {
+	using System;
+	using System.IO;
+	using System.Text.RegularExpressions;
+	using System.Threading;
 
-using DotNetOpenAuth.Logging;
-using DotNetOpenAuth.Logging.LogProviders;
-using DotNetOpenAuth.OpenId.Extensions.AttributeExchange;
-
-namespace DotNetOpenAuth.OpenIdOfflineProvider {
+	using DotNetOpenAuth.Logging;
 
 	/// <summary>
 	/// Sends logging events to a <see cref="TextWriter"/>.
@@ -31,17 +22,13 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 	/// <author>Nicko Cadell</author>
 	/// <author>Gert Driesen</author>
 	/// <author>Douglas de la Torre</author>
-	public class TextWriterLogProvider : ILogProvider {
+	internal class TextWriterLogProvider : ILogProvider {
+		private readonly TextBoxTextWriter _writer;
 
 		private static bool _providerIsAvailableOverride = true;
-		private readonly TextWriterLogger.WriteDelegate _logWriteDelegate;
 
-		public TextWriterLogProvider() {
-			if (!IsLoggerAvailable()) {
-				throw new InvalidOperationException("Gibraltar.Agent.Log (Loupe) not found");
-			}
-
-			_logWriteDelegate = GetLogWriteDelegate();
+		internal TextWriterLogProvider(TextBoxTextWriter writer) {
+			_writer = writer;
 		}
 
 		/// <summary>
@@ -56,90 +43,103 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		}
 
 		public ILog GetLogger(string name) {
-			return new TextWriterLogProvider.TextWriterLogger(name, _logWriteDelegate);
+			return new TextWriterLogger(_writer);
 		}
 
-		public static bool IsLoggerAvailable() {
-			return ProviderIsAvailableOverride && GetLogManagerType() != null;
-		}
-
-		private static Type GetLogManagerType() {
-			return Type.GetType("Gibraltar.Agent.Log, Gibraltar.Agent");
-		}
-
-		private static TextWriterLogger.WriteDelegate GetLogWriteDelegate() {
-			Type logManagerType = GetLogManagerType();
-			Type logMessageSeverityType = Type.GetType("Gibraltar.Agent.LogMessageSeverity, Gibraltar.Agent");
-			Type logWriteModeType = Type.GetType("Gibraltar.Agent.LogWriteMode, Gibraltar.Agent");
-
-			MethodInfo method = logManagerType.GetMethod("Write", new[]
-                                                                  {
-                                                                      logMessageSeverityType, typeof(string), typeof(int), typeof(Exception), typeof(bool), 
-                                                                      logWriteModeType, typeof(string), typeof(string), typeof(string), typeof(string), typeof(object[])
-                                                                  });
-
-			var callDelegate = (TextWriterLogger.WriteDelegate)Delegate.CreateDelegate(typeof(TextWriterLogger.WriteDelegate), method);
-			return callDelegate;
-		}
 		public class TextWriterLogger : ILog {
-			private const string LogSystem = "LibLog";
-
-			private readonly string _category;
-			private readonly WriteDelegate _logWriteDelegate;
 			private readonly int _skipLevel;
+			private TextWriter _writer;
+			private ITextWriterFormatter _textWriterFormatter;
+			private IDateTimeProvider _dateTimeProvider;
 
-			internal TextWriterLogger(string category, WriteDelegate logWriteDelegate) {
-				_category = category;
-				_logWriteDelegate = logWriteDelegate;
+			internal TextWriterLogger(TextBoxTextWriter writer) {
+				_writer = writer;
 				_skipLevel = 1;
+				this.DateTimeProvider = new UtcDateTimeProvider();
+				this.TextWriterFormatter = new DefaultTextWriterFormatter();
 			}
 
+			public TextWriter Writer {
+				get {
+					return _writer;
+				}
+
+				set {
+					_writer = value;
+				}
+			}
+
+			public ITextWriterFormatter TextWriterFormatter {
+				get {
+					return _textWriterFormatter;
+				}
+				set {
+					if (value == null)
+						throw new ArgumentNullException();
+					_textWriterFormatter = value;
+				}
+			}
+
+			public IDateTimeProvider DateTimeProvider {
+				get {
+					return _dateTimeProvider;
+				}
+				set {
+					if (value == null)
+						throw new ArgumentNullException();
+					_dateTimeProvider = value;
+				}
+			}
 			public bool Log(LogLevel logLevel, Func<string> messageFunc, Exception exception) {
 				if (messageFunc == null) {
 					//nothing to log..
 					return true;
 				}
-
-				_logWriteDelegate((int)ToLogMessageSeverity(logLevel), LogSystem, _skipLevel, exception, true, 0, null, _category, null, messageFunc.Invoke());
-
+				string[] lines = Regex.Split(messageFunc(), "\r\n|\r|\n");
+				foreach (var line in lines) {
+					this.TextWriterFormatter.WriteText(_writer, logLevel, this.DateTimeProvider.GetCurrentDateTime(), line);
+				}
+				_writer.Flush();
 				return true;
 			}
+			public interface IDateTimeProvider {
+				DateTime GetCurrentDateTime();
+			}
+			public interface ITextWriterFormatter {
+				void WriteText(TextWriter writer, LogLevel level, DateTime dateTime, string text);
+			}
+			public class DefaultTextWriterFormatter : ITextWriterFormatter {
+				public void WriteText(TextWriter writer, LogLevel level, DateTime dateTime, string text) {
+					string sLevel;
+					switch (level) {
+						case LogLevel.Info:
+						default:
+							sLevel = "I";
+							break;
 
-			public TraceEventType ToLogMessageSeverity(LogLevel logLevel) {
-				switch (logLevel) {
-					case LogLevel.Trace:
-						return TraceEventType.Verbose;
-					case LogLevel.Debug:
-						return TraceEventType.Verbose;
-					case LogLevel.Info:
-						return TraceEventType.Information;
-					case LogLevel.Warn:
-						return TraceEventType.Warning;
-					case LogLevel.Error:
-						return TraceEventType.Error;
-					case LogLevel.Fatal:
-						return TraceEventType.Critical;
-					default:
-						throw new ArgumentOutOfRangeException("logLevel");
+						case LogLevel.Debug:
+							sLevel = "D";
+							break;
+
+						case LogLevel.Warn:
+							sLevel = "W";
+							break;
+
+						case LogLevel.Error:
+							sLevel = "E";
+							break;
+					}
+
+					writer.WriteLine("{0}:{1} {2} [{4}]: {3}",
+						sLevel, dateTime.ToShortDateString(), dateTime.ToLongTimeString(),
+						text, Thread.CurrentThread.GetHashCode());
 				}
 			}
-
-			/// <summary>
-			/// The form of the Loupe Log.Write method we're using
-			/// </summary>
-			internal delegate void WriteDelegate(
-				int severity,
-				string logSystem,
-				int skipFrames,
-				Exception exception,
-				bool attributeToException,
-				int writeMode,
-				string detailsXml,
-				string category,
-				string caption,
-				string description,
-				params object[] args
-				);
+			public class UtcDateTimeProvider : IDateTimeProvider {
+				public DateTime GetCurrentDateTime() {
+					return DateTime.UtcNow;
+				}
+			}
 		}
 	}
 }
