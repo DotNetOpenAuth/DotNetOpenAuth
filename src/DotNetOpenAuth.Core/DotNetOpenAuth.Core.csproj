@@ -19,7 +19,9 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="App_Packages\LibLog.2.0\LibLog.cs" />
+    <Compile Include="App_Packages\LibLog.2.0\LibLog.cs">
+      <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
+    </Compile>
     <Compile Include="Assumes.cs" />
     <Compile Include="IHostFactories.cs" />
     <Compile Include="IRequireHostFactories.cs" />

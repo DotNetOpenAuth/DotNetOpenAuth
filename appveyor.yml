@@ -1,0 +1,21 @@
+version: 5.0.{build}
+branches:
+  except:
+  - master
+skip_tags: true
+assembly_info:
+  patch: true
+  file: '**\AssemblyInfo.*'
+  assembly_version: '{version}'
+  assembly_file_version: '{version}'
+  assembly_informational_version: '{version}'
+before_build:
+- cd .\src
+- nuget restore
+- cd ..\
+build:
+  project: src\DotNetOpenAuth.sln
+  parallel: true
+  verbosity: normal
+test:
+  assemblies: DotNetOpenAuth.Test.dll

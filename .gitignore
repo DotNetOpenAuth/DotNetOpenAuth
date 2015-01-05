@@ -24,3 +24,4 @@ _ReSharper*
 *.vs10x
 *.docstates
 UpgradeLog*.htm
+/src/packages
