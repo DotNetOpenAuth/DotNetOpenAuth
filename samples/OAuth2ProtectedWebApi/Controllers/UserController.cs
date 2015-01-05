@@ -44,6 +44,7 @@
 			}
 
 			var response = await authServer.Channel.PrepareResponseAsync(responseMessage);
+			Response.ContentType = response.Content.Headers.ContentType.ToString();
 			return response.AsActionResult();
 		}
 
@@ -57,6 +58,7 @@
 			}
 
 			var redirectingResponse = await request.GetRedirectingResponseAsync();
+			Response.ContentType = redirectingResponse.Content.Headers.ContentType.ToString();
 			return redirectingResponse.AsActionResult();
 		}
 
