@@ -277,6 +277,7 @@ namespace DotNetOpenAuth.OAuth2 {
 			Requires.NotNull(authorizationState, "authorizationState");
 			Requires.NotNull(accessTokenSuccess, "accessTokenSuccess");
 
+			authorizationState.IdToken = accessTokenSuccess.IdToken;
 			authorizationState.AccessToken = accessTokenSuccess.AccessToken;
 			authorizationState.AccessTokenExpirationUtc = DateTime.UtcNow + accessTokenSuccess.Lifetime;
 			authorizationState.AccessTokenIssueDateUtc = DateTime.UtcNow;
@@ -305,6 +306,7 @@ namespace DotNetOpenAuth.OAuth2 {
 			Requires.NotNull(authorizationState, "authorizationState");
 			Requires.NotNull(accessTokenSuccess, "accessTokenSuccess");
 
+			authorizationState.IdToken = accessTokenSuccess.IdToken;
 			authorizationState.AccessToken = accessTokenSuccess.AccessToken;
 			authorizationState.AccessTokenExpirationUtc = DateTime.UtcNow + accessTokenSuccess.Lifetime;
 			authorizationState.AccessTokenIssueDateUtc = DateTime.UtcNow;

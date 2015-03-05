@@ -89,6 +89,11 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// </summary>
 		internal const string access_token = "access_token";
 
+        /// <summary>
+        /// The "id_token" string.
+        /// </summary>
+        internal const string id_token = "id_token";
+
 		/// <summary>
 		/// The "token_type" string.
 		/// </summary>

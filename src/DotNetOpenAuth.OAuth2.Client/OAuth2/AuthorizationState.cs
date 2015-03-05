@@ -42,6 +42,12 @@ namespace DotNetOpenAuth.OAuth2 {
 		/// Gets or sets the access token.
 		/// </summary>
 		/// <value>The access token.</value>
+		public string IdToken { get; set; }
+
+		/// <summary>
+		/// Gets or sets the access token.
+		/// </summary>
+		/// <value>The access token.</value>
 		public string AccessToken { get; set; }
 
 		/// <summary>

@@ -25,6 +25,12 @@ namespace DotNetOpenAuth.OAuth2 {
 		string RefreshToken { get; set; }
 
 		/// <summary>
+		/// Gets or sets the id token.
+		/// </summary>
+		/// <value>The id token.</value>
+		string IdToken { get; set; }
+
+		/// <summary>
 		/// Gets or sets the access token.
 		/// </summary>
 		/// <value>The access token.</value>

@@ -103,6 +103,13 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		public string AccessToken { get; set; }
 
 		/// <summary>
+		/// Gets or sets the access token.
+		/// </summary>
+		/// <value>The access token.</value>
+		[MessagePart(Protocol.id_token, IsRequired = false)]
+		public string IdToken { get; internal set; }
+
+		/// <summary>
 		/// Gets or sets the scope of the <see cref="AccessToken"/> if one is given; otherwise the scope of the authorization code.
 		/// </summary>
 		/// <value>The scope.</value>
