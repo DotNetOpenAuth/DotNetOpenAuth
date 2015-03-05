@@ -58,6 +58,13 @@ namespace DotNetOpenAuth.OAuth2.Messages {
 		[MessagePart(Protocol.access_token, IsRequired = true)]
 		public string AccessToken { get; internal set; }
 
+        /// <summary>
+        /// Gets or sets the access token.
+        /// </summary>
+        /// <value>The access token.</value>
+        [MessagePart(Protocol.id_token, IsRequired = false)]
+        public string IdToken { get; internal set; }
+
 		/// <summary>
 		/// Gets or sets the token type.
 		/// </summary>
