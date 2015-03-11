@@ -1,5 +1,8 @@
-<h1>DotNetOpenAuth samples</h1>
-
+<html>
+<body>
+	<h1>
+    DotNetOpenAuth samples
+</h1>
 <h3>
     Prerequisites:</h3>
 <ul>
@@ -177,3 +180,6 @@ before doing any testing with them.
         features for quickly clearing cookies etc.</li>
     <li><a href="http://www.iopus.com/download/">iMacros</a> - good for automating web testing</li>
 </ul>
+
+</body>
+</html>
