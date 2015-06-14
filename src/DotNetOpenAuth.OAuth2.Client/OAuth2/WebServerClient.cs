@@ -106,18 +106,17 @@ namespace DotNetOpenAuth.OAuth2 {
 			// Mitigate XSRF attacks by including a state value that would be unpredictable between users, but
 			// verifiable for the same user/session.
 			// If the host is implementing the authorization tracker though, they're handling this protection themselves.
-			var cookies = new List<CookieHeaderValue>();
+            var xsrfCookieValue = default( string );
 			if (this.AuthorizationTracker == null) {
 				string xsrfKey = MessagingUtilities.GetNonCryptoRandomDataAsBase64(16, useWeb64: true);
-				cookies.Add(new CookieHeaderValue(XsrfCookieName, xsrfKey) {
-					HttpOnly = true,
-					Secure = FormsAuthentication.RequireSSL,
-				});
+				xsrfCookieValue = string.Format( "{0}={1}; {2}HttpOnly;", XsrfCookieName, xsrfKey, FormsAuthentication.RequireSSL ? "Secure; " : "" );
 				request.ClientState = xsrfKey;
 			}
 
-			var response = await this.Channel.PrepareResponseAsync(request, cancellationToken);
-			response.Headers.AddCookies(cookies);
+			var response = await this.Channel.PrepareResponseAsync( request, cancellationToken );
+
+			if (xsrfCookieValue != null)
+				response.Headers.TryAddWithoutValidation("Set-Cookie", xsrfCookieValue);
 
 			return response;
 		}
@@ -153,11 +152,13 @@ namespace DotNetOpenAuth.OAuth2 {
 					authorizationState = this.AuthorizationTracker.GetAuthorizationState(callback, response.ClientState);
 					ErrorUtilities.VerifyProtocol(authorizationState != null, ClientStrings.AuthorizationResponseUnexpectedMismatch);
 				} else {
-					var xsrfCookieValue = (from cookieHeader in request.Headers.GetCookies()
-										   from cookie in cookieHeader.Cookies
-										   where cookie.Name == XsrfCookieName
-										   select cookie.Value).FirstOrDefault();
-					ErrorUtilities.VerifyProtocol(xsrfCookieValue != null && string.Equals(response.ClientState, xsrfCookieValue, StringComparison.Ordinal), ClientStrings.AuthorizationResponseUnexpectedMismatch);
+					var cookieNameToken = XsrfCookieName + "=";
+					var xsrfCookieValue = (from cookie in request.Headers.GetValues( "Cookie" )
+										   where cookie.StartsWith( cookieNameToken )
+										   let cookieValue = cookie.Substring( cookieNameToken.Length )
+										   select cookieValue).FirstOrDefault();
+
+					ErrorUtilities.VerifyProtocol( xsrfCookieValue != null && string.Equals( response.ClientState, xsrfCookieValue, StringComparison.Ordinal ), ClientStrings.AuthorizationResponseUnexpectedMismatch );
 					authorizationState = new AuthorizationState { Callback = callback };
 				}
 				var success = response as EndUserAuthorizationSuccessAuthCodeResponse;
