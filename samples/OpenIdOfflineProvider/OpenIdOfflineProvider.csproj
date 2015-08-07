@@ -147,7 +147,8 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ProviderController.cs" />
     <Compile Include="Controllers\UserController.cs" />
-    <Compile Include="TextLogProvider.cs" />
+    <Compile Include="Startup.cs" />
+    <Compile Include="TextWriterLogProvider.cs" />
     <Page Include="CheckIdWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

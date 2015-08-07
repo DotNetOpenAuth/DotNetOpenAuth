@@ -95,7 +95,17 @@ namespace DotNetOpenAuth.Test.OpenId.Messages {
 			responseReplay.UtcCreationDate = local;
 			DateTime utcCreationDate = responseReplay.UtcCreationDate;
 			Assert.AreEqual(DateTimeKind.Utc, utcCreationDate.Kind, "Local time should have been converted to universal time.");
-			//Assert.AreNotEqual(local.Hour, utcCreationDate.Hour, "The hour was expected to change (unless local time _is_ UTC time for this PC!)");
+
+			// Check if this PC is not UTC (i.e. the UTC hour and local hour are different), if so we can perform this test
+			DateTime currentUtc = DateTime.UtcNow;
+			DateTime currentLocal = DateTime.Now;
+
+			if (currentUtc.Hour != currentLocal.Hour) {
+				Assert.AreNotEqual(
+					local.Hour,
+					utcCreationDate.Hour,
+					"The hour was expected to change (unless local time _is_ UTC time for this PC!)");
+			}
 
 			// Now try setting UTC time just to make sure it DOESN'T mangle the hour
 			if (this.creationDate.Kind != DateTimeKind.Utc) {

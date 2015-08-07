@@ -5,15 +5,14 @@
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OpenIdOfflineProvider {
-    using System.Windows;
+	using System.Windows;
 
-    using DotNetOpenAuth.Logging;
+	using DotNetOpenAuth.Logging;
 
-    /// <summary>
+	/// <summary>
 	/// Interaction logic for App.xaml
 	/// </summary>
 	public partial class App : Application {
-
 		/// <summary>
 		/// Initializes a new instance of the <see cref="App"/> class.
 		/// </summary>
