@@ -253,7 +253,7 @@ namespace DotNetOpenAuth.Test.Messaging {
 			string totalmismatch = new string('B', 5000);
 			string almostmatch = new string('A', 4999) + 'B';
 
-			const int Iterations = 4000;
+			const int Iterations = 100000;
 			var totalMismatchTimer = new Stopwatch();
 			totalMismatchTimer.Start();
 			for (int i = 0; i < Iterations; i++) {
