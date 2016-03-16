@@ -509,8 +509,8 @@ namespace DotNetOpenAuth.OpenId.RelyingParty {
 				}
 			}
 
-			// Sort endpoints so that the first one in the list is the most preferred one.
-			filteredEndpoints.OrderBy(ep => ep, relyingParty.EndpointOrder);
+            // Sort endpoints so that the first one in the list is the most preferred one.
+            filteredEndpoints = filteredEndpoints.OrderBy(ep => ep, relyingParty.EndpointOrder).ToList();
 
 			var endpointList = new List<IdentifierDiscoveryResult>(filteredEndpoints.Count);
 			foreach (var endpoint in filteredEndpoints) {
