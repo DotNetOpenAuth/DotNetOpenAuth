@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
 // <copyright file="ProviderController.cs" company="Andrew Arnott">
-//     Copyright (c) Andrew Arnott. All rights reserved.
+//    Copyright (c) Andrew Arnott. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
@@ -23,7 +23,8 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider.Controllers {
 	public class ProviderController : ApiController {
 		private static readonly ICryptoKeyAndNonceStore store = new MemoryCryptoKeyAndNonceStore();
 
-	    private static readonly ILog Logger = LogProvider.GetCurrentClassLogger();
+		private static readonly ILog Logger = LogProvider.GetCurrentClassLogger();
+
 		private MainWindow MainWindow {
 			get { return MainWindow.Instance; }
 		}
@@ -40,7 +41,7 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider.Controllers {
 			var provider = new OpenIdProvider(store);
 			IRequest request = await provider.GetRequestAsync(this.Request);
 			if (request == null) {
-                Logger.Error("A request came in that did not carry an OpenID message.");
+				Logger.Error("A request came in that did not carry an OpenID message.");
 				return new HttpResponseMessage(HttpStatusCode.BadRequest) {
 					Content = new StringContent("<html><body>This is an OpenID Provider endpoint.</body></html>", Encoding.UTF8, "text/html"),
 				};

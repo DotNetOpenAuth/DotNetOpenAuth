@@ -6,10 +6,10 @@
 
 	using DotNetOpenAuth.Logging;
 
-    public partial class Global : HttpApplication {
+	public partial class Global : HttpApplication {
 		protected void Application_Start(object sender, EventArgs e) {
-            ///			LogProvider.SetCurrentLogProvider(new ....)
-            Logging.Logger.Info("Sample starting...");
+			////			LogProvider.SetCurrentLogProvider(new ....)
+			Logging.Logger.Info("Sample starting...");
 		}
 
 		protected void Application_End(object sender, EventArgs e) {

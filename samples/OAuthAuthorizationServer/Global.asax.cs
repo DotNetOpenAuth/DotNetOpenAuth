@@ -10,7 +10,7 @@
 
 	using DotNetOpenAuth.Logging;
 
-    /// <summary>
+	/// <summary>
 	/// The global MVC Application.
 	/// </summary>
 	/// <remarks>
@@ -85,7 +85,7 @@
 
 			KeyNonceStore = new DatabaseKeyNonceStore();
 
-///			LogProvider.SetCurrentLogProvider(new ....)
+////			LogProvider.SetCurrentLogProvider(new ....)
 			Logger.Info("Sample starting...");
 		}
 

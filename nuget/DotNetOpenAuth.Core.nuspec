@@ -17,7 +17,9 @@
 			<frameworkAssembly assemblyName="System.Configuration" targetFramework="net40" />
 		</frameworkAssemblies>
 		<dependencies>
-			<dependency id="Microsoft.Net.Http" />
+			<group targetFramework="net40">
+				<dependency id="Microsoft.Net.Http" />
+			</group>
 		</dependencies>
 	</metadata>
 	<files>

@@ -18,9 +18,10 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider.Controllers {
 	using Validation;
 
 	public class HomeController : ApiController {
-        private static readonly ILog Logger = LogProvider.GetCurrentClassLogger();
-        public HttpResponseMessage Get() {
-            Logger.Info("Discovery on OP Identifier detected.");
+		private static readonly ILog Logger = LogProvider.GetCurrentClassLogger();
+
+		public HttpResponseMessage Get() {
+			Logger.Info("Discovery on OP Identifier detected.");
 			var opEndpoint = this.Url.Link("default", new { controller = "provider" });
 			var opEndpointUri = new Uri(opEndpoint);
 			return new HttpResponseMessage() {

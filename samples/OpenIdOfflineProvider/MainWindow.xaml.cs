@@ -1,42 +1,29 @@
 ﻿//-----------------------------------------------------------------------
 // <copyright file="MainWindow.xaml.cs" company="Outercurve Foundation">
-//     Copyright (c) Outercurve Foundation. All rights reserved.
+//   Copyright (c) Outercurve Foundation. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
 
 namespace DotNetOpenAuth.OpenIdOfflineProvider {
-    using System;
-    using System.ComponentModel;
-    using System.Globalization;
-    using System.Linq;
-    using System.Net;
-    using System.Net.Http.Headers;
-    using System.Runtime.InteropServices;
-    using System.ServiceModel;
-    using System.Threading.Tasks;
-    using System.Web;
-    using System.Web.Http;
-    using System.Windows;
-    using System.Windows.Input;
+	using System;
+	using System.ComponentModel;
+	using System.Globalization;
+	using System.Linq;
+	using System.Net;
+	using System.Net.Http.Headers;
+	using System.Runtime.InteropServices;
+	using System.ServiceModel;
+	using System.Threading.Tasks;
+	using System.Web;
+	using System.Windows;
+	using System.Windows.Input;
 
-    using DotNetOpenAuth.Logging;
+	using DotNetOpenAuth.Logging;
 
-    using Microsoft.Owin.Hosting;
+	using Microsoft.Owin.Hosting;
+	using Validation;
 
-    using Owin;
-
-    using Validation;
-	public class Startup {
-		// This code configures Web API. The Startup class is specified as a type
-		// parameter in the WebApp.Start method.
-		public void Configuration(IAppBuilder appBuilder) {
-			// Configure Web API for self-host. 
-			HttpConfiguration config = new HttpConfiguration();
-			config.Routes.MapHttpRoute("default", "{controller}/{id}", new { controller = "Home", id = RouteParameter.Optional });
-			appBuilder.UseWebApi(config);
-		}
-	} 
-    /// <summary>
+	/// <summary>
 	/// Interaction logic for MainWindow.xaml
 	/// </summary>
 	public partial class MainWindow : Window, IDisposable {
@@ -50,15 +37,15 @@ namespace DotNetOpenAuth.OpenIdOfflineProvider {
 		/// </summary>
 		private ILog _logger;
 
-	    private IDisposable hostServer;
+		private IDisposable hostServer;
 
-	    /// <summary>
+		/// <summary>
 		/// Initializes a new instance of the <see cref="MainWindow"/> class.
 		/// </summary>
 		public MainWindow() {
 			this.InitializeComponent();
 			LogProvider.SetCurrentLogProvider(new TextWriterLogProvider(new TextBoxTextWriter(this.logBox)));
-			_logger = LogProvider.GetLogger(typeof(MainWindow));
+			this._logger = LogProvider.GetLogger(typeof(MainWindow));
 			Instance = this;
 			this.StartProviderAsync();
 		}

@@ -7,7 +7,7 @@
 
 	using DotNetOpenAuth.Logging;
 
-    /// <summary>
+	/// <summary>
 	/// Logging tools for this sample.
 	/// </summary>
 	public static class Logging {

@@ -1,4 +1,10 @@
-﻿namespace DotNetOpenAuth.OpenIdOfflineProvider {
+﻿//-----------------------------------------------------------------------
+// <copyright file="TextWriterLogProvider.cs" company="Outercurve Foundation">
+//     Copyright (c) Outercurve Foundation. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
+
+namespace DotNetOpenAuth.OpenIdOfflineProvider {
 	using System;
 	using System.IO;
 	using System.Text.RegularExpressions;
@@ -28,7 +34,7 @@
 		private static bool _providerIsAvailableOverride = true;
 
 		internal TextWriterLogProvider(TextBoxTextWriter writer) {
-			_writer = writer;
+			this._writer = writer;
 		}
 
 		/// <summary>
@@ -43,7 +49,7 @@
 		}
 
 		public ILog GetLogger(string name) {
-			return new TextWriterLogger(_writer);
+			return new TextWriterLogger(this._writer);
 		}
 
 		public class TextWriterLogger : ILog {
@@ -53,88 +59,101 @@
 			private IDateTimeProvider _dateTimeProvider;
 
 			internal TextWriterLogger(TextBoxTextWriter writer) {
-				_writer = writer;
-				_skipLevel = 1;
+				this._writer = writer;
+				this._skipLevel = 1;
 				this.DateTimeProvider = new UtcDateTimeProvider();
 				this.TextWriterFormatter = new DefaultTextWriterFormatter();
 			}
 
+			public interface IDateTimeProvider {
+				DateTime GetCurrentDateTime();
+			}
+
+			public interface ITextWriterFormatter {
+				void WriteText(TextWriter writer, LogLevel level, DateTime dateTime, string text);
+			}
+
 			public TextWriter Writer {
 				get {
-					return _writer;
+					return this._writer;
 				}
 
 				set {
-					_writer = value;
+					this._writer = value;
 				}
 			}
 
 			public ITextWriterFormatter TextWriterFormatter {
 				get {
-					return _textWriterFormatter;
+					return this._textWriterFormatter;
 				}
+
 				set {
-					if (value == null)
+					if (value == null) {
 						throw new ArgumentNullException();
-					_textWriterFormatter = value;
+					}
+					this._textWriterFormatter = value;
 				}
 			}
 
 			public IDateTimeProvider DateTimeProvider {
 				get {
-					return _dateTimeProvider;
+					return this._dateTimeProvider;
 				}
+
 				set {
-					if (value == null)
+					if (value == null) {
 						throw new ArgumentNullException();
-					_dateTimeProvider = value;
+					}
+					this._dateTimeProvider = value;
 				}
 			}
+
 			public bool Log(LogLevel logLevel, Func<string> messageFunc, Exception exception) {
 				if (messageFunc == null) {
-					//nothing to log..
+					// nothing to log..
 					return true;
 				}
 				string[] lines = Regex.Split(messageFunc(), "\r\n|\r|\n");
 				foreach (var line in lines) {
-					this.TextWriterFormatter.WriteText(_writer, logLevel, this.DateTimeProvider.GetCurrentDateTime(), line);
+					this.TextWriterFormatter.WriteText(this._writer, logLevel, this.DateTimeProvider.GetCurrentDateTime(), line);
 				}
-				_writer.Flush();
+				this._writer.Flush();
 				return true;
 			}
-			public interface IDateTimeProvider {
-				DateTime GetCurrentDateTime();
-			}
-			public interface ITextWriterFormatter {
-				void WriteText(TextWriter writer, LogLevel level, DateTime dateTime, string text);
-			}
+
 			public class DefaultTextWriterFormatter : ITextWriterFormatter {
 				public void WriteText(TextWriter writer, LogLevel level, DateTime dateTime, string text) {
-					string sLevel;
+					string logLevelAbbreviation;
 					switch (level) {
 						case LogLevel.Info:
 						default:
-							sLevel = "I";
+							logLevelAbbreviation = "I";
 							break;
 
 						case LogLevel.Debug:
-							sLevel = "D";
+							logLevelAbbreviation = "D";
 							break;
 
 						case LogLevel.Warn:
-							sLevel = "W";
+							logLevelAbbreviation = "W";
 							break;
 
 						case LogLevel.Error:
-							sLevel = "E";
+							logLevelAbbreviation = "E";
 							break;
 					}
 
-					writer.WriteLine("{0}:{1} {2} [{4}]: {3}",
-						sLevel, dateTime.ToShortDateString(), dateTime.ToLongTimeString(),
-						text, Thread.CurrentThread.GetHashCode());
+					writer.WriteLine(
+						"{0}:{1} {2} [{4}]: {3}",
+						logLevelAbbreviation,
+						dateTime.ToShortDateString(),
+						dateTime.ToLongTimeString(),
+						text,
+						Thread.CurrentThread.GetHashCode());
 				}
 			}
+
 			public class UtcDateTimeProvider : IDateTimeProvider {
 				public DateTime GetCurrentDateTime() {
 					return DateTime.UtcNow;

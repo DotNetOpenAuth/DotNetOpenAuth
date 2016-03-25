@@ -6,9 +6,8 @@
 
 	using DotNetOpenAuth.Logging;
 
-    public partial class Global : HttpApplication {
+	public partial class Global : HttpApplication {
 		protected void Application_Start(object sender, EventArgs e) {
-
 			Logging.Logger.Info("Sample starting...");
 		}
 
