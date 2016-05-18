@@ -29,6 +29,7 @@ DotNetOpenAuth utilises the following open source projects:
 - [Web Protection Library](https://wpl.codeplex.com/)
 - [XUnit](https://github.com/xunit/xunit)
 - [License Header Manager](https://visualstudiogallery.msdn.microsoft.com/5647a099-77c9-4a49-91c3-94001828e99e)
+- [Mentalis Content] (http://www.mentalis.org/)
 
 ..and is supported by the following open source friendly companies:
 
