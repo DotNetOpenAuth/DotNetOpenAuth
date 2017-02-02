@@ -52,23 +52,26 @@ namespace DotNetOpenAuth.OAuth2.ChannelElements {
 		protected static ClientAuthenticationResult TryAuthenticateClientBySecret(IAuthorizationServerHost authorizationServerHost, string clientIdentifier, string clientSecret) {
 			Requires.NotNull(authorizationServerHost, "authorizationServerHost");
 
-			if (!string.IsNullOrEmpty(clientIdentifier)) {
+			if (string.IsNullOrEmpty(clientIdentifier)) { // no client id provided.
+				return ClientAuthenticationResult.NoAuthenticationRecognized;
+			}
+			try {
 				var client = authorizationServerHost.GetClient(clientIdentifier);
-				if (client != null) {
-					if (!string.IsNullOrEmpty(clientSecret)) {
-						if (client.IsValidClientSecret(clientSecret)) {
-							return ClientAuthenticationResult.ClientAuthenticated;
-						} else { // invalid client secret
-							return ClientAuthenticationResult.ClientAuthenticationRejected;
-						}
-					} else { // no client secret provided
-						return ClientAuthenticationResult.ClientIdNotAuthenticated;
-					}
-				} else { // The client identifier is not recognized.
+				ErrorUtilities.VerifyHost(client != null, OAuthStrings.ResultShouldNotBeNull, authorizationServerHost.GetType().FullName, "GetClient(string)");
+
+				if (string.IsNullOrEmpty(clientSecret)) { // no client secret provided
+					return ClientAuthenticationResult.ClientIdNotAuthenticated;
+				}
+
+				if (client.IsValidClientSecret(clientSecret)) {
+					return ClientAuthenticationResult.ClientAuthenticated;
+				} else { // invalid client secret
 					return ClientAuthenticationResult.ClientAuthenticationRejected;
 				}
-			} else { // no client id provided.
-				return ClientAuthenticationResult.NoAuthenticationRecognized;
+			} catch (KeyNotFoundException) {
+				return ClientAuthenticationResult.ClientAuthenticationRejected;
+			} catch (ArgumentException) {
+				return ClientAuthenticationResult.ClientAuthenticationRejected;
 			}
 		}
 	}
