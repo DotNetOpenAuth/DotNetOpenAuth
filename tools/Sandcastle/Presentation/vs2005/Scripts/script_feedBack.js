@@ -55,7 +55,7 @@ function URLValue()
 
 function GetLanguage()
 {
-	var langauge;
+	var language;
   	if(navigator.userAgent.indexOf("Firefox")!=-1)
   	{
   		var index = navigator.userAgent.indexOf('(');
