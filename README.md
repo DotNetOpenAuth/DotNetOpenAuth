@@ -26,7 +26,7 @@ DotNetOpenAuth utilises the following open source projects:
 - [Autofac](http://autofac.org/)
 - [Json.Net](http://james.newtonking.com/json)
 - [LibLog](https://github.com/damianh/LibLog)
-- [Web Protection Library](NuGet https://www.nuget.org/packages/AntiXSS/4.3.0 and Microsoft Download Center http://www.microsoft.com/en-us/download/details.aspx?id=43126 or in .NET 4.0)
+- [Web Protection Library](https://www.nuget.org/packages/AntiXSS/4.3.0)
 - [XUnit](https://github.com/xunit/xunit)
 - [License Header Manager](https://visualstudiogallery.msdn.microsoft.com/5647a099-77c9-4a49-91c3-94001828e99e)
 - [Mentalis Content] (http://www.mentalis.org/)
