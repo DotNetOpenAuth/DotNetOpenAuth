@@ -407,7 +407,11 @@ namespace DotNetOpenAuth.Messaging {
 				var directRequest = requestMessage as IHttpDirectRequest;
 				if (directRequest != null) {
 					foreach (var header in httpRequest.Headers) {
-						directRequest.Headers.Add(header.Key, header.Value);
+						try {
+							directRequest.Headers.Add(header.Key, header.Value);
+						} catch (FormatException) {
+							ErrorUtilities.ThrowProtocol(MessagingStrings.UnexpectedMessagePartValue, header.Key, header.Value);
+						}
 					}
 				}
 

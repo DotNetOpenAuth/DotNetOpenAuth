@@ -459,6 +459,11 @@ namespace DotNetOpenAuth.Messaging {
 			}
 
 			if (response.Content != null) {
+				foreach (var header in response.Content.Headers) {
+					foreach (var value in header.Value) {
+						responseContext.AddHeader(header.Key, value);
+					}
+				}
 				await response.Content.CopyToAsync(responseContext.OutputStream).ConfigureAwait(false);
 			}
 		}
