@@ -21,12 +21,12 @@ All samples are available in the [Samples Repository](https://github.com/DotNetO
 ## Credits ##
 DotNetOpenAuth utilises the following open source projects:
 
-- [ASP.NET Web API](https://aspnetwebstack.codeplex.com/)
-- [Katana](https://katanaproject.codeplex.com/)
+- [ASP.NET Web API](https://github.com/odata/webapi)
+- [Katana](https://github.com/aspnet/AspNetKatana/)
 - [Autofac](http://autofac.org/)
 - [Json.Net](http://james.newtonking.com/json)
 - [LibLog](https://github.com/damianh/LibLog)
-- [Web Protection Library](https://wpl.codeplex.com/)
+- [Web Protection Library](https://www.nuget.org/packages/AntiXSS/4.3.0)
 - [XUnit](https://github.com/xunit/xunit)
 - [License Header Manager](https://visualstudiogallery.msdn.microsoft.com/5647a099-77c9-4a49-91c3-94001828e99e)
 - [Mentalis Content] (http://www.mentalis.org/)
